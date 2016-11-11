@@ -10,12 +10,15 @@ If so, this package is for you.
 
 [GPy](https://github.com/SheffieldML/GPy) is a way more general GP library that was a strong influence in the development of this one. I've tried to stay as faithful as possible to its structure.
 
-Assuming this project proves successful, I'll try to integrate with GPy.
+I've re-used a lot of the GPy code. The main issue with simply adding my methods to GPy is that the API used to interact between GPy's `kern`, `likelihood`, and `inference` packages centers around the `dL_dK` object, a matrix derivative of the likelihood with respect to covariance. The materialization of this matrix is the very thing my algorithm tries to avoid for performance.
+
+If there is some quantifiable success with this approach then integration with GPy would be a reasonable next-step.
 
 ## Example
 
 Currently, I'm only supporting 1 input dimension.
 
+    # TODO: modify with interface change
     def noisify(x, sd): return x + np.rand.normal(0, sd)
     Xs = [np.arange(-10, 5, 0.5), np.arange(-5.25, 10, .5)]
     Xs = [[noisify(x, 0.1) for x in ls] for ls in Xs]
@@ -37,11 +40,12 @@ Currently, I'm only supporting 1 input dimension.
 
 ## Dev requirements
 
-`pylint nose`
+`pylint nose paramz`
 
 
 ## Dev roadmap:
 
+0. Interfaces (copy from GPy)
 1. Toeplitz matrix representation, efficient eigendecomposition, and multiplication
 2. Same as above, but for Kronecker matrices
 3. Linear conjugate-gradient descent for fast inversion
