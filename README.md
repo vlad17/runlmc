@@ -42,16 +42,15 @@ Currently, I'm only supporting 1 input dimension.
 
 `pylint nose paramz`
 
-
 ## Dev roadmap:
 
 0. Interfaces (copy from GPy)
+7. Sphinxdoc + Doctests + pylint
 1. Toeplitz matrix representation, efficient eigendecomposition, and multiplication
 2. Same as above, but for Kronecker matrices
 3. Linear conjugate-gradient descent for fast inversion
 4. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
 5. Incorporating priors (e.g., three-parameter beta)
 6. Log-determinant bound (greedy algorithm; may be improved with Prof. Tarjan)
-7. Sphinxdoc + Doctests
-8. Continuous integration for unit tests + pylint
+8. Continuous integration for unit tests
 
