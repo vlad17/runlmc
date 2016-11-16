@@ -48,7 +48,8 @@ class _PriorizableLeaf(_PriorizableNode):
         """
         Set the prior for this object to prior.
 
-        :param :class:`runlmc.parameterization.Prior` prior: prior set for this parameter
+        :param :class:`runlmc.parameterization.Prior` prior: prior set for this
+                                                             parameter
         :param bool warning: whether to warn if another prior was set for this
                              parameter
         """

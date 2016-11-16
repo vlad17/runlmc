@@ -39,12 +39,14 @@ Currently, I'm only supporting 1 input dimension.
         for outs in [lo, mu, hi]: plt.plot(xticks, outs[i])
         plt.plot(Xs[i], Ys[i])
         plt.show()
+        
+## Dev Stuff
 
-## Dev requirements
+Required packages: `pylint nose paramz gpy`
 
-`pylint nose paramz gpy`
+Pylint: `.pylintrc` is in the repo root. Run `pylint runlmc`.
 
-## Dev roadmap:
+### Roadmap:
 
 0. Interfaces (copy from GPy)
 0. Sphinxdoc + pylint

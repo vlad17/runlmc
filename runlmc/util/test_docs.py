@@ -1,50 +1,45 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-# pylint: skip-file
-# Skipping the file for simply-named test classes.
-
 import unittest
-
-import numpy as np
 
 from .docs import inherit_doc
 
-class A:
+class A: # pylint: disable=too-few-public-methods
     """A"""
     def __init__(self):
         """A.__init__"""
         pass
 
-    def a():
+    def a(self):
         """A.a"""
         pass
 
-class B:
+class B: # pylint: disable=invalid-name
     """B"""
-    def a():
+    def a(self):
         """B.a"""
         pass
-    def b():
+    def b(self):
         """B.b"""
         pass
-    def nodoc():
+    def nodoc(self):
         pass
 
-@inherit_doc
+@inherit_doc # pylint: disable=invalid-name,too-few-public-methods
 class C(A):
     def __init__(self):
         super().__init__()
-    def a():
+    def a(self):
         pass
 
-@inherit_doc
+@inherit_doc # pylint: disable=invalid-name
 class D(A, B):
-    def a():
+    def a(self):
         pass
-    def b():
+    def b(self):
         pass
-    def nodoc():
+    def nodoc(self):
         pass
 
 class TestDocs(unittest.TestCase):
