@@ -16,7 +16,7 @@ class RBFTest(unittest.TestCase):
         variance = 3
         self.rbf_f = lambda r: variance * math.exp(-0.5 * r * r)
         self.rbf_df = lambda r: -r * self.rbf_f(r)
-        self.testK = RBF(variance)
+        self.testK = RBF(variance, 'wierd-name')
 
     def test_defaults(self):
         k = RBF()
@@ -30,8 +30,8 @@ class RBFTest(unittest.TestCase):
 
     def test_to_gpy(self):
         gpy = self.testK.to_gpy()
-        self.assertEqual(gpy.name, 'rbf')
-        self.assertEqual(gpy.variance[0], self.testK.variance[0])
+        self.assertEqual(gpy.name, self.testK.name)
+        self.assertEqual(float(gpy.variance[0]), float(self.testK.variance[0]))
         self.assertEqual(gpy.input_dim, 1)
         self.assertEqual(gpy.lengthscale, [1])
         self.assertEqual(gpy.ARD, False)

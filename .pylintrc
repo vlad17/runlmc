@@ -116,7 +116,7 @@ ignore-imports=no
 bad-functions=map,filter,input
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,ex,Run,_,x,y,n,mu,a,b,A,nu,l,v,d,Xs,Ys,X,Y,m,v,K,f,it
+good-names=i,j,k,ex,Run,_,x,y,n,mu,a,b,A,nu,l,v,d,Xs,Ys,X,Y,m,v,K,f,it,Qs
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata

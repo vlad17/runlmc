@@ -44,12 +44,12 @@ Currently, I'm only supporting 1 input dimension.
 
 Required packages: `pylint nose paramz gpy`
 
-Pylint: `.pylintrc` is in the repo root. Run `pylint runlmc`.
+Pylint: `.pylintrc` is in the repo root. Run `pylint --disable=locally-disabled,fixme runlmc`.
 
 ### Roadmap:
 
-0. Interfaces (copy from GPy)
-0. Sphinxdoc + pylint
+0. Multigp unit test
+0. Sphinxdoc - :type: notations, check math.
 0. Toeplitz matrix representation, efficient eigendecomposition, and multiplication
 0. Same as above, but for Kronecker matrices
 0. Linear conjugate-gradient descent for fast inversion
@@ -57,7 +57,7 @@ Pylint: `.pylintrc` is in the repo root. Run `pylint runlmc`.
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
 0. Log-determinant bound (greedy algorithm; may be improved with Prof. Tarjan)
 0. Continuous integration for unit tests
-0. Drop gpy dep
+0. Drop gpy dep (in non-tests)
 0. multidimensional inputs and ARD.
-0. Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/
-0. Get rid of GPy for the exact computation.
+0. Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
+

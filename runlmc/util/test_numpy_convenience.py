@@ -5,12 +5,16 @@ import unittest
 
 import numpy as np
 
-from .numpy_convenience import map_entries
+from .numpy_convenience import map_entries, tesselate
 
 class TestNumpyConvenience(unittest.TestCase):
     @staticmethod
     def f(x):
         return x * x
+
+    def tesselate_compare(self, flat, lens, expected):
+        actual = tesselate(np.array(flat), lens)
+        np.testing.assert_equal(actual, list(map(np.array, expected)))
 
     def test_map_entires_empty(self):
         empty = np.array([])
@@ -28,3 +32,25 @@ class TestNumpyConvenience(unittest.TestCase):
         np.testing.assert_almost_equal(
             map_entries(TestNumpyConvenience.f, ints),
             np.square(ints))
+
+    def test_tesselate_throws(self):
+        with self.assertRaises(ValueError):
+            tesselate(np.array([]), [1])
+        with self.assertRaises(ValueError):
+            tesselate(np.array([1, 2, 3]), [1, 1, 1, 1])
+        with self.assertRaises(ValueError):
+            tesselate(np.array([1, 2, 3]), [1, 0, 3])
+        with self.assertRaises(ValueError):
+            tesselate(np.array([1, 2, 3]), [1, 1])
+        with self.assertRaises(ValueError):
+            tesselate(np.array([1, 2, 3]), [2])
+        with self.assertRaises(ValueError):
+            tesselate(np.array([1, 2, 3]), [])
+
+    def test_tesselate_empty(self):
+        self.tesselate_compare([], [0], [[]])
+        self.tesselate_compare([], [0, 0, 0], [[], [], []])
+        self.tesselate_compare([1], [0, 1], [[], [1]])
+
+    def test_tesselate_basic(self):
+        self.tesselate_compare([1, 2, 3], [1, 2], [[1], [2, 3]])

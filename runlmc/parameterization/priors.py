@@ -37,9 +37,6 @@ class Prior:
     }
     domain = None # must be set to one of the above strings
 
-    # TODO - see if we can use some python package to do value-based
-    # caching (i.e., same distribution parameters).
-
     def lnpdf(self, x):
         """
         :param x: query float or numpy array (for multiple parameters
