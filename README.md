@@ -20,20 +20,20 @@ If there is some quantifiable success with this approach then integration with G
 
 Currently, I'm only supporting 1 input dimension.
 
-    # TODO: modify with interface change
     def noisify(x, sd): return x + np.rand.normal(0, sd)
     Xs = [np.arange(-10, 5, 0.5), np.arange(-5.25, 10, .5)]
-    Xs = [[noisify(x, 0.1) for x in ls] for ls in Xs]
-    Ks = [runlmc.kern.StdPeriodic(...) for i in range(2)]
-    Ys = runlmc.Sample(Xs, Ks, added_noise=[1,0.3])
-    K = runlmc.LMC(input_dim=1,num_outputs=2,ranks=5,kernels_list=Ks)
-    model = runlmc.GP(Xs, Ys, K)
+    Xs = [[noisify(x, 0.1) for x in ls] for i, ls in enumerate(Xs, 1)]
+    Ks = [runlmc.kern.StdPeriodic() for _ in range(2)]
+    Ys = runlmc.util.Sample(Xs, Ks, added_noise=[1,0.3])
+    m = runlmc.models.LMC(Xs, Ys,ranks=[1,1],kernels_list=Ks)
     m.optimize()
     
     xticks = np.arange(-10, 10, 0.01)
-    mus = m.mean(xticks)
-    los, his = m.ci(xticks, 0.95)
+    mus, _ = m.predict([xticks, xticks])
+    los, his = m.predict_quantiles([xticks, xticks])
     
+    %matplotlib inline
+    import matplotlib.pyplot as plt
     for i in range(2)
         print("Output", i)
         for outs in [lo, mu, hi]: plt.plot(xticks, outs[i])
