@@ -90,3 +90,6 @@ ENV/
 
 # Emacs
 *~
+
+# Generated doc files
+doc/_generated
