@@ -88,8 +88,16 @@ class ExactLMCTest(unittest.TestCase):
 
     def test_gpy_basic_no_opt(self):
         basic, basic_gpy = self.generate_basic()
-        #basic.optimize()
-        #basic_gpy.optimize()
         self.evaluate(basic, basic_gpy, self.basic_predict_Xs, self.basic_meta)
 
-    # TODO, one step opt, optimize() full
+    def test_gpy_basic_one_opt(self):
+        basic, basic_gpy = self.generate_basic()
+        basic._parameters_changed()
+        basic_gpy.parameters_changed()
+        self.evaluate(basic, basic_gpy, self.basic_predict_Xs, self.basic_meta)
+
+    def test_gpy_basic_full_opt(self):
+        basic, basic_gpy = self.generate_basic()
+        basic.optimize()
+        basic_gpy.optimize()
+        self.evaluate(basic, basic_gpy, self.basic_predict_Xs, self.basic_meta)
