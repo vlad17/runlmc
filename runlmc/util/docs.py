@@ -3,7 +3,7 @@
 
 """
 This module contains a documentation-inheritance utility decorator,
-:function:`inherit_doc`.
+:func:`inherit_doc`.
 """
 
 import types

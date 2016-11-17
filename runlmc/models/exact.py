@@ -29,13 +29,18 @@ class ExactLMC(MultiGP):
     Uses the Gaussian likelihood. Put formally, this computes the regular
     GP with the non-stationary kernel:
 
-    .. math:
+    .. math::
 
-        \sum_{q=1}^Q(W_qW_q^\top+\boldsymbol\epsilon_q I)
-             \circ [k_q(X_i, X_j)]_{ij\in[D]^2}
+        \sum_{q=1}^Q(W_qW_q^\\top+\\boldsymbol\\kappa_q I)
+             \circ [k_q(X_i, X_j)]_{ij\in[D]^2} +
+             \\boldsymbol\epsilon I
 
     :math:`[\cdot]_{ij}` represents a block matrix, with rows and columns
     possibly of different widths. :math:`\circ` is the Hadamard product.
+    :math:`\\boldsymbol\\kappa_q` is a scaling vector for per-sub-kernel
+    variances (make sure redundant parameters don't exist in
+    :math:`k_q`). :math:`\\boldsymbol\\epsilon I` is a Gaussian noise
+    addition, iid within each output.
 
     :param Xs: input observations, should be a list of numpy arrays,
                where the numpy arrays are one dimensional. The arrays

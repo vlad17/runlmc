@@ -9,7 +9,7 @@
 
 """
 This module defines a generic internal :class:`Model` class, which handles
-the interface between this class and the :module:`paramz` optimization layer.
+the interface between this class and the :mod:`paramz` optimization layer.
 """
 
 import numpy as np
@@ -39,10 +39,10 @@ class Model(paramz.Model, _PriorizableNode):
     The :class:`Model` binds together likelihood values computed from
     the model without the priors (which is implemented by derived classes)
     with the priors. In other words, for observations :math:`\mathbf{y}`,
-    parameters :math:`\theta` dependent on priors :math:`\phi`, the user
-    supplies :math:`\log p(\mathbf{y}|\theta,\phi)` as well as its
-    derivative with respect to :math:`\theta`. This class automatically
-    adds in the missing `\log p(\theta|\phi)` term and its derivative.
+    parameters :math:`\\theta` dependent on priors :math:`\\phi`, the user
+    supplies :math:`\log p(\mathbf{y}|\\theta,\\phi)` as well as its
+    derivative with respect to :math:`\\theta`. This class automatically
+    adds in the missing :math:`\log p(\\theta|\\phi)` term and its derivative.
     """
 
     def log_likelihood(self):
@@ -51,18 +51,19 @@ class Model(paramz.Model, _PriorizableNode):
                  current inputs and outputs and the current prior.
                  This should NOT include the likelihood of the parameters
                  given their priors. In other words, this value should be
-                 :math:`\log p(\mathbf{y}|\theta,\phi)`
+                 :math:`\log p(\mathbf{y}|\\theta,\\phi)`
         """
         raise NotImplementedError
 
     def log_likelihood_with_prior(self):
         """
         Let the observations be :math:`\mathbf{y}`,
-        parameters be :math:`\theta`, and the prior :math:`\phi`.
-        .. math:
+        parameters be :math:`\\theta`, and the prior :math:`\\phi`.
 
-            \log p(\mathbf{y}|\phi) = \log p(\mathbf{y}|\theta,\phi) +
-            \log p(\mathbf{y}|\theta,\phi)
+        .. math::
+
+            \log p(\mathbf{y}|\\phi) = \log p(\mathbf{y}|\\theta,\\phi) +
+            \log p(\mathbf{y}|\\theta,\phi)
 
         :return: the overall log likelihood shown above.
         """
@@ -77,7 +78,7 @@ class Model(paramz.Model, _PriorizableNode):
 
     def log_prior(self):
         """
-        :return: the log prior :math:`\log p(\theta|\phi)`
+        :return: the log prior :math:`\log p(\\theta|\\phi)`
         """
         if self.priors.size == 0:
             return 0.

@@ -11,7 +11,7 @@
 This module contains the :class:`Parameterized` class.
 
 It only exists for convenience, documentation, and to
-indicate which methods of the corresponding :module:`paramz`
+indicate which methods of the corresponding :mod:`paramz`
 class should be used.
 """
 
@@ -34,41 +34,44 @@ class Parameterized(paramz.Parameterized, _PriorizableNode):
 
     Printing parameters:
 
-        - print `m`:           prints a nice summary over all parameters
-        - print `m.name`:      prints details for param with name 'name'
-        - print `m[regexp]`: prints details for all the parameters
-                             which match (!) regexp
-        - print `m['']`:       prints details for all parameters
+        - `print(m)`:           prints a nice summary over all parameters
 
-        Fields:
+        - `print(name)`:      prints details for param with name 'name'
 
-            Name:       The name of the param, can be renamed!
-            Value:      Shape or value, if one-valued
-            Constrain:  constraint of the param, curly "{c}" brackets indicate
-                        some parameters are constrained by c. See detailed
-                        print to get exact constraints.
-            Tied_to:    which paramter it is tied to.
+        - `print m[regexp]`:   prints details for all the parameters
+                               which match (!) regexp
 
-    Getting and setting parameters:
+        - `print `m['']`:       prints details for all parameters
 
-        Set all values in param to one:
+    Printed fields:
 
-            m.name.to.param = 1
+        **name**:         The name of the param, can be renamed!
+
+        **value**:        Shape or value, if one-valued
+
+        **constraints**:  constraint of the param, curly "{c}" brackets
+                          indicate
+                          some parameters are constrained by c. See detailed
+                          print to get exact constraints.
+
+    Getting and setting parameters::
+
+        m.subparameterized1.subparameterized2.param[:] = 1
 
     Handling of constraining, fixing and tieing parameters:
 
         You can constrain parameters by calling the constrain on the param
-        itself, e.g:
+        itself, e.g::
 
-            - `m.name[:,1].constrain_positive()`
-            - `m.name[0].tie_to(m.name[1])`
+            m.name[:,1].constrain_positive()
+            m.name[0].tie_to(m.name[1])
 
         Fixing parameters will fix them to the value they are right now. If you
         change
         the parameters value, the param will be fixed to the new value!
 
         If you want to operate on all parameters use `m['']` to wildcard select
-        all paramters
+        all parameters
         and concatenate them. Printing `m['']` will result in printing of all
         parameters in detail.
     """
@@ -103,21 +106,22 @@ class Parameterized(paramz.Parameterized, _PriorizableNode):
 
         This :class:`Parameterized` object contributes to :math:`L`
         in a way that's defined by its parameters. Let this contribution
-        be :math:`C`, a function of parameters :math:`\{\theta_j\}`.
+        be :math:`C`, a function of parameters :math:`\{\\theta_j\}`.
 
         There may be other parameters for other :class:`Parameterized` objects
         contributing to :math:`L`, but they don't affect
-        :math:`\partial_{\theta_j}L`.
+        :math:`\partial_{\\theta_j}L`.
 
-        The goal of this method is to compute for each :math:`\theta_j`:
+        The goal of this method is to compute for each :math:`\\theta_j`:
 
-        .. math:
+        .. math::
 
-            \partial_{\theta_j}L(X)=\partial_{C_X}L\cdot\partial_{\theta_j}C_X
+            \partial_{\\theta_j}L(X)=\partial_{C_X}L
+                \cdot\partial_{\\theta_j}C_X
 
         Above, :math:`X` may be a vector of (possibly multi-dimensional)
-        inputs, and :math:`C` may be vector-valued function of :math:`\theta_j`
-        for other parameters :math:`\theta_{-j}` fixed and for a single input
+        inputs, and :math:`C` may be vector-valued function of :math:`\\theta_j`
+        for other parameters :math:`\\theta_{-j}` fixed and for a single input
         (element in :math:`X`). Then the derivatives above can be matrices,
         in which case the dot product is generalized.
 
@@ -125,12 +129,12 @@ class Parameterized(paramz.Parameterized, _PriorizableNode):
         :math:`\partial_{C_X}L`, we allow for a `visit` function :math:`v`
         that should satisfy:
 
-        .. math:
+        .. math::
 
-            v(\partial_{\theta_j}C_X)=\partial_{\theta_j}L(X)
+            v(\partial_{\\theta_j}C_X)=\partial_{\\theta_j}L(X)
 
-        Note :math:`\partial_{\theta_j}C_X` is just as
-        :math:`\partial_{C_X}L` large but is sparse.
+        Note :math:`\partial_{\\theta_j}C_X` is just as large as
+        :math:`\partial_{C_X}L` but the former is sparse.
 
         :param visit: a function which transforms the local derivative
                       of this class

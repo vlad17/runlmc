@@ -124,12 +124,15 @@ class MultiGP(Model):
 
         :param Xs: The points at which to make a prediction for each output.
                    Should be empty if no output desired for a certain index.
-        :type Xs: list of np.ndarray for each output `d`, one-dimensional
-                  of size `n_d` each. Length of `Xs` should be equal to the
-                  number of outputs `self.output_dim`.
+                   This is a :class:`list` of :class:`numpy.ndarray` for each
+                   output `d`, one-dimensional
+                   of size `n_d` each. Length of `Xs` should be equal to the
+                   number of outputs `self.output_dim`.
         :returns: `(mean, var)`:
+
             `mean`: posterior mean, a list of length `self.output_dim` with
                     one-dimensional numpy arrays of length `n_d` at index `d`.
+
             `var`: posterior variance, corresponding to each mean entry.
 
         .. Note:
@@ -166,7 +169,8 @@ class MultiGP(Model):
         Optimize the model using :func:`self.log_likelihood` and
         :func:`self.log_likelihood_gradient`, as well as :func:`self.priors`.
 
-        `kwargs` are passed to the optimizer. Keywords handled:
+        `kwargs` are passed to the optimizer. See parameters for handled
+        keywords.
 
         :param max_iters: maximum number of function evaluations
         :type max_iters: int

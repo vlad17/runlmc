@@ -48,8 +48,8 @@ class _PriorizableLeaf(_PriorizableNode):
         """
         Set the prior for this object to prior.
 
-        :param :class:`runlmc.parameterization.Prior` prior: prior set for this
-                                                             parameter
+        :param  prior: prior set for this parameter
+        :type prior: :class:`runlmc.parameterization.Prior`
         :param bool warning: whether to warn if another prior was set for this
                              parameter
         """
@@ -74,8 +74,8 @@ class _PriorizableLeaf(_PriorizableNode):
 
     def unset_priors(self, *priors):
         """
-        Un-set all priors given (in *priors) from this parameter handle.
+        Un-set all priors given in `*priors` from this parameter handle.
 
-        :param priors: the list of :class:`runlmc.priors.Prior`s to unset
+        :param priors: the list of :class:`runlmc.priors.Prior` to unset
         """
         self._unset_priors(*priors)

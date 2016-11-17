@@ -26,7 +26,7 @@ class RBF(StationaryKern):
 
     .. math::
 
-       k(r) = \sigma^2 \exp \frac{-r^2}{2}
+       k(r) = \sigma^2 \exp \\frac{-r^2}{2}
     """
     def __init__(self, variance=1, name='rbf'):
         """

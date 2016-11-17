@@ -26,16 +26,22 @@ class Prior:
     Prior objects are immutable.
 
     Methods are intended to be vectorized over parameters with the same
-    priors. In other words, mapping :method:`lnpdf` and :method:`lnpdf_grad`
+    priors. In other words, mapping :func:`lnpdf` and
+    :func:`lnpdf_grad`
     over each point individually should produce the same result as
     passing in a list of those points.
     """
-    CONSTRAIN_DOMAIN = {
+
+    _CONSTRAIN_DOMAIN = {
         'real': _assert_no_constraints,
         'positive': lambda x: x.constrain_positive(warning=False),
         'negative': lambda x: x.constrain_negative(warning=False)
     }
-    domain = None # must be set to one of the above strings
+    domain = None
+    """
+    :attribute domain: Domain on which the prior is defined
+    :type domain: str
+    """
 
     def lnpdf(self, x):
         """

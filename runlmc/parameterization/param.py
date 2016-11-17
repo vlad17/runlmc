@@ -11,10 +11,10 @@
 This module contains the :class:`Param` class, used to keep track of
 optimization parameters.
 
-Developers familiar with :module:`paramz` can add their own parameters
+Developers familiar with :py:mod:`paramz` can add their own parameters
 for custom kernels and priors.
 
-This class differs from the corresponding :module:`paramz` one because
+This class differs from the corresponding :mod:`paramz` one because
 it is priorizable.
 """
 
