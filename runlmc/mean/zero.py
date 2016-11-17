@@ -2,8 +2,11 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import numpy as np
-from .mean_function import MeanFunction
 
+from .mean_function import MeanFunction
+from ..util.docs import inherit_doc
+
+@inherit_doc
 class Zero(MeanFunction):
     """
     The zero mapping.
@@ -15,5 +18,5 @@ class Zero(MeanFunction):
         self._validate_inputs(Xs)
         return [np.zeros(len(X)) for X in Xs]
 
-    def update_gradients(self, dL_dF, X):
+    def visit_gradients(self, visit, inputs):
         pass

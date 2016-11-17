@@ -33,17 +33,6 @@ class StationaryKern(Parameterized):
         """
         raise NotImplementedError
 
-    # TODO: something that will give dK_dtheta_k
-    # top-level will iterate over each stationary's theta_k,
-    # computing dL_dtheta_k efficiently and just setting that index.
-
-    # TODO: make the above a common interface (report deriv of self
-    # wrt param, then get told your own derivative). comment this in
-    # the README. do this for mean_function as well.
-
-    # TODO: mean_function tests, gradient tests for kern,
-    # then see multigp file.
-
     def to_gpy(self):
         """
         :return: GPy version of this kernel.

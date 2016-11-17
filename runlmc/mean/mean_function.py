@@ -26,10 +26,11 @@ class MeanFunction(Parameterized):
         assert self.input_dim == 1, 'Input dimensions must be 1, for now'
 
     def f(self, Xs):
-        raise NotImplementedError
+        """
+        Evaluation of the mean function.
 
-    # TODO - no more update_gradients
-    def update_gradients(self, dL_dF, X):
+        :return:
+        """
         raise NotImplementedError
 
     def _validate_inputs(self, Xs):
@@ -37,7 +38,7 @@ class MeanFunction(Parameterized):
             raise ValueError('len(Xs) {} != output dimension {}'.format(
                 len(Xs), self.output_dim))
         for i, X in enumerate(Xs):
-            if X.ndim > 1:
+            if X.ndim != 1:
                 raise ValueError(
                     'Inputs for output {} have dim {} != 1'.format(
                         i, X.ndim))
