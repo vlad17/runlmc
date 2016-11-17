@@ -44,7 +44,7 @@ Currently, I'm only supporting 1 input dimension.
 
 Required packages for development (Python 3 versions): `pylint nose paramz gpy sphinx`.
 
-**All below invocations should be done from the repo root.
+**All below invocations should be done from the repo root.**
 
 Pylint.
 
