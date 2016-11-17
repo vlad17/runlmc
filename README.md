@@ -69,8 +69,6 @@ For a clean rebuild of docs, use the following:
 
 ### Roadmap:
 
-0. Multigp unit test
-0. Sphinxdoc - :type: notations, check math.
 0. Toeplitz matrix representation, efficient eigendecomposition, and multiplication
 0. Same as above, but for Kronecker matrices
 0. Linear conjugate-gradient descent for fast inversion
