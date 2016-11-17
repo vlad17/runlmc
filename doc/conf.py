@@ -80,7 +80,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build', '*_test*', '*flycheck_*', 'modules.rst']
+exclude_patterns = ['_build', '*test_*', '*flycheck_*', 'modules.rst']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
