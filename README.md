@@ -44,28 +44,17 @@ Currently, I'm only supporting 1 input dimension.
 
 Required packages for development (Python 3 versions): `pylint nose paramz gpy sphinx`.
 
-**All below invocations should be done from the repo root.**
+Note:
 
-Pylint.
-
-    pylint --disable=locally-disabled,fixme runlmc
-
-Unit tests
-
-    nosetests
-
-Documentation `sphinx` from root (index generated in `doc/_generated/_build/`
-
-    sphinx-apidoc --separate --force --output-dir=doc/_generated runlmc/ 
-    PYTHONPATH=. sphinx-build -j $(nproc) -c doc/ -b html doc/_generated doc/_generated/_build/
-    
-For a clean rebuild of docs, use the following:
-
-    rm -rf doc/_generated
-    sphinx-apidoc --separate --force --output-dir=doc/_generated runlmc/ 
-    mkdir -p doc/_generated/_static
-    PYTHONPATH=. sphinx-build -E -j $(nproc) -c doc/ -b html doc/_generated doc/_generated/_build/
-
+ * All below invocations should be done from the repo root.
+ 
+ * All invocations rely on `bash` scripts.
+ 
+| Command           | Purpose  |
+| ----------------- | -------- |
+| `./style.sh`      | Check style with pylint, ignoring TODOs and locally-disabled warnings. |
+| `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/runlmc.html`) |
+| `nosetests`       | Run unit tests |
 
 ### Roadmap:
 
