@@ -42,7 +42,7 @@ Currently, I'm only supporting 1 input dimension.
         
 ## Dev Stuff
 
-Required packages for development (Python 3 versions): `pylint nose paramz gpy sphinx`.
+Required packages for development (Python 3 versions): `pylint nose paramz gpy sphinx contexttimer`.
 
 Note:
 
