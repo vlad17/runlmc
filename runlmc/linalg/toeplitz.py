@@ -1,8 +1,6 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-import math
-
 import numpy as np
 import scipy.linalg
 import scipy.sparse.linalg
@@ -58,29 +56,9 @@ class SymmToeplitz(Matrix):
         return np.fft.ifft(self.circ_fft * x_fft)[:len(x)].real
 
     def eig(self, cutoff):
-        # Temporary solution using scipy's sparse routines
+        # Temporary solution using dense routines.
         # The grudsky implementation from before will be installed shortly
-        A = scipy.sparse.linalg.aslinearoperator(self)
-        N = len(self.top)
-        k = min(N, max(int(math.sqrt(N)), 16))
-        while True:
-            sol = scipy.sparse.linalg.eigsh(
-                A,
-                k=k,
-                which='LA',
-                return_eigenvectors=False,
-                tol=(cutoff / 2))
-            # Any imaginary components are due to round-off, since we're
-            # Hermitian
-            sol = sol.real
-            if sol.min() <= cutoff:
-                break
-
-            k *= 2
-            if k >= N:
-                sol = np.linalg.eigvalsh(scipy.linalg.toeplitz(self.top)).real
-                break
-
+        sol = np.linalg.eigvalsh(scipy.linalg.toeplitz(self.top)).real
         sol = np.sort(sol)
         cut = np.searchsorted(sol, cutoff)
         return sol[cut:][::-1]
