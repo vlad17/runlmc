@@ -120,7 +120,8 @@ class Parameterized(paramz.Parameterized, _PriorizableNode):
                 \cdot\partial_{\\theta_j}C_X
 
         Above, :math:`X` may be a vector of (possibly multi-dimensional)
-        inputs, and :math:`C` may be vector-valued function of :math:`\\theta_j`
+        inputs, and :math:`C` may be vector-valued function of
+        :math:`\\theta_j`
         for other parameters :math:`\\theta_{-j}` fixed and for a single input
         (element in :math:`X`). Then the derivatives above can be matrices,
         in which case the dot product is generalized.

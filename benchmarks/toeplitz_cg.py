@@ -19,14 +19,20 @@ def stress_toeplitz_solve(n):
 
 
     A = scipy.sparse.linalg.aslinearoperator(SymmToeplitz(top))
-    tol = 1e-6
+    tol = 1e-15
 
-    print('Toeplitz Solver: size {}'.format(n))
+    print('Toeplitz Solver: size {} tol {:g}'.format(n, tol))
 
+    ctr = 0
+    def inc(_):
+        nonlocal ctr
+        ctr += 1
     with contexttimer.Timer() as cg_sparse_time:
-        cg_sparse, success = scipy.sparse.linalg.cg(A, b, tol=tol)
+        cg_sparse, success = scipy.sparse.linalg.cg(
+            A, b, tol=tol, callback=inc)
         assert success == 0
-    print('    Sparse FFT CG {:4.4f} s'.format(cg_sparse_time.elapsed))
+    print('    Sparse FFT CG {:4.4f} s ({} iterations)'
+          .format(cg_sparse_time.elapsed, ctr))
 
     with contexttimer.Timer() as cg_dense_time:
         cg_dense, success = scipy.sparse.linalg.cg(toep, b, tol=tol)
@@ -43,7 +49,7 @@ def stress_toeplitz_solve(n):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print('Usage: python linalg_solvers.py n')
+        print('Usage: python toeplitz_cg.py n')
         print()
         print('n should be size of linear systems to solve')
         sys.exit(1)

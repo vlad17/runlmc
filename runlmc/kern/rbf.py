@@ -44,3 +44,6 @@ class RBF(StationaryKern):
         import GPy
         v = float(self.variance[0])
         return GPy.kern.RBF(input_dim=1, variance=v, name=self.name)
+
+    def visit_gradients(self, visit, inputs):
+        pass

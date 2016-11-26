@@ -58,12 +58,11 @@ Note:
 
 ### Roadmap:
 
-0. Toeplitz matrix representation, efficient eigendecomposition, and multiplication
 0. Same as above, but for Kronecker matrices
 0. Linear conjugate-gradient descent for fast inversion
 0. Determinant gradient computation - figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant.
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
-0. Log-determinant bound (greedy algorithm; may be improved with Prof. Tarjan)
+0. Log-determinant bound (there seems to be an issue with Toeplitz eig for heavy diagonals - a better solver might have to be found).
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests)
 0. multidimensional inputs and ARD.
