@@ -1,11 +1,17 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
+import math
+
 import numpy as np
 import scipy.linalg
 import scipy.sparse.linalg
 
-class SymmToeplitz:
+from .matrix import Matrix
+from ..util.docs import inherit_doc
+
+@inherit_doc
+class SymmToeplitz(Matrix):
     """
     Creates a class with a parsimonious representation of a symmetric
     Toeplitz matrix; that is, a matrix :math:`T` with entries :math:`T_ij`
@@ -14,10 +20,6 @@ class SymmToeplitz:
     .. math::
 
         t_{ij} = t_{i'j'}
-
-    It admits an :math:`O(n)` space representation and can compute
-    matrix-vector products and approximate eigenvalues using
-    as-much additional space and in :math:`O(n \log n)` time.
 
     Notation used in documentation for this class, in addition to its
     implementation, is based on Böttcher, Grudsky, and Maksimenko (2010).
@@ -36,14 +38,11 @@ class SymmToeplitz:
         if len(top) == 0:
             raise ValueError('top is empty')
 
-        top = top.astype('float64', casting='safe')
+        super().__init__(len(top))
 
+        self.top = top.astype('float64', casting='safe')
         circ = SymmToeplitz._cyclic_extend(top)
         self.circ_fft = np.fft.fft(circ)
-
-        self.dtype = top.dtype
-        self.shape = (len(top), len(top))
-        self.top = top
 
     @staticmethod
     def _cyclic_extend(x):
@@ -54,60 +53,34 @@ class SymmToeplitz:
         return extended
 
     def matvec(self, x):
-        """
-        Multiply a vector by this matrix. This implementation uses a Circulant
-        embedding and an FFT to compute the product in :math:`O(n\log n)` time.
-
-        :param x: a one-dimensional numpy array of the same size as this matrix
-        :returns: the matrix-vector product
-        """
         assert len(x) * 2 == len(self.circ_fft)
         x_fft = np.fft.fft(x, n=len(self.circ_fft))
         return np.fft.ifft(self.circ_fft * x_fft)[:len(x)].real
 
-
-    def solve(self, b, tol):
-        """
-        Solves a linear system :math:`A\textbf{x}=\textbf{b}` without
-        any preconditioners for :math:`\textbf{x}`. :math:`A` is the
-        matrix represented by this class.
-
-        :param b: numpy vector :math:`\textbf{b}`
-        :returns: the linear solution :math:`\textbf{x}`
-        """
-        A = scipy.sparse.linalg.aslinearoperator(self)
-        cg_solve, success = scipy.sparse.linalg.cg(A, b, tol=tol)
-        assert success == 0
-        return cg_solve
-
-    def eig(self, tol):
-        """
-        Finds the eigenvalues of this matrix of magnitude above the cutoff.
-
-        :param tol: eigenvalue tolerance size
-        :returns: a numpy array of eigenvalues in decreasing order, repeated by
-                  multiplicity.
-        """
+    def eig(self, cutoff):
+        # Temporary solution using scipy's sparse routines
+        # The grudsky implementation from before will be installed shortly
         A = scipy.sparse.linalg.aslinearoperator(self)
         N = len(self.top)
-        import math
-        k = max(math.log(N), 16)
-        sol = None
-        while k < N:
+        k = min(N, max(int(math.sqrt(N)), 16))
+        while True:
             sol = scipy.sparse.linalg.eigsh(
                 A,
                 k=k,
-                which='LM',
+                which='LA',
                 return_eigenvectors=False,
-                tol=(tol / 3))
+                tol=(cutoff / 2))
             # Any imaginary components are due to round-off, since we're
             # Hermitian
             sol = sol.real
-            if sol.min() <= tol:
+            if sol.min() <= cutoff:
                 break
+
             k *= 2
-        if k >= N:
-            sol = np.linalg.eigvalsh(scipy.linalg.toeplitz(self.top))
+            if k >= N:
+                sol = np.linalg.eigvalsh(scipy.linalg.toeplitz(self.top)).real
+                break
+
         sol = np.sort(sol)
-        cut = np.searchsorted(sol, tol)
+        cut = np.searchsorted(sol, cutoff)
         return sol[cut:][::-1]

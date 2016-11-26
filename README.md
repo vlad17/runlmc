@@ -58,7 +58,7 @@ Note:
 
 ### Roadmap:
 
-0. Same as above, but for Kronecker matrices
+0. Kronecker matrices fast multiplication.
 0. Linear conjugate-gradient descent for fast inversion
 0. Determinant gradient computation - figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant.
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!

@@ -51,7 +51,8 @@ class ToeplitzTest(unittest.TestCase):
         for top, b in self.examples:
             toep = scipy.linalg.toeplitz(top)
             if np.linalg.matrix_rank(toep) < len(top):
-                continue
+                top[0] += np.abs(top[1:]).sum() + 1
+                toep = scipy.linalg.toeplitz(top)
             tol = 1e-15
             cg_solve = SymmToeplitz(top).solve(b, tol)
             np_solve = np.linalg.solve(toep, b)
@@ -65,8 +66,10 @@ class ToeplitzTest(unittest.TestCase):
             toep = scipy.linalg.toeplitz(top)
             np_vals = np.linalg.eigvalsh(toep)
             np_vals[::-1].sort()
-            tol = 1e-4
-            vals = SymmToeplitz(top).eig(tol)
+            cutoff = 1e-5
+            vals = SymmToeplitz(top).eig(cutoff)
             self.assertNotEqual(len(vals), 0)
             np.testing.assert_allclose(vals, np_vals[:len(vals)])
-            self.assertTrue(all(vals > tol))
+            self.assertTrue(all(vals > cutoff))
+            # Make sure we're finding all the eigenvalues
+            self.assertEqual(len(vals), sum(np_vals > cutoff))
