@@ -2,8 +2,9 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import unittest
-import numpy as np
+import warnings
 
+import numpy as np
 from GPy.models import GPCoregionalizedRegression
 from GPy.util.multioutput import LCM
 
@@ -98,6 +99,8 @@ class ExactLMCTest(unittest.TestCase):
 
     def test_gpy_basic_full_opt(self):
         basic, basic_gpy = self.generate_basic()
-        basic.optimize()
-        basic_gpy.optimize()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            basic.optimize()
+            basic_gpy.optimize()
         self.evaluate(basic, basic_gpy, self.basic_predict_Xs, self.basic_meta)

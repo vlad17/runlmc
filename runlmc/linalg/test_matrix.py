@@ -4,7 +4,6 @@
 import unittest
 
 import numpy as np
-import scipy.linalg
 
 from .matrix import Matrix
 

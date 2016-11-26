@@ -2,7 +2,6 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import sys
-import warnings
 
 import contexttimer
 import numpy as np
