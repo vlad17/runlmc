@@ -2,21 +2,19 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import numpy as np
-import scipy.linalg
-import scipy.sparse.linalg
 
-from .matrix import Matrix
+from .psd_matrix import PSDMatrix
 from ..util.docs import inherit_doc
 from ..util.numpy_convenience import EPS
 
 @inherit_doc
-class SymmNpMatrix(Matrix):
+class NumpyMatrix(PSDMatrix):
     """
     Adapter to :class:`Matrix` with :mod:`numpy` arrays.
     """
     def __init__(self, nparr):
         """
-        Creates a :class:`SymmNpMatrix` matrix.
+        Creates a :class:`NumpyMatrix` matrix. Its positivity is assumed.
 
         :param nparr: 2-dimensional :mod:`numpy` array
         :raises ValueError: if `nparr` isn't 2D or square or symmetric
@@ -27,8 +25,9 @@ class SymmNpMatrix(Matrix):
 
         self.A = nparr.astype('float64', casting='safe')
 
-        if not np.allclose(self.A, self.A.T, rtol=0, atol=(EPS * 2)):
-            raise ValueError('Input numpy array not symmetric')
+        if not np.allclose(self.A, self.A.T, rtol=EPS, atol=(EPS * 2)):
+            raise ValueError('Input numpy array {} not symmetric '
+                             .format(self.A.shape))
 
         super().__init__(len(nparr))
 
@@ -39,11 +38,5 @@ class SymmNpMatrix(Matrix):
         sol = np.linalg.eigvalsh(self.A).real
         sol = np.sort(sol)
         cut = np.searchsorted(sol, cutoff)
+        print(cut, cutoff, sol)
         return sol[cut:][::-1]
-
-    def test_shape_2d(self): # TODO move to test
-        A = np.arange(3 * 4 * 5).reshape(3, 4, 5)
-        self.assertRaises(ValueError, SymmNpMatrix, A)
-        self.assertRaises(ValueError, SymmNpMatrix, A.reshape(-1))
-
-    # nonsymm test

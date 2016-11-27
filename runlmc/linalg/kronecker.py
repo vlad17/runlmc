@@ -4,18 +4,20 @@
 import numpy as np
 import scipy.sparse.linalg
 
-from .matrix import Matrix
-from .np_matrix import SymmNpMatrix
+from .numpy_matrix import NumpyMatrix
+from .psd_matrix import PSDMatrix
 from ..util.docs import inherit_doc
 from ..util.numpy_convenience import EPS
 
 @inherit_doc
-class Kronecker(Matrix):
+class Kronecker(PSDMatrix):
     """
     Creates a class with a parsimonious representation of a Kronecker product
     of two :class:`Matrix` instances. For the Kronecker matrix
     :math:`K=A\\otimes B`, the :math:`ij`-th block entry is
     :math:`a_{ij}B`.
+
+    :math:`K` is PSD if :math:`A,B` are.
 
     The implementation is based off of Gilboa, Saatçi, and Cunningham (2015).
     """
@@ -39,10 +41,10 @@ class Kronecker(Matrix):
 
     @staticmethod
     def _to_mat(X):
-        if isinstance(X, Matrix):
+        if isinstance(X, PSDMatrix):
             return X
         elif isinstance(X, np.ndarray):
-            return SymmNpMatrix(X)
+            return NumpyMatrix(X)
         else:
             raise TypeError('Inputs have to be runlmc.linalg.matrix.Matrix'
                             ' or numpy.ndarray instances')
@@ -73,21 +75,7 @@ class Kronecker(Matrix):
         # Given a descending array xs, search for the first value below
         # a certain threshold.
         idx = np.searchsorted(xs[::-1], x)
-        return -idx
-
-    @staticmethod
-    def _yield_eigs(eigA, eigB, cutoff):
-        if len(eigA) > len(eigB):
-            for arr in Kronecker._yield_eigs(eigB, eigA, cutoff):
-                yield arr
-            return
-
-        for a in eigA:
-            # try log-cutoff linear search?
-            cut_b = Kronecker._conservative_cutoff_factor(cutoff, a)
-            idx = Kronecker._binsearch_descending(cut_b, eigB)
-            eigB = eigB[:idx]
-            yield a * eigB
+        return len(xs)-idx
 
     def eig(self, cutoff):
         if self.shape[0] == 1:
@@ -98,7 +86,9 @@ class Kronecker(Matrix):
         largeB = self._largest_eig(self.B)[0]
         eigA = self.A.eig(self._conservative_cutoff_factor(cutoff, largeB))
         eigB = self.B.eig(self._conservative_cutoff_factor(cutoff, largeA))
-        eigs = np.concatenate(tuple(self._yield_eigs(eigA, eigB, cutoff)))
+        # Can use smarter filter here - don't need to generate every eigenvalue
+        # from the outer product if the smallest is less than the fixed cutoff
+        eigs = np.outer(eigA, eigB).reshape(-1)
         # eigs[::-1].sort()[::-1]?
         # mergesort?
         eigs.sort()

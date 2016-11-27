@@ -35,19 +35,21 @@ class PSDMatrix:
         self.dtype = np.float64
         self.shape = (n, n)
 
-    def solve(self, b, tol):
+    def as_linear_operator(self):
         """
-        Solves a linear system :math:`A\\textbf{x}=\\textbf{b}` without
-        any preconditioners for :math:`\\textbf{x}`. :math:`A` is the
-        matrix represented by this class.
+        .. Note:: The :func:`scipy.sparse.linalg.aslinearoperator`
+                  converter does not do the same work this does - it doesn't
+                  correctly interpret what a PSD operator has to offer.
 
-        :param b: numpy vector :math:`\\textbf{b}`
-        :returns: the linear solution :math:`\\textbf{x}`
+        :returns: this matrix as a
+                  :class:`scipy.sparse.linalg.LinearOperator`
         """
-        A = scipy.sparse.linalg.aslinearoperator(self)
-        cg_solve, success = scipy.sparse.linalg.cg(A, b, tol=tol)
-        assert success == 0
-        return cg_solve
+        return scipy.sparse.linalg.LinearOperator(
+            shape=self.shape,
+            dtype=self.dtype,
+            matvec=self.matvec,
+            rmatvec=self.matvec,
+            matmat=self.matmat)
 
     def matvec(self, x):
         """

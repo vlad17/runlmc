@@ -62,6 +62,8 @@ Note:
 0. hard cutoff test
 0. Matrix -> SymmMatrix, NpMatrix tests
 0. Clean up benchmark
+0. super.setUp()
+0. Adding to own transpose - verify bug!
 0. Sum-matrices fast mul (eig should throw, determinants can be offered)
 0. Determinant gradient computation - figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant.
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!

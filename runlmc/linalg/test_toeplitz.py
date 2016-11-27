@@ -6,71 +6,45 @@ import unittest
 import numpy as np
 import scipy.linalg
 
-from .toeplitz import SymmToeplitz
+from .test_matrix_base import MatrixTestBase
+from .toeplitz import Toeplitz
 
-class ToeplitzTest(unittest.TestCase):
+class ToeplitzTest(unittest.TestCase, MatrixTestBase):
 
     def setUp(self):
-        up = np.arange(100)
-        down = np.copy(up[::-1])
-        up = up / 2
-        updown = np.add.accumulate(np.hstack([up, down]))[::-1]
-        downup = np.hstack([down, up])
+        super().setUp()
 
-        np.random.seed(1234)
         random = np.abs(np.hstack([np.random.rand(30), np.zeros(10)]))
         random[::-1].sort()
         random[0] += np.abs(random[1:]).sum()
-        rand_b = np.random.rand(40)
 
-        self.examples = [(np.array(a), np.array(b)) for a, b in [
-            ([1, 1], [2, 2]),
-            ([1, -1], [-1, 1]),
-            ([1, 3, 1], [2, 1, 1]),
-            (np.arange(10)[::-1], np.arange(10)),
-            (updown, downup),
-            (random, rand_b)]]
+        up = lambda x: np.arange(x) + 1
+        down = lambda x: up(x)[::-1]
+
+        self.examples = [self._generate(x) for x in [
+            [1],
+            [1, 0],
+            [1, 1],
+            [0, 0],
+            [1, -1],
+            [1, 2, -1],
+            up(10),
+            down(10),
+            random]]
+
+    @staticmethod
+    def _generate(x):
+        x = np.array(x)
+        msg = 'Toeplitz {}'.format(
+            'size {}'.format(len(x)) if len(x) > 10 else x)
+        return (Toeplitz(x), scipy.linalg.toeplitz(x), msg)
 
     def test_bad_shape(self):
         two_d = np.arange(8).reshape(2, 4)
-        self.assertRaises(ValueError, SymmToeplitz, two_d)
+        self.assertRaises(ValueError, Toeplitz, two_d)
         empty = np.array([])
-        self.assertRaises(ValueError, SymmToeplitz, empty)
+        self.assertRaises(ValueError, Toeplitz, empty)
 
     def test_bad_type(self):
         cplx = np.arange(5) * 1j
-        self.assertRaises(Exception, SymmToeplitz, cplx)
-
-    def test_matvec(self):
-        for top, x in self.examples:
-            my_dot = SymmToeplitz(top).matvec(x)
-            toep = scipy.linalg.toeplitz(top)
-            numpy_dot = toep.dot(x)
-            np.testing.assert_allclose(my_dot, numpy_dot)
-
-    def test_cg(self):
-        for top, b in self.examples:
-            toep = scipy.linalg.toeplitz(top)
-            if np.linalg.matrix_rank(toep) < len(top):
-                top[0] += np.abs(top[1:]).sum() + 1
-                toep = scipy.linalg.toeplitz(top)
-            tol = 1e-15
-            cg_solve = SymmToeplitz(top).solve(b, tol)
-            np_solve = np.linalg.solve(toep, b)
-            import math
-            atol = tol * math.sqrt(np.linalg.cond(toep))
-            np.testing.assert_allclose(cg_solve, np_solve, atol=atol, rtol=0)
-
-    def test_eig(self):
-        for top, _ in self.examples:
-            top = self.examples[len(self.examples)-1][0]
-            toep = scipy.linalg.toeplitz(top)
-            np_vals = np.linalg.eigvalsh(toep)
-            np_vals[::-1].sort()
-            cutoff = 1e-5
-            vals = SymmToeplitz(top).eig(cutoff)
-            self.assertNotEqual(len(vals), 0)
-            np.testing.assert_allclose(vals, np_vals[:len(vals)])
-            self.assertTrue(all(vals > cutoff))
-            # Make sure we're finding all the eigenvalues
-            self.assertEqual(len(vals), sum(np_vals > cutoff))
+        self.assertRaises(Exception, Toeplitz, cplx)
