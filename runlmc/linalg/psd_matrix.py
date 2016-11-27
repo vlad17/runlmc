@@ -4,12 +4,25 @@
 import numpy as np
 import scipy.sparse.linalg
 
-class Matrix:
+class PSDMatrix:
     """
     An abstract class defining the interface for the necessary
     sparse matrix operations.
 
-    We only consider square matrices over doubles.
+    We consider a very restricted class of matrices only, namely
+    positive semi-definite, symmetric, real matrices. In other words,
+    the matrix :math:`A` represented by instances of this class is expected to
+    adhere to the following semantic laws:
+
+    #. :math:`\\forall\\textbf{x}`, :math:`\\textbf{x}^\\topA\\textbf{x} \ge 0`
+    #. :math:`A^\\top = A`
+
+    These laws manifest themselves through the following properties, through
+    the actual API, which exposes :func:`matvec` for matrix-vector
+    multiplication and :func:`eig` for eigenvalues.
+
+    #. `A.matvec(x).dot(x) >= 0`
+    #. `len(A.eig(cutoff=0)) == A.shape[0]`
     """
 
     def __init__(self, n):

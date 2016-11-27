@@ -5,13 +5,13 @@ import numpy as np
 import scipy.linalg
 import scipy.sparse.linalg
 
-from .matrix import Matrix
+from .psd_matrix import PSDMatrix
 from ..util.docs import inherit_doc
 
 @inherit_doc
-class SymmToeplitz(Matrix):
+class Toeplitz(PSDMatrix):
     """
-    Creates a class with a parsimonious representation of a symmetric
+    Creates a class with a parsimonious representation of a PSD
     Toeplitz matrix; that is, a matrix :math:`T` with entries :math:`T_{ij}`
     which for all :math:`i,j` and :math:`i'=i+1, j'=j+1` satisfy:
 
@@ -19,12 +19,14 @@ class SymmToeplitz(Matrix):
 
         t_{ij} = t_{i'j'}
 
+    In addition, :math:`T` must be PSD.
+
     Notation used in documentation for this class, in addition to its
     implementation, is based on Böttcher, Grudsky, and Maksimenko (2010).
     """
     def __init__(self, top):
         """
-        Creates a :class:`SymmToeplitz` matrix.
+        Creates a :class:`Toeplitz` matrix.
 
         :param top: 1-dimensional :mod:`numpy` array, used as the underlying
                     storage, which represents the first row :math:`t_{1j}`.
@@ -39,7 +41,7 @@ class SymmToeplitz(Matrix):
         super().__init__(len(top))
 
         self.top = top.astype('float64', casting='safe')
-        circ = SymmToeplitz._cyclic_extend(top)
+        circ = self._cyclic_extend(top)
         self.circ_fft = np.fft.fft(circ)
 
     @staticmethod
