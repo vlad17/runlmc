@@ -44,3 +44,5 @@ def tesselate(nparr, lenit):
         raise ValueError('shape {}[0] != {} num elements'.format(
             nparr.shape, ends[-1]))
     return np.split(nparr, ends[:-1])
+
+EPS = np.finfo('float64').eps

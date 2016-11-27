@@ -12,7 +12,7 @@ from ..util.docs import inherit_doc
 class SymmToeplitz(Matrix):
     """
     Creates a class with a parsimonious representation of a symmetric
-    Toeplitz matrix; that is, a matrix :math:`T` with entries :math:`T_ij`
+    Toeplitz matrix; that is, a matrix :math:`T` with entries :math:`T_{ij}`
     which for all :math:`i,j` and :math:`i'=i+1, j'=j+1` satisfy:
 
     .. math::

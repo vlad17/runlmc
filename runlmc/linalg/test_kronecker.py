@@ -7,6 +7,7 @@ import unittest
 import numpy as np
 import scipy.linalg
 
+from .matrix import Matrix
 from .kronecker import Kronecker
 from .toeplitz import SymmToeplitz
 
@@ -33,6 +34,17 @@ class KroneckerTest(unittest.TestCase):
             [SymmToeplitz(random), np.random.rand(5, 5)],
             [np.random.rand(100, 100), np.random.rand(5, 5)]]
 
+        self.examples = [[self._symmetrize(x), self._symmetrize(y)]
+                         for x, y in self.examples]
+
+    @staticmethod
+    def _symmetrize(x):
+        if isinstance(x, Matrix):
+            return x
+        if np.allclose(np.triu(x), np.tril(x).T):
+            return x
+        return x + x.T
+
     @staticmethod
     def _generate(mats):
         my_kron = reduce(Kronecker, mats)
@@ -46,3 +58,21 @@ class KroneckerTest(unittest.TestCase):
             my_kron, np_kron = self._generate(mats)
             x = np.arange(len(np_kron)) + 1
             np.testing.assert_allclose(my_kron.matvec(x), np_kron.dot(x))
+
+    def test_eig(self):
+        for mats in self.examples:
+            my_kron, np_kron = self._generate(mats)
+            tol = 1e-3
+            np.testing.assert_allclose(my_kron.eig(tol), my_kron.eig(tol))
+
+    def test_empty(self):
+        empty = np.array([[]])
+        one = np.array([[1]])
+        self.assertRaises(ValueError, Kronecker, empty, one)
+        self.assertRaises(ValueError, Kronecker, one, empty)
+        self.assertRaises(ValueError, Kronecker, empty, empty)
+
+    def test_type(self):
+        class Dummy:
+            shape = (1, 1)
+        self.assertRaises(TypeError, Kronecker, Dummy(), np.array([[1]]))
