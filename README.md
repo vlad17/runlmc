@@ -58,10 +58,8 @@ Note:
 
 ### Roadmap:
 
-0. Kronecker matrices fast multiplication.
 0. Kronecker matrices fast eig.
-0. Sum-matrices fast mul
-0. Sum-matrices fast eig
+0. Sum-matrices fast mul (eig should throw, determinants can be offered)
 0. Determinant gradient computation - figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant.
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
 0. Log-determinant bound (there seems to be an issue with Toeplitz eig for heavy diagonals - a better solver might have to be found).
