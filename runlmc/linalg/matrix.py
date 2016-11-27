@@ -46,6 +46,17 @@ class Matrix:
         """
         raise NotImplementedError
 
+    def matmat(self, X):
+        """
+        Multiply a matrix :math:`X` by this matrix,
+        :math:`A`, yielding :math:`AX`. This just repeatedly calls
+        :func:`matvec`.
+
+        :param X: a (possibly rectangular) matrix.
+        :returns: the matrix-matrix product
+        """
+        return np.hstack([self.matvec(col).reshape(-1, 1) for col in X.T])
+
     def eig(self, cutoff):
         """
         Finds the eigenvalues of this matrix of magnitude above the cutoff.

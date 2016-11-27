@@ -17,6 +17,7 @@ class ToeplitzTest(unittest.TestCase):
         updown = np.add.accumulate(np.hstack([up, down]))[::-1]
         downup = np.hstack([down, up])
 
+        np.random.seed(1234)
         random = np.abs(np.hstack([np.random.rand(30), np.zeros(10)]))
         random[::-1].sort()
         random[0] += np.abs(random[1:]).sum()
