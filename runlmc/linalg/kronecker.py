@@ -4,7 +4,6 @@
 import logging
 
 import numpy as np
-import scipy.sparse.linalg
 
 from .numpy_matrix import NumpyMatrix
 from .psd_matrix import PSDMatrix
