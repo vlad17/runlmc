@@ -14,6 +14,7 @@ from ..kern.rbf import RBF
 class ExactLMCTest(unittest.TestCase):
 
     def setUp(self):
+        super().setUp()
         mapnp = lambda x: [np.array(i) for i in x]
 
         self.basic_kernels = [

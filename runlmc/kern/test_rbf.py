@@ -12,6 +12,7 @@ from ..util.numpy_convenience import map_entries
 class RBFTest(unittest.TestCase):
 
     def setUp(self):
+        super().setUp()
         self.cases = np.arange(3.0)
         variance = 3
         self.rbf_f = lambda r: variance * math.exp(-0.5 * r * r)
