@@ -82,3 +82,10 @@ class Toeplitz(PSDMatrix):
         totals[1:] -= abstop[:0:-1]
         totals = np.add.accumulate(totals)
         return totals.max()
+
+    def __str__(self):
+        if len(self.top) > 10:
+            topstr = 'size {}'.format(len(self.top))
+        else:
+            topstr = str(self.top)
+        return 'Toeplitz ' + topstr

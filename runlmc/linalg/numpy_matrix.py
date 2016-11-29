@@ -42,3 +42,6 @@ class NumpyMatrix(PSDMatrix):
 
     def upper_eig_bound(self):
         return np.abs(self.A).sum(axis=1).max()
+
+    def __str__(self):
+        return str(self.A)

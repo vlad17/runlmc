@@ -11,20 +11,9 @@ class MatrixTestBase:
         # Eigenvalue cutoff
         self.eigtol = None
 
-        # List of triplets
-        # [(matrix being tested, numpy equivalent, diagnostic info)]
+        # List of pairs
+        # [(matrix being tested, numpy equivalent)]
         self.examples = None
-
-    @staticmethod
-    def _print_matrix(x):
-        return str(x)
-
-    @staticmethod
-    def _assert_wrap(e, info):
-        if not e.args:
-            e.args = ''
-            e.args += '\n{}'.format(info)
-        raise e
 
     @staticmethod
     def _rpsd(n):
@@ -43,28 +32,24 @@ class MatrixTestBase:
         out[0] = 1
         return out
 
-
     def test_matvec(self):
-        for my_mat, np_mat, info in self.examples:
+        for my_mat, np_mat in self.examples:
             x = np.arange(len(np_mat)) + 1
-            try:
-                np.testing.assert_allclose(my_mat.matvec(x), np_mat.dot(x))
-            except AssertionError as e:
-                self._assert_wrap(e, info)
+            np.testing.assert_allclose(my_mat.matvec(x), np_mat.dot(x),
+                                       err_msg='\n{!s}\n'.format(my_mat))
 
     def test_eig(self):
-        for my_mat, np_mat, info in self.examples:
+        for my_mat, np_mat in self.examples:
             np_eigs = np.linalg.eigvalsh(np_mat).real
             np_eigs = np_eigs[np_eigs > self.eigtol]
             np_eigs[::-1].sort()
-            try:
-                np.testing.assert_allclose(my_mat.eig(self.eigtol), np_eigs)
-            except AssertionError as e:
-                self._assert_wrap(e, info)
+            np.testing.assert_allclose(my_mat.eig(self.eigtol), np_eigs,
+                                       err_msg='\n{!s}\n'.format(my_mat))
 
     def test_bound(self):
-        for my_mat, np_mat, info in self.examples:
+        for my_mat, np_mat in self.examples:
             np_eig = np.linalg.eigvalsh(np_mat).real.max()
             ub = my_mat.upper_eig_bound()
             # un-negate
-            self.assertGreaterEqual(ub, np_eig, msg=info)
+            self.assertGreaterEqual(ub, np_eig,
+                                    msg='\n{!s}\n'.format(my_mat))

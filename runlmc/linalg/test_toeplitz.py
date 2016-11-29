@@ -39,9 +39,7 @@ class ToeplitzTest(unittest.TestCase, MatrixTestBase):
     @staticmethod
     def _generate(x):
         x = np.array(x)
-        msg = '\nToeplitz {}'.format(
-            'size {}'.format(len(x)) if len(x) > 10 else x)
-        return (Toeplitz(x), scipy.linalg.toeplitz(x), msg)
+        return Toeplitz(x), scipy.linalg.toeplitz(x)
 
     def test_bad_shape(self):
         two_d = np.arange(8).reshape(2, 4)

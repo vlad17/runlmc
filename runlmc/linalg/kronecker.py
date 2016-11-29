@@ -109,3 +109,6 @@ class Kronecker(PSDMatrix):
         # mergesort?
         eigs.sort()
         return eigs[np.searchsorted(eigs, cutoff, 'right'):][::-1]
+
+    def __str__(self):
+        return 'Kron(A, B)\nA\n{!s}\nB\n{!s}'.format(self.A, self.B)
