@@ -19,9 +19,6 @@ class PSDMatrixTest(unittest.TestCase):
         lo = m.as_linear_operator()
         self.assertEqual(lo.dtype, np.float64)
         self.assertEqual(lo.shape, (3, 3))
-        self.assertEqual(m.matvec, lo.matvec)
-        self.assertEqual(m.matmat, lo.matmat)
-        self.assertEqual(m.matmat, lo.rmatmat)
 
     def test_bad_size(self):
         self.assertRaises(ValueError, PSDMatrix, 0)
