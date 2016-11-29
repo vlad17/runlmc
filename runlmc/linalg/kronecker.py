@@ -60,6 +60,22 @@ class Kronecker(PSDMatrix):
 
     @staticmethod
     def _largest_eig(mat):
+        # Gershgorin circle thm
+        # TODO: test / make part of interface
+        from .toeplitz import Toeplitz
+        if isinstance(mat, NumpyMatrix):
+            return np.abs(mat.A).sum(axis=0).max()
+        elif isinstance(mat, Toeplitz):
+            # largest cyclic permutation
+            totals = np.zeros(len(mat.top))
+            totals[0] = np.abs(mat.top).sum()
+            # this can be unfolded into a nonrecursive plus an accumulate
+            for i in range(1, len(totals)):
+                totals[i] = totals[i-1] - mat.top[-i] + mat.top[i]
+            return totals.max()
+        else:
+            assert isinstance(mat, Kronecker)
+            return Kronecker._largest_eig(mat.A)*Kronecker._largest_eig(mat.B)
         return scipy.sparse.linalg.eigsh(
             scipy.sparse.linalg.aslinearoperator(mat),
             k=1,
@@ -82,8 +98,8 @@ class Kronecker(PSDMatrix):
             eigs = self.A.eig(0) * self.B.eig(0)
             return eigs if eigs[0] > cutoff else np.array([])
 
-        largeA = self._largest_eig(self.A)[0]
-        largeB = self._largest_eig(self.B)[0]
+        largeA = self._largest_eig(self.A)
+        largeB = self._largest_eig(self.B)
         eigA = self.A.eig(self._conservative_cutoff_factor(cutoff, largeB))
         eigB = self.B.eig(self._conservative_cutoff_factor(cutoff, largeA))
         # Can use smarter filter here - don't need to generate every eigenvalue
@@ -92,4 +108,6 @@ class Kronecker(PSDMatrix):
         # eigs[::-1].sort()[::-1]?
         # mergesort?
         eigs.sort()
+        print('large A pred', largeA, 'actual', eigA[0])
+        print('large B pred', largeB, 'actual', eigB[0])
         return eigs[np.searchsorted(eigs, cutoff, 'right'):][::-1]

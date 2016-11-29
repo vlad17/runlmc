@@ -33,7 +33,7 @@ def rand_psd(n):
     A += np.diag(np.fabs(A).sum(axis=1) + 1)
     return A
 
-def stress_kronecker_solve(top, d):
+def stress_kronecker_eig(top, d):
     n = len(top)
     b = np.random.rand(n * d)
     toep = scipy.linalg.toeplitz(top)
@@ -42,44 +42,45 @@ def stress_kronecker_solve(top, d):
     assert np.linalg.matrix_rank(dense) == d
     assert np.linalg.matrix_rank(toep) == n
 
-    A = Kronecker(dense, Toeplitz(top)).as_linear_operator()
+    A = Kronecker(dense, Toeplitz(top))
     M = np.kron(dense, toep)
     assert np.linalg.matrix_rank(M) == n * d
 
-    tol = 1e-6
+    cutoff = 1e-3
     cond = np.linalg.cond(M)
-    print('    size {}x{} tol {:g} cond {}'
-          .format(n, d, tol, cond))
+    print('    size {}x{} cutoff {:g} cond {}'
+          .format(n, d, cutoff, cond))
 
-    def time_method(f):
-        with contexttimer.Timer() as solve_time:
-            solve, name = f()
-        print('    {} sec {:8.4f} resid {:8.4e}'.format(
-            name.rjust(20),
-            solve_time.elapsed,
-            np.linalg.norm(A.matvec(solve) - b)))
-    time_method(lambda: (np.linalg.solve(M, b), 'linear solve'))
+    with contexttimer.Timer() as solve_time:
+        eigs = np.linalg.eigvalsh(M)
+        eigs[::-1].sort()
+        eigs = eigs[eigs > cutoff]
+    print('    {} sec {:8.4f}'.format(
+        'dense lapack'.rjust(20),
+        solve_time.elapsed))
 
-    def sparse():
-        out, succ = scipy.sparse.linalg.cg(A, b, tol=tol, maxiter=(n*d))
-        return out, '{} sparse CG'.format('' if not succ else '*')
-    time_method(sparse)
+    with contexttimer.Timer() as solve_time:
+        my_eigs = A.eig(cutoff)
+    print('    {} sec {:8.4f}'.format(
+        'kron decomp'.rjust(20),
+        solve_time.elapsed))
 
-
-    def minres():
-        out, succ = scipy.sparse.linalg.minres(A, b, tol=tol, maxiter=(n*d))
-        return out, '{} sparse MINRES'.format('' if not succ else '*')
-    time_method(minres)
+    if len(my_eigs) != len(eigs):
+        print('    INCOMPATIBLE LENGTHS! np {} != mine {}'.format(
+            len(eigs), len(my_eigs)))
+    else:
+        print('    avg eigdiff {}'.format(
+            np.abs(eigs - my_eigs).mean()))
 
 if __name__ == "__main__":
     if len(sys.argv) not in [3, 4]:
-        print('Usage: python kronecker_cg.py n d [seed]')
+        print('Usage: python kronecker_eig.py n d [seed]')
         print()
         print('n > 8 is the size of the Toeplitz submatrix')
         print('d > 0 is the size of the dense submatrix')
         print('default seed is 1234')
-        print('this solves the kronecker product system size n * d')
-        print('choose d == 1 and n large to test Toeplitz CG mainly')
+        print('this eigendecomposes the kronecker product system size n * d')
+        print('choose d == 1 and n large to test Toeplitz eig mainly')
         sys.exit(1)
 
     n = int(sys.argv[1])
@@ -94,11 +95,11 @@ if __name__ == "__main__":
     print('* = no convergence')
 
     print('random (well-cond) ')
-    stress_kronecker_solve(random_toep(n), d)
+    stress_kronecker_eig(random_toep(n), d)
 
     # Poorly-conditioned
     print('linear decrease (poor-cond)')
-    stress_kronecker_solve(poor_cond_toep(n), d)
+    stress_kronecker_eig(poor_cond_toep(n), d)
 
     print('exponentially decreasing (realistic)')
-    stress_kronecker_solve(np.exp(-np.arange(n)), d)
+    stress_kronecker_eig(np.exp(-np.arange(n)), d)

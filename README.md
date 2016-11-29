@@ -40,6 +40,12 @@ Currently, I'm only supporting 1 input dimension.
         plt.plot(Xs[i], Ys[i])
         plt.show()
         
+## Benchmarks
+
+Make sure that the directory root is in the `PYTHONPATH` when running the benchmarks. E.g., from the directory root:
+
+    PYTHONPATH=. python benchmark/toeplitz_cg.py 100
+        
 ## Dev Stuff
 
 Required packages for development (Python 3 versions): `pylint nose paramz gpy sphinx contexttimer`.
@@ -59,9 +65,8 @@ Note:
 ### Roadmap:
 
 0. hard cutoff test (eigenvalue >= cutoff included)
-0. Clean up benchmark, add kronecker eigen benchmark
 0. super.setUp()
-0. Adding to own transpose - verify if A += A.T is in repo
+0. Gershgorin eig bound should be formally part of interface
 0. Sum-matrices fast mul (eig should throw, determinants can be offered)
 0. Determinant gradient computation - figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant.
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
