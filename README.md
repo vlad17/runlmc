@@ -64,8 +64,6 @@ Note:
 
 ### Roadmap:
 
-0. pretty print
-0. `_assert_wrap` should be avoidable with np.testing options
 0. Sum-matrices fast mul (eig should throw, determinants can be offered)
 0. Determinant gradient computation - figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant.
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
