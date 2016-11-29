@@ -1,6 +1,8 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
+import logging
+
 import numpy as np
 import scipy.sparse.linalg
 
@@ -8,6 +10,8 @@ from .numpy_matrix import NumpyMatrix
 from .psd_matrix import PSDMatrix
 from ..util.docs import inherit_doc
 from ..util.numpy_convenience import EPS
+
+_LOG = logging.getLogger(__name__)
 
 @inherit_doc
 class Kronecker(PSDMatrix):
@@ -100,14 +104,29 @@ class Kronecker(PSDMatrix):
 
         largeA = self._largest_eig(self.A)
         largeB = self._largest_eig(self.B)
-        eigA = self.A.eig(self._conservative_cutoff_factor(cutoff, largeB))
-        eigB = self.B.eig(self._conservative_cutoff_factor(cutoff, largeA))
+        cutoffA = self._conservative_cutoff_factor(cutoff, largeB)
+        cutoffB = self._conservative_cutoff_factor(cutoff, largeA)
+
+        _LOG.warning('%s eig(cutoff=%8.4g) -> A %s eig(cutoff=%8.4g)',
+                     self.shape, cutoff, self.A.shape, cutoffA)
+        eigA = self.A.eig(cutoffA)
+        _LOG.warning('%s A %s largest eig predicted %8.4g actual %8.4g',
+                     self.shape, self.A.shape, largeA,
+                     eigA[0] if len(eigA) > 0 else 0)
+
+        _LOG.warning('%s eig(cutoff=%8.4g) -> B %s eig(cutoff=%8.4g)',
+                     self.shape, cutoff, self.B.shape, cutoffB)
+        eigB = self.B.eig(cutoffA)
+        _LOG.warning('%s B %s largest eig predicted %8.4g actual %8.4g',
+                     self.shape, self.B.shape, largeB,
+                     eigB[0] if len(eigB) > 0 else 0)
+
+
+
         # Can use smarter filter here - don't need to generate every eigenvalue
         # from the outer product if the smallest is less than the fixed cutoff
         eigs = np.outer(eigA, eigB).reshape(-1)
         # eigs[::-1].sort()[::-1]?
         # mergesort?
         eigs.sort()
-        print('large A pred', largeA, 'actual', eigA[0])
-        print('large B pred', largeB, 'actual', eigB[0])
         return eigs[np.searchsorted(eigs, cutoff, 'right'):][::-1]
