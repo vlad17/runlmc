@@ -17,7 +17,8 @@ _LOG = logging.getLogger(__name__)
 class Kronecker(PSDMatrix):
     """
     Creates a class with a parsimonious representation of a Kronecker product
-    of two :class:`Matrix` instances. For the Kronecker matrix
+    of two :class:`runlmc.linalg.psd_matrix.PSDMatrix` instances.
+    For the Kronecker matrix
     :math:`K=A\\otimes B`, the :math:`ij`-th block entry is
     :math:`a_{ij}B`.
 
@@ -50,7 +51,8 @@ class Kronecker(PSDMatrix):
         elif isinstance(X, np.ndarray):
             return NumpyMatrix(X)
         else:
-            raise TypeError('Inputs have to be runlmc.linalg.matrix.Matrix'
+            raise TypeError('Inputs have to be '
+                            'runlmc.linalg.psd_matrix.PSDMatrix'
                             ' or numpy.ndarray instances')
 
     def matvec(self, x):

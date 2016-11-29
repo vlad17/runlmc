@@ -10,7 +10,7 @@ from ..util.numpy_convenience import EPS
 @inherit_doc
 class NumpyMatrix(PSDMatrix):
     """
-    Adapter to :class:`Matrix` with :mod:`numpy` arrays.
+    Adapter to :class:`PSDMatrix` with :mod:`numpy` arrays.
     """
     def __init__(self, nparr):
         """

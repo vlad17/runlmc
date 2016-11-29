@@ -14,7 +14,7 @@ class PSDMatrix:
     the matrix :math:`A` represented by instances of this class is expected to
     adhere to the following semantic laws:
 
-    #. :math:`\\forall\\textbf{x}`, :math:`\\textbf{x}^\\topA\\textbf{x} \ge 0`
+    #. :math:`\\forall\\textbf{x}`, :math:`\\textbf{x}^\\top A\\textbf{x} \ge 0`
     #. :math:`A^\\top = A`
 
     These laws manifest themselves through the following properties, through
