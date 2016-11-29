@@ -104,4 +104,5 @@ class ExactLMCTest(unittest.TestCase):
             warnings.simplefilter("ignore", RuntimeWarning)
             basic.optimize()
             basic_gpy.optimize()
-        self.evaluate(basic, basic_gpy, self.basic_predict_Xs, self.basic_meta)
+            self.evaluate(basic, basic_gpy, self.basic_predict_Xs,
+                          self.basic_meta)
