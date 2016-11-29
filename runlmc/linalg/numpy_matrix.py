@@ -37,5 +37,5 @@ class NumpyMatrix(PSDMatrix):
     def eig(self, cutoff):
         sol = np.linalg.eigvalsh(self.A).real
         sol = np.sort(sol)
-        cut = np.searchsorted(sol, cutoff)
+        cut = np.searchsorted(sol, cutoff, 'right')
         return sol[cut:][::-1]

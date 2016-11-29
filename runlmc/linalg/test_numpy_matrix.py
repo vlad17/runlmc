@@ -22,6 +22,7 @@ class NumpyMatrixTest(unittest.TestCase, MatrixTestBase):
         up = lambda x: np.diag(np.arange(x) + 1)
         down = lambda x: up(x)[::-1, ::-1]
 
+        self.eigtol = 1e-3
         self.examples = [self._generate(x) for x in [
             np.identity(1),
             np.identity(2),
@@ -29,7 +30,10 @@ class NumpyMatrixTest(unittest.TestCase, MatrixTestBase):
             down(3),
             random_toep,
             self._rpsd(10),
-            self._rpsd(100)]]
+            self._rpsd(100),
+            np.kron(np.identity(2), np.identity(3) * self.eigtol / 2),
+            np.kron(np.identity(2), np.identity(3) * self.eigtol),
+            np.kron(np.identity(2), np.identity(3) * self.eigtol * 2)]]
 
     @staticmethod
     def _generate(x):

@@ -8,6 +8,10 @@ class MatrixTestBase:
     def setUp(self):
         super().setUp()
         np.random.seed(1234)
+
+        # Eigenvalue cutoff
+        self.eigtol = None
+
         # List of triplets
         # [(matrix being tested, numpy equivalent, diagnostic info)]
         self.examples = None
@@ -30,6 +34,17 @@ class MatrixTestBase:
         A += np.diag(np.fabs(A).sum(axis=1) + 1)
         return A
 
+    @classmethod
+    def _toep_eig(cls, e, mult):
+        # return a psd toeplitz matrix with eigenvalues
+        # e (multiplicity mult) and (mult + 1) - mult * e
+        assert e > 0
+        assert e < 1
+        out = np.ones(mult + 1) * 1-e
+        out[0] = 1
+        return out
+
+
     def test_matvec(self):
         for my_mat, np_mat, info in self.examples:
             x = np.arange(len(np_mat)) + 1
@@ -40,11 +55,10 @@ class MatrixTestBase:
 
     def test_eig(self):
         for my_mat, np_mat, info in self.examples:
-            tol = 1e-3
             np_eigs = np.linalg.eigvalsh(np_mat).real
-            np_eigs = np_eigs[np_eigs > tol]
+            np_eigs = np_eigs[np_eigs > self.eigtol]
             np_eigs[::-1].sort()
             try:
-                np.testing.assert_allclose(my_mat.eig(tol), np_eigs)
+                np.testing.assert_allclose(my_mat.eig(self.eigtol), np_eigs)
             except AssertionError as e:
                 self._assert_wrap(e, info)

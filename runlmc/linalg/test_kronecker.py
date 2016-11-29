@@ -23,6 +23,8 @@ class KroneckerTest(unittest.TestCase, MatrixTestBase):
         up = lambda x: np.diag(np.arange(x) + 1)
         down = lambda x: up(x)[::-1, ::-1]
 
+        self.eigtol = 1e-3
+
         examples = [
             [up(1), down(1)],
             [up(3), down(2)],
@@ -32,7 +34,10 @@ class KroneckerTest(unittest.TestCase, MatrixTestBase):
             [self._rpsd(2), self._rpsd(3)],
             [up(3), Toeplitz(np.arange(10)[::-1] + 1)],
             [Toeplitz(random), self._rpsd(5)],
-            [self._rpsd(100), self._rpsd(5)]]
+            [self._rpsd(100), self._rpsd(5)],
+            [np.identity(2), np.identity(3) * self.eigtol / 2],
+            [np.identity(2), np.identity(3) * self.eigtol],
+            [np.identity(2), np.identity(3) * self.eigtol * 2]]
 
         self.examples = list(map(self._generate, examples))
 

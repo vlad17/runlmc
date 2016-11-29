@@ -64,7 +64,7 @@ Note:
 
 ### Roadmap:
 
-0. hard cutoff test (eigenvalue >= cutoff included is wrong)
+0. cls -> static where possible
 0. super.setUp()
 0. Gershgorin eig bound should be formally part of interface
 0. Sum-matrices fast mul (eig should throw, determinants can be offered)

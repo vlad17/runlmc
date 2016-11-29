@@ -116,7 +116,7 @@ class Kronecker(PSDMatrix):
 
         _LOG.info('%s eig(cutoff=%8.4g) -> B %s eig(cutoff=%8.4g)',
                   self.shape, cutoff, self.B.shape, cutoffB)
-        eigB = self.B.eig(cutoffA)
+        eigB = self.B.eig(cutoffB)
         _LOG.info('%s B %s largest eig predicted %8.4g actual %8.4g',
                   self.shape, self.B.shape, largeB,
                   eigB[0] if len(eigB) > 0 else 0)

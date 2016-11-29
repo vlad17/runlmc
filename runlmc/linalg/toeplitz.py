@@ -62,5 +62,5 @@ class Toeplitz(PSDMatrix):
         # The grudsky implementation from before will be installed shortly
         sol = np.linalg.eigvalsh(scipy.linalg.toeplitz(self.top)).real
         sol = np.sort(sol)
-        cut = np.searchsorted(sol, cutoff)
+        cut = np.searchsorted(sol, cutoff, 'right')
         return sol[cut:][::-1]
