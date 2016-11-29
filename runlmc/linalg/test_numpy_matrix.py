@@ -38,7 +38,7 @@ class NumpyMatrixTest(unittest.TestCase, MatrixTestBase):
     @staticmethod
     def _generate(x):
         x = np.array(x)
-        msg = 'Numpy {}'.format(
+        msg = '\nNumpy {}'.format(
             'size {}'.format(len(x)) if len(x) > 10 else x)
         return (NumpyMatrix(x), x, msg)
 

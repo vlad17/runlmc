@@ -6,7 +6,6 @@ import numpy as np
 class MatrixTestBase:
 
     def setUp(self):
-        super().setUp()
         np.random.seed(1234)
 
         # Eigenvalue cutoff
@@ -62,3 +61,10 @@ class MatrixTestBase:
                 np.testing.assert_allclose(my_mat.eig(self.eigtol), np_eigs)
             except AssertionError as e:
                 self._assert_wrap(e, info)
+
+    def test_bound(self):
+        for my_mat, np_mat, info in self.examples:
+            np_eig = np.linalg.eigvalsh(np_mat).real.max()
+            ub = my_mat.upper_eig_bound()
+            # un-negate
+            self.assertGreaterEqual(ub, np_eig, msg=info)

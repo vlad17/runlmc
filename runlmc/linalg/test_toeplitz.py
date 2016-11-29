@@ -39,7 +39,7 @@ class ToeplitzTest(unittest.TestCase, MatrixTestBase):
     @staticmethod
     def _generate(x):
         x = np.array(x)
-        msg = 'Toeplitz {}'.format(
+        msg = '\nToeplitz {}'.format(
             'size {}'.format(len(x)) if len(x) > 10 else x)
         return (Toeplitz(x), scipy.linalg.toeplitz(x), msg)
 

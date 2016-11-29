@@ -64,29 +64,8 @@ class Kronecker(PSDMatrix):
             x = M.matmat(x)
         return x.reshape(-1)
 
-    @staticmethod
-    def _largest_eig(mat):
-        # Gershgorin circle thm
-        # TODO: test / make part of interface
-        from .toeplitz import Toeplitz
-        if isinstance(mat, NumpyMatrix):
-            return np.abs(mat.A).sum(axis=0).max()
-        elif isinstance(mat, Toeplitz):
-            # largest cyclic permutation
-            totals = np.zeros(len(mat.top))
-            totals[0] = np.abs(mat.top).sum()
-            # this can be unfolded into a nonrecursive plus an accumulate
-            for i in range(1, len(totals)):
-                totals[i] = totals[i-1] - mat.top[-i] + mat.top[i]
-            return totals.max()
-        else:
-            assert isinstance(mat, Kronecker)
-            return Kronecker._largest_eig(mat.A)*Kronecker._largest_eig(mat.B)
-        return scipy.sparse.linalg.eigsh(
-            scipy.sparse.linalg.aslinearoperator(mat),
-            k=1,
-            which='LA',
-            return_eigenvectors=False) # TODO: mess with tol / ncv
+    def upper_eig_bound(self):
+        return self.A.upper_eig_bound() * self.B.upper_eig_bound()
 
     @staticmethod
     def _conservative_cutoff_factor(cutoff, factor):
@@ -104,8 +83,8 @@ class Kronecker(PSDMatrix):
             eigs = self.A.eig(0) * self.B.eig(0)
             return eigs if eigs[0] > cutoff else np.array([])
 
-        largeA = self._largest_eig(self.A)
-        largeB = self._largest_eig(self.B)
+        largeA = self.A.upper_eig_bound()
+        largeB = self.B.upper_eig_bound()
         cutoffA = self._conservative_cutoff_factor(cutoff, largeB)
         cutoffB = self._conservative_cutoff_factor(cutoff, largeA)
 

@@ -81,3 +81,16 @@ class PSDMatrix:
                   multiplicity.
         """
         raise NotImplementedError
+
+    def upper_eig_bound(self):
+        """
+        Returns an upper bound :math:`B` for the largest eigenvalue of this
+        PSD matrix.
+
+        Impementations can rely on the fairly tight and efficient-to-compute
+        Gershgorin circle theorem, which implies that the largest eigenvalue
+        is bounded by the largest absolute row sum in PSD matices.
+
+        :return: :math:`B`
+        """
+        raise NotImplementedError

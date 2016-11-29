@@ -64,3 +64,21 @@ class Toeplitz(PSDMatrix):
         sol = np.sort(sol)
         cut = np.searchsorted(sol, cutoff, 'right')
         return sol[cut:][::-1]
+
+    def upper_eig_bound(self):
+        # By Gershgorin, we need to find the largest absolute row.
+        # This can be computed in linear time with an easy dynamic program,
+        # since it's just the largest cyclic permutation of top.
+        #
+        # The vectorized numpy expression below is equivalent to the following
+        # C-like syntax:
+        # totals = np.zeros(len(self.top))
+        # totals[0] = np.abs(self.top).sum()
+        # for i in range(1, len(totals)):
+        #     totals[i] = totals[i-1] - self.top[-i] + self.top[i]
+        abstop = np.abs(self.top)
+        totals = np.copy(abstop)
+        totals[0] = abstop.sum()
+        totals[1:] -= abstop[:0:-1]
+        totals = np.add.accumulate(totals)
+        return totals.max()

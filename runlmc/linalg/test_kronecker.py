@@ -47,7 +47,7 @@ class KroneckerTest(unittest.TestCase, MatrixTestBase):
         mats = [scipy.linalg.toeplitz(x.top) if isinstance(x, Toeplitz)
                 else x for x in mats]
         np_kron = reduce(np.kron, mats)
-        return my_kron, np_kron, ''
+        return my_kron, np_kron, '\n'
 
     def test_empty(self):
         empty = np.array([[]])

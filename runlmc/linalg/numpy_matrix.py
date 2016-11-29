@@ -39,3 +39,6 @@ class NumpyMatrix(PSDMatrix):
         sol = np.sort(sol)
         cut = np.searchsorted(sol, cutoff, 'right')
         return sol[cut:][::-1]
+
+    def upper_eig_bound(self):
+        return np.abs(self.A).sum(axis=1).max()
