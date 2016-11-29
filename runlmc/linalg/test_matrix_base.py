@@ -3,10 +3,14 @@
 
 import numpy as np
 
-class MatrixTestBase:
+from ..util.test_utils import RandomTest
+
+class MatrixTestBase(RandomTest):
 
     def setUp(self):
-        np.random.seed(1234)
+        super().setUp()
+
+        # Attributes to be filled in by subclasses
 
         # Eigenvalue cutoff
         self.eigtol = None

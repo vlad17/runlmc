@@ -57,6 +57,6 @@ class KroneckerTest(unittest.TestCase, MatrixTestBase):
         self.assertRaises(ValueError, Kronecker, empty, empty)
 
     def test_type(self):
-        class Dummy: # pylint: disable=too-few-public-methods
+        class Dummy:
             shape = (1, 1)
         self.assertRaises(TypeError, Kronecker, Dummy(), np.array([[1]]))

@@ -5,7 +5,7 @@ import unittest
 
 from .docs import inherit_doc
 
-class A: # pylint: disable=too-few-public-methods
+class A:
     """A"""
     def __init__(self):
         """A.__init__"""
@@ -26,7 +26,7 @@ class B: # pylint: disable=invalid-name
     def nodoc(self):
         pass
 
-@inherit_doc # pylint: disable=invalid-name,too-few-public-methods
+@inherit_doc # pylint: disable=invalid-name
 class C(A):
     def __init__(self):
         super().__init__()
