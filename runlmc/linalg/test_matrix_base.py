@@ -16,8 +16,8 @@ class MatrixTestBase:
         # [(matrix being tested, numpy equivalent, diagnostic info)]
         self.examples = None
 
-    @classmethod
-    def _print_matrix(cls, x):
+    @staticmethod
+    def _print_matrix(x):
         return str(x)
 
     @staticmethod
@@ -27,15 +27,15 @@ class MatrixTestBase:
             e.args += '\n{}'.format(info)
         raise e
 
-    @classmethod
-    def _rpsd(cls, n):
+    @staticmethod
+    def _rpsd(n):
         A = np.random.randint(-10, 10, (n, n))
         A = (A + A.T).astype(np.float64)
         A += np.diag(np.fabs(A).sum(axis=1) + 1)
         return A
 
-    @classmethod
-    def _toep_eig(cls, e, mult):
+    @staticmethod
+    def _toep_eig(e, mult):
         # return a psd toeplitz matrix with eigenvalues
         # e (multiplicity mult) and (mult + 1) - mult * e
         assert e > 0
