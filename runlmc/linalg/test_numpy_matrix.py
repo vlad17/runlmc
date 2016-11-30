@@ -6,10 +6,10 @@ import unittest
 import numpy as np
 import scipy.linalg
 
-from .test_matrix_base import MatrixTestBase
+from .test_matrix_base import DecomposableMatrixTestBase
 from .numpy_matrix import NumpyMatrix
 
-class NumpyMatrixTest(unittest.TestCase, MatrixTestBase):
+class NumpyMatrixTest(unittest.TestCase, DecomposableMatrixTestBase):
 
     def setUp(self):
         super().setUp()

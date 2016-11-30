@@ -3,14 +3,14 @@
 
 import numpy as np
 
-from .psd_matrix import PSDMatrix
+from .psd_matrix import PSDDecomposableMatrix
 from ..util.docs import inherit_doc
 from ..util.numpy_convenience import EPS
 
 @inherit_doc
-class NumpyMatrix(PSDMatrix):
+class NumpyMatrix(PSDDecomposableMatrix):
     """
-    Adapter to :class:`PSDMatrix` with :mod:`numpy` arrays.
+    Adapter to :class:`PSDDecomposableMatrix` with :mod:`numpy` arrays.
     """
     def __init__(self, nparr):
         """

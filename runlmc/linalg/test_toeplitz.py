@@ -6,10 +6,10 @@ import unittest
 import numpy as np
 import scipy.linalg
 
-from .test_matrix_base import MatrixTestBase
+from .test_matrix_base import DecomposableMatrixTestBase
 from .toeplitz import Toeplitz
 
-class ToeplitzTest(unittest.TestCase, MatrixTestBase):
+class ToeplitzTest(unittest.TestCase, DecomposableMatrixTestBase):
 
     def setUp(self):
         super().setUp()

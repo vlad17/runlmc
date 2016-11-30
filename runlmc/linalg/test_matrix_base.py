@@ -42,6 +42,8 @@ class MatrixTestBase(RandomTest):
             np.testing.assert_allclose(my_mat.matvec(x), np_mat.dot(x),
                                        err_msg='\n{!s}\n'.format(my_mat))
 
+class DecomposableMatrixTestBase(MatrixTestBase):
+
     def test_eig(self):
         for my_mat, np_mat in self.examples:
             np_eigs = np.linalg.eigvalsh(np_mat).real
@@ -54,6 +56,5 @@ class MatrixTestBase(RandomTest):
         for my_mat, np_mat in self.examples:
             np_eig = np.linalg.eigvalsh(np_mat).real.max()
             ub = my_mat.upper_eig_bound()
-            # un-negate
             self.assertGreaterEqual(ub, np_eig,
                                     msg='\n{!s}\n'.format(my_mat))

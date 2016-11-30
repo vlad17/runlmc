@@ -5,11 +5,11 @@ import numpy as np
 import scipy.linalg
 import scipy.sparse.linalg
 
-from .psd_matrix import PSDMatrix
+from .psd_matrix import PSDDecomposableMatrix
 from ..util.docs import inherit_doc
 
 @inherit_doc
-class Toeplitz(PSDMatrix):
+class Toeplitz(PSDDecomposableMatrix):
     """
     Creates a class with a parsimonious representation of a PSD
     Toeplitz matrix; that is, a matrix :math:`T` with entries :math:`T_{ij}`

@@ -4,6 +4,8 @@
 import numpy as np
 import scipy.sparse.linalg
 
+from ..util.docs import inherit_doc
+
 class PSDMatrix:
     """
     An abstract class defining the interface for the necessary
@@ -11,19 +13,18 @@ class PSDMatrix:
 
     We consider a very restricted class of matrices only, namely
     positive semi-definite, symmetric, real matrices. In other words,
-    the matrix :math:`A` represented by instances of this class is expected to
+    the matrix :math:`K` represented by instances of this class is expected to
     adhere to the following semantic laws:
 
     #. :math:`\\forall\\textbf{x}`,
-       :math:`\\textbf{x}^\\top A\\textbf{x} \ge 0`
-    #. :math:`A^\\top = A`
+       :math:`\\textbf{x}^\\top K\\textbf{x} \ge 0`
+    #. :math:`K^\\top = K`
 
-    These laws manifest themselves through the following properties, through
+    These laws manifest themselves the following property, with
     the actual API, which exposes :func:`matvec` for matrix-vector
-    multiplication and :func:`eig` for eigenvalues.
+    multiplication.
 
-    #. `A.matvec(x).dot(x) >= 0`
-    #. `len(A.eig(cutoff=0)) == A.shape[0]`
+    * Positivity: `K.matvec(x).dot(x) >= 0`
     """
 
     def __init__(self, n):
@@ -55,7 +56,7 @@ class PSDMatrix:
     def matvec(self, x):
         """
         Multiply a vector :math:`\\textbf{x}` by this matrix,
-        :math:`A`, yielding :math:`A\\textbf{x}`.
+        :math:`K`, yielding :math:`K\\textbf{x}`.
 
         :param x: a one-dimensional numpy array of the same size as this matrix
         :returns: the matrix-vector product
@@ -65,13 +66,26 @@ class PSDMatrix:
     def matmat(self, X):
         """
         Multiply a matrix :math:`X` by this matrix,
-        :math:`A`, yielding :math:`AX`. This just repeatedly calls
+        :math:`K`, yielding :math:`KX`. This just repeatedly calls
         :func:`matvec`.
 
         :param X: a (possibly rectangular) matrix.
         :returns: the matrix-matrix product
         """
         return np.hstack([self.matvec(col).reshape(-1, 1) for col in X.T])
+
+@inherit_doc
+class PSDDecomposableMatrix(PSDMatrix):
+    """
+    An extention to a regular :class:`PSDMatrix` which allows for efficient
+    eigendecomposition and bounding. This adheres to the following
+    mathematical property manifested by the API :func:`eig`.
+
+    * Positive eigenvalues: `len(K.eig(cutoff=0)) == K.shape[0]`
+    """
+
+    def __init__(self, n):
+        super().__init__(n)
 
     def eig(self, cutoff):
         """

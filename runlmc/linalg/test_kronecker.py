@@ -7,11 +7,11 @@ import unittest
 import numpy as np
 import scipy.linalg
 
-from .test_matrix_base import MatrixTestBase
+from .test_matrix_base import DecomposableMatrixTestBase
 from .kronecker import Kronecker
 from .toeplitz import Toeplitz
 
-class KroneckerTest(unittest.TestCase, MatrixTestBase):
+class KroneckerTest(unittest.TestCase, DecomposableMatrixTestBase):
 
     def setUp(self):
         super().setUp()

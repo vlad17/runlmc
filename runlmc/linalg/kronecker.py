@@ -6,17 +6,17 @@ import logging
 import numpy as np
 
 from .numpy_matrix import NumpyMatrix
-from .psd_matrix import PSDMatrix
+from .psd_matrix import PSDDecomposableMatrix
 from ..util.docs import inherit_doc
 from ..util.numpy_convenience import EPS
 
 _LOG = logging.getLogger(__name__)
 
 @inherit_doc
-class Kronecker(PSDMatrix):
+class Kronecker(PSDDecomposableMatrix):
     """
     Creates a class with a parsimonious representation of a Kronecker product
-    of two :class:`runlmc.linalg.psd_matrix.PSDMatrix` instances.
+    of two :class:`runlmc.linalg.psd_matrix.PSDDecomposableMatrix` instances.
     For the Kronecker matrix
     :math:`K=A\\otimes B`, the :math:`ij`-th block entry is
     :math:`a_{ij}B`.
@@ -45,13 +45,13 @@ class Kronecker(PSDMatrix):
 
     @staticmethod
     def _to_mat(X):
-        if isinstance(X, PSDMatrix):
+        if isinstance(X, PSDDecomposableMatrix):
             return X
         elif isinstance(X, np.ndarray):
             return NumpyMatrix(X)
         else:
             raise TypeError('Inputs have to be '
-                            'runlmc.linalg.psd_matrix.PSDMatrix'
+                            'runlmc.linalg.psd_matrix.PSDDecomposableMatrix'
                             ' or numpy.ndarray instances')
 
     def matvec(self, x):
