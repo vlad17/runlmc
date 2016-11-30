@@ -2,15 +2,16 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import sys
-import math
 
 import contexttimer
 import numpy as np
 import scipy.linalg
 import scipy.sparse.linalg
 
-from runlmc.linalg.toeplitz import Toeplitz
 from runlmc.linalg.kronecker import Kronecker
+from runlmc.linalg.sum_matrix import SumMatrix
+from runlmc.linalg.toeplitz import Toeplitz
+from runlmc.linalg.numpy_matrix import NumpyMatrix
 
 def random_toep(n):
     top = np.abs(np.random.rand(n))
@@ -19,7 +20,7 @@ def random_toep(n):
     return top
 
 def poor_cond_toep(n):
-    up = np.arange(n // 8) + 1
+    up = (np.arange(n // 8) + 1) * (1 + np.random.rand())
     down = np.copy(up[::-1])
     up = up / 2
     top = np.zeros(n)
@@ -27,29 +28,31 @@ def poor_cond_toep(n):
     top[:len(updown)] = updown
     return top
 
+def exp_decr_toep(n):
+    return np.exp(-(1 + np.random.rand()) * np.arange(n))
+
 def rand_psd(n):
     A = np.random.rand(n, n)
     A = (A + A.T).astype(np.float64) / 2
     A += np.diag(np.fabs(A).sum(axis=1) + 1)
     return A
 
-def stress_kronecker_solve(top, d):
-    n = len(top)
+def stress_sum_solve(top_gen, n, d, q, noise):
     b = np.random.rand(n * d)
-    toep = scipy.linalg.toeplitz(top)
-    dense = rand_psd(d)
 
-    assert np.linalg.matrix_rank(dense) == d
-    assert np.linalg.matrix_rank(toep) == n
-
-    A = Kronecker(dense, Toeplitz(top)).as_linear_operator()
-    M = np.kron(dense, toep)
+    dense_mats = [rand_psd(d) for _ in range(q)]
+    toep_tops = [top_gen(n) for _ in range(q)]
+    A = SumMatrix([Kronecker(NumpyMatrix(dense), Toeplitz(top))
+                   for dense, top in zip(dense_mats, toep_tops)],
+                  noise).as_linear_operator()
+    M = sum(np.kron(dense, scipy.linalg.toeplitz(top))
+            for dense, top in zip(dense_mats, toep_tops))
     assert np.linalg.matrix_rank(M) == n * d
 
     tol = 1e-6
     cond = np.linalg.cond(M)
-    print('    size {}x{} tol {:g} cond {}'
-          .format(n, d, tol, cond))
+    print('    size qxnxd {}x{}x{} tol {:g} cond {}'
+          .format(q, n, d, tol, cond))
 
     def time_method(f):
         with contexttimer.Timer() as solve_time:
@@ -72,33 +75,51 @@ def stress_kronecker_solve(top, d):
     time_method(minres)
 
 if __name__ == "__main__":
-    if len(sys.argv) not in [3, 4]:
-        print('Usage: python kronecker_cg.py n d [seed]')
+    if len(sys.argv) not in [5, 6]:
+        print('Usage: python inversion.py n d q eps [seed]')
         print()
         print('n > 8 is the size of the Toeplitz submatrix')
         print('d > 0 is the size of the dense submatrix')
+        print('q > 0 is the number of dense-Toeplitz Kronecker products')
+        print('      to sum together for the system')
+        print('eps >= 0 is the constant diagonal perturbation (a float)')
+        print('         added in (higher eps -> better conditioning).')
         print('default seed is 1234')
-        print('this solves the kronecker product system size n * d')
-        print('choose d == 1 and n large to test Toeplitz CG mainly')
+        print()
+        print('This benchmarks solving a system defined by a sum of\n'
+              'dense-Toeplitz Kronecker products, which has size n * d\n'
+              'but only n * d^2 * q parameters, as opposed to\n'
+              'the dense system of (n * d)^2 parameters')
+        print()
+        print('Choose q = d = 1 and n large to test Toeplitz, mainly')
+        print('Choose q = 1 and n ~ d^2 > 1 to test Kronecker, mainly')
         sys.exit(1)
 
     n = int(sys.argv[1])
     d = int(sys.argv[2])
-    seed = int(sys.argv[3]) if len(sys.argv) > 3 else 1234
+    q = int(sys.argv[3])
+    eps = float(sys.argv[4])
+    seed = int(sys.argv[5]) if len(sys.argv) > 5 else 1234
 
     assert n > 8
     assert d > 0
-
+    assert q > 0
+    assert eps >= 0
     np.random.seed(seed)
+
+    noise = np.ones(n * d) * eps
 
     print('* = no convergence')
 
     print('random (well-cond) ')
-    stress_kronecker_solve(random_toep(n), d)
+    stress_sum_solve(random_toep, n, d, q, noise)
 
     # Poorly-conditioned
     print('linear decrease (poor-cond)')
-    stress_kronecker_solve(poor_cond_toep(n), d)
+    if n * d <= 2000:
+        stress_sum_solve(poor_cond_toep, n, d, q, noise)
+    else:
+        print('    (skipping)')
 
     print('exponentially decreasing (realistic)')
-    stress_kronecker_solve(np.exp(-np.arange(n)), d)
+    stress_sum_solve(exp_decr_toep, n, d, q, noise)

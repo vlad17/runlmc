@@ -44,7 +44,7 @@ Currently, I'm only supporting 1 input dimension.
 
 Make sure that the directory root is in the `PYTHONPATH` when running the benchmarks. E.g., from the directory root:
 
-    PYTHONPATH=. python benchmark/toeplitz_cg.py 100
+    PYTHONPATH=. python benchmark/inversion.py
         
 ## Dev Stuff
 
@@ -62,17 +62,21 @@ Note:
 | `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/runlmc.html`) |
 | `nosetests`       | Run unit tests |
 
-### Roadmap:
+### Roadmap
 
-0. Sum-matrices mul benchmark
-0. Kron sum det (in models/)
-0. Determinant gradient computation - figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant.
+0. Log determinant and its gradient computation - figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant bound and easy derivative of bound.
 0. `__init__` docs should go in class doc
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
-0. Log-determinant bound (there seems to be an issue with Toeplitz eig for heavy diagonals - a better solver might have to be found).
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests)
 0. multidimensional inputs and ARD.
 0. Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
-0. Clean up / dedup benchmark code
+0. matrix .to_numpy() functionality (modify benchmarks and tests to use it, too)
+0. dedup common benchmark code functionality
 
+### Considerations
+
+* MINRES or CG?
+* How can we add good preconditioners? How much do they help?
+* What are condition numbers in practice?
+* Why are sparse eigensolvers poor?

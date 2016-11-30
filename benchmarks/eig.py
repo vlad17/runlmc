@@ -2,7 +2,6 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import sys
-import math
 
 import contexttimer
 import numpy as np
@@ -74,13 +73,13 @@ def stress_kronecker_eig(top, d):
 
 if __name__ == "__main__":
     if len(sys.argv) not in [3, 4]:
-        print('Usage: python kronecker_eig.py n d [seed]')
+        print('Usage: python eig.py n d [seed]')
         print()
         print('n > 8 is the size of the Toeplitz submatrix')
         print('d > 0 is the size of the dense submatrix')
         print('default seed is 1234')
         print('this eigendecomposes the kronecker product system size n * d')
-        print('choose d == 1 and n large to test Toeplitz eig mainly')
+        print('choose d == 1 and n large to test Toeplitz eig only')
         sys.exit(1)
 
     n = int(sys.argv[1])
@@ -89,7 +88,6 @@ if __name__ == "__main__":
 
     assert n > 8
     assert d > 0
-
     np.random.seed(seed)
 
     print('* = no convergence')
