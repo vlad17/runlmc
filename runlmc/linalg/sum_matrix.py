@@ -21,6 +21,8 @@ class SumMatrix(PSDMatrix):
     It is special in that it does not admit an easy way to
     eigendecompose itself given the eigendecompostion of its elements.
 
+    However, it has some other convenient properties.
+
     :param Ks: decomposable matrices to sum
     :param noise: :math:`\\boldsymbol\epsilon`
     :raises ValueError: if any elements of `noise < 0`
@@ -57,3 +59,36 @@ class SumMatrix(PSDMatrix):
             str(self.noise) + '\n' +
             '\n'.join(
                 ['K{}\n{!s}'.format(i, K) for i, K in enumerate(self.Ks)]))
+
+    def logdet(self):
+        """
+        Using the eigendecomposition of each :math:`A_i`, this method computes
+        an **upper bound** of the log-determinant:
+
+        .. math::
+
+            \log\det\\left|K\\right|
+
+        This is done by approximately solving an optimization problem.
+        For details, and an elementary proof of the solution, see [TODO PAPER].
+        """
+        # separate into a minimum constant diagonal perturbation
+        # plus a sum of matrices
+        Q = len(self.Ks)
+        n = self.shape[0]
+        min_err = max(min(self.noise.min() / Q / n, 1e-6), 1e-10)
+        noise = np.copy(self.noise)
+        noise[noise < min_err] = min_err
+        eigs = np.zeros((Q + 1, n)) + min_err
+        eigs[-1] = noise
+        for i, K in enumerate(self.Ks):
+            eigs_K = K.eig(min_err)
+            eigs[i, :len(eigs_K)] = eigs_K
+
+        eigsT = eigs.T
+        for i in range(Q):
+            eigsT = eigsT[np.argsort(eigsT[:, :i].sum(-1))]
+            eigsT[:, i][::-1].sort()
+        eigs = eigsT.T
+
+        return np.log(eigs.sum(axis=0)).sum()
