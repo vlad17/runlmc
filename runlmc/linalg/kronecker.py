@@ -87,6 +87,8 @@ class Kronecker(PSDDecomposableMatrix):
         cutoffA = self._conservative_cutoff_factor(cutoff, largeB)
         cutoffB = self._conservative_cutoff_factor(cutoff, largeA)
 
+        #logging.basicConfig(level=logging.INFO)
+
         _LOG.info('%s eig(cutoff=%8.4g) -> A %s eig(cutoff=%8.4g)',
                   self.shape, cutoff, self.A.shape, cutoffA)
         eigA = self.A.eig(cutoffA)

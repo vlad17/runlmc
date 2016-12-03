@@ -76,6 +76,8 @@ class SumMatrixTest(unittest.TestCase, MatrixTestBase):
             self.assertGreater(sign, 0)
             my_logdet = my_mat.logdet()
             rel_err = abs(my_logdet - logdet) / abs(logdet)
+            # my_logdet >= logdet actually only probibalistically holds.
+            # TODO - figure out exact bound?
             self.assertGreaterEqual(my_logdet, logdet,
                                     msg='\n{!s}\n'.format(my_mat))
             self.assertGreaterEqual(2, rel_err,
