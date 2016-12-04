@@ -66,7 +66,7 @@ Note:
 
 0. `test_utils.py` - add tests for this, document, rename to `testing_utils.py`
 0. matrix .to_numpy() functionality (modify benchmarks and tests to use it, too)
-0. try to figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant bound and easy derivative of bound.
+0. Toeplitz eigenvalues (fast approx)
 0. Log determinant bound grad
 0. `__init__` docs should go in class doc
 0. python checks for PSD in toeplitz / numpy when in debug?
@@ -82,3 +82,4 @@ Note:
 * How can we add good preconditioners? How much do they help?
 * What are condition numbers in practice?
 * Why are sparse eigensolvers poor?
+* SLFM approach work for computing deriv of log det / log det exactly (pg. 16 in vector-valued-lmc.pdf)
