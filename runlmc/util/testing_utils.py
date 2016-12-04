@@ -15,11 +15,9 @@ from runlmc.linalg.sum_matrix import SumMatrix
 from runlmc.linalg.toeplitz import Toeplitz
 from runlmc.linalg.numpy_matrix import NumpyMatrix
 
-# I wrote a similar class in databricks/spark-sklearn, but the task is
-# small and common enough that the code is basically the same.
 class RandomTest(unittest.TestCase):
     """
-    This test case mixin sets the random seed to be based on the time
+    This test case sets the random seed to be based on the time
     that the test is run.
 
     If there is a `SEED` variable in the enviornment, then this is used as the
@@ -33,15 +31,18 @@ class RandomTest(unittest.TestCase):
         super().setUp()
 
         seed = os.getenv("SEED")
-        seed = np.uint32(seed if seed else time.time())
-        self.seed = seed
+        if seed is None:
+            seed = int(time.time() * 37 + os.getpid())
+        self.seed = np.array([seed]).astype(np.uint32)[0]
 
-        print('Random test using SEED={}'.format(seed))
+        print('Random test using SEED={}'.format(self.seed))
 
-        random.seed(seed)
-        np.random.seed(seed)
+        random.seed(self.seed)
+        np.random.seed(self.seed)
 
 def smallest_eig(top):
+    if len(top) == 1:
+        return top[0]
     A = Toeplitz(top).as_linear_operator()
     try:
         sm = scipy.sparse.linalg.eigsh(
@@ -121,6 +122,6 @@ def run_main(f, help_str):
 
 def rand_psd(n):
     A = np.random.rand(n, n)
-    A = (A + A.T).astype(np.float64) / 2
-    A += np.diag(np.fabs(A).sum(axis=1) + 1)
-    return A
+    A = (A + A.T) / 2
+    D = np.diag(np.fabs(A).sum(axis=1) + 1)
+    return A + D
