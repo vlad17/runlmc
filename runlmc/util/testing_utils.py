@@ -1,6 +1,12 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
+"""
+The following methods are useful for generating various matrices for testing.
+
+"PSDT" stands for positive semi-definite Toeplitz (and, implicitly, symmetric).
+"""
+
 import os
 import random
 import time
@@ -41,17 +47,28 @@ class RandomTest(unittest.TestCase):
         np.random.seed(self.seed)
 
 def smallest_eig(top):
+    """
+    :param top: top row of PSDT Toeplitz matrix
+    :returns: the smallest eigenvalue for a symmetric Toeplitz matrix
+              with the top row `top`.
+    """
+
     if len(top) == 1:
         return top[0]
+
     A = Toeplitz(top).as_linear_operator()
     try:
-        sm = scipy.sparse.linalg.eigsh(
+        return scipy.sparse.linalg.eigsh(
             A, k=1, which='SA', return_eigenvectors=False)[0]
     except scipy.sparse.linalg.eigen.arpack.ArpackNoConvergence:
-        sm = np.linalg.eigvalsh(scipy.linalg.toeplitz(top)).min()
-    return sm
+        return np.linalg.eigvalsh(scipy.linalg.toeplitz(top)).min()
 
 def poor_cond_toep(n):
+    """
+    :param n: size of output
+    :returns: the top row of a randomly scaled PSDT matrix whose
+              :math:`L^2` condition number scales exponentially with `n`
+    """
     top = np.arange(n)[::-1] * (np.random.rand() + 1e-3)
 
     while smallest_eig(top) < 0:
@@ -60,6 +77,9 @@ def poor_cond_toep(n):
     return top
 
 def random_toep(n):
+    """
+    :returns: top row of a random PSDT matrix of size `n`.
+    """
     top = np.abs(np.random.rand(n))
     top[::-1].sort()
     while smallest_eig(top) < 0:
@@ -67,9 +87,28 @@ def random_toep(n):
     return top
 
 def exp_decr_toep(n):
+    """
+    :returns: top row of a PSDT matrix of size `n` with terms
+              exponentially decreasing in distance from the main diagonal;
+              the rate of which is randomly generated but at least
+              :math:`e`.
+    """
     return np.exp(-(1 + np.random.rand()) * np.arange(n))
 
 def run_main(f, help_str):
+    """
+    A helper function which is re-used in setting up benchmarks for kernels
+    that are shaped in a specific manner; namely, sums of Kronecker products
+    of small dense and large Toeplitz matrices.
+
+    This function reads in command-line arguments and executes a simple
+    benchmarking script.
+
+    :param f: benchmarking function to pass generated inputs with
+              user-specified parameters to.
+    :param help_str: a help-string to be printed when the user does not
+                     call a correct invocation of the program.
+    """
     if len(sys.argv) not in [5, 6]:
         print('Usage: python logdet.py n d q eps [seed]')
         print()
@@ -121,6 +160,9 @@ def run_main(f, help_str):
         f(my_mat, np_mat, n, d, q, eps)
 
 def rand_psd(n):
+    """
+    :returns: a random `n` by `n` symmetric PSD matrix with positive entries
+    """
     A = np.random.rand(n, n)
     A = (A + A.T) / 2
     D = np.diag(np.fabs(A).sum(axis=1) + 1)

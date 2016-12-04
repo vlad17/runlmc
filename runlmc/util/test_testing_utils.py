@@ -52,7 +52,7 @@ class PSDConstructionTest(utils.RandomTest):
         logs = np.log([np.linalg.cond(mat)
                        for mat in self.generate_toep(utils.poor_cond_toep)])
         growth = logs / np.roll(logs, 1)
-        np.testing.assert_array_less(np.ones(len(logs) - 1), growth[1:])
+        np.testing.assert_array_less(1.1 * np.ones(len(logs) - 1), growth[1:])
 
     def test_random_toep_distinct(self):
         self.assertFalse(np.allclose(
@@ -92,7 +92,5 @@ class PSDConstructionTest(utils.RandomTest):
         eigss = [np.linalg.eigvalsh(mat)
                  for mat in mats]
         for eigs, mat in zip(eigss, mats):
-            print(np.linalg.cond(mat))
             msg = '\nmatrix\n{}\neigs\n{}'.format(mat, eigs)
-            print(np.diag(mat))
             self.assertTrue(np.all(eigs >= 0), msg=msg)
