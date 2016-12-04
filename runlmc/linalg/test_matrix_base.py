@@ -3,13 +3,9 @@
 
 import numpy as np
 
-from ..util.test_utils import RandomTest
+class MatrixTestBase:
 
-class MatrixTestBase(RandomTest):
-
-    def setUp(self):
-        super().setUp()
-
+    def __init__(self):
         # Attributes to be filled in by subclasses
 
         # Eigenvalue cutoff

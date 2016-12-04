@@ -5,6 +5,7 @@ import os
 import random
 import time
 import sys
+import unittest
 
 import numpy as np
 import scipy.sparse.linalg
@@ -16,7 +17,7 @@ from runlmc.linalg.numpy_matrix import NumpyMatrix
 
 # I wrote a similar class in databricks/spark-sklearn, but the task is
 # small and common enough that the code is basically the same.
-class RandomTest:
+class RandomTest(unittest.TestCase):
     """
     This test case mixin sets the random seed to be based on the time
     that the test is run.
@@ -29,8 +30,11 @@ class RandomTest:
     """
 
     def setUp(self):
+        super().setUp()
+
         seed = os.getenv("SEED")
         seed = np.uint32(seed if seed else time.time())
+        self.seed = seed
 
         print('Random test using SEED={}'.format(seed))
 

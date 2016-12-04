@@ -1,15 +1,14 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-import unittest
-
 import numpy as np
 import scipy.linalg
 
 from .test_matrix_base import DecomposableMatrixTestBase
 from .numpy_matrix import NumpyMatrix
+from ..util.testing_utils import RandomTest
 
-class NumpyMatrixTest(unittest.TestCase, DecomposableMatrixTestBase):
+class NumpyMatrixTest(RandomTest, DecomposableMatrixTestBase):
 
     def setUp(self):
         super().setUp()

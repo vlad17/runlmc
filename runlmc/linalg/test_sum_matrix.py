@@ -1,8 +1,6 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-import unittest
-
 import numpy as np
 import scipy.linalg
 
@@ -11,8 +9,9 @@ from .numpy_matrix import NumpyMatrix
 from .psd_matrix import PSDMatrix
 from .sum_matrix import SumMatrix
 from .toeplitz import Toeplitz
+from ..util.testing_utils import RandomTest
 
-class SumMatrixTest(unittest.TestCase, MatrixTestBase):
+class SumMatrixTest(RandomTest, MatrixTestBase):
 
     def setUp(self):
         super().setUp()

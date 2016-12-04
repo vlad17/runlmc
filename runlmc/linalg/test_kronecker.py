@@ -2,7 +2,6 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 from functools import reduce
-import unittest
 
 import numpy as np
 import scipy.linalg
@@ -10,8 +9,9 @@ import scipy.linalg
 from .test_matrix_base import DecomposableMatrixTestBase
 from .kronecker import Kronecker
 from .toeplitz import Toeplitz
+from ..util.testing_utils import RandomTest
 
-class KroneckerTest(unittest.TestCase, DecomposableMatrixTestBase):
+class KroneckerTest(RandomTest, DecomposableMatrixTestBase):
 
     def setUp(self):
         super().setUp()

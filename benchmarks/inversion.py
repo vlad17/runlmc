@@ -12,7 +12,7 @@ from runlmc.linalg.kronecker import Kronecker
 from runlmc.linalg.sum_matrix import SumMatrix
 from runlmc.linalg.toeplitz import Toeplitz
 from runlmc.linalg.numpy_matrix import NumpyMatrix
-import runlmc.util.test_utils as utils
+import runlmc.util.testing_utils as utils
 
 def stress_sum_solve(my_mat, np_mat, n, d, q, eps):
     b = np.random.rand(np_mat.shape[0])

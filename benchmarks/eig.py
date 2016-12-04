@@ -10,7 +10,7 @@ import scipy.sparse.linalg
 
 from runlmc.linalg.toeplitz import Toeplitz
 from runlmc.linalg.kronecker import Kronecker
-import runlmc.util.test_utils as utils
+import runlmc.util.testing_utils as utils
 
 def stress_kronecker_eig(top, d):
     n = len(top)
