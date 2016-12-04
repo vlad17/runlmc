@@ -5,6 +5,7 @@ import numpy as np
 
 from .psd_matrix import PSDMatrix
 from ..util.docs import inherit_doc
+from ..util.numpy_convenience import EPS
 
 @inherit_doc
 class SumMatrix(PSDMatrix):
@@ -76,7 +77,7 @@ class SumMatrix(PSDMatrix):
         # plus a sum of matrices
         Q = len(self.Ks)
         n = self.shape[0]
-        min_err = max(self.noise.min(), 1e-10)
+        min_err = max(self.noise.min(), EPS)
         noise = np.copy(self.noise)
         noise[noise < min_err] = min_err
         eigs = np.zeros((Q + 1, n)) + min_err

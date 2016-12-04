@@ -80,5 +80,5 @@ class SumMatrixTest(unittest.TestCase, MatrixTestBase):
             # TODO - figure out exact bound?
             self.assertGreaterEqual(my_logdet, logdet,
                                     msg='\n{!s}\n'.format(my_mat))
-            self.assertGreaterEqual(2, rel_err,
+            self.assertGreaterEqual(1, rel_err,
                                     msg='\n{!s}\n'.format(my_mat))
