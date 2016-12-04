@@ -10,33 +10,13 @@ import scipy.sparse.linalg
 
 from runlmc.linalg.toeplitz import Toeplitz
 from runlmc.linalg.kronecker import Kronecker
-
-def random_toep(n):
-    top = np.abs(np.random.rand(n))
-    top[::-1].sort()
-    top[0] += 1
-    return top
-
-def poor_cond_toep(n):
-    up = np.arange(n // 8) + 1
-    down = np.copy(up[::-1])
-    up = up / 2
-    top = np.zeros(n)
-    updown = np.add.accumulate(np.hstack([up, down]))[::-1]
-    top[:len(updown)] = updown
-    return top
-
-def rand_psd(n):
-    A = np.random.rand(n, n)
-    A = (A + A.T).astype(np.float64) / 2
-    A += np.diag(np.fabs(A).sum(axis=1) + 1)
-    return A
+import runlmc.util.test_utils as utils
 
 def stress_kronecker_eig(top, d):
     n = len(top)
     b = np.random.rand(n * d)
     toep = scipy.linalg.toeplitz(top)
-    dense = rand_psd(d)
+    dense = utils.rand_psd(d)
 
     assert np.linalg.matrix_rank(dense) == d
     assert np.linalg.matrix_rank(toep) == n
@@ -93,11 +73,10 @@ if __name__ == "__main__":
     print('* = no convergence')
 
     print('random (well-cond) ')
-    stress_kronecker_eig(random_toep(n), d)
+    stress_kronecker_eig(utils.random_toep(n), d)
 
-    # Poorly-conditioned
     print('linear decrease (poor-cond)')
-    stress_kronecker_eig(poor_cond_toep(n), d)
+    stress_kronecker_eig(utils.poor_cond_toep(n), d)
 
     print('exponentially decreasing (realistic)')
-    stress_kronecker_eig(np.exp(-np.arange(n)), d)
+    stress_kronecker_eig(utils.exp_decr_toep(n), d)

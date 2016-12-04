@@ -64,10 +64,10 @@ Note:
 
 ### Roadmap
 
-0. dedup common benchmark code functionality
+0. `test_utils.py` - add tests for this, document, rename to `testing_utils.py`
 0. matrix .to_numpy() functionality (modify benchmarks and tests to use it, too)
+0. try to figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant bound and easy derivative of bound.
 0. Log determinant bound grad
-0. log det grad - try TO figure out if SLFM approach will work (pg. 16 in vector-valued-lmc.pdf). Otherwise, use determinant bound and easy derivative of bound.
 0. `__init__` docs should go in class doc
 0. python checks for PSD in toeplitz / numpy when in debug?
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
