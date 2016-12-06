@@ -94,3 +94,6 @@ flycheck_*.py
 
 # Generated doc files
 doc/_generated
+
+.profiles
+profiles
