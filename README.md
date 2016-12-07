@@ -64,8 +64,9 @@ Note:
 
 ### Roadmap
 
+0. `_rpsd -> random_psd`
 0. `test_utils.py` - add tests for this, document, rename to `testing_utils.py`
-0. matrix .to_numpy() functionality (modify benchmarks and tests to use it, too)
+0. matrix .to_numpy() functionality (modify benchmarks and tests to use it, too) - eig default impl
 0. Toeplitz eigenvalues (fast approx)
 0. Log determinant bound grad
 0. `__init__` docs should go in class doc
@@ -83,3 +84,22 @@ Note:
 * What are condition numbers in practice?
 * Why are sparse eigensolvers poor?
 * SLFM approach work for computing deriv of log det / log det exactly (pg. 16 in vector-valued-lmc.pdf)
+* Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
+* GP optimization approaches [meta, for general improvement, after inner loop proven faster]
+    * scipy constrained multivariate methods
+        * l-bfgs-b
+        * cobyla
+        * tnc
+        * slsqp
+        * simplex
+    * paramz
+        * scg
+    * climin (constrained?)
+        * rmsprop
+        * adadelta
+        * adam
+        * rprop
+    * gradient-free? if fast enough...
+        * `scipy.optimize.differential_evolution`
+        * [other derivative-free optimization](https://en.wikipedia.org/wiki/Derivative-free_optimization)
+        * `pyOpt` may have a few [link](http://www.pyopt.org/reference/optimizers.html)

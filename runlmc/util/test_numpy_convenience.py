@@ -5,7 +5,7 @@ import unittest
 
 import numpy as np
 
-from .numpy_convenience import map_entries, tesselate
+from .numpy_convenience import map_entries, tesselate, search_descending
 
 class TestNumpyConvenience(unittest.TestCase):
     @staticmethod
@@ -54,3 +54,29 @@ class TestNumpyConvenience(unittest.TestCase):
 
     def test_tesselate_basic(self):
         self.tesselate_compare([1, 2, 3], [1, 2], [[1], [2, 3]])
+
+    def test_search_descending_empty(self):
+        self.assertEqual(0, search_descending(1, [], inclusive=True))
+        self.assertEqual(0, search_descending(1, [], inclusive=True))
+
+    def test_search_descending_one(self):
+        self.assertEqual(0, search_descending(1, [0], inclusive=True))
+        self.assertEqual(0, search_descending(1, [0], inclusive=False))
+        self.assertEqual(1, search_descending(1, [1], inclusive=True))
+        self.assertEqual(0, search_descending(1, [1], inclusive=False))
+        self.assertEqual(1, search_descending(1, [2], inclusive=True))
+        self.assertEqual(1, search_descending(1, [2], inclusive=False))
+
+    def test_search_descending(self):
+        self.assertEqual(0, search_descending(2, [1, 1, 0], inclusive=True))
+        self.assertEqual(0, search_descending(2, [1, 1, 0], inclusive=False))
+        self.assertEqual(2, search_descending(1, [1, 1, 0], inclusive=True))
+        self.assertEqual(0, search_descending(1, [1, 1, 0], inclusive=False))
+        self.assertEqual(3, search_descending(2, [2, 2, 2], inclusive=True))
+        self.assertEqual(0, search_descending(2, [2, 2, 2], inclusive=False))
+        self.assertEqual(3, search_descending(2, [3, 2, 2], inclusive=True))
+        self.assertEqual(1, search_descending(2, [3, 2, 2], inclusive=False))
+
+    def test_search_descending_raises(self):
+        self.assertRaises(ValueError, search_descending, 1, [1, 0, 1], True)
+        self.assertRaises(ValueError, search_descending, 1, [1, 0, 1], False)

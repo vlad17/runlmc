@@ -9,9 +9,9 @@ import scipy.linalg
 from .test_matrix_base import DecomposableMatrixTestBase
 from .kronecker import Kronecker
 from .toeplitz import Toeplitz
-from ..util.testing_utils import RandomTest
+from ..util import testing_utils as utils
 
-class KroneckerTest(RandomTest, DecomposableMatrixTestBase):
+class KroneckerTest(utils.RandomTest, DecomposableMatrixTestBase):
 
     def setUp(self):
         super().setUp()
@@ -40,6 +40,12 @@ class KroneckerTest(RandomTest, DecomposableMatrixTestBase):
             [np.identity(2), np.identity(3) * self.eigtol * 2]]
 
         self.examples = list(map(self._generate, examples))
+
+        self.approx_examples = [self._generate(x) for x in [
+            [self._rpsd(5), Toeplitz(utils.exp_decr_toep(10))],
+            [self._rpsd(5), Toeplitz(utils.exp_decr_toep(100))],
+            [Toeplitz(utils.exp_decr_toep(10)),
+             Toeplitz(utils.exp_decr_toep(10))]]]
 
     @staticmethod
     def _generate(mats):

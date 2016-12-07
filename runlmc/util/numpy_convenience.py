@@ -46,3 +46,19 @@ def tesselate(nparr, lenit):
     return np.split(nparr, ends[:-1])
 
 EPS = np.finfo('float64').eps
+
+def search_descending(x, xs, inclusive):
+    """
+    :param x: threshold
+    :param xs: descending-ordered array to search
+    :param inclusive: whether to include values of `x` in `xs`
+    :returns: the largest index index `i` such that `xs[:i] >= x`
+              if `inclusive` else `xs[:i] > x`.
+    :raises ValueError: if array is not weakly decreasing
+    """
+    xs = np.array(xs)
+    if np.any(np.diff(xs) > 0):
+        raise ValueError('array is not weakly decreasing:\n{}'.format(xs))
+    option = 'left' if inclusive else 'right'
+    idx = np.searchsorted(xs[::-1], x, option)
+    return len(xs) - idx

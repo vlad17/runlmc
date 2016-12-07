@@ -6,9 +6,9 @@ import scipy.linalg
 
 from .test_matrix_base import DecomposableMatrixTestBase
 from .toeplitz import Toeplitz
-from ..util.testing_utils import RandomTest
+from ..util import testing_utils as utils
 
-class ToeplitzTest(RandomTest, DecomposableMatrixTestBase):
+class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
 
     def setUp(self):
         super().setUp()
@@ -17,23 +17,26 @@ class ToeplitzTest(RandomTest, DecomposableMatrixTestBase):
         random[::-1].sort()
         random[0] += np.abs(random[1:]).sum()
 
-        up = lambda x: np.arange(x) + 1
-        down = lambda x: up(x)[::-1]
+        down = lambda x: (np.arange(x) + 1)[::-1]
 
-        self.eigtol = 1e-3
+        self.eigtol = 1e-6
         self.examples = [self._generate(x) for x in [
             [1],
             [1, 0],
             [1, 1],
             [0, 0],
             [1, -1],
+            [1] + [0.999] * 5 + [0] * 110,
             self._toep_eig(self.eigtol / 2, 5),
             self._toep_eig(self.eigtol, 5),
             self._toep_eig(self.eigtol * 2, 5),
-            [1, 2, -1],
-            up(10),
             down(10),
             random]]
+
+        self.approx_examples = [self._generate(x) for x in [
+            utils.exp_decr_toep(10),
+            utils.exp_decr_toep(50),
+            utils.exp_decr_toep(100)]]
 
     @staticmethod
     def _generate(x):

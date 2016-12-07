@@ -177,7 +177,7 @@ class MultiGP(Model):
         :messages: whether to display during optimisation
         :type messages: bool
         :param optimizer: which optimizer to use (defaults to `'lbfgsb'`),
-                          options include `'scg'`, `'lbfgs'`, `'tnc'`,
+                          options include `'scg'`, `'org-bfgs'`, `'tnc'`,
                           `'adadelta'`, `'rprop'`, `'simplex'`.
         :type optimizer: string
         :param bool ipython_notebook: whether to use ipython notebook widgets

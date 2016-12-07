@@ -15,20 +15,20 @@ import runlmc.util.testing_utils as utils
 def stress_kronecker_eig(top, d):
     n = len(top)
     b = np.random.rand(n * d)
-    toep = scipy.linalg.toeplitz(top)
     dense = utils.rand_psd(d)
+    A = Kronecker(dense, Toeplitz(top))
+    toep = scipy.linalg.toeplitz(top)
+    M = np.kron(dense, toep)
 
     assert np.linalg.matrix_rank(dense) == d
     assert np.linalg.matrix_rank(toep) == n
-
-    A = Kronecker(dense, Toeplitz(top))
-    M = np.kron(dense, toep)
     assert np.linalg.matrix_rank(M) == n * d
 
-    cutoff = 1e-3
+    cutoff = 1e-4
     cond = np.linalg.cond(M)
-    print('    size {}x{} cutoff {:g} cond {}'
-          .format(n, d, cutoff, cond))
+    dom = np.count_nonzero(top[top > top.max() * cutoff])
+    print('    dominant entries {} size {}x{} cutoff {:g} cond {}'
+          .format(dom, n, d, cutoff, cond))
 
     with contexttimer.Timer() as solve_time:
         eigs = np.linalg.eigvalsh(M)
@@ -47,9 +47,9 @@ def stress_kronecker_eig(top, d):
     if len(my_eigs) != len(eigs):
         print('    INCOMPATIBLE LENGTHS! np {} != mine {}'.format(
             len(eigs), len(my_eigs)))
-    else:
-        print('    avg eigdiff {}'.format(
-            np.abs(eigs - my_eigs).mean()))
+    minlen = min(len(my_eigs), len(eigs))
+    print('    avg eigdiff {} (on shared eigenvalues)'.format(
+        np.abs(eigs[:minlen] - my_eigs[:minlen]).mean()))
 
 if __name__ == "__main__":
     if len(sys.argv) not in [3, 4]:

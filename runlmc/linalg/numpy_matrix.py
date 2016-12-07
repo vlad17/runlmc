@@ -34,7 +34,7 @@ class NumpyMatrix(PSDDecomposableMatrix):
     def matvec(self, x):
         return self.A.dot(x)
 
-    def eig(self, cutoff):
+    def eig(self, cutoff, exact):
         sol = np.linalg.eigvalsh(self.A).real
         sol = np.sort(sol)
         cut = np.searchsorted(sol, cutoff, 'right')

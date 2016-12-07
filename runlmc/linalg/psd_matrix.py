@@ -87,11 +87,16 @@ class PSDDecomposableMatrix(PSDMatrix):
     def __init__(self, n):
         super().__init__(n)
 
-    def eig(self, cutoff):
+    def eig(self, cutoff, exact):
         """
         Finds the eigenvalues of this matrix of magnitude above the cutoff.
 
+        The approximate eigenvalues are only good for computing
+        log-determinants, though there's no good guarantee there.
+        The approximation generally holds well for well-conditioned matrices.
+
         :param cutoff: eigenvalue cutoff
+        :param exact: whether to use exact computation, or approximate.
         :returns: a numpy array of eigenvalues in decreasing order, repeated by
                   multiplicity.
         """

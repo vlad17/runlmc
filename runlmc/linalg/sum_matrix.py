@@ -83,7 +83,7 @@ class SumMatrix(PSDMatrix):
         eigs = np.zeros((Q + 1, n)) + min_err
         eigs[-1] = noise
         for i, K in enumerate(self.Ks):
-            eigs_K = K.eig(min_err)
+            eigs_K = K.eig(min_err, exact=False)
             eigs[i, :len(eigs_K)] = eigs_K
 
         eigsT = eigs.T

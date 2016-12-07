@@ -9,7 +9,7 @@ from .numpy_matrix import NumpyMatrix
 from .psd_matrix import PSDMatrix
 from .sum_matrix import SumMatrix
 from .toeplitz import Toeplitz
-from ..util.testing_utils import RandomTest
+from ..util.testing_utils import RandomTest, exp_decr_toep
 
 class SumMatrixTest(RandomTest, MatrixTestBase):
 
@@ -21,18 +21,28 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
 
         self.eigtol = 1e-3
 
+        # Pathological Toeplitz matrices are dense in examples here
+        # to test the sum_matrix algorithm; using the approximation
+        # of eigenvalues in Toeplitz is too dangerous.
         examples = [
             ([up(1), up(1), up(1)], np.ones(1)),
             ([up(3), down(3), up(3)], np.ones(3)),
             ([self._rpsd(3), self._rpsd(3)], np.random.rand(3)),
-            ([Toeplitz(self._toep_eig(1e-3 * i, 5)) for i in range(1, 3)],
+            ([scipy.linalg.toeplitz(self._toep_eig(1e-3 * i, 5))
+              for i in range(1, 4)],
              1e-3 * (1 + np.random.rand(6))),
-            ([Toeplitz(self._toep_eig(1e-6 * i, 5)) for i in range(1, 3)],
+            ([scipy.linalg.toeplitz(self._toep_eig(1e-6 * i, 5))
+              for i in range(1, 4)],
              1e-6 * (1 + np.random.rand(6))),
-            ([Toeplitz(self._toep_eig(1e-10 * i, 5)) for i in range(1, 3)],
+            ([scipy.linalg.toeplitz(self._toep_eig(1e-10 * i, 5))
+              for i in range(1, 4)],
              1e-10 * (1 + np.random.rand(6))),
-            ([Toeplitz(np.arange(10)[::-1] * i) for i in range(1, 3)],
+            ([scipy.linalg.toeplitz(np.arange(10)[::-1] * i)
+              for i in range(1, 4)],
              1e-5 * (1 + np.random.rand(10))),
+            ([Toeplitz(exp_decr_toep(5)) for _ in range(5)],
+             np.ones(5) * 1e-4),
+            # TODO: add nested kronecker here when .tonumpy supported
             ([self._rpsd(100) for _ in range(10)], np.random.rand(100))]
 
         self.examples = list(map(self._generate, examples))
@@ -74,10 +84,14 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
             sign, logdet = np.linalg.slogdet(np_mat)
             self.assertGreater(sign, 0)
             my_logdet = my_mat.logdet()
-            rel_err = abs(my_logdet - logdet) / abs(logdet)
-            # my_logdet >= logdet actually only probibalistically holds.
-            # TODO - figure out exact bound?
-            self.assertGreaterEqual(my_logdet, logdet,
-                                    msg='\n{!s}\n'.format(my_mat))
-            self.assertGreaterEqual(1, rel_err,
-                                    msg='\n{!s}\n'.format(my_mat))
+            msg = '\nmy logdet {} np logdet {}\n{!s}\n'.format(
+                my_logdet, logdet, my_mat)
+
+            # If we're very close to being singular then the bound isn't
+            # so great; just make sure we have an upper bound
+            if logdet < 0:
+                self.assertGreaterEqual(my_logdet, logdet, msg=msg)
+            else:
+                rel_err = abs(logdet - my_logdet)
+                rel_err /= 1 if logdet == 0 else abs(logdet)
+                self.assertGreaterEqual(0.5, rel_err, msg=msg)

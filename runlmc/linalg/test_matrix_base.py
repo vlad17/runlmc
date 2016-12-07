@@ -6,6 +6,7 @@ import numpy as np
 class MatrixTestBase:
 
     def __init__(self):
+        super().__init__()
         # Attributes to be filled in by subclasses
 
         # Eigenvalue cutoff
@@ -14,6 +15,10 @@ class MatrixTestBase:
         # List of pairs
         # [(matrix being tested, numpy equivalent)]
         self.examples = None
+
+        # Same as above, but for testing approximate eigenvalues
+        # matrices here should be well-behaved.
+        self.approx_examples = None
 
     @staticmethod
     def _rpsd(n):
@@ -40,13 +45,28 @@ class MatrixTestBase:
 
 class DecomposableMatrixTestBase(MatrixTestBase):
 
-    def test_eig(self):
+    def test_exact_eig(self):
         for my_mat, np_mat in self.examples:
             np_eigs = np.linalg.eigvalsh(np_mat).real
             np_eigs = np_eigs[np_eigs > self.eigtol]
             np_eigs[::-1].sort()
-            np.testing.assert_allclose(my_mat.eig(self.eigtol), np_eigs,
+            np.testing.assert_allclose(my_mat.eig(self.eigtol, exact=True),
+                                       np_eigs,
                                        err_msg='\n{!s}\n'.format(my_mat))
+
+    def test_approx_eig(self):
+        for my_mat, np_mat in self.approx_examples:
+            sign, logdet = np.linalg.slogdet(np_mat)
+            assert sign > 0, sign
+            eigs = my_mat.eig(self.eigtol, exact=False)
+            my_logdet = np.log(eigs).sum()
+            my_logdet += (my_mat.shape[0] - len(eigs)) * np.log(self.eigtol)
+            rel_err = abs(logdet - my_logdet)
+            rel_err /= 1 if logdet == 0 else abs(logdet)
+            msg = '\nmy logdet {} np logdet {}\n{!s}\n'.format(
+                my_logdet, logdet, my_mat)
+            print(msg)
+            self.assertGreaterEqual(0.5, rel_err, msg=msg)
 
     def test_bound(self):
         for my_mat, np_mat in self.examples:

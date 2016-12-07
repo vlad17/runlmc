@@ -12,7 +12,7 @@ from runlmc.linalg.toeplitz import Toeplitz
 from runlmc.linalg.numpy_matrix import NumpyMatrix
 import runlmc.util.testing_utils as utils
 
-def stress_logdet(my_mat, np_mat, n, d, q, eps):
+def stress_logdet(my_mat, np_mat, *_):
     cond = np.linalg.cond(np_mat)
     print('    cond {}'.format(cond))
 
@@ -32,8 +32,7 @@ def stress_logdet(my_mat, np_mat, n, d, q, eps):
         my_logdet))
 
     rel_err = abs(logdet - my_logdet) / abs(logdet)
-    assert logdet <= my_logdet, 'numpy {} vs mine {}'.format(logdet, my_logdet)
-    assert rel_err <= 1, rel_err
+    print('    relative error {}'.format(rel_err))
 
 HELP_STR = ('This benchmarks determinant finding of a system of a sum of\n'
             'dense-Toeplitz Kronecker products, which has size n * d\n'

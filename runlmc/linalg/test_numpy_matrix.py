@@ -34,6 +34,8 @@ class NumpyMatrixTest(RandomTest, DecomposableMatrixTestBase):
             np.kron(np.identity(2), np.identity(3) * self.eigtol),
             np.kron(np.identity(2), np.identity(3) * self.eigtol * 2)]]
 
+        self.approx_examples = self.examples
+
     @staticmethod
     def _generate(x):
         x = np.array(x)

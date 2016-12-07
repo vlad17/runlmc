@@ -68,18 +68,13 @@ class Kronecker(PSDDecomposableMatrix):
 
     @staticmethod
     def _conservative_cutoff_factor(cutoff, factor):
+        if factor == 0:
+            return 0
         return cutoff / factor * (1 - 2 * EPS)
 
-    @staticmethod
-    def _binsearch_descending(x, xs):
-        # Given a descending array xs, search for the first value below
-        # a certain threshold.
-        idx = np.searchsorted(xs[::-1], x)
-        return len(xs)-idx
-
-    def eig(self, cutoff):
+    def eig(self, cutoff, exact):
         if self.shape[0] == 1:
-            eigs = self.A.eig(0) * self.B.eig(0)
+            eigs = self.A.eig(0, exact=True) * self.B.eig(0, exact=True)
             return eigs if eigs[0] > cutoff else np.array([])
 
         largeA = self.A.upper_eig_bound()
@@ -87,18 +82,16 @@ class Kronecker(PSDDecomposableMatrix):
         cutoffA = self._conservative_cutoff_factor(cutoff, largeB)
         cutoffB = self._conservative_cutoff_factor(cutoff, largeA)
 
-        #logging.basicConfig(level=logging.INFO)
-
         _LOG.info('%s eig(cutoff=%8.4g) -> A %s eig(cutoff=%8.4g)',
                   self.shape, cutoff, self.A.shape, cutoffA)
-        eigA = self.A.eig(cutoffA)
+        eigA = self.A.eig(cutoffA, exact)
         _LOG.info('%s A %s largest eig predicted %8.4g actual %8.4g',
                   self.shape, self.A.shape, largeA,
                   eigA[0] if len(eigA) > 0 else 0)
 
         _LOG.info('%s eig(cutoff=%8.4g) -> B %s eig(cutoff=%8.4g)',
                   self.shape, cutoff, self.B.shape, cutoffB)
-        eigB = self.B.eig(cutoffB)
+        eigB = self.B.eig(cutoffB, exact)
         _LOG.info('%s B %s largest eig predicted %8.4g actual %8.4g',
                   self.shape, self.B.shape, largeB,
                   eigB[0] if len(eigB) > 0 else 0)
