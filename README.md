@@ -64,14 +64,13 @@ Note:
 
 ### Roadmap
 
-0. `_rpsd -> random_psd`
-0. `test_utils.py` - add tests for this, document, rename to `testing_utils.py`
 0. matrix .to_numpy() functionality (modify benchmarks and tests to use it, too) - eig default impl
-0. Toeplitz eigenvalues (fast approx)
-0. Log determinant bound grad
 0. `__init__` docs should go in class doc
 0. python checks for PSD in toeplitz / numpy when in debug?
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
+    * derivative-free opt first;
+    * numerical derivative opt;
+    * derivatives (implement det grad derivative; SLFM derivatives)
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests)
 0. multidimensional inputs and ARD.
