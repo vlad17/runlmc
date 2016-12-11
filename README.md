@@ -64,7 +64,6 @@ Note:
 
 ### Roadmap
 
-0. `__init__` docs should go in class doc
 0. python checks for PSD in toeplitz / numpy when in debug?
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
     * derivative-free opt first;
