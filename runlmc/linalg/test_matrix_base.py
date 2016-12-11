@@ -12,9 +12,7 @@ class MatrixTestBase:
         # Eigenvalue cutoff
         self.eigtol = None
 
-        # List of pairs
-        # [(matrix being tested, numpy equivalent)]
-        self.examples = None
+        self.examples = None # List of PSDMatrix being tested
 
         # Same as above, but for testing approximate eigenvalues
         # matrices here should be well-behaved.
@@ -38,7 +36,8 @@ class MatrixTestBase:
         return out
 
     def test_matvec(self):
-        for my_mat, np_mat in self.examples:
+        for my_mat in self.examples:
+            np_mat = my_mat.as_numpy()
             x = np.arange(len(np_mat)) + 1
             np.testing.assert_allclose(my_mat.matvec(x), np_mat.dot(x),
                                        err_msg='\n{!s}\n'.format(my_mat))
@@ -46,7 +45,8 @@ class MatrixTestBase:
 class DecomposableMatrixTestBase(MatrixTestBase):
 
     def test_exact_eig(self):
-        for my_mat, np_mat in self.examples:
+        for my_mat in self.examples:
+            np_mat = my_mat.as_numpy()
             np_eigs = np.linalg.eigvalsh(np_mat).real
             np_eigs = np_eigs[np_eigs > self.eigtol]
             np_eigs[::-1].sort()
@@ -55,7 +55,8 @@ class DecomposableMatrixTestBase(MatrixTestBase):
                                        err_msg='\n{!s}\n'.format(my_mat))
 
     def test_approx_eig(self):
-        for my_mat, np_mat in self.approx_examples:
+        for my_mat in self.approx_examples:
+            np_mat = my_mat.as_numpy()
             sign, logdet = np.linalg.slogdet(np_mat)
             assert sign > 0, sign
             eigs = my_mat.eig(self.eigtol, exact=False)
@@ -69,7 +70,8 @@ class DecomposableMatrixTestBase(MatrixTestBase):
             self.assertGreaterEqual(0.5, rel_err, msg=msg)
 
     def test_bound(self):
-        for my_mat, np_mat in self.examples:
+        for my_mat in self.examples:
+            np_mat = my_mat.as_numpy()
             np_eig = np.linalg.eigvalsh(np_mat).real.max()
             ub = my_mat.upper_eig_bound()
             self.assertGreaterEqual(ub, np_eig,

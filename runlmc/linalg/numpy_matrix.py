@@ -31,6 +31,9 @@ class NumpyMatrix(PSDDecomposableMatrix):
 
         super().__init__(len(nparr))
 
+    def as_numpy(self):
+        return self.A
+
     def matvec(self, x):
         return self.A.dot(x)
 

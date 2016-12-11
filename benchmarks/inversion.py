@@ -14,10 +14,10 @@ from runlmc.linalg.toeplitz import Toeplitz
 from runlmc.linalg.numpy_matrix import NumpyMatrix
 import runlmc.util.testing_utils as utils
 
-def stress_sum_solve(my_mat, np_mat, n, d, q, eps):
-    b = np.random.rand(np_mat.shape[0])
-    assert np.linalg.matrix_rank(np_mat) == n * d
-
+def stress_sum_solve(my_mat):
+    b = np.random.rand(my_mat.shape[0])
+    sz = len(b)
+    np_mat = my_mat.as_numpy()
     linop = my_mat.as_linear_operator()
 
     tol = 1e-6
@@ -34,13 +34,13 @@ def stress_sum_solve(my_mat, np_mat, n, d, q, eps):
     time_method(lambda: (np.linalg.solve(np_mat, b), 'linear solve'))
 
     def sparse():
-        out, succ = scipy.sparse.linalg.cg(my_mat, b, tol=tol, maxiter=(n*d))
+        out, succ = scipy.sparse.linalg.cg(my_mat, b, tol=tol, maxiter=sz)
         return out, '{} sparse CG'.format('' if not succ else '*')
     time_method(sparse)
 
     def minres():
         out, succ = scipy.sparse.linalg.minres(my_mat, b, tol=tol,
-                                               maxiter=(n*d))
+                                               maxiter=sz)
         return out, '{} sparse MINRES'.format('' if not succ else '*')
     time_method(minres)
 

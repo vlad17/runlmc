@@ -54,6 +54,9 @@ class Kronecker(PSDDecomposableMatrix):
                             'runlmc.linalg.psd_matrix.PSDDecomposableMatrix'
                             ' or numpy.ndarray instances')
 
+    def as_numpy(self):
+        return np.kron(self.A.as_numpy(), self.B.as_numpy())
+
     def matvec(self, x):
         # This differs from the paper's MVM, but is the equivalent for
         # a C-style ordering of arrays.

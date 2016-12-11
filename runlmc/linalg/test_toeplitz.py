@@ -20,7 +20,7 @@ class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
         down = lambda x: (np.arange(x) + 1)[::-1]
 
         self.eigtol = 1e-6
-        self.examples = [self._generate(x) for x in [
+        self.examples = [Toeplitz(np.array(x)) for x in [
             [1],
             [1, 0],
             [1, 1],
@@ -33,15 +33,15 @@ class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
             down(10),
             random]]
 
-        self.approx_examples = [self._generate(x) for x in [
+        self.approx_examples = [Toeplitz(x) for x in [
             utils.exp_decr_toep(10),
             utils.exp_decr_toep(50),
             utils.exp_decr_toep(100)]]
 
-    @staticmethod
-    def _generate(x):
-        x = np.array(x)
-        return Toeplitz(x), scipy.linalg.toeplitz(x)
+    def test_as_numpy(self):
+        for t in self.examples:
+            np.testing.assert_array_equal(
+                t.as_numpy(), scipy.linalg.toeplitz(t.top))
 
     def test_bad_shape(self):
         two_d = np.arange(8).reshape(2, 4)

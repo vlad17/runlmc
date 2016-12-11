@@ -53,6 +53,12 @@ class PSDMatrix:
             rmatvec=self.matvec,
             matmat=self.matmat)
 
+    def as_numpy(self):
+        """
+        :returns: numpy matrix equivalent, as a 2D :class:`numpy.ndarray`
+        """
+        raise NotImplementedError
+
     def matvec(self, x):
         """
         Multiply a vector :math:`\\textbf{x}` by this matrix,

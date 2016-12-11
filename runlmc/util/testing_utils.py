@@ -154,10 +154,7 @@ def run_main(f, help_str):
         my_mat = SumMatrix([Kronecker(NumpyMatrix(dense), Toeplitz(top))
                             for dense, top in zip(dense_mats, toep_tops)],
                            noise)
-        np_mat = sum(np.kron(dense, scipy.linalg.toeplitz(top))
-                     for dense, top in zip(dense_mats, toep_tops))
-        np_mat += np.diag(noise)
-        f(my_mat, np_mat, n, d, q, eps)
+        f(my_mat)
 
 def rand_psd(n):
     """

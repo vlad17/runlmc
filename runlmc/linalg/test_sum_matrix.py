@@ -5,6 +5,7 @@ import numpy as np
 import scipy.linalg
 
 from .test_matrix_base import MatrixTestBase
+from .kronecker import Kronecker
 from .numpy_matrix import NumpyMatrix
 from .psd_matrix import PSDMatrix
 from .sum_matrix import SumMatrix
@@ -42,6 +43,14 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
              1e-5 * (1 + np.random.rand(10))),
             ([Toeplitz(exp_decr_toep(5)) for _ in range(5)],
              np.ones(5) * 1e-4),
+            ([Kronecker(self._rpsd(2), Toeplitz(exp_decr_toep(5)))
+              for _ in range(5)],
+             np.ones(10) * 1e-4),
+            ([Kronecker(self._rpsd(2), self._rpsd(2))
+              for _ in range(2)],
+             np.ones(4) * 1e-4),
+            ([Toeplitz(exp_decr_toep(5)) for _ in range(5)],
+             np.ones(5) * 1e-4),
             # TODO: add nested kronecker here when .tonumpy supported
             ([self._rpsd(100) for _ in range(10)], np.random.rand(100))]
 
@@ -52,10 +61,12 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
         mats, noise = mats_and_noise
         my_mats = [NumpyMatrix(x) if not isinstance(x, PSDMatrix) else x
                    for x in mats]
-        as_np = (scipy.linalg.toeplitz(x.top) if isinstance(x, Toeplitz) else x
-                 for x in mats)
-        np_mat = sum(as_np) + np.diag(noise)
-        return SumMatrix(my_mats, noise), np_mat
+        return SumMatrix(my_mats, noise)
+
+    def test_as_numpy(self):
+        for s in self.examples:
+            np_mat = sum(K.as_numpy() for K in s.Ks) + np.diag(s.noise)
+            np.testing.assert_allclose(s.as_numpy(), np_mat)
 
     def test_empty(self):
         sum_mat = SumMatrix([], np.ones(3))
@@ -80,7 +91,8 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
                           np.ones(3))
 
     def test_logdet(self):
-        for my_mat, np_mat in self.examples:
+        for my_mat in self.examples:
+            np_mat = my_mat.as_numpy()
             sign, logdet = np.linalg.slogdet(np_mat)
             self.assertGreater(sign, 0)
             my_logdet = my_mat.logdet()

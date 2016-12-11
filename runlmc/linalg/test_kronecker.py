@@ -39,21 +39,18 @@ class KroneckerTest(utils.RandomTest, DecomposableMatrixTestBase):
             [np.identity(2), np.identity(3) * self.eigtol],
             [np.identity(2), np.identity(3) * self.eigtol * 2]]
 
-        self.examples = list(map(self._generate, examples))
+        self.examples = list(map(lambda x: Kronecker(*x), examples))
 
-        self.approx_examples = [self._generate(x) for x in [
+        self.approx_examples = [reduce(Kronecker, x) for x in [
             [self._rpsd(5), Toeplitz(utils.exp_decr_toep(10))],
             [self._rpsd(5), Toeplitz(utils.exp_decr_toep(100))],
             [Toeplitz(utils.exp_decr_toep(10)),
              Toeplitz(utils.exp_decr_toep(10))]]]
 
-    @staticmethod
-    def _generate(mats):
-        my_kron = reduce(Kronecker, mats)
-        mats = [scipy.linalg.toeplitz(x.top) if isinstance(x, Toeplitz)
-                else x for x in mats]
-        np_kron = reduce(np.kron, mats)
-        return my_kron, np_kron
+    def test_as_numpy(self):
+        for k in self.examples:
+            np.testing.assert_array_equal(
+                k.as_numpy(), np.kron(k.A.as_numpy(), k.B.as_numpy()))
 
     def test_empty(self):
         empty = np.array([[]])

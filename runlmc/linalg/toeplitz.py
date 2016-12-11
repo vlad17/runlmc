@@ -51,6 +51,9 @@ class Toeplitz(PSDDecomposableMatrix):
         extended[n+1:] = x[1:][::-1]
         return extended
 
+    def as_numpy(self):
+        return scipy.linalg.toeplitz(self.top)
+
     def matvec(self, x):
         # This MVM takes advantage of a well-known circulant embedding
         # of this Toeplitz matrix, enabling O(n lg n) multiplication
@@ -70,7 +73,7 @@ class Toeplitz(PSDDecomposableMatrix):
         # Böttcher, Grudsky, and Maksimenko 2010 approach is also accurate
         # and is O(r^3n) per eigenvalue, where r is depedent on how
         # diagonally dominant the matrix is. This can analogously be parallel.
-        sol = np.linalg.eigvalsh(scipy.linalg.toeplitz(self.top)).real
+        sol = np.linalg.eigvalsh(self.as_numpy()).real
         sol[::-1].sort()
         return sol[:search_descending(cutoff, sol, inclusive=False)]
 

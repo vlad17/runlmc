@@ -17,11 +17,9 @@ def stress_kronecker_eig(top, d, exact):
     b = np.random.rand(n * d)
     dense = utils.rand_psd(d)
     A = Kronecker(dense, Toeplitz(top))
-    toep = scipy.linalg.toeplitz(top)
-    M = np.kron(dense, toep)
+    M = A.as_numpy()
 
     assert np.linalg.matrix_rank(dense) == d
-    assert np.linalg.matrix_rank(toep) == n
     assert np.linalg.matrix_rank(M) == n * d
 
     exact = bool(exact)

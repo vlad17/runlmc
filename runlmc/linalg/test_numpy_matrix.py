@@ -22,7 +22,7 @@ class NumpyMatrixTest(RandomTest, DecomposableMatrixTestBase):
         down = lambda x: up(x)[::-1, ::-1]
 
         self.eigtol = 1e-3
-        self.examples = [self._generate(x) for x in [
+        self.examples = [NumpyMatrix(x) for x in [
             np.identity(1),
             np.identity(2),
             up(3),
@@ -36,10 +36,9 @@ class NumpyMatrixTest(RandomTest, DecomposableMatrixTestBase):
 
         self.approx_examples = self.examples
 
-    @staticmethod
-    def _generate(x):
-        x = np.array(x)
-        return NumpyMatrix(x), x
+    def test_as_numpy(self):
+        for n in self.examples:
+            np.testing.assert_array_equal(n.A, n.as_numpy())
 
     def test_shape_2d(self):
         A = np.arange(3 * 4 * 5).reshape(3, 4, 5)

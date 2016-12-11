@@ -53,6 +53,9 @@ class SumMatrix(PSDMatrix):
     def matvec(self, x):
         return sum(K.matvec(x) for K in self.Ks) + self.noise * x
 
+    def as_numpy(self):
+        return sum(K.as_numpy() for K in self.Ks) + np.diag(self.noise)
+
     def __str__(self):
         return (
             'SumMatrix([..., Ki, ...]) + noise\n' +

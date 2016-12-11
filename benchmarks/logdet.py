@@ -12,7 +12,8 @@ from runlmc.linalg.toeplitz import Toeplitz
 from runlmc.linalg.numpy_matrix import NumpyMatrix
 import runlmc.util.testing_utils as utils
 
-def stress_logdet(my_mat, np_mat, *_):
+def stress_logdet(my_mat):
+    np_mat = my_mat.as_numpy()
     cond = np.linalg.cond(np_mat)
     print('    cond {}'.format(cond))
 
