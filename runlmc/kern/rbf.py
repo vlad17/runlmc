@@ -27,12 +27,11 @@ class RBF(StationaryKern):
     .. math::
 
        k(r) = \sigma^2 \exp \\frac{-r^2}{2}
+
+    :param variance: :math:`sigma^2`, above.
+    :param name:
     """
     def __init__(self, variance=1, name='rbf'):
-        """
-        :param variance: :math:`sigma^2`, above.
-        :param name:
-        """
         super().__init__(name=name)
         self.variance = Param('variance', variance, Logexp())
         self.link_parameter(self.variance)

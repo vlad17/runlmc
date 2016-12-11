@@ -24,15 +24,14 @@ class Kronecker(PSDDecomposableMatrix):
     :math:`K` is PSD if :math:`A,B` are.
 
     The implementation is based off of Gilboa, Saatçi, and Cunningham (2015).
+
+    Creates a :class:`Kronecker` matrix.
+
+    :param A: the first matrix
+    :param B: the second matrix
+    :raises ValueError: if matrices aren't square
     """
     def __init__(self, A, B):
-        """
-        Creates a :class:`Kronecker` matrix.
-
-        :param A: the first matrix
-        :param B: the second matrix
-        :raises ValueError: if matrices aren't square
-        """
         super().__init__(A.shape[0] * B.shape[0])
 
         if A.shape[0] != A.shape[1]:

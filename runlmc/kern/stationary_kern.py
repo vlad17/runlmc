@@ -19,11 +19,10 @@ class StationaryKern(Parameterized):
     object never contains any data, as a parameterized object
     its gradients can be changed according to whatever
     data it's being tuned to.
+
+    :param name:
     """
     def __init__(self, name):
-        """
-        :param name:
-        """
         super().__init__(name=name)
 
     def from_dist(self, dists):

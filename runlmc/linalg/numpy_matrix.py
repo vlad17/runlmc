@@ -11,14 +11,13 @@ from ..util.numpy_convenience import EPS
 class NumpyMatrix(PSDDecomposableMatrix):
     """
     Adapter to :class:`PSDDecomposableMatrix` with :mod:`numpy` arrays.
+
+    Creates a :class:`NumpyMatrix` matrix. Its positivity is assumed.
+
+    :param nparr: 2-dimensional :mod:`numpy` array
+    :raises ValueError: if `nparr` isn't 2D or square or symmetric
     """
     def __init__(self, nparr):
-        """
-        Creates a :class:`NumpyMatrix` matrix. Its positivity is assumed.
-
-        :param nparr: 2-dimensional :mod:`numpy` array
-        :raises ValueError: if `nparr` isn't 2D or square or symmetric
-        """
         if nparr.ndim != 2 or nparr.shape[0] != nparr.shape[1]:
             raise ValueError('Input numpy array of shape {} not square matrix'
                              .format(nparr.shape))

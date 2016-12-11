@@ -25,13 +25,12 @@ class PSDMatrix:
     multiplication.
 
     * Positivity: `K.matvec(x).dot(x) >= 0`
+
+    :param n: number of rows in this square matrix
+    :raises ValueError: if `n < 1`
     """
 
     def __init__(self, n):
-        """
-        :param n: number of rows in this square matrix
-        :raises ValueError: if `n < 1`
-        """
         if n < 1:
             raise ValueError('Size of the matrix {} < 1'.format(n))
         self.dtype = np.float64
