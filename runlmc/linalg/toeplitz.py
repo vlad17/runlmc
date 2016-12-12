@@ -28,10 +28,12 @@ class Toeplitz(PSDDecomposableMatrix):
     :param top: 1-dimensional :mod:`numpy` array, used as the underlying
                 storage, which represents the first row :math:`t_{1j}`.
                 Should be castable to a float64.
-    :raises ValueError: if `top` isn't of the right shape, is empty.
+    :raises ValueError: if `top` isn't of the right shape or is empty.
+                        Alternatively, raised if induced Toeplitz matrix
+                        is not PSD (only if check is enabled).
     """
 
-    def __init__(self, top):
+    def __init__(self, top, check_psd=True):
         if top.shape != (len(top),):
             raise ValueError('top shape {} is not 1D'.format(top.shape))
         if len(top) == 0:
@@ -42,6 +44,12 @@ class Toeplitz(PSDDecomposableMatrix):
         self.top = top.astype('float64', casting='safe')
         circ = self._cyclic_extend(top)
         self._circ_fft = np.fft.fft(circ)
+
+        if check_psd:
+            eigs = np.linalg.eigvalsh(scipy.linalg.toeplitz(self.top))
+            if np.any(eigs < 0):
+                raise ValueError('Eigenvalues below zero {}\n{!s}'
+                                 .format(eigs, self))
 
     @staticmethod
     def _cyclic_extend(x):

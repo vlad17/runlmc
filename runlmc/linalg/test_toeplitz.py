@@ -13,10 +13,6 @@ class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
     def setUp(self):
         super().setUp()
 
-        random = np.abs(np.hstack([np.random.rand(30), np.zeros(10)]))
-        random[::-1].sort()
-        random[0] += np.abs(random[1:]).sum()
-
         down = lambda x: (np.arange(x) + 1)[::-1]
 
         self.eigtol = 1e-6
@@ -26,12 +22,12 @@ class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
             [1, 1],
             [0, 0],
             [1, -1],
-            [1] + [0.999] * 5 + [0] * 110,
+            [3.5] + [0.999] * 5 + [0] * 110,
             self._toep_eig(self.eigtol / 2, 5),
             self._toep_eig(self.eigtol, 5),
             self._toep_eig(self.eigtol * 2, 5),
             down(10),
-            random]]
+            utils.exp_decr_toep(30)]]
 
         self.approx_examples = [Toeplitz(x) for x in [
             utils.exp_decr_toep(10),

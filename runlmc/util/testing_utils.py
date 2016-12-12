@@ -48,7 +48,7 @@ class RandomTest(unittest.TestCase):
 
 def smallest_eig(top):
     """
-    :param top: top row of PSDT Toeplitz matrix
+    :param top: top row of Toeplitz matrix
     :returns: the smallest eigenvalue for a symmetric Toeplitz matrix
               with the top row `top`.
     """
@@ -56,7 +56,7 @@ def smallest_eig(top):
     if len(top) == 1:
         return top[0]
 
-    A = Toeplitz(top).as_linear_operator()
+    A = Toeplitz(top, check_psd=False).as_linear_operator()
     try:
         return scipy.sparse.linalg.eigsh(
             A, k=1, which='SA', return_eigenvectors=False)[0]
