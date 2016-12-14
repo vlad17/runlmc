@@ -68,6 +68,12 @@ Note:
     * derivative-free opt first;
     * numerical derivative opt;
     * derivatives (implement det grad derivative; SLFM derivatives)
+0. SLFM approach (new algorithm paper)
+   0. How to take determinant? Derivatives?
+   0. Re-prove (legitimately); start by showing wilson SKI m^(-3) conv (in multioutput case), then prove SLFM for 1 input dim, rank 1
+   0. Rank >1 reduction to rank 1 (use constant kq terms)
+   0. multidimensional proof; requires cubic interpol from SKI (again, for multioutput)
+   0. SLFM code up; GP code up; do K, dK/dL reconstruction experiments.
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests)
 0. multidimensional inputs and ARD.
@@ -99,3 +105,13 @@ Note:
         * `scipy.optimize.differential_evolution`
         * [other derivative-free optimization](https://en.wikipedia.org/wiki/Derivative-free_optimization)
         * `pyOpt` may have a few [link](http://www.pyopt.org/reference/optimizers.html)
+
+### Thesis Plan
+
+0. Intro
+0. Related Work - see detailed-plan.md; proposal; close loose ends here
+0. SKI - prove O(m^-3) formalism (one-input case)
+0. runlmc theoretical kernel re-creation error (can we re-prove? what are the bounds) (one-input case) (SLFM approach, if viable)
+0. experimental proof of above
+0. algorithm for runlmc kernel; explain/prove fast structural runtimes
+0. experimental proof for above; comparison to gpy exact/ssgp
