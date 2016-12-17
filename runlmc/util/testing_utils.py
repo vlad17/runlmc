@@ -164,3 +164,15 @@ def rand_psd(n):
     A = (A + A.T) / 2
     D = np.diag(np.fabs(A).sum(axis=1) + 1)
     return A + D
+
+
+def check_np_lists(a, b):
+    """
+    Verifies that two lists of numpy arrays are all close.
+    :param a:
+    :param b:
+    """
+    assert len(a) == len(b)
+    for i, (sub_a, sub_b) in enumerate(zip(a, b)):
+        np.testing.assert_allclose(
+            sub_a, sub_b, err_msg='output {}'.format(i))

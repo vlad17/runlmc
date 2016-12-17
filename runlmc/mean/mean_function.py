@@ -27,7 +27,7 @@ class MeanFunction(Parameterized):
 
     def f(self, Xs):
         """
-        Evaluation of the mean function.
+        Evaluation of the mean function :math:`f`.
 
         :return:
         """
@@ -42,3 +42,39 @@ class MeanFunction(Parameterized):
                 raise ValueError(
                     'Inputs for output {} have dim {} != 1'.format(
                         i, X.ndim))
+
+    def mean_gradient(self, Xs):
+        """
+        Let this mean be parameterized by some parameters
+        :math:`\\boldsymbol\\theta\\in\\mathbb{R}^p`. For every
+        :math:`\\theta_j\in\\boldsymbol\\theta`, at each input point
+        :math:`\\textbf{x}^{(i)}` (for a certain output index :math:`i`),
+        we can compute the derivative
+        :math:`\\partial_{\\theta_j}f(\\textbf{x}^{(i)})`.
+        For the evaluation of this
+        partial derivative at multiple places, :math:`\\textbf{X}`,
+        we call the list of vectors of partial derivatives
+        :math:`\\partial_{\\theta_j}f(\\textbf{X})`
+        (a list with one vector per output index).
+
+        :param Xs: inputs to evaluate at
+        :returns: A list of parameter gradients; the :math:`j`-th entry of this
+                  list is :math:`\\partial_{\\theta_j}f(\\textbf{X})`. Each
+                  :math:`\\partial_{\\theta_j}f(\\textbf{X})` in turn is
+                  another list with one entry per output :math:`i`; the
+                  :math:`i`-th entry is a one-dimensional numpy array
+                  with :math:`k`-th entry the derivative of the :math:`j`-th
+                  mean parameter at the :math:`k`-th input for the :math:`i`-th
+                  output, :math:`\\partial_{\\theta_j}f(\\textbf{x}^{(i)}_k)`.
+        """
+        raise NotImplementedError
+
+    def update_gradient(self, grad):
+        """
+        :param grad: a one-dimensional array, representing the gradient vector
+                     :math:`\\nabla_{\\boldsymbol\\theta}L` for the
+                     likelihood with respect to this mean's parameters,
+                     in the same order of parameters as the row order returned
+                     by :func:`mean_gradient`.
+        """
+        raise NotImplementedError

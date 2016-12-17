@@ -9,7 +9,8 @@ from ..util.docs import inherit_doc
 @inherit_doc
 class Zero(MeanFunction):
     """
-    The zero mapping.
+    The zero mapping. Note that leaving the `mean_function` parameter
+    as none in all of the models does the same job.
     """
     def __init__(self, input_dim, output_dim, name='zero'):
         super().__init__(input_dim, output_dim, name)
@@ -18,5 +19,9 @@ class Zero(MeanFunction):
         self._validate_inputs(Xs)
         return [np.zeros(len(X)) for X in Xs]
 
-    def visit_gradients(self, visit, inputs):
+    def mean_gradient(self, Xs):
+        # Zero function has no parameters
+        return []
+
+    def update_gradient(self, grad):
         pass
