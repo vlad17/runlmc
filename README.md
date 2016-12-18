@@ -64,6 +64,8 @@ Note:
 
 ### Roadmap
 
+0. Identity kernel + tests
+0. finish multigp testing
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
     * derivative-free opt first;
     * numerical derivative opt;
@@ -74,10 +76,13 @@ Note:
    0. Rank >1 reduction to rank 1 (use constant kq terms)
    0. multidimensional proof; requires cubic interpol from SKI (again, for multioutput)
    0. SLFM code up; GP code up; do K, dK/dL reconstruction experiments.
+0. New means, kernels (generalize the unit testing BasicModel)
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests)
+0. TODO(MSGP) - fast toeplitz eig
+0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
+0. TODO(PAPER) - add references to paper (in README, too)
 0. multidimensional inputs and ARD.
-0. Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 
 ### Considerations
 

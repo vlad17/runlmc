@@ -89,5 +89,5 @@ class ConstantTest(unittest.TestCase):
         check_np_lists(out, means, atol=1e-5)
 
     def test_optimization_priors_one_step(self):
-        # TODO: check that priors propogate
+        # TODO(priors)
         pass

@@ -74,7 +74,8 @@ class SumMatrix(PSDMatrix):
             \log\det\\left|K\\right|
 
         This is done by approximately solving an optimization problem.
-        For details, and an elementary proof of the solution, see [TODO PAPER].
+        For details, and an elementary proof of the solution, see
+        [TODO(PAPER) section .].
         """
         # separate into a minimum constant diagonal perturbation
         # plus a sum of matrices

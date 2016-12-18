@@ -159,7 +159,7 @@ class Toeplitz(PSDDecomposableMatrix):
         # vectorized over j, is equivalent to the Fourier transform of
         # of c.
 
-        # TODO: MSGP approximation; use whittle (?)
+        # TODO(MSGP) approximation; use whittle (?)
 
         n = len(self.top)
         N = 2 * n + 2

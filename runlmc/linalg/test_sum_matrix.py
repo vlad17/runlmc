@@ -51,7 +51,9 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
              np.ones(4) * 1e-4),
             ([Toeplitz(exp_decr_toep(5)) for _ in range(5)],
              np.ones(5) * 1e-4),
-            # TODO: add nested kronecker here when .tonumpy supported
+            ([Kronecker(self._rpsd(2),
+                        Kronecker(self._rpsd(2), self._rpsd(10)))
+              for _ in range(2)],
             ([self._rpsd(100) for _ in range(10)], np.random.rand(100))]
 
         self.examples = list(map(self._generate, examples))

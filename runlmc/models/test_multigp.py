@@ -119,3 +119,4 @@ class MultiGPTest(unittest.TestCase):
     #   - Make sure dummy param, mean function are notified of gradient
     #   - Check above for kernel/gradient priors propogated as well
     #   - predict_quantiles works property for >2 tups
+    # TODO(priors)
