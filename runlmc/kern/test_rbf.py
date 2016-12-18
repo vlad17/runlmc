@@ -5,10 +5,46 @@ import unittest
 import math
 
 import numpy as np
+import scipy.linalg
 
 from .rbf import RBF
+from ..parameterization.model import Model
 from ..util.numpy_convenience import map_entries
-from ..util.testing_utils import check_np_lists
+from ..util.testing_utils import check_np_lists, SingleGradOptimizer
+
+class BasicModel(Model):
+    def __init__(self, dists, Y, kern):
+        super().__init__('single-kern')
+        self.link_parameter(kern)
+        self.dists = dists
+        self.kern = kern
+        self.Y = Y
+
+    def log_likelihood(self):
+        K_top = self.kern.from_dist(self.dists)
+        KinvY = scipy.linalg.solve_toeplitz(K_top, self.Y)
+        # Prevent slight negative eigenvalues from roundoff.
+        sign, logdet = np.linalg.slogdet(
+            scipy.linalg.toeplitz(K_top) + 1e-10 * np.identity(len(K_top)))
+        assert sign > 0, sign
+        return -0.5 * self.Y.dot(KinvY) - 0.5 * logdet
+
+    def parameters_changed(self):
+        # maximize -0.5 * (y . K^-1 y) - 0.5 log |K|
+        # gradient wrt t is 0.5 tr((a a^T - K^-1)dK/dt), a = K^-1 a
+        K_top = self.kern.from_dist(self.dists)
+        a = scipy.linalg.solve_toeplitz(K_top, self.Y)
+        all_grad = self.kern.kernel_gradient(self.dists)
+        likelihood_grad = np.zeros(len(all_grad))
+        for i, grad in enumerate(all_grad):
+            dKdt = scipy.linalg.toeplitz(grad)
+            Kinv_dKdt = scipy.linalg.solve_toeplitz(K_top, dKdt)
+            aaT_dKdt = np.outer(a, dKdt.dot(a))
+            trace = np.trace(aaT_dKdt - Kinv_dKdt)
+            likelihood_grad[i] = 0.5 * trace
+
+        self.kern.update_gradient(likelihood_grad)
+
 
 class RBFTest(unittest.TestCase):
 
@@ -61,6 +97,27 @@ class RBFTest(unittest.TestCase):
         self.assertEqual(gpy.ARD, False)
         self.assertEqual(gpy.active_dims, [0])
 
-        # TODO: create a subclass dummy model that changes the params once
-        # and test with sgd optimizer (set deriv to 0 after)
-        # TODO: do same as above, but with a prior.
+    def test_optimization_one_step(self):
+        dists = np.arange(10)
+        opt = SingleGradOptimizer()
+        Y = np.sin(np.arange(10))
+        m = BasicModel(dists, Y, self.testK)
+        ll_before = m.log_likelihood()
+        m.optimize(opt)
+        ll_after = m.log_likelihood()
+        self.assertGreater(ll_after, ll_before)
+        self.assertNotEqual(self.variance, float(self.testK.variance[0]))
+        self.assertNotEqual(self.inv_lengthscale,
+                            float(self.testK.inv_lengthscale[0]))
+
+    def test_optimization(self):
+        dists = np.arange(10)
+        Y = np.sin(np.arange(10))
+        m = BasicModel(dists, Y, self.testK)
+        ll_before = m.log_likelihood()
+        m.optimize('lbfgsb')
+        self.assertGreaterEqual(m.log_likelihood(), ll_before)
+
+    def test_optimization_priors_one_step(self):
+        # TODO: check that priors propogate
+        pass

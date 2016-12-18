@@ -11,8 +11,6 @@
 The RBF kernel.
 """
 
-import math
-
 import numpy as np
 from paramz.transformations import Logexp
 
