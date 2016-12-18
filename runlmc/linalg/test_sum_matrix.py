@@ -54,6 +54,7 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
             ([Kronecker(self._rpsd(2),
                         Kronecker(self._rpsd(2), self._rpsd(10)))
               for _ in range(2)],
+             np.ones(40) * 1e-4),
             ([self._rpsd(100) for _ in range(10)], np.random.rand(100))]
 
         self.examples = list(map(self._generate, examples))
