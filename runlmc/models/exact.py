@@ -57,8 +57,7 @@ class ExactLMC(MultiGP):
     :type name: string
     """
     def __init__(self, Xs, Ys, kernels, ranks, name='ExactLMC'):
-        super().__init__(Xs, Ys, mean_function=None,
-                         normalize=False, name=name)
+        super().__init__(Xs, Ys, normalize=False, name=name)
         self.gpy_model = ExactLMC._construct_gpy(
             Xs, Ys, kernels, ranks)
 

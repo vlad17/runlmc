@@ -73,10 +73,6 @@ class ExactLMCTest(unittest.TestCase):
         np.testing.assert_almost_equal(var, var_gpy)
         np.testing.assert_almost_equal(quantiles, quantiles_gpy)
 
-    def test_no_mean_function(self):
-        basic, _ = self.generate_basic()
-        self.assertEqual(basic.mean_function, None)
-
     def test_no_normalizer(self):
         basic, _ = self.generate_basic()
         self.assertEqual(basic.normalizer, None)

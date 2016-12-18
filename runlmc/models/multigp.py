@@ -20,7 +20,6 @@ import scipy.stats
 from GPy.util.normalizer import Standardize as Norm
 
 from ..parameterization.model import Model
-from ..util.numpy_convenience import map_entries
 
 _LOG = logging.getLogger(__name__)
 
@@ -43,8 +42,6 @@ class MultiGP(Model):
                where the numpy arrays are one dimensional.
     :param Ys: output observations, this must be a list of one-dimensional
                numpy arrays, matching up with the number of rows in `Xs`.
-    :param mean_function: The mean function vectorized over our multiple
-                          outputs.
     :param bool normalize: optional normalization for outputs `Ys`.
                            Prediction will be un-normalized.
     :param str name:
@@ -52,14 +49,11 @@ class MultiGP(Model):
     :raises: :class:`ValueError` if normalization if any `Ys` have no variance
                                  or values in `Xs` have multiple identical
                                  values.
-    :raises: :class:`ValueError` if mean function dimensions do not match
-                                 inputs/outputs.
     """
-    def __init__(self, Xs, Ys, mean_function=None, normalize=True,
+    def __init__(self, Xs, Ys, normalize=True,
                  name='multigp'):
         super().__init__(name)
         self.input_dim, self.output_dim = self._validate_io(Xs, Ys)
-        self._validate_mean_function(mean_function)
 
         assert self.input_dim == 1, self.input_dim
 
@@ -72,9 +66,6 @@ class MultiGP(Model):
             Ys = [norm.normalize(Y) for norm, Y in zip(self.normalizer, Ys)]
 
         self.Xs, self.Ys = Xs, Ys
-        self.mean_function = mean_function
-        if self.mean_function:
-            self.link_parameter(self.mean_function)
 
         _LOG.info('%s: initialized', name)
 
@@ -85,7 +76,7 @@ class MultiGP(Model):
 
         Classes should update their posterior information, log likelihood,
         and gradients when this happens, such that `self._raw_predict`,
-        `self.log_likelihood`, `self.mean_function`, and `self.gradient`
+        `self.log_likelihood`, and `self.gradient`
         are consistent with the new parameters.
 
         .. Note: This method should not be called except by the internal
@@ -103,7 +94,7 @@ class MultiGP(Model):
     def _raw_predict(self, Xs):
         """
         Returns the raw predictive mean and variance, without
-        incorporating the mean function or normalization.
+        incorporating normalization.
 
         See :method:`predict` for more details.
         """
@@ -111,9 +102,6 @@ class MultiGP(Model):
 
     def _predict(self, Xs, normalize):
         mu, var = self._raw_predict(Xs)
-        if self.mean_function is not None:
-            for unshifted, shift in zip(mu, self.mean_function.f(Xs)):
-                unshifted += shift
 
         if self.normalizer and normalize:
             mu = [norm.inverse_mean(m) for norm, m in zip(self.normalizer, mu)]
@@ -151,21 +139,21 @@ class MultiGP(Model):
         variance according to the Gaussian likelihood.
 
         :param quantiles: tuple of quantiles, default is (2.5, 97.5),
-                          which is the 95% interval
+                          which is the 95% interval; shouldn't be 0 or 100
         :type quantiles: tuple of doubles
         :returns: list of quantiles for each output's input, as a numpy
                   array, 2-D, the first axis corresponding to the
                   input index and the second to the quantile index.
         """
         mu, var = self._predict(Xs, normalize=False)
-        quantiles = np.fromiter(quantiles)
+        quantiles = np.fromiter(quantiles, dtype=float)
         quantiles = [
-            np.outer(v, scipy.stats.norm.ppf(quantiles/100.))
+            np.outer(np.sqrt(v), scipy.stats.norm.ppf(quantiles/100.))
             + m[:, np.newaxis]
             for m, v in zip(mu, var)]
         if self.normalizer:
-            quantiles = [map_entries(self.normalizer.inverse_mean, q)
-                         for q in quantiles]
+            quantiles = [norm.inverse_mean(q)
+                         for norm, q in zip(self.normalizer, quantiles)]
         return quantiles
 
     def optimize(self, **kwargs):
@@ -238,19 +226,3 @@ class MultiGP(Model):
                     .format(i, len(X), len(u)))
 
         return 1, len(Xs)
-
-    def _validate_mean_function(self, mean_function):
-        if mean_function is None:
-            return
-        if mean_function.input_dim != self.input_dim:
-            raise ValueError(
-                'Mean function {} input dim {} != GP input dim {}'.format(
-                    mean_function.name,
-                    mean_function.input_dim,
-                    self.input_dim))
-        if mean_function.output_dim != self.output_dim:
-            raise ValueError(
-                'Mean function {} output dim {} != GP output dim {}'.format(
-                    mean_function.name,
-                    mean_function.output_dim,
-                    self.output_dim))
