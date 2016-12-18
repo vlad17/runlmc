@@ -4,26 +4,10 @@
 import unittest
 
 import numpy as np
-from paramz.optimization import Optimizer
 
 from ..parameterization.model import Model
-from ..kern.identity import Identity
 from .constant import Constant
-from .zero import Zero
-from ..util.testing_utils import check_np_lists
-
-class SingleGradOptimizer(Optimizer):
-    def __init__(self):
-        super().__init__()
-        self.gradient_observed = None
-
-    def opt(self, x_init, f_fp=None, f=None, fp=None):
-        # 1 iteration only
-        # Note we save the negative of the gradient, since
-        # the Model class will implicitly flip the objective's sign
-        # to make the likelihood maximization into a minimization problem.
-        self.gradient_observed = -fp(x_init)
-        self.x_opt = x_init + self.gradient_observed
+from ..util.testing_utils import check_np_lists, SingleGradOptimizer
 
 class BasicModel(Model):
     def __init__(self, Xs, mean):
