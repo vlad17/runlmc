@@ -53,8 +53,6 @@ class RBFTest(unittest.TestCase):
         self.cases = np.arange(10.0)
         self.variance = 3
         self.inv_lengthscale = 4
-        self.rbf_f = lambda r: self.variance * math.exp(-0.5 * r * r)
-        self.rbf_df = lambda r: -r * self.rbf_f(r)
         self.testK = RBF(self.variance, self.inv_lengthscale, 'wierd-name')
 
     def f(self, r):
