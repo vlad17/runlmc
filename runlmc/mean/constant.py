@@ -16,6 +16,11 @@ class Constant(MeanFunction):
 
     It may be useful if you would like to have no normalization
     _and_ want to impose priors on the mean adjustment.
+
+    :param input_dim:
+    :param output_dim:
+    :param c0: optional vector of length output_dim for the initial offsets
+               that the constant takes on.
     """
 
     def __init__(self, input_dim, output_dim, c0=None, name='constant'):
@@ -36,7 +41,9 @@ class Constant(MeanFunction):
         return [np.ones(len(X)) * c for X, c in zip(Xs, self.c)]
 
     def mean_gradient(self, Xs):
-        return [np.ones(len(X)) for X in Xs]
+        return [[np.ones(len(X)) if i == j else np.zeros(len(X))
+                 for j, X in enumerate(Xs)]
+                for i in range(len(self.c))]
 
     def update_gradient(self, grad):
         self.gradient = grad
