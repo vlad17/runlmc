@@ -65,6 +65,8 @@ Note:
 ### Roadmap
 
 0. Identity kernel + tests
+0. Numerical derivative code
+0. Add numerical deriv checking (with paramz?) to `Constant, RBF` tests.
 0. finish multigp testing
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
     * derivative-free opt first;
