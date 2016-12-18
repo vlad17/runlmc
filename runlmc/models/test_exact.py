@@ -18,8 +18,8 @@ class ExactLMCTest(unittest.TestCase):
         mapnp = lambda x: [np.array(i) for i in x]
 
         self.basic_kernels = [
-            RBF(variance=1, name='rbf1'),
-            RBF(variance=2, name='rbf2')]
+            RBF(name='rbf1'),
+            RBF(variance=2, inv_lengthscale=2, name='rbf2')]
         self.basic_Xs = mapnp([[0, 1, 2], [0.5, 1.5, 2.5]])
         self.basic_Ys = mapnp([[5, 6, 7], [7, 6, 5]])
         self.basic_predict_Xs = mapnp([[0.5, 1.5], [1.0, 2.0]])
@@ -90,12 +90,6 @@ class ExactLMCTest(unittest.TestCase):
 
     def test_gpy_basic_no_opt(self):
         basic, basic_gpy = self.generate_basic()
-        self.evaluate(basic, basic_gpy, self.basic_predict_Xs, self.basic_meta)
-
-    def test_gpy_basic_one_opt(self):
-        basic, basic_gpy = self.generate_basic()
-        basic._parameters_changed()
-        basic_gpy.parameters_changed()
         self.evaluate(basic, basic_gpy, self.basic_predict_Xs, self.basic_meta)
 
     def test_gpy_basic_full_opt(self):

@@ -17,6 +17,7 @@ import logging
 
 import numpy as np
 import scipy.stats
+from GPy.util.normalizer import Standardize as Norm
 
 from ..parameterization.model import Model
 from ..util.numpy_convenience import map_entries
@@ -48,14 +49,16 @@ class MultiGP(Model):
                            Prediction will be un-normalized.
     :param str name:
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
+    :raises: :class:`ValueError` if normalization if any `Ys` have no variance
+                                 or values in `Xs` have multiple identical
+                                 values.
     :raises: :class:`ValueError` if mean function dimensions do not match
                                  inputs/outputs.
     """
     def __init__(self, Xs, Ys, mean_function=None, normalize=True,
                  name='multigp'):
         super().__init__(name)
-        self.input_dim, self.output_dim = self._validate_io(
-            Xs, Ys)
+        self.input_dim, self.output_dim = self._validate_io(Xs, Ys)
         self._validate_mean_function(mean_function)
 
         assert self.input_dim == 1, self.input_dim
@@ -63,9 +66,10 @@ class MultiGP(Model):
         _LOG.info('%s: normalizing outputs', name)
         self.normalizer = None
         if normalize:
-            # TODO: add normalization creation here
-            self.normalizer.set_scale(Ys)
-            Ys = self.normalizer.normalize(Ys)
+            self.normalizer = [Norm() for _ in range(len(Ys))]
+            for norm, Y in zip(self.normalizer, Ys):
+                norm.scale_by(Y)
+            Ys = [norm.normalize(Y) for norm, Y in zip(self.normalizer, Ys)]
 
         self.Xs, self.Ys = Xs, Ys
         self.mean_function = mean_function
@@ -112,9 +116,9 @@ class MultiGP(Model):
                 unshifted += shift
 
         if self.normalizer and normalize:
-            mu = [map_entries(self.normalizer.inverse_mean, m) for m in mu]
-            var = [map_entries(self.normalizer.inverse_variance, v)
-                   for v in var]
+            mu = [norm.inverse_mean(m) for norm, m in zip(self.normalizer, mu)]
+            var = [norm.inverse_variance(v)
+                   for norm, v in zip(self.normalizer, var)]
 
         return mu, var
 
@@ -178,8 +182,8 @@ class MultiGP(Model):
         :type messages: bool
         :param optimizer: which optimizer to use (defaults to `'lbfgsb'`),
                           options include `'scg'`, `'org-bfgs'`, `'tnc'`,
-                          `'adadelta'`, `'rprop'`, `'simplex'`.
-        :type optimizer: string
+                          `'adadelta'`, `'rprop'`, `'simplex'`. This can either
+                          be a `str` or `paramz.optimization.Optimizer`.
         :param bool ipython_notebook: whether to use ipython notebook widgets
                                       or not (default true)
         :param bool clear_after_finish: if in ipython notebook, we can clear
@@ -221,10 +225,32 @@ class MultiGP(Model):
             if Y.ndim != 1:
                 raise ValueError('Output {} mishapen, {} not 1D'
                                  .format(i, Y.shape))
+
+        for i, Y in enumerate(Ys):
+            if np.std(Y) == 0:
+                raise ValueError('Output {} has std dev 0'.format(i))
+
+        for i, X in enumerate(Xs):
+            u = np.unique(X)
+            if len(u) < len(X):
+                raise ValueError(
+                    'Output {} has {} elements, but only {} unique ones'
+                    .format(i, len(X), len(u)))
+
         return 1, len(Xs)
 
     def _validate_mean_function(self, mean_function):
         if mean_function is None:
             return
-        assert mean_function.input_dim == self.input_dim
-        assert mean_function.output_dim == self.output_dim
+        if mean_function.input_dim != self.input_dim:
+            raise ValueError(
+                'Mean function {} input dim {} != GP input dim {}'.format(
+                    mean_function.name,
+                    mean_function.input_dim,
+                    self.input_dim))
+        if mean_function.output_dim != self.output_dim:
+            raise ValueError(
+                'Mean function {} output dim {} != GP output dim {}'.format(
+                    mean_function.name,
+                    mean_function.output_dim,
+                    self.output_dim))
