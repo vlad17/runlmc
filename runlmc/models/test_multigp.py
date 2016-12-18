@@ -62,12 +62,6 @@ class MultiGPTest(unittest.TestCase):
 
     def test_zero_sd(self):
         Xs = [np.arange(2)]
-        Ys = Xs
-        self.assertRaises(ValueError, DummyMultiGP,
-                          Xs, Ys, False, None, '')
-
-    def test_zero_sd(self):
-        Xs = [np.arange(2)]
         Ys = [np.ones(2)]
         self.assertRaises(ValueError, DummyMultiGP,
                           Xs, Ys, False, None, '')

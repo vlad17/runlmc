@@ -5,7 +5,6 @@ import unittest
 
 import numpy as np
 
-from ..parameterization.model import Model
 from ..util.testing_utils import check_np_lists
 from .zero import Zero
 
