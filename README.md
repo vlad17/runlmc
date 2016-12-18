@@ -64,14 +64,13 @@ Note:
 
 ### Roadmap
 
-0. Identity kernel + tests
-0. Numerical derivative code
-0. Add numerical deriv checking (with paramz?) to `Constant, RBF` tests.
 0. finish multigp testing
 0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
     * derivative-free opt first;
     * numerical derivative opt;
     * derivatives (implement det grad derivative; SLFM derivatives)
+0. Numerical derivation class
+0. Add tests to verify gradient (for a particular model, with and without prior)
 0. SLFM approach (new algorithm paper)
    0. How to take determinant? Derivatives?
    0. Re-prove (legitimately); start by showing wilson SKI m^(-3) conv (in multioutput case), then prove SLFM for 1 input dim, rank 1

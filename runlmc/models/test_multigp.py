@@ -114,9 +114,4 @@ class MultiGPTest(unittest.TestCase):
 
     # TODO: add tests for the following functionality
     #   - mean function should shift appropriately
-    #   - derived class with its own priored param, mean, and _raw_predict):
-    #   - Make sure dummy param, mean function perpetuate priors
-    #   - Make sure dummy param, mean function are notified of gradient
-    #   - Check above for kernel/gradient priors propogated as well
     #   - predict_quantiles works property for >2 tups
-    # TODO(priors)
