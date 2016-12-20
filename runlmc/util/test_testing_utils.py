@@ -31,11 +31,6 @@ class PSDConstructionTest(utils.RandomTest):
     def generate_toep(self, f):
         return map(scipy.linalg.toeplitz, self.generate(f))
 
-    def test_smallest_eig(self):
-        self.assertEqual(utils.smallest_eig(np.ones(1)), 1)
-        self.assertAlmostEqual(utils.smallest_eig(np.array([1, 0, 0, 0])), 1)
-        self.assertAlmostEqual(utils.smallest_eig(np.array([1, 0, 0, -1])), 0)
-
     def test_poor_cond_toep_distinct(self):
         self.assertFalse(np.allclose(
             utils.poor_cond_toep(50), utils.poor_cond_toep(50)))

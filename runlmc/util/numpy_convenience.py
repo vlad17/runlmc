@@ -6,8 +6,10 @@ Convenience functions for working with numpy arrays.
 """
 
 from itertools import accumulate
+import logging
 
 import numpy as np
+import scipy.sparse.linalg
 
 def map_entries(f, nparr):
     """
@@ -62,3 +64,27 @@ def search_descending(x, xs, inclusive):
     option = 'left' if inclusive else 'right'
     idx = np.searchsorted(xs[::-1], x, option)
     return len(xs) - idx
+
+def smallest_eig(top):
+    """
+    :param top: top row of Toeplitz matrix to get eigenvalues for
+    :type top numpy.ndarray:
+    :returns: the smallest eigenvalue
+    """
+
+    if len(top) == 1:
+        return top[0]
+
+    from runlmc.linalg.toeplitz import Toeplitz
+    logger = logging.getLogger('runlmc.linalg.toeplitz')
+    orig_lvl = logger.level
+    logger.setLevel(logging.INFO)
+    toep = Toeplitz(top)
+    logger.setLevel(orig_lvl)
+
+    A = toep.as_linear_operator()
+    try:
+        return scipy.sparse.linalg.eigsh(
+            A, k=1, which='SA', return_eigenvectors=False)[0]
+    except scipy.sparse.linalg.eigen.arpack.ArpackNoConvergence:
+        return np.linalg.eigvalsh(scipy.linalg.toeplitz(toep.top)).min()

@@ -1,6 +1,8 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
+import logging
+
 import numpy as np
 import scipy.linalg
 
@@ -10,10 +12,12 @@ from ..util import testing_utils as utils
 
 class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
 
+    @staticmethod
+    def down(x):
+        return (np.arange(x) + 1)[::-1]
+
     def setUp(self):
         super().setUp()
-
-        down = lambda x: (np.arange(x) + 1)[::-1]
 
         self.eigtol = 1e-6
         self.examples = [Toeplitz(np.array(x)) for x in [
@@ -26,7 +30,7 @@ class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
             self._toep_eig(self.eigtol / 2, 5),
             self._toep_eig(self.eigtol, 5),
             self._toep_eig(self.eigtol * 2, 5),
-            down(10),
+            self.down(10),
             utils.exp_decr_toep(30)]]
 
         self.approx_examples = [Toeplitz(x) for x in [
@@ -48,3 +52,13 @@ class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
     def test_bad_type(self):
         cplx = np.arange(5) * 1j
         self.assertRaises(Exception, Toeplitz, cplx)
+
+    def test_throws_nonpsd_log_on(self):
+        logger = logging.getLogger('runlmc.linalg.toeplitz')
+        non_psd = np.array([2, 3])
+        orig_lvl = logger.level
+        logger.setLevel(logging.DEBUG)
+        self.assertRaises(RuntimeError, Toeplitz, non_psd)
+        logger.setLevel(logging.INFO)
+        Toeplitz(non_psd)
+        logger.setLevel(orig_lvl)

@@ -8,6 +8,10 @@ If so, this package is for you.
 
 In other words, this provides a matrix-free implementation of multi-output GPs for certain covariances. As far as I know, this is also the only matrix-free implementation for single-output GPs in python.
 
+## Usage Notes
+
+* Currently, I'm only supporting 1 input dimension.
+
 ## A note on GPy
 
 [GPy](https://github.com/SheffieldML/GPy) is a way more general GP library that was a strong influence in the development of this one. I've tried to stay as faithful as possible to its structure.
@@ -17,8 +21,6 @@ I've re-used a lot of the GPy code. The main issue with simply adding my methods
 If there is some quantifiable success with this approach then integration with GPy would be a reasonable next-step.
 
 ## Example
-
-Currently, I'm only supporting 1 input dimension.
 
     def noisify(x, sd): return x + np.rand.normal(0, sd)
     Xs = [np.arange(-10, 5, 0.5), np.arange(-5.25, 10, .5)]
@@ -62,10 +64,12 @@ Note:
 | ----------------- | -------- |
 | `./style.sh`      | Check style with pylint, ignoring TODOs and locally-disabled warnings. |
 | `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/runlmc.html`) |
-| `nosetests`       | Run unit tests |
+| `nosetests -l DEBUG`       | Run unit tests |
 
 ### Roadmap
 
+0. Rm toeplitz check
+0. Fix numpy down(15) eig instability
 0. Top-level GP inference code for LMC just for log likelihood
 0. Add StdPeriodic kernel
 0. Create noisify; exact sampling functions

@@ -1,13 +1,17 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
+import logging
+
 import numpy as np
 import scipy.linalg
 import scipy.sparse.linalg
 
 from .psd_matrix import PSDDecomposableMatrix
 from ..util.docs import inherit_doc
-from ..util.numpy_convenience import search_descending, EPS
+from ..util.numpy_convenience import search_descending, EPS, smallest_eig
+
+_LOG = logging.getLogger(__name__)
 
 @inherit_doc
 class Toeplitz(PSDDecomposableMatrix):
@@ -29,11 +33,12 @@ class Toeplitz(PSDDecomposableMatrix):
                 storage, which represents the first row :math:`t_{1j}`.
                 Should be castable to a float64.
     :raises ValueError: if `top` isn't of the right shape or is empty.
-                        Alternatively, raised if induced Toeplitz matrix
-                        is not PSD (only if check is enabled).
+    :raises RuntimError: if induced Toeplitz matrix
+                         is not PSD (if logger with this module's fully
+                         qualified name is set to debug mode)
     """
 
-    def __init__(self, top, check_psd=True):
+    def __init__(self, top):
         if top.shape != (len(top),):
             raise ValueError('top shape {} is not 1D'.format(top.shape))
         if len(top) == 0:
@@ -45,11 +50,12 @@ class Toeplitz(PSDDecomposableMatrix):
         circ = self._cyclic_extend(top)
         self._circ_fft = np.fft.fft(circ)
 
-        if check_psd:
-            eigs = np.linalg.eigvalsh(scipy.linalg.toeplitz(self.top))
-            if np.any(eigs < 0):
-                raise ValueError('Eigenvalues below zero {}\n{!s}'
-                                 .format(eigs, self))
+        if _LOG.isEnabledFor(logging.DEBUG):
+            sm = smallest_eig(self.top)
+            # use a buffer for numerical instability
+            if sm < -EPS * max(self.top) * len(self.top):
+                raise RuntimeError('Eigenvalue {} below zero\n{!s}'
+                                   .format(sm, self))
 
     @staticmethod
     def _cyclic_extend(x):

@@ -14,13 +14,13 @@ import sys
 import unittest
 
 import numpy as np
-import scipy.sparse.linalg
 from paramz.optimization import Optimizer
 
-from runlmc.linalg.kronecker import Kronecker
-from runlmc.linalg.sum_matrix import SumMatrix
-from runlmc.linalg.toeplitz import Toeplitz
-from runlmc.linalg.numpy_matrix import NumpyMatrix
+from ..linalg.kronecker import Kronecker
+from ..linalg.sum_matrix import SumMatrix
+from ..linalg.toeplitz import Toeplitz
+from ..linalg.numpy_matrix import NumpyMatrix
+from .numpy_convenience import smallest_eig
 
 class RandomTest(unittest.TestCase):
     """
@@ -46,23 +46,6 @@ class RandomTest(unittest.TestCase):
 
         random.seed(self.seed)
         np.random.seed(self.seed)
-
-def smallest_eig(top):
-    """
-    :param top: top row of Toeplitz matrix
-    :returns: the smallest eigenvalue for a symmetric Toeplitz matrix
-              with the top row `top`.
-    """
-
-    if len(top) == 1:
-        return top[0]
-
-    A = Toeplitz(top, check_psd=False).as_linear_operator()
-    try:
-        return scipy.sparse.linalg.eigsh(
-            A, k=1, which='SA', return_eigenvectors=False)[0]
-    except scipy.sparse.linalg.eigen.arpack.ArpackNoConvergence:
-        return np.linalg.eigvalsh(scipy.linalg.toeplitz(top)).min()
 
 def poor_cond_toep(n):
     """
