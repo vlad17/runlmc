@@ -40,6 +40,8 @@ Currently, I'm only supporting 1 input dimension.
         plt.plot(Xs[i], Ys[i])
         plt.show()
         
+TODO: show resulting image
+        
 ## Benchmarks
 
 Make sure that the directory root is in the `PYTHONPATH` when running the benchmarks. E.g., from the directory root:
@@ -64,8 +66,14 @@ Note:
 
 ### Roadmap
 
-0. finish multigp testing
-0. Writing out the top-level GP inference and learning code (translating the math equations in the introduction to a usable API) -> make this work for IMC first (should be identical to SKI), then LMC!
+0. Top-level GP inference code for LMC just for log likelihood
+0. Add StdPeriodic kernel
+0. Create noisify; exact sampling functions
+0. Benchmark/evaluate reconstruction error for K (on various example kernels)
+0. Benchmark/evaluate reconstruction error for log likelihood
+0. Write PURJ paper - proofs and evidence of reconstruction error being
+   tolerable.
+0. Model learning
     * derivative-free opt first;
     * numerical derivative opt;
     * derivatives (implement det grad derivative; SLFM derivatives)
@@ -78,12 +86,14 @@ Note:
    0. multidimensional proof; requires cubic interpol from SKI (again, for multioutput)
    0. SLFM code up; GP code up; do K, dK/dL reconstruction experiments.
 0. New means, kernels (generalize the unit testing BasicModel)
+0. rename `rand_psd` -> `rand_pd`
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests)
 0. TODO(MSGP) - fast toeplitz eig
 0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 0. TODO(PAPER) - add references to paper (in README, too)
 0. multidimensional inputs and ARD.
+0. product kernels (multiple factors) and active dimensions
 
 ### Considerations
 
