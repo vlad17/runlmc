@@ -7,8 +7,6 @@ import numpy as np
 import scipy.stats
 
 from .multigp import MultiGP
-from ..mean.zero import Zero
-from ..mean.constant import Constant
 from ..util.testing_utils import check_np_lists
 
 class DummyMultiGP(MultiGP):
