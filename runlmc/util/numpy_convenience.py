@@ -75,16 +75,4 @@ def smallest_eig(top):
     if len(top) == 1:
         return top[0]
 
-    from runlmc.linalg.toeplitz import Toeplitz
-    logger = logging.getLogger('runlmc.linalg.toeplitz')
-    orig_lvl = logger.level
-    logger.setLevel(logging.INFO)
-    toep = Toeplitz(top)
-    logger.setLevel(orig_lvl)
-
-    A = toep.as_linear_operator()
-    try:
-        return scipy.sparse.linalg.eigsh(
-            A, k=1, which='SA', return_eigenvectors=False)[0]
-    except scipy.sparse.linalg.eigen.arpack.ArpackNoConvergence:
-        return np.linalg.eigvalsh(scipy.linalg.toeplitz(toep.top)).min()
+    return np.linalg.eigvalsh(scipy.linalg.toeplitz(top)).min()

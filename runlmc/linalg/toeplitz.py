@@ -52,8 +52,7 @@ class Toeplitz(PSDDecomposableMatrix):
 
         if _LOG.isEnabledFor(logging.DEBUG):
             sm = smallest_eig(self.top)
-            # use a buffer for numerical instability
-            if sm < -EPS * max(self.top) * len(self.top):
+            if sm < 0:
                 raise RuntimeError('Eigenvalue {} below zero\n{!s}'
                                    .format(sm, self))
 

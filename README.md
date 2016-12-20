@@ -68,8 +68,6 @@ Note:
 
 ### Roadmap
 
-0. Rm toeplitz check
-0. Fix numpy down(15) eig instability
 0. Top-level GP inference code for LMC just for log likelihood
 0. Add StdPeriodic kernel
 0. Create noisify; exact sampling functions
