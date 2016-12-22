@@ -6,7 +6,6 @@ Convenience functions for working with numpy arrays.
 """
 
 from itertools import accumulate
-import logging
 
 import numpy as np
 import scipy.sparse.linalg

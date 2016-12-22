@@ -136,8 +136,11 @@ def run_main(f, help_str):
         dense_mats = [rand_psd(d) for _ in range(q)]
         toep_tops = [generator(n) for _ in range(q)]
         my_mat = SumMatrix([Kronecker(NumpyMatrix(dense), Toeplitz(top))
-                            for dense, top in zip(dense_mats, toep_tops)],
-                           noise)
+                            for dense, top in zip(dense_mats, toep_tops)])
+        # added noise
+        my_mat.orig_matvec = my_mat.matvec
+        my_mat.matvec = lambda x: my_mat.orig_matvec(x) + eps * x # pylint:disable=cell-var-from-loop
+        my_mat.logdet = lambda: np.log(my_mat.approx_eigs(eps) + noise).sum() # pylint:disable=cell-var-from-loop
         f(my_mat)
 
 def rand_psd(n):
