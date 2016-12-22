@@ -235,7 +235,7 @@ class LMC(MultiGP):
         """
         min_noise = self.noise.min()
         eigs = self.ski_kernel.K_sum.approx_eigs(min_noise)
-        return np.log(eigs + self.noise + 1e-4).sum()
+        return np.log(eigs + self.noise.mean() + 1e-8).sum() # Fishy, need better
 
     def normal_quadratic(self):
         """
