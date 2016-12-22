@@ -42,7 +42,7 @@ class MultiGP(Model):
                where the numpy arrays are one dimensional.
     :param Ys: output observations, this must be a list of one-dimensional
                numpy arrays, matching up with the number of rows in `Xs`.
-    :param bool normalize: optional normalization for outputs `Ys`.
+    :param normalize: optional normalization for outputs `Ys`.
                            Prediction will be un-normalized.
     :param str name:
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
@@ -50,8 +50,7 @@ class MultiGP(Model):
                                  or values in `Xs` have multiple identical
                                  values.
     """
-    def __init__(self, Xs, Ys, normalize=True,
-                 name='multigp'):
+    def __init__(self, Xs, Ys, normalize=True, name='multigp'):
         super().__init__(name)
         self.input_dim, self.output_dim = self._validate_io(Xs, Ys)
 
@@ -67,7 +66,7 @@ class MultiGP(Model):
 
         self.Xs, self.Ys = Xs, Ys
 
-        _LOG.info('%s: initialized', name)
+        _LOG.info('%s: MultiGP initialized', name)
 
     def parameters_changed(self):
         """

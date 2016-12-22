@@ -18,7 +18,7 @@ from ..util.numpy_convenience import tesselate
 @inherit_doc
 class ExactLMC(MultiGP):
     """
-    The exact Gaussian Process model for heteroscedastic multioutput regression
+    The exact Gaussian Process model for multioutput regression
     under a Linear Model of Coregionalization.
 
     This performs the inversion-based cubic-time algorithm.
@@ -26,32 +26,16 @@ class ExactLMC(MultiGP):
     .. Note: Because this implementation uses GPy, mean functions and
              normalization are unsupported.
 
-    Uses the Gaussian likelihood. Put formally, this computes the regular
-    GP with the non-stationary kernel:
-
-    .. math::
-
-        \sum_{q=1}^Q(W_qW_q^\\top+\\boldsymbol\\kappa_q I)
-             \circ [k_q(X_i, X_j)]_{ij\in[D]^2} +
-             \\boldsymbol\epsilon I
-
-    :math:`[\cdot]_{ij}` represents a block matrix, with rows and columns
-    possibly of different widths. :math:`\circ` is the Hadamard product.
-    :math:`\\boldsymbol\\kappa_q` is a scaling vector for per-sub-kernel
-    variances (make sure redundant parameters don't exist in
-    :math:`k_q`). :math:`\\boldsymbol\\epsilon I` is a Gaussian noise
-    addition, iid within each output.
+    Uses the Gaussian likelihood. See :class:`runlmc.models.lmc.LMC` for the
+    explicit LMC formula.
 
     :param Xs: input observations, should be a list of numpy arrays,
-               where the numpy arrays are one dimensional. The arrays
-               are denoted :math:`X_i` above and may have different lengths.
+               where the numpy arrays are one dimensional.
     :param Ys: output observations, this must be a list of one-dimensional
                numpy arrays, matching up with the number of rows in `Xs`.
     :param kernels: a list of (stationary) kernels which constitute the
-                    terms of the LMC sums prior to coregionalization. The
-                    :math:`q`-th index here corresponds to :math:`k_q` above.
-                    This list's length is :math:`Q`
-    :param ranks: :math:`Q`-length list of ranks of :math:`W_q`.
+                    terms of the LMC sums prior to coregionalization.
+    :param ranks: list of ranks for coregionalization factors
     :type ranks: list of integer
     :param name: model name
     :type name: string
