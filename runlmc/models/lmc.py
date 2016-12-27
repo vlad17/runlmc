@@ -183,6 +183,8 @@ class LMC(MultiGP):
         self.ski_kernel = self._generate_ski()
         self.y = np.hstack(self.Ys)
 
+    TOL = 1e-4
+
     @staticmethod
     def _autogrid(Xs, lo, hi, m):
         if m is None:
@@ -235,7 +237,12 @@ class LMC(MultiGP):
         """
         min_noise = self.noise.min()
         eigs = self.ski_kernel.K_sum.approx_eigs(min_noise)
-        return np.log(eigs + self.noise.mean() + 1e-8).sum() # Fishy, need better
+        # noise needs to be adjusted dimensionally. Idea: use top eigs?
+        eigs[::-1].sort()
+        noise = np.repeat(self.noise, list(map(len, self.Ys)))
+        noise.sort()
+        top_eigs = eigs[:len(noise)]
+        return np.log(top_eigs + noise + self.TOL).sum()
 
     def normal_quadratic(self):
         """
@@ -247,7 +254,7 @@ class LMC(MultiGP):
         """
         op = self.ski_kernel.as_linear_operator()
         Kinv_y, succ = scipy.sparse.linalg.minres(
-            op, self.y, tol=1e-4, maxiter=self.m)
+            op, self.y, tol=self.TOL, maxiter=self.m)
         # TODO log succ warn
         return self.y.dot(Kinv_y)
 

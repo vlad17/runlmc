@@ -68,7 +68,7 @@ Note:
 
 ### Roadmap
 
-0. Top-level GP inference code for LMC just for log likelihood
+0. Top-level GP inference code for LMC just for log likelihood (add tests, then clean up the code/dedup work)
 0. Add StdPeriodic kernel
 0. Create noisify; exact sampling functions
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
