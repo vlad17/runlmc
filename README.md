@@ -54,11 +54,7 @@ Make sure that the directory root is in the `PYTHONPATH` when running the benchm
 
 Required packages for development (Python 3 versions): `pylint nose paramz gpy sphinx contexttimer`.
 
-Note:
-
- * All below invocations should be done from the repo root.
- 
- * All invocations rely on `bash` scripts.
+All below invocations should be done from the repo root.
  
 | Command           | Purpose  |
 | ----------------- | -------- |
@@ -68,12 +64,16 @@ Note:
 
 ### Roadmap
 
-0. Top-level GP inference code for LMC just for log likelihood (add tests, then clean up the code/dedup work)
+0. GP tests - up to training data improvements from deriv-free opt (add an accuracy test on sine + noise)
+0. Verify/clean up docs for lmc.py
+0. Add `_raw_predict`; test
 0. Add StdPeriodic kernel
+0. Consolidate SKI-opt-explore
 0. Create noisify; exact sampling functions
+0. Put resulting image into this README (link to ipynb in `examples/`)
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
-0. Write PURJ paper - proofs and evidence of reconstruction error being
+0. Write "PURJ" paper - proofs and evidence of reconstruction error being
    tolerable.
 0. Model learning
     * derivative-free opt first;

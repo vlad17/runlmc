@@ -250,7 +250,7 @@ class LMC(MultiGP):
         this returns :math:`\\textbf{y}^\\topK_{\\text{SKI}}^{-1}\\textbf{y}`.
 
         :returns: the normal quadratic term for the current outputs
-                 `Ys`.
+                  `Ys`.
         """
         op = self.ski_kernel.as_linear_operator()
         Kinv_y, succ = scipy.sparse.linalg.minres(

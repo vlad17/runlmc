@@ -6,11 +6,20 @@ import unittest
 import numpy as np
 
 from .lmc import LMC
-from ..util.testing_utils import check_np_lists
+from ..kern.rbf import RBF
 
 class LMCTest(unittest.TestCase):
 
+    def setUp(self):
+        super().setUp()
+        mapnp = lambda x: [np.array(i) for i in x]
 
-    def test_empty(self):
-        self.assertRaises(ValueError, DummyMultiGP,
-                          [], [], False, '')
+        self.basic_kernels = [
+            RBF(name='rbf1'),
+            RBF(variance=2, inv_lengthscale=2, name='rbf2')]
+        self.basic_Xs = mapnp([[0, 1, 2], [0.5, 1.5, 2.5]])
+        self.basic_Ys = mapnp([[5, 6, 7], [7, 6, 5]])
+
+    def test_no_kernel(self):
+        self.assertRaises(ValueError, LMC,
+                          self.basic_Xs, self.basic_Ys, kernels=[])
