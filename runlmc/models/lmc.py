@@ -175,6 +175,7 @@ class LMC(MultiGP):
         for i in range(len(self.kernels)):
             coreg_vec = np.random.randn(self.output_dim)
             self.coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
+            self.link_parameter(self.coreg_vecs[-1])
 
         # Corresponds to epsilon
         self.noise = Param('noise', np.ones(self.output_dim), Logexp())
@@ -233,7 +234,9 @@ class LMC(MultiGP):
     def log_det_K(self):
         """
         :returns: an upper bound of the approximate log determinant,
-                  :math:`\\log\\det K + \\boldsymbol\\epsilon I`
+                  uses :math:`K_\\text{SKI}` to find an approximate
+                  upper bound for
+                  :math:`\\log\\det K_{\text{exact}} + \\boldsymbol\\epsilon I`
         """
         min_noise = self.noise.min()
         eigs = self.ski_kernel.K_sum.approx_eigs(min_noise)
