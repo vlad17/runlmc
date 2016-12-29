@@ -65,16 +65,15 @@ All below invocations should be done from the repo root.
 ### Roadmap
 
 0. GP tests - up to training data improvements from deriv-free opt (add an accuracy test on sine + noise)
-0. Verify/clean up docs for lmc.py
+0. Verify/clean up docs for lmc.py, style
 0. Add `_raw_predict`; test
 0. Add StdPeriodic kernel
-0. Consolidate SKI-opt-explore
+0. Consolidate SKI-opt-explore (keep 2d, del 1d, add cov) + add cov test
 0. Create noisify; exact sampling functions
 0. Put resulting image into this README (link to ipynb in `examples/`)
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
-0. Write "PURJ" paper - proofs and evidence of reconstruction error being
-   tolerable.
+0. Write "PURJ" paper - proofs and evidence of reconstruction error being tolerable. - log det algo - what's the bound?
 0. Model learning
     * derivative-free opt first;
     * numerical derivative opt;
@@ -133,3 +132,4 @@ All below invocations should be done from the repo root.
 0. experimental proof of above
 0. algorithm for runlmc kernel; explain/prove fast structural runtimes
 0. experimental proof for above; comparison to gpy exact/ssgp
+0. test lmc._autogrid for edge cases.
