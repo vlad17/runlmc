@@ -123,6 +123,10 @@ class LMC(MultiGP):
     (corresponding to an output's iid noise) are now all equal to
     :math:`\\left\\vert U\\right\\vert`.
 
+    Each :math:`A_q` (only a column vector for now) is a parameter of
+    this model, with name `a<q>`, where `<q>` is replaced with a specific
+    number.
+
     TODO(new parameters)
     ranks - currently everything will be rank-1
     mean-function - zero-mean for now
