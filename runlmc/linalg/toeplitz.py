@@ -52,9 +52,10 @@ class Toeplitz(PSDDecomposableMatrix):
 
         if _LOG.isEnabledFor(logging.DEBUG):
             sm = smallest_eig(self.top)
-            if sm < 0:
-                raise RuntimeError('Eigenvalue {} below zero\n{!s}'
-                                   .format(sm, self))
+            cutoff = len(top) ** 2 * EPS
+            if sm < -cutoff:
+                raise RuntimeError('Eigenvalue {} below tolerance {}\n{!s}'
+                                   .format(sm, -cutoff, self))
 
     @staticmethod
     def _cyclic_extend(x):

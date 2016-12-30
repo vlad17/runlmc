@@ -8,6 +8,7 @@ Convenience functions for working with numpy arrays.
 from itertools import accumulate
 
 import numpy as np
+import scipy.linalg
 import scipy.sparse.linalg
 
 def map_entries(f, nparr):
@@ -74,4 +75,4 @@ def smallest_eig(top):
     if len(top) == 1:
         return top[0]
 
-    return np.linalg.eigvalsh(scipy.linalg.toeplitz(top)).min()
+    return scipy.linalg.eigvalsh(scipy.linalg.toeplitz(top)).min()

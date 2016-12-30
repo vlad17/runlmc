@@ -69,8 +69,10 @@ All below invocations should be done from the repo root.
 0. Add `_raw_predict`; test
 0. Add StdPeriodic kernel
 0. Consolidate SKI-opt-explore (keep 2d, del 1d, add cov) + add cov test
+0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
 0. Create noisify; exact sampling functions
 0. Put resulting image into this README (link to ipynb in `examples/`)
+0. Figure out eigenvalue issues - SEED=3333617092 nosetests runlmc.models.test_lmc breaks Toeplitz PSD
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
 0. Write "PURJ" paper - proofs and evidence of reconstruction error being tolerable. - log det algo - what's the bound?
@@ -78,7 +80,7 @@ All below invocations should be done from the repo root.
     * derivative-free opt first;
     * numerical derivative opt;
     * derivatives (implement det grad derivative; SLFM derivatives)
-0. Numerical derivation class
+0. Numerical derivation class (use MAT321 method)
 0. Add tests to verify gradient (for a particular model, with and without prior)
 0. SLFM approach (new algorithm paper)
    0. How to take determinant? Derivatives?
