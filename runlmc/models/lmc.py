@@ -28,7 +28,8 @@ class SKI(PSDMatrix):
 
         row_lens = [len(X) for X in Xs]
         row_ends = np.add.accumulate(row_lens)
-        row_begins = row_ends - row_ends[0]
+        row_begins = np.roll(row_ends, 1)
+        row_begins[0] = 0
         order = row_ends[-1]
 
         super().__init__(order)
@@ -36,13 +37,14 @@ class SKI(PSDMatrix):
 
         col_lens = [W.nnz for W in Ws]
         col_ends = np.add.accumulate(col_lens)
-        col_begins = col_ends - col_ends[0]
+        col_begins = np.roll(col_ends, 1)
+        col_begins[0] = 0
         width = col_ends[-1]
 
         grid_size = K_sum.shape[0] // len(Xs)
 
-        ind_starts = np.add.accumulate([W.indptr[-1] for W in Ws])
-        ind_starts -= ind_starts[0]
+        ind_starts = np.roll(np.add.accumulate([W.indptr[-1] for W in Ws]), 1)
+        ind_starts[0] = 0
         ind_ptr = np.append(np.repeat(ind_starts, row_lens), width)
         data = np.empty(width)
         col_indices = np.repeat(np.arange(len(Xs)) * grid_size, col_lens)
@@ -59,8 +61,8 @@ class SKI(PSDMatrix):
         self.noise = np.repeat(noise, row_lens)
 
     def as_numpy(self):
-        WK = self.W.dot(self.K_sum.as_numpy().T)
-        return self.W.dot(WK.T) + np.diag(self.noise)
+        WKT = self.W.dot(self.K_sum.as_numpy().T)
+        return self.W.dot(WKT.T) + np.diag(self.noise)
 
     def matvec(self, x):
         return self.W.dot(self.K_sum.matvec(self.WT.dot(x))) + x * self.noise
@@ -117,6 +119,9 @@ class LMC(MultiGP):
 
         K=\sum_{q=1}^QA_qA_q^\\top \\otimes k_q(U, U) +
              \\boldsymbol\\epsilon' I
+
+    TODO :math:`\\boldsymbol\\epsilon'` has been REMOVED - noise is NOT in
+    SKI space anymore.
 
     Above, the values of :math:`\\boldsymbol\\epsilon'` are the same as its
     unprimed counterpart, but the lengths of each region with the same value
@@ -242,7 +247,7 @@ class LMC(MultiGP):
                   upper bound for
                   :math:`\\log\\det K_{\text{exact}} + \\boldsymbol\\epsilon I`
         """
-        min_noise = self.noise.min()
+        min_noise = min(self.noise.min(), self.TOL)
         eigs = self.ski_kernel.K_sum.approx_eigs(min_noise)
         # noise needs to be adjusted dimensionally. Idea: use top eigs?
         eigs[::-1].sort()
