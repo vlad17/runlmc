@@ -50,6 +50,30 @@ class LMCTest(RandomTest):
         super().setUp()
 
     @staticmethod
+    def case_1d():
+        kerns = [RBF(variance=2, inv_lengthscale=3)]
+        szs = [15]
+        coregs = [[1]]
+        return ExactAnalogue(kerns, szs, coregs)
+
+    @staticmethod
+    def case_2d():
+        kerns = [RBF(variance=2, inv_lengthscale=3),
+                 RBF(variance=3, inv_lengthscale=2)]
+        szs = [15, 20]
+        coregs = [[1, 2], [3, 4]]
+        return ExactAnalogue(kerns, szs, coregs)
+
+    @staticmethod
+    def case_large():
+        kerns = [RBF(variance=2, inv_lengthscale=3),
+                 RBF(variance=3, inv_lengthscale=2),
+                 RBF(variance=1, inv_lengthscale=1)]
+        szs = [15, 20, 10, 12, 13]
+        coregs = [[1, 1, 1, 1, 2], [2, 1, 2, 1, 2], [-1, 1, -1, -1, -1]]
+        return ExactAnalogue(kerns, szs, coregs)
+
+    @staticmethod
     def avg_entry_diff(x1, x2):
         return np.fabs(x1 - x2).mean()
 
@@ -67,6 +91,24 @@ class LMCTest(RandomTest):
 
         self.assertGreater(avg_diff_sz, avg_diff_2sz)
 
+    def check_normal_quadratic(self, exact):
+        exact_mat = exact.gen_exact_mat()
+        y = np.hstack(exact.yss)
+        Kinv_y = np.linalg.solve(exact_mat, y)
+        expected = y.dot(Kinv_y)
+
+        actual = exact.gen_lmc(sum(exact.sizes)).normal_quadratic()
+        np.testing.assert_allclose(
+            expected, actual, rtol=LMC.TOL, atol=LMC.TOL)
+        avg_diff_sz = abs(actual - expected)
+
+        actual = exact.gen_lmc(sum(exact.sizes) * 2).normal_quadratic()
+        np.testing.assert_allclose(
+            expected, actual, rtol=LMC.TOL, atol=LMC.TOL)
+        avg_diff_2sz = abs(actual - expected)
+
+        self.assertGreater(avg_diff_sz, avg_diff_2sz)
+
     def test_no_kernel(self):
         mapnp = lambda x: list(map(np.array, x))
         basic_Xs = mapnp([[0, 1, 2], [0.5, 1.5, 2.5]])
@@ -75,32 +117,28 @@ class LMCTest(RandomTest):
                           basic_Xs, basic_Ys, kernels=[])
 
     def test_kernel_reconstruction_1d(self):
-        kerns = [RBF(variance=2, inv_lengthscale=3)]
-        szs = [15]
-        coregs = [[1]]
-        self.check_kernel_reconstruction(
-            ExactAnalogue(kerns, szs, coregs))
+        ea = self.case_1d()
+        self.check_kernel_reconstruction(ea)
 
     def test_kernel_reconstruction_2d(self):
-        kerns = [RBF(variance=2, inv_lengthscale=3),
-                 RBF(variance=3, inv_lengthscale=2)]
-        szs = [15, 20]
-        coregs = [[1, 2], [3, 4]]
-        self.check_kernel_reconstruction(
-            ExactAnalogue(kerns, szs, coregs))
+        ea = self.case_2d()
+        self.check_kernel_reconstruction(ea)
 
     def test_kernel_reconstruction_large(self):
-        kerns = [RBF(variance=2, inv_lengthscale=3),
-                 RBF(variance=3, inv_lengthscale=2),
-                 RBF(variance=1, inv_lengthscale=1)]
-        szs = [15, 20, 10, 12, 13]
-        coregs = [[1, 1, 1, 1, 2], [2, 1, 2, 1, 2], [-1, 1, -1, -1, -1]]
-        self.check_kernel_reconstruction(
-            ExactAnalogue(kerns, szs, coregs))
+        ea = self.case_large()
+        self.check_kernel_reconstruction(ea)
 
-    def test_normal_quadratic(self):
-        # should agree with K_SKI (make a randomtest?)
-        pass
+    def test_normal_quadratic_1d(self):
+        ea = self.case_1d()
+        self.check_normal_quadratic(ea)
+
+    def test_normal_quadratic_2d(self):
+        ea = self.case_2d()
+        self.check_normal_quadratic(ea)
+
+    def test_normal_quadratic_large(self):
+        ea = self.case_large()
+        self.check_normal_quadratic(ea)
 
     def test_optimization(self):
         # on a random example, NLL should decrease before/after.
