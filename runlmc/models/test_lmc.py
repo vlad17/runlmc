@@ -2,12 +2,22 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import numpy as np
+import paramz.optimization
 import scipy.linalg
+import scipy.optimize
 import scipy.spatial.distance
 
 from .lmc import LMC
 from ..kern.rbf import RBF
 from ..util.testing_utils import RandomTest
+
+class DerivFree(paramz.optimization.Optimizer):
+    def __init__(self):
+        super().__init__()
+
+    def opt(self, x_init, f=None, **_):
+        constraints = []
+        self.x_opt = scipy.optimize.fmin_cobyla(f, x_init, constraints, disp=0)
 
 class ExactAnalogue:
     def __init__(self, kerns, sizes, coregs):
@@ -97,17 +107,12 @@ class LMCTest(RandomTest):
         Kinv_y = np.linalg.solve(exact_mat, y)
         expected = y.dot(Kinv_y)
 
-        actual = exact.gen_lmc(sum(exact.sizes)).normal_quadratic()
-        np.testing.assert_allclose(
-            expected, actual, rtol=LMC.TOL, atol=LMC.TOL)
-        avg_diff_sz = abs(actual - expected)
+        lmc = exact.gen_lmc(sum(exact.sizes))
+        lmc.TOL = 1e-15 # tighten tolerance for tests
+        tol = 1e-4
 
-        actual = exact.gen_lmc(sum(exact.sizes) * 2).normal_quadratic()
-        np.testing.assert_allclose(
-            expected, actual, rtol=LMC.TOL, atol=LMC.TOL)
-        avg_diff_2sz = abs(actual - expected)
-
-        self.assertGreater(avg_diff_sz, avg_diff_2sz)
+        actual = lmc.normal_quadratic()
+        np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
 
     def test_no_kernel(self):
         mapnp = lambda x: list(map(np.array, x))
@@ -140,24 +145,40 @@ class LMCTest(RandomTest):
         ea = self.case_large()
         self.check_normal_quadratic(ea)
 
-    def test_optimization(self):
-        # on a random example, NLL should decrease before/after.
-        pass
+    # TODO compare raw_predict to SKI exact matrix
+    # Eq. 7 in Sec. 5.1.1 in MSGP
 
     def test_1d_fit(self):
-        # internally, fit should get within noise on training data
-        # up to tolerance (use sin).
-        pass
+        ea = self.case_1d()
+        noise = np.random.randn(len(ea.xss)) * 0.05
+        ea.yss = [np.sin(ea.xss[0]) + noise]
+        lmc = ea.gen_lmc(sum(ea.sizes))
 
-    def test_2d_fit_nocov(self):
-        # internally, fit should get within noise on training data up
-        # to tolerance (use sin/cos)
-        # note coregionalization may be found even if not there - nonconvex
-        # problem won't necessarily find the right solution -> don't check
-        # params, just fit
-        pass
+        ll_before = lmc.log_likelihood()
+        lmc.optimize(optimizer=DerivFree())
+        ll_after = lmc.log_likelihood()
 
-    # TODO: test_2d_fit_cov - with covariance
+        self.assertGreater(ll_after, ll_before)
+
+        # TODO reconstruction should be within max(noise) + 2 * tol + delta
+        # test at xss + delta shifted
+
+    def test_2d_fit(self):
+        ea = self.case_2d()
+        noises = [0.05 * np.random.randn(len(ea.xss[0])),
+                  0.02 * np.random.randn(len(ea.xss[1]))]
+        ea.yss = [np.sin(ea.xss[0]) + noises[0],
+                  np.sin(ea.xss[1]) + noises[1]]
+        lmc = ea.gen_lmc(sum(ea.sizes))
+
+        ll_before = lmc.log_likelihood()
+        lmc.optimize(optimizer=DerivFree())
+        ll_after = lmc.log_likelihood()
+
+        self.assertGreater(ll_after, ll_before)
+
+        # TODO reconstruction, again.
+
     # TODO: test_coreg_nocov - requires rank 2, single kernel, l1 prior
     #       on coreg (should find identity matrix approx coregionalization
     #       after a couple random restarts (choose l2 err minimizing one,

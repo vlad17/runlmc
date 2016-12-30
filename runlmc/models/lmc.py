@@ -276,4 +276,5 @@ class LMC(MultiGP):
         return -0.5 * nll
 
     def _raw_predict(self, Xs):
+        # Not optimized for speed.
         raise NotImplementedError
