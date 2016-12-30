@@ -24,6 +24,41 @@ class LMCTest(RandomTest):
     def avg_entry_diff(x1, x2):
         return np.fabs(x1 - x2).mean()
 
+
+    def check_kernel_reconstruction(self, kerns, szs, coregs):
+        assert len(coregs) == len(kerns)
+        assert set(map(len, coregs)) == {len(szs)}
+
+        tol = LMC.TOL
+
+        def gen_lmc(m):
+            lmc = LMC(xss, yss, normalize=False, kernels=kerns, m=m)
+            for lmc_coreg, coreg in zip(lmc.coreg_vecs, coregs):
+                lmc_coreg[:] = coreg
+            lmc.noise[:] = np.ones(len(szs))
+            return lmc
+
+        xss = [np.random.rand(sz) for sz in szs]
+        yss = [np.random.rand(sz) for sz in szs]
+
+        expected = np.identity(sum(szs))
+        for coreg, kern in zip(coregs, kerns):
+            coreg_mat = np.outer(coreg, coreg)
+            expected += np.bmat([
+                [coreg_mat[i, j] * self.pairwise_dists(kern, xss[i], xss[j])
+                 for j in range(len(szs))]
+                for i in range(len(szs))]).A
+
+        actual = gen_lmc(sum(szs)).K_SKI()
+        np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
+        avg_diff_sz = self.avg_entry_diff(expected, actual)
+
+        actual = gen_lmc(sum(szs) * 2).K_SKI()
+        np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
+        avg_diff_2sz = self.avg_entry_diff(expected, actual)
+
+        self.assertGreater(avg_diff_sz, avg_diff_2sz)
+
     def test_no_kernel(self):
         mapnp = lambda x: list(map(np.array, x))
         basic_Xs = mapnp([[0, 1, 2], [0.5, 1.5, 2.5]])
@@ -32,69 +67,26 @@ class LMCTest(RandomTest):
                           basic_Xs, basic_Ys, kernels=[])
 
     def test_kernel_reconstruction_1d(self):
-        rbf = RBF(variance=2, inv_lengthscale=3)
-        sz = 15
-        xss = [np.random.rand(sz)]
-        yss = [np.random.rand(sz)]
-        noise = np.ones(1)
-
-        lmc = LMC(xss, yss, normalize=False, kernels=[rbf], m=sz)
-        lmc.coreg_vecs[0][:] = np.ones(1)
-        lmc.noise[:] = noise
-
-        k1 = self.pairwise_dists(rbf, xss[0], xss[0])
-        expected = k1 + np.identity(len(k1))
-        actual = lmc.K_SKI()
-        tol = lmc.TOL
-        np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
-
-        avg_diff_sz = self.avg_entry_diff(expected, actual)
-
-        lmc = LMC(xss, yss, normalize=False, kernels=[rbf], m=(sz * 2))
-        lmc.coreg_vecs[0][:] = np.ones(1)
-        lmc.noise[:] = noise
-        actual = lmc.K_SKI()
-        np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
-        avg_diff_2sz = self.avg_entry_diff(expected, actual)
-
-        self.assertGreater(avg_diff_sz, avg_diff_2sz)
+        kerns = [RBF(variance=2, inv_lengthscale=3)]
+        szs = [15]
+        coregs = [[1]]
+        self.check_kernel_reconstruction(kerns, szs, coregs)
 
     def test_kernel_reconstruction_2d(self):
         kerns = [RBF(variance=2, inv_lengthscale=3),
-                RBF(variance=3, inv_lengthscale=2)]
+                 RBF(variance=3, inv_lengthscale=2)]
         szs = [15, 20]
-        xss = [np.random.rand(sz) for sz in szs]
-        yss = [np.random.rand(sz) for sz in szs]
+        coregs = [[1, 2], [3, 4]]
+        self.check_kernel_reconstruction(kerns, szs, coregs)
 
-        lmc = LMC(xss, yss, normalize=False, kernels=kerns, m=sum(szs))
-        lmc.coreg_vecs[0][:] = [1, 2]
-        lmc.coreg_vecs[1][:] = [3, 4]
-        lmc.noise[:] = np.ones(2)
+    def test_kernel_reconstruction_large(self):
+        kerns = [RBF(variance=2, inv_lengthscale=3),
+                 RBF(variance=3, inv_lengthscale=2),
+                 RBF(variance=1, inv_lengthscale=1)]
+        szs = [15, 20, 10, 12, 13]
+        coregs = [[1, 1, 1, 1, 2], [2, 1, 2, 1, 2], [-1, 1, -1, -1, -1]]
+        self.check_kernel_reconstruction(kerns, szs, coregs)
 
-        expected = np.identity(sum(szs))
-        for coreg, kern in zip(lmc.coreg_vecs, kerns):
-            coreg_mat = np.outer(coreg, coreg)
-            bmat = [
-                [coreg_mat[i, j] * self.pairwise_dists(kern, xss[i], xss[j])
-                 for j in range(2)]
-                for i in range(2)]
-            expected += np.bmat(bmat).A
-
-        actual = lmc.K_SKI()
-        tol = lmc.TOL
-        np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
-
-        avg_diff_sz = self.avg_entry_diff(expected, actual)
-
-        lmc = LMC(xss, yss, normalize=False, kernels=kerns, m=(sum(szs) * 2))
-        lmc.coreg_vecs[0][:] = [1, 2]
-        lmc.coreg_vecs[1][:] = [3, 4]
-        lmc.noise[:] = np.ones(2)
-        actual = lmc.K_SKI()
-        np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
-        avg_diff_2sz = self.avg_entry_diff(expected, actual)
-
-        self.assertGreater(avg_diff_sz, avg_diff_2sz)
 
     def test_normal_quadratic(self):
         # should agree with K_SKI (make a randomtest?)
