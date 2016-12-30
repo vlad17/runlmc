@@ -56,9 +56,9 @@ class MultiGP(Model):
 
         assert self.input_dim == 1, self.input_dim
 
-        _LOG.info('%s: normalizing outputs', name)
         self.normalizer = None
         if normalize:
+            _LOG.info('%s: normalizing outputs', name)
             self.normalizer = [Norm() for _ in range(len(Ys))]
             for norm, Y in zip(self.normalizer, Ys):
                 norm.scale_by(Y)
