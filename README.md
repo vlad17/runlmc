@@ -135,3 +135,4 @@ All below invocations should be done from the repo root.
 0. algorithm for runlmc kernel; explain/prove fast structural runtimes
 0. experimental proof for above; comparison to gpy exact/ssgp
 0. test lmc._autogrid for edge cases.
+0. test lmc ExactAnalogue with different gaussian noise (not all 1s)
