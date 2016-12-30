@@ -107,6 +107,7 @@ All below invocations should be done from the repo root.
 * SLFM approach work for computing deriv of log det / log det exactly (pg. 16 in vector-valued-lmc.pdf)
 * Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
 * GP optimization approaches [meta, for general improvement, after inner loop proven faster]
+    * Constrained optimizers might not actually be necessary - paramz transformations take car of positivity.
     * scipy constrained multivariate methods
         * l-bfgs-b
         * cobyla
@@ -115,7 +116,7 @@ All below invocations should be done from the repo root.
         * simplex
     * paramz
         * scg
-    * climin (constrained?)
+    * climin
         * rmsprop
         * adadelta
         * adam
