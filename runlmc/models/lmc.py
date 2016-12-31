@@ -4,6 +4,7 @@
 import logging
 
 import numpy as np
+import scipy.linalg
 import scipy.sparse.linalg
 from paramz.transformations import Logexp
 
@@ -23,42 +24,13 @@ class SKI(PSDMatrix):
     """
     TODO init docs
     """
-    def __init__(self, K_sum, Ws, noise, Xs):
+    def __init__(self, K_sum, W, noise, Xs):
+        lens = [len(X) for X in Xs]
+        super().__init__(sum(lens))
         self.K_sum = K_sum
-
-        row_lens = [len(X) for X in Xs]
-        row_ends = np.add.accumulate(row_lens)
-        row_begins = np.roll(row_ends, 1)
-        row_begins[0] = 0
-        order = row_ends[-1]
-
-        super().__init__(order)
-        # Needless W reconstruction
-
-        col_lens = [W.nnz for W in Ws]
-        col_ends = np.add.accumulate(col_lens)
-        col_begins = np.roll(col_ends, 1)
-        col_begins[0] = 0
-        width = col_ends[-1]
-
-        grid_size = K_sum.shape[0] // len(Xs)
-
-        ind_starts = np.roll(np.add.accumulate([W.indptr[-1] for W in Ws]), 1)
-        ind_starts[0] = 0
-        ind_ptr = np.append(np.repeat(ind_starts, row_lens), width)
-        data = np.empty(width)
-        col_indices = np.repeat(np.arange(len(Xs)) * grid_size, col_lens)
-        for rbegin, rend, cbegin, cend, W in zip(
-                row_begins, row_ends, col_begins, col_ends, Ws):
-            ind_ptr[rbegin:rend] += W.indptr[:-1]
-            data[cbegin:cend] = W.data
-            col_indices[cbegin:cend] += W.indices
-
-        self.W = scipy.sparse.csr_matrix(
-            (data, col_indices, ind_ptr), shape=(order, K_sum.shape[0]))
+        self.W = W
         self.WT = self.W.transpose().tocsr()
-
-        self.noise = np.repeat(noise, row_lens)
+        self.noise = np.repeat(noise, lens)
 
     def as_numpy(self):
         WKT = self.W.dot(self.K_sum.as_numpy().T)
@@ -177,8 +149,7 @@ class LMC(MultiGP):
         self.dists = self.inducing_grid - self.inducing_grid[0]
 
         # Corresponds to W; block diagonal matrix.
-        self.interpolants = [interp_cubic(self.inducing_grid, X)
-                             for X in self.Xs]
+        self.interpolant = self._interpolant(self.Xs, self.inducing_grid)
 
         self.coreg_vecs = []
         for i in range(len(self.kernels)):
@@ -192,6 +163,11 @@ class LMC(MultiGP):
 
         self.ski_kernel = self._generate_ski()
         self.y = np.hstack(self.Ys)
+
+        # Predictive weights
+        self.alpha = None
+        self.nu = None
+        self.native_var = None
 
     TOL = 1e-4
 
@@ -213,6 +189,38 @@ class LMC(MultiGP):
 
         return np.linspace(lo, hi, m), m
 
+    @staticmethod
+    def _interpolant(Xs, inducing_grid):
+        multiout_grid_sizes = np.arange(len(Xs)) * len(inducing_grid)
+        Ws = [interp_cubic(inducing_grid, X) for X in Xs]
+
+        row_lens = [len(X) for X in Xs]
+        row_ends = np.add.accumulate(row_lens)
+        row_begins = np.roll(row_ends, 1)
+        row_begins[0] = 0
+        order = row_ends[-1]
+
+        col_lens = [W.nnz for W in Ws]
+        col_ends = np.add.accumulate(col_lens)
+        col_begins = np.roll(col_ends, 1)
+        col_begins[0] = 0
+        width = col_ends[-1]
+
+        ind_starts = np.roll(np.add.accumulate([W.indptr[-1] for W in Ws]), 1)
+        ind_starts[0] = 0
+        ind_ptr = np.append(np.repeat(ind_starts, row_lens), width)
+        data = np.empty(width)
+        col_indices = np.repeat(multiout_grid_sizes, col_lens)
+        for rbegin, rend, cbegin, cend, W in zip(
+                row_begins, row_ends, col_begins, col_ends, Ws):
+            ind_ptr[rbegin:rend] += W.indptr[:-1]
+            data[cbegin:cend] = W.data
+            col_indices[cbegin:cend] += W.indices
+
+        ncols = len(Xs) * len(inducing_grid)
+        return scipy.sparse.csr_matrix(
+            (data, col_indices, ind_ptr), shape=(order, ncols))
+
     def _generate_ski(self):
         coreg_mats = [np.outer(a, a) for a in self.coreg_vecs]
         kernels = [Toeplitz(k.from_dist(self.dists))
@@ -220,7 +228,7 @@ class LMC(MultiGP):
         products = [Kronecker(A, K) for A, K in zip(coreg_mats, kernels)]
         kern_sum = SumMatrix(products)
         return SKI(kern_sum,
-                   self.interpolants,
+                   self.interpolant,
                    self.noise,
                    self.Xs)
 
@@ -229,6 +237,10 @@ class LMC(MultiGP):
         # derivatives w.r.t. ordinary covariance hyperparameters
         # d lam(K) = diag(V'*dK*V), for psd matrix K = V*diag(lam)*V'.
         self.ski_kernel = self._generate_ski()
+
+        self.nu = None
+        self.alpha = None
+        self.native_var = None
 
     def K_SKI(self):
         """
@@ -256,6 +268,36 @@ class LMC(MultiGP):
         top_eigs = eigs[:len(noise)]
         return np.log(top_eigs + noise + self.TOL).sum()
 
+    def _invmul(self, y):
+        op = self.ski_kernel.as_linear_operator()
+        Kinv_y, succ = scipy.sparse.linalg.minres(
+            op, self.y, tol=self.TOL, maxiter=self.m)
+        # TODO log succ warn
+        return Kinv_y
+
+    def _precompute_predict(self):
+        # Not optimized for speed - this performs dense linear algebra
+        # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
+        # This can probably be sped up (even by e.g., using the approximations
+        # offered in those sections, or perhaps some less coarse ones).
+        # However, it's the training that's the bottleneck, not prediction.
+        nongrid_alpha = self._invmul(self.y)
+        WT = self.ski_kernel.WT
+        K_UU = self.ski_kernel.K_sum
+        alpha = K_UU.matvec(WT.dot(nongrid_alpha))
+
+        A = self.K_SKI()
+        K_XU = self.interpolant.dot(K_UU.as_numpy())
+        Ainv_KXU = scipy.linalg.solve(A, K_XU, sym_pos=True, overwrite_a=True)
+        nu = np.diag(K_XU.T.dot(Ainv_KXU))
+
+        coregs = np.square(np.column_stack(self.coreg_vecs))
+        kerns = [k.from_dist(0) for k in self.kernels]
+        native_output_var = coregs.dot(kerns).reshape(-1)
+        native_var = native_output_var + self.noise
+
+        return alpha, nu, native_var
+
     def normal_quadratic(self):
         """
         If the flattened outputs are written as :math:`\\textbf{y}`,
@@ -264,11 +306,7 @@ class LMC(MultiGP):
         :returns: the normal quadratic term for the current outputs
                   `Ys`.
         """
-        op = self.ski_kernel.as_linear_operator()
-        Kinv_y, succ = scipy.sparse.linalg.minres(
-            op, self.y, tol=self.TOL, maxiter=self.m)
-        # TODO log succ warn
-        return self.y.dot(Kinv_y)
+        return self.y.dot(self._invmul(self.y))
 
     def log_likelihood(self):
         nll = self.log_det_K() + self.normal_quadratic()
@@ -276,5 +314,17 @@ class LMC(MultiGP):
         return -0.5 * nll
 
     def _raw_predict(self, Xs):
-        # Not optimized for speed.
-        raise NotImplementedError
+        if self.alpha is None:
+            self.alpha, self.nu, self.native_var = self._precompute_predict()
+
+        W = self._interpolant(Xs, self.inducing_grid)
+        lens = [len(X) for X in Xs]
+
+        m = W.dot(self.alpha)
+
+        native_var = np.repeat(self.native_var, lens)
+        v = native_var - W.dot(self.nu)
+        v[v < 0] = 0
+
+        endpoints = np.add.accumulate(lens)[:-1]
+        return np.split(m, endpoints), np.split(v, endpoints)

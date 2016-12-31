@@ -114,6 +114,49 @@ class LMCTest(RandomTest):
         actual = lmc.normal_quadratic()
         np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
 
+    def check_fit(self, ea, noise_sd, true_func):
+        assert all(x < 0.1 for x in noise_sd)
+        assert len(noise_sd) == len(true_func)
+        noises = [np.random.randn(len(xs)) * sd
+                  for xs, sd in zip(ea.xss, noise_sd)]
+        ea.yss = [f(xs) + noise
+                  for f, xs, noise in zip(true_func, ea.xss, noises)]
+        lmc = ea.gen_lmc(sum(ea.sizes))
+
+        mu, var = lmc.predict(ea.xss)
+        avg_err_before = [np.fabs(m - ys).mean() for m, ys in zip(mu, ea.yss)]
+        avg_var_before = [v.mean() for v in var]
+        ll_before = lmc.log_likelihood()
+        lmc.optimize(optimizer=DerivFree())
+        mu, var = lmc.predict(ea.xss)
+        err_after = [np.fabs(m - ys) for m, ys in zip(mu, ea.yss)]
+        avg_err_after = [err.mean() for err in err_after]
+        avg_var_after = [v.mean() for v in var]
+        ll_after = lmc.log_likelihood()
+
+        for before, after in zip(avg_err_before, avg_err_after):
+            self.assertGreater(before, after)
+
+        for before, after in zip(avg_var_before, avg_var_after):
+            self.assertGreater(before, after)
+
+        self.assertGreater(ll_after, ll_before)
+
+        # Probibalistic but very, very likely to hold bounds
+        # These will only fail to catch gross errors
+
+        # Be within a magnitude of the noise sd
+        for avg_var, sd in zip(avg_var_after, noise_sd):
+            actual_sd = np.sqrt(avg_var)
+            self.assertGreater(actual_sd, sd / 10)
+            self.assertGreater(sd * 10, actual_sd)
+
+        for errs, output_vars in zip(err_after, var):
+            sds = np.sqrt(output_vars)
+            nabove_3sig = np.count_nonzero(errs > 3 * sds)
+            # Note 5% is two sigma, intentionally.
+            self.assertGreater(0.05, nabove_3sig / len(errs))
+
     def test_no_kernel(self):
         mapnp = lambda x: list(map(np.array, x))
         basic_Xs = mapnp([[0, 1, 2], [0.5, 1.5, 2.5]])
@@ -145,39 +188,17 @@ class LMCTest(RandomTest):
         ea = self.case_large()
         self.check_normal_quadratic(ea)
 
-    # TODO compare raw_predict to SKI exact matrix
-    # Eq. 7 in Sec. 5.1.1 in MSGP
-
     def test_1d_fit(self):
         ea = self.case_1d()
-        noise = np.random.randn(len(ea.xss)) * 0.05
-        ea.yss = [np.sin(ea.xss[0]) + noise]
-        lmc = ea.gen_lmc(sum(ea.sizes))
-
-        ll_before = lmc.log_likelihood()
-        lmc.optimize(optimizer=DerivFree())
-        ll_after = lmc.log_likelihood()
-
-        self.assertGreater(ll_after, ll_before)
-
-        # TODO reconstruction should be within max(noise) + 2 * tol + delta
-        # test at xss + delta shifted
+        noise_sd = [0.05]
+        true_func = [np.sin]
+        self.check_fit(ea, noise_sd, true_func)
 
     def test_2d_fit(self):
         ea = self.case_2d()
-        noises = [0.05 * np.random.randn(len(ea.xss[0])),
-                  0.02 * np.random.randn(len(ea.xss[1]))]
-        ea.yss = [np.sin(ea.xss[0]) + noises[0],
-                  np.sin(ea.xss[1]) + noises[1]]
-        lmc = ea.gen_lmc(sum(ea.sizes))
-
-        ll_before = lmc.log_likelihood()
-        lmc.optimize(optimizer=DerivFree())
-        ll_after = lmc.log_likelihood()
-
-        self.assertGreater(ll_after, ll_before)
-
-        # TODO reconstruction, again.
+        noise_sd = [0.02, 0.08]
+        true_func = [np.sin, np.cos]
+        self.check_fit(ea, noise_sd, true_func)
 
     # TODO: test_coreg_nocov - requires rank 2, single kernel, l1 prior
     #       on coreg (should find identity matrix approx coregionalization
