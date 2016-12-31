@@ -64,11 +64,12 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. GP tests - up to training data improvements from deriv-free opt (add an accuracy test on sine + noise)
+0. n/m scaling factor, reference 2.3.1 SKI
 0. Verify/clean up docs for lmc.py, style
-0. Add `_raw_predict`; test
+0. Consolidate SKI-opt-explore (keep 2d, del 1d)
+0. TODO: new logdet algo? [try this](https://arxiv.org/abs/1503.06394)
 0. Add StdPeriodic kernel
-0. Consolidate SKI-opt-explore (keep 2d, del 1d, add cov) + add cov test
+0. Try exploration notebook; see if correct period learned in StdPeriodic
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
 0. Create noisify; exact sampling functions
 0. Put resulting image into this README (link to ipynb in `examples/`)
@@ -76,12 +77,14 @@ All below invocations should be done from the repo root.
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
 0. Write "PURJ" paper - proofs and evidence of reconstruction error being tolerable. - log det algo - what's the bound?
+0. create an LMC test for checking a no-covariance multioutput case detected (requires rank-2 kernel to learn the identity matrix as its coregionalization). Similarly for a with-covariance. Both cases should be 2-output, single kernel, non-noisy.
 0. Model learning
     * derivative-free opt first;
     * numerical derivative opt;
     * derivatives (implement det grad derivative; SLFM derivatives)
 0. Numerical derivation class (use MAT321 method)
 0. Add tests to verify gradient (for a particular model, with and without prior)
+0. Beat GPy; iterate for speed.
 0. SLFM approach (new algorithm paper)
    0. How to take determinant? Derivatives?
    0. Re-prove (legitimately); start by showing wilson SKI m^(-3) conv (in multioutput case), then prove SLFM for 1 input dim, rank 1
@@ -137,3 +140,4 @@ All below invocations should be done from the repo root.
 0. experimental proof for above; comparison to gpy exact/ssgp
 0. test lmc._autogrid for edge cases.
 0. test lmc kernel reconstruction, quadratic with ExactAnalogue with different gaussian noise (not all 1s)
+0. test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math

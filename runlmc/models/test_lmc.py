@@ -199,10 +199,3 @@ class LMCTest(RandomTest):
         noise_sd = [0.02, 0.08]
         true_func = [np.sin, np.cos]
         self.check_fit(ea, noise_sd, true_func)
-
-    # TODO: test_coreg_nocov - requires rank 2, single kernel, l1 prior
-    #       on coreg (should find identity matrix approx coregionalization
-    #       after a couple random restarts (choose l2 err minimizing one,
-    #       on data with no noise).
-    # TODO: same as above, but find the covariance. (check we don't go to the
-    #       identity)
