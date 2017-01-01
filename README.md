@@ -64,10 +64,9 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. n/m scaling factor, reference 2.3.1 SKI
-0. Verify/clean up docs for lmc.py, style
 0. Consolidate SKI-opt-explore (keep 2d, del 1d)
-0. TODO: new logdet algo? [try this](https://arxiv.org/abs/1503.06394)
+0. Verify/clean up docs for lmc.py, style
+0. new logdet algo? [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet)
 0. Add StdPeriodic kernel
 0. Try exploration notebook; see if correct period learned in StdPeriodic
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh

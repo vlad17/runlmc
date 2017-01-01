@@ -77,7 +77,7 @@ def exp_decr_toep(n):
               the rate of which is randomly generated but at least
               :math:`e`.
     """
-    return np.exp(-(1 + np.random.rand()) * np.arange(n))
+    return np.exp(-np.random.rand() * np.arange(n))
 
 def run_main(f, help_str):
     """

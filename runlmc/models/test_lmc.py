@@ -145,7 +145,13 @@ class LMCTest(RandomTest):
         self.assertGreater(ll_after, ll_before)
 
         # Probibalistic but very, very likely to hold bounds
-        # These will only fail to catch gross errors
+        # These will only catch gross errors
+
+        for errs, output_vars in zip(err_after, var):
+            sds = np.sqrt(output_vars)
+            nabove_3sig = np.count_nonzero(errs > 3 * sds)
+            # Note 5% is two sigma, intentionally.
+            self.assertGreater(0.05, nabove_3sig / len(errs))
 
         # Be within a magnitude of the noise sd
         for avg_var, sd in zip(avg_var_after, noise_sd):
@@ -153,11 +159,8 @@ class LMCTest(RandomTest):
             self.assertGreater(actual_sd, sd / 10)
             self.assertGreater(sd * 10, actual_sd)
 
-        for errs, output_vars in zip(err_after, var):
-            sds = np.sqrt(output_vars)
-            nabove_3sig = np.count_nonzero(errs > 3 * sds)
-            # Note 5% is two sigma, intentionally.
-            self.assertGreater(0.05, nabove_3sig / len(errs))
+        # Better verification necessary, as soon as we get better
+        # optimization.
 
     def test_no_kernel(self):
         mapnp = lambda x: list(map(np.array, x))
