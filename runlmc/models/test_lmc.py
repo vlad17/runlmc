@@ -1,6 +1,8 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
+import unittest
+
 import numpy as np
 import paramz.optimization
 import scipy.linalg
@@ -187,6 +189,10 @@ class LMCTest(RandomTest):
     def test_normal_quadratic_large(self):
         ea = self.case_large()
         self.check_normal_quadratic(ea)
+
+    @unittest.skip('test to come when log det gets guarantee')
+    def test_log_det_1d(self):
+        pass
 
     def test_1d_fit(self):
         ea = self.case_1d()

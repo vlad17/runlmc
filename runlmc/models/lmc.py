@@ -265,7 +265,11 @@ class LMC(MultiGP):
         eigs[::-1].sort()
         noise = np.repeat(self.noise, list(map(len, self.Ys)))
         noise.sort()
-        top_eigs = eigs[:len(noise)]
+        # KISS-GP section 2.3.1 from Wilson 2015
+        # Theorem 3.4 of Baker 1977 in
+        # The numerical treatment of integral equation
+        # This converges to the upper bound in the number of examples.
+        top_eigs = eigs[:len(noise)] * len(noise) / len(self.inducing_grid)
         return np.log(top_eigs + noise + self.TOL).sum()
 
     def _invmul(self, y):
