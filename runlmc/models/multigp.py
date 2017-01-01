@@ -100,6 +100,8 @@ class MultiGP(Model):
         raise NotImplementedError
 
     def _predict(self, Xs, normalize):
+        assert len(Xs) == self.output_dim, \
+            'num inputs {} != output_dim {}'.format(len(Xs), self.output_dim)
         mu, var = self._raw_predict(Xs)
 
         if self.normalizer and normalize:
