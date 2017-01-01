@@ -64,69 +64,50 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Consolidate SKI-opt-explore (keep 2d, del 1d)
 0. Verify/clean up docs for lmc.py, style
-0. new logdet algo? [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet)
-0. Add StdPeriodic kernel
-0. Try exploration notebook; see if correct period learned in StdPeriodic
+0. Put image into this README (link to ipynb in `examples/`)
+0. Review docs in general
+0. Rank > 1 coregionalization
+0. create an LMC test for checking a no-covariance multioutput case detected (requires rank-2 kernel to learn the identity matrix as its coregionalization). Similarly for a with-covariance. Both cases should be 2-output, single kernel, non-noisy.
+0. Add StdPeriodic, Matern kernel (add a PSD test)
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
-0. Create noisify; exact sampling functions
-0. Put resulting image into this README (link to ipynb in `examples/`)
-0. Figure out eigenvalue issues - SEED=3333617092 nosetests runlmc.models.test_lmc breaks Toeplitz PSD
+0. Figure out eigenvalue issues - SEED=3333617092 nosetests runlmc.models.test_lmc breaks Toeplitz PSD; log
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
-0. Write "PURJ" paper - proofs and evidence of reconstruction error being tolerable. - log det algo - what's the bound?
-0. create an LMC test for checking a no-covariance multioutput case detected (requires rank-2 kernel to learn the identity matrix as its coregionalization). Similarly for a with-covariance. Both cases should be 2-output, single kernel, non-noisy.
+0. Write up the current algorithm (PDF)
 0. Model learning
-    * derivative-free opt first;
-    * numerical derivative opt;
-    * derivatives (implement det grad derivative; SLFM derivatives)
-0. Numerical derivation class (use MAT321 method)
-0. Add tests to verify gradient (for a particular model, with and without prior)
+    * derivative-free opt first -> common bottlenecks?
+    * numerical derivative opt -> numerical derivation class (use MAT321 method)
+    * derivatives -> hopefully it doesn't come to this, lot more work.
+0. Add tests to verify gradient (for a particular model, with and without prior, use the MAT321 method)
 0. Beat GPy; iterate for speed.
-0. SLFM approach (new algorithm paper)
+0. TODO(PAPER) - add references to paper (in README, too)
+
+### Considerations 
+
+* SLFM approach -> can we take determeinant in this representation?
+   0. SLFM approach work for computing deriv of log det / log det exactly (pg. 16 in vector-valued-lmc.pdf)
    0. How to take determinant? Derivatives?
    0. Re-prove (legitimately); start by showing wilson SKI m^(-3) conv (in multioutput case), then prove SLFM for 1 input dim, rank 1
    0. Rank >1 reduction to rank 1 (use constant kq terms)
    0. multidimensional proof; requires cubic interpol from SKI (again, for multioutput)
    0. SLFM code up; GP code up; do K, dK/dL reconstruction experiments.
-0. New means, kernels (generalize the unit testing BasicModel)
-0. rename `rand_psd` -> `rand_pd`
-0. Continuous integration for unit tests
-0. Drop gpy dep (in non-tests)
-0. TODO(MSGP) - fast toeplitz eig
-0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
-0. TODO(PAPER) - add references to paper (in README, too)
-0. multidimensional inputs and ARD.
-0. product kernels (multiple factors) and active dimensions
-
-### Considerations
-
-* MINRES or CG?
+* TODO(MSGP) - fast toeplitz eig
+* MINRES or LCG?
 * How can we add good preconditioners? How much do they help?
 * What are condition numbers in practice?
-* Why are sparse eigensolvers poor?
-* SLFM approach work for computing deriv of log det / log det exactly (pg. 16 in vector-valued-lmc.pdf)
+* Why are sparse eigensolvers poor? Can we use them as an accurate general-purpose solution if all else fails?
 * Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
-* GP optimization approaches [meta, for general improvement, after inner loop proven faster]
-    * Constrained optimizers might not actually be necessary - paramz transformations take car of positivity.
-    * scipy constrained multivariate methods
-        * l-bfgs-b
-        * cobyla
-        * tnc
-        * slsqp
-        * simplex
-    * paramz
-        * scg
-    * climin
-        * rmsprop
-        * adadelta
-        * adam
-        * rprop
-    * gradient-free? if fast enough...
-        * `scipy.optimize.differential_evolution`
-        * [other derivative-free optimization](https://en.wikipedia.org/wiki/Derivative-free_optimization)
-        * `pyOpt` may have a few [link](http://www.pyopt.org/reference/optimizers.html)
+0. New logdet algo? [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet)
+
+### Low-priority Tasks
+
+0. rename `rand_psd` -> `rand_pd`
+0. Continuous integration for unit tests
+0. Drop gpy dep (in non-tests) - requires exact kernel cholesky impl
+0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
+0. multidimensional inputs and ARD.
+0. product kernels (multiple factors) and active dimensions
 
 ### Thesis Plan
 
