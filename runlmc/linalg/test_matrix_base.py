@@ -54,21 +54,6 @@ class DecomposableMatrixTestBase(MatrixTestBase):
                                        np_eigs,
                                        err_msg='\n{!s}\n'.format(my_mat))
 
-    def test_approx_eig(self):
-        for my_mat in self.approx_examples:
-            np_mat = my_mat.as_numpy()
-            sign, logdet = np.linalg.slogdet(np_mat)
-            assert sign > 0, sign
-            eigs = my_mat.eig(self.eigtol, exact=False)
-            my_logdet = np.log(eigs).sum()
-            my_logdet += (my_mat.shape[0] - len(eigs)) * np.log(self.eigtol)
-            rel_err = abs(logdet - my_logdet)
-            rel_err /= 1 if logdet == 0 else abs(logdet)
-            msg = '\nmy logdet {} np logdet {}\n{!s}\n'.format(
-                my_logdet, logdet, my_mat)
-            print(msg)
-            self.assertGreaterEqual(0.5, rel_err, msg=msg)
-
     def test_bound(self):
         for my_mat in self.examples:
             np_mat = my_mat.as_numpy()

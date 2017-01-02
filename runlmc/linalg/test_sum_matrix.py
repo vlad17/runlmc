@@ -86,21 +86,3 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
 
     def test_empty(self):
         self.assertRaises(ValueError, SumMatrix, [])
-
-    def test_logdet(self):
-        for my_mat in self.examples:
-            np_mat = my_mat.as_numpy()
-            sign, logdet = np.linalg.slogdet(np_mat)
-            self.assertGreater(sign, 0)
-            my_logdet = np.log(my_mat.approx_eigs(1e-6)).sum()
-            msg = '\nmy logdet {} np logdet {}\n{!s}\n'.format(
-                my_logdet, logdet, my_mat)
-
-            # If we're very close to being singular then the bound isn't
-            # so great; just make sure we have an upper bound
-            if logdet < 0:
-                self.assertGreaterEqual(my_logdet, logdet, msg=msg)
-            else:
-                rel_err = abs(logdet - my_logdet)
-                rel_err /= 1 if logdet == 0 else abs(logdet)
-                self.assertGreaterEqual(0.5, rel_err, msg=msg)

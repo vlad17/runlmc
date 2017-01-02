@@ -64,15 +64,14 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Verify/clean up docs for lmc.py, style
-0. logging - success for minres, params changed, Toeplitz eigen, LMC creation general info, Kronecker eig lower verbosity.
+0. logging - success for minres, params changed, Toeplitz eigen, LMC creation general info, Kronecker eig lower verbosity, `runlmc.linalg.test_sum_matrix` logdet acc.
 0. Put image into this README (link to ipynb in `examples/`)
 0. Review docs in general
 0. Rank > 1 coregionalization
 0. create an LMC test for checking a no-covariance multioutput case detected (requires rank-2 kernel to learn the identity matrix as its coregionalization). Similarly for a with-covariance. Both cases should be 2-output, single kernel, non-noisy.
 0. Add StdPeriodic, Matern kernel (add a PSD test)
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
-0. Figure out eigenvalue issues - SEED=3333617092 nosetests runlmc.models.test_lmc breaks Toeplitz PSD; log
+0. Figure out eigenvalue issues - ; log
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
 0. Write up the current algorithm (PDF)
@@ -86,6 +85,7 @@ All below invocations should be done from the repo root.
 
 ### Considerations 
 
+* SEED=3333617092 nosetests runlmc.models.test_lmc breaks Toeplitz PSD strictly (currently has large negative eigval cutoff)
 * SLFM approach -> can we take determeinant in this representation?
    0. SLFM approach work for computing deriv of log det / log det exactly (pg. 16 in vector-valued-lmc.pdf)
    0. How to take determinant? Derivatives?
