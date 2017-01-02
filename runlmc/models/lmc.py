@@ -20,26 +20,6 @@ from ..util.interpolation import interp_cubic
 _LOG = logging.getLogger(__name__)
 
 @inherit_doc
-class SKI(PSDMatrix):
-    """
-    TODO init docs
-    """
-    def __init__(self, K_sum, W, noise, Xs):
-        lens = [len(X) for X in Xs]
-        super().__init__(sum(lens))
-        self.K_sum = K_sum
-        self.W = W
-        self.WT = self.W.transpose().tocsr()
-        self.noise = np.repeat(noise, lens)
-
-    def as_numpy(self):
-        WKT = self.W.dot(self.K_sum.as_numpy().T)
-        return self.W.dot(WKT.T) + np.diag(self.noise)
-
-    def matvec(self, x):
-        return self.W.dot(self.K_sum.matvec(self.WT.dot(x))) + x * self.noise
-
-@inherit_doc
 class LMC(MultiGP):
     """
     The main class of this package, `LMC` implements linearithmic
@@ -80,7 +60,8 @@ class LMC(MultiGP):
 
     .. math::
 
-        K_{\\text{exact}}\\approx K_{\\text{SKI}} = W K W^\\top
+        K_{\\text{exact}}\\approx K_{\\text{SKI}} = W K W^\\top +
+            \\boldsymbol\\epsilon I
 
     Above, :math:`K` is a structured kernel over a grid :math:`U`, derived
     from :math:`A_q, k_q` as before. The grid structure enables us to
@@ -89,16 +70,7 @@ class LMC(MultiGP):
 
     .. math::
 
-        K=\sum_{q=1}^QA_qA_q^\\top \\otimes k_q(U, U) +
-             \\boldsymbol\\epsilon' I
-
-    TODO :math:`\\boldsymbol\\epsilon'` has been REMOVED - noise is NOT in
-    SKI space anymore.
-
-    Above, the values of :math:`\\boldsymbol\\epsilon'` are the same as its
-    unprimed counterpart, but the lengths of each region with the same value
-    (corresponding to an output's iid noise) are now all equal to
-    :math:`\\left\\vert U\\right\\vert`.
+        K=\sum_{q=1}^QA_qA_q^\\top \\otimes k_q(U, U)
 
     Each :math:`A_q` (only a column vector for now) is a parameter of
     this model, with name `a<q>`, where `<q>` is replaced with a specific
@@ -171,6 +143,23 @@ class LMC(MultiGP):
 
     TOL = 1e-4
 
+    class _SKI(PSDMatrix):
+        def __init__(self, K_sum, W, noise, Xs):
+            lens = [len(X) for X in Xs]
+            super().__init__(sum(lens))
+            self.K_sum = K_sum
+            self.W = W
+            self.WT = self.W.transpose().tocsr()
+            self.noise = np.repeat(noise, lens)
+
+        def as_numpy(self):
+            WKT = self.W.dot(self.K_sum.as_numpy().T)
+            return self.W.dot(WKT.T) + np.diag(self.noise)
+
+        def matvec(self, x):
+            return self.W.dot(self.K_sum.matvec(self.WT.dot(x))) \
+                + x * self.noise
+
     @staticmethod
     def _autogrid(Xs, lo, hi, m):
         if m is None:
@@ -227,11 +216,11 @@ class LMC(MultiGP):
                    for k in self.kernels]
         products = [Kronecker(A, K) for A, K in zip(coreg_mats, kernels)]
         kern_sum = SumMatrix(products)
-        return SKI(kern_sum,
-                   self.interpolant,
-                   self.noise,
-                   self.Xs)
-
+        return LMC._SKI(
+            kern_sum,
+            self.interpolant,
+            self.noise,
+            self.Xs)
 
     def parameters_changed(self):
         # derivatives w.r.t. ordinary covariance hyperparameters
@@ -257,7 +246,7 @@ class LMC(MultiGP):
         :returns: an upper bound of the approximate log determinant,
                   uses :math:`K_\\text{SKI}` to find an approximate
                   upper bound for
-                  :math:`\\log\\det K_{\text{exact}} + \\boldsymbol\\epsilon I`
+                  :math:`\\log\\det K_{\text{exact}}`
         """
         min_noise = min(self.noise.min(), self.TOL)
         eigs = self.ski_kernel.K_sum.approx_eigs(min_noise)
@@ -275,7 +264,7 @@ class LMC(MultiGP):
     def _invmul(self, y):
         op = self.ski_kernel.as_linear_operator()
         Kinv_y, succ = scipy.sparse.linalg.minres(
-            op, self.y, tol=self.TOL, maxiter=self.m)
+            op, y, tol=self.TOL, maxiter=self.m)
         # TODO log succ warn
         return Kinv_y
 
@@ -304,11 +293,10 @@ class LMC(MultiGP):
 
     def normal_quadratic(self):
         """
-        If the flattened outputs are written as :math:`\\textbf{y}`,
-        this returns :math:`\\textbf{y}^\\topK_{\\text{SKI}}^{-1}\\textbf{y}`.
+        If the flattened (Stacked)outputs are written as :math:`\\textbf{y}`,
+        this returns :math:`\\textbf{y}^\\top K_{\\text{SKI}}^{-1}\\textbf{y}`.
 
-        :returns: the normal quadratic term for the current outputs
-                  `Ys`.
+        :returns: the normal quadratic term for the current outputs `Ys`.
         """
         return self.y.dot(self._invmul(self.y))
 

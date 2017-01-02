@@ -114,7 +114,7 @@ class SumMatrix(PSDMatrix):
                 eigs_small = K.eig(min_eig, exact=False)
                 eigs_K[:] = min_eig
                 eigs_K[:len(eigs_small)] = eigs_small
-                i, j = 0, 0
+                i = 0
                 for k in range(n):
                     lowest_i = max(i - s, 0)
                     highest_i = min(s + (s - (i - lowest_i)), n - 1, k)
@@ -127,7 +127,7 @@ class SumMatrix(PSDMatrix):
                     vals = prev_eigs[i_candidates] + eigs_K[j_candidates]
                     best = chooser(vals)
                     eigs[k] = vals[best]
-                    i, j = i_candidates[best], j_candidates[best]
+                    i = i_candidates[best]
 
             eigs[eigs < min_eig] = min_eig
             return eigs
