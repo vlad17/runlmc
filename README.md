@@ -20,35 +20,38 @@ I've re-used a lot of the GPy code. The main issue with simply adding my methods
 
 If there is some quantifiable success with this approach then integration with GPy would be a reasonable next-step.
 
-## Example
+## Examples and Benchmarks
 
-    def noisify(x, sd): return x + np.rand.normal(0, sd)
-    Xs = [np.arange(-10, 5, 0.5), np.arange(-5.25, 10, .5)]
-    Xs = [[noisify(x, 0.1) for x in ls] for i, ls in enumerate(Xs, 1)]
-    Ks = [runlmc.kern.StdPeriodic() for _ in range(2)]
-    Ys = runlmc.util.Sample(Xs, Ks, added_noise=[1,0.3])
-    m = runlmc.models.LMC(Xs, Ys,ranks=[1,1],kernels_list=Ks)
-    m.optimize()
-    
-    xticks = np.arange(-10, 10, 0.01)
-    mus, _ = m.predict([xticks, xticks])
-    los, his = m.predict_quantiles([xticks, xticks])
-    
-    %matplotlib inline
-    import matplotlib.pyplot as plt
-    for i in range(2)
-        print("Output", i)
-        for outs in [lo, mu, hi]: plt.plot(xticks, outs[i])
-        plt.plot(Xs[i], Ys[i])
-        plt.show()
+### Snippet
+
+Note: currently derivatives are not implemented, nor is the package optimized for speed yet.
+
+Full example 
+
+    n_per_output = [65, 100]
+    xss = list(map(np.random.rand, n_per_output))
+    yss = [f(2 * np.pi * xs) + np.random.randn(len(xs)) * 0.05
+           for f, xs in zip([np.sin, np.cos], xss)]
+    ks = [RBF(name='rbf{}'.format(i)) for i in range(nout)]
+    lmc = LMC(xss, yss, kernels=ks)
+    # ... plotting code
         
-TODO: show resulting image
+![unopt](examples/unopt.png) TODO unoptimized
+
+    lmc.optimize(optimizer=DerivFree())
+    # ... more plotting code
+    
+![opt](examples/opt.png) TODO optimized
         
-## Benchmarks
+### Running the Examples and Benchmarks
 
 Make sure that the directory root is in the `PYTHONPATH` when running the benchmarks. E.g., from the directory root:
 
     PYTHONPATH=. python benchmark/inversion.py
+    
+Similarly, for examples:
+
+    cd examples; PYTHONPATH=.. jupyter notebook example.ipynb
         
 ## Dev Stuff
 
@@ -64,7 +67,6 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Put image into this README (link to ipynb in `examples/`)
 0. Review docs in general
 0. Rank > 1 coregionalization
 0. create an LMC test for checking a no-covariance multioutput case detected (requires rank-2 kernel to learn the identity matrix as its coregionalization). Similarly for a with-covariance. Both cases should be 2-output, single kernel, non-noisy.
