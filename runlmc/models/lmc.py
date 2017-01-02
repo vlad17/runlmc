@@ -4,7 +4,7 @@
 import logging
 
 import numpy as np
-import scipy.linalg
+import scipy.linalg as la
 import scipy.sparse.linalg
 from paramz.transformations import Logexp
 
@@ -110,18 +110,25 @@ class LMC(MultiGP):
         if not kernels:
             raise ValueError('Number of kernels should be >0')
 
-        # Grid corresponds to U
-        self.inducing_grid, self.m = self._autogrid(Xs, lo, hi, m)
-
         self.kernels = kernels
         for k in self.kernels:
             self.link_parameter(k)
+
+        self.n = sum(map(len, Xs))
+        _LOG.info('LMC %s generating inducing grid n = %d',
+                  self.name, self.n)
+        # Grid corresponds to U
+        self.inducing_grid, self.m = self._autogrid(Xs, lo, hi, m)
 
         # Toeplitz(self.dists) is the pairwise distance matrix of U
         self.dists = self.inducing_grid - self.inducing_grid[0]
 
         # Corresponds to W; block diagonal matrix.
         self.interpolant = self._interpolant(self.Xs, self.inducing_grid)
+
+        _LOG.info('LMC %s grid (n = %d, m = %d) complete, '
+                  'generating first SKI kernel',
+                  self.name, self.n, self.m)
 
         self.coreg_vecs = []
         for i in range(len(self.kernels)):
@@ -140,6 +147,8 @@ class LMC(MultiGP):
         self.alpha = None
         self.nu = None
         self.native_var = None
+
+        _LOG.info('LMC %s fully initialized', self.name)
 
     TOL = 1e-4
 
@@ -179,7 +188,7 @@ class LMC(MultiGP):
         return np.linspace(lo, hi, m), m
 
     @staticmethod
-    def _interpolant(Xs, inducing_grid):
+    def _interpolant(Xs, inducing_grid): # pylint: disable=too-many-locals
         multiout_grid_sizes = np.arange(len(Xs)) * len(inducing_grid)
         Ws = [interp_cubic(inducing_grid, X) for X in Xs]
 
@@ -225,6 +234,8 @@ class LMC(MultiGP):
     def parameters_changed(self):
         # derivatives w.r.t. ordinary covariance hyperparameters
         # d lam(K) = diag(V'*dK*V), for psd matrix K = V*diag(lam)*V'.
+        if _LOG.isEnabledFor(logging.DEBUG):
+            _LOG.debug('params changed for LMC\n%s', str(self))
         self.ski_kernel = self._generate_ski()
 
         self.nu = None
@@ -265,7 +276,9 @@ class LMC(MultiGP):
         op = self.ski_kernel.as_linear_operator()
         Kinv_y, succ = scipy.sparse.linalg.minres(
             op, y, tol=self.TOL, maxiter=self.m)
-        # TODO log succ warn
+        if succ != 0:
+            _LOG.critical('MINRES (m = %d) for LMC %s did not converge.'
+                          'Error %d', self.m, self.name, succ)
         return Kinv_y
 
     def _precompute_predict(self):
@@ -281,7 +294,7 @@ class LMC(MultiGP):
 
         A = self.K_SKI()
         K_XU = self.interpolant.dot(K_UU.as_numpy())
-        Ainv_KXU = scipy.linalg.solve(A, K_XU, sym_pos=True, overwrite_a=True)
+        Ainv_KXU = la.solve(A, K_XU, sym_pos=True, overwrite_a=True)
         nu = np.diag(K_XU.T.dot(Ainv_KXU))
 
         coregs = np.square(np.column_stack(self.coreg_vecs))
@@ -312,11 +325,11 @@ class LMC(MultiGP):
         W = self._interpolant(Xs, self.inducing_grid)
         lens = [len(X) for X in Xs]
 
-        m = W.dot(self.alpha)
+        mean = W.dot(self.alpha)
 
         native_var = np.repeat(self.native_var, lens)
-        v = native_var - W.dot(self.nu)
-        v[v < 0] = 0
+        var = native_var - W.dot(self.nu)
+        var[var < 0] = 0
 
         endpoints = np.add.accumulate(lens)[:-1]
-        return np.split(m, endpoints), np.split(v, endpoints)
+        return np.split(mean, endpoints), np.split(var, endpoints)

@@ -84,19 +84,19 @@ class Kronecker(PSDDecomposableMatrix):
         cutoffA = self._conservative_cutoff_factor(cutoff, largeB)
         cutoffB = self._conservative_cutoff_factor(cutoff, largeA)
 
-        _LOG.info('%s eig(cutoff=%8.4g) -> A %s eig(cutoff=%8.4g)',
-                  self.shape, cutoff, self.A.shape, cutoffA)
+        _LOG.debug('%s eig(cutoff=%8.4g) -> A %s eig(cutoff=%8.4g)',
+                   self.shape, cutoff, self.A.shape, cutoffA)
         eigA = self.A.eig(cutoffA, exact)
-        _LOG.info('%s A %s largest eig predicted %8.4g actual %8.4g',
-                  self.shape, self.A.shape, largeA,
-                  eigA[0] if len(eigA) > 0 else 0)
+        _LOG.debug('%s A %s largest eig predicted %8.4g actual %8.4g',
+                   self.shape, self.A.shape, largeA,
+                   eigA[0] if len(eigA) > 0 else 0)
 
-        _LOG.info('%s eig(cutoff=%8.4g) -> B %s eig(cutoff=%8.4g)',
-                  self.shape, cutoff, self.B.shape, cutoffB)
+        _LOG.debug('%s eig(cutoff=%8.4g) -> B %s eig(cutoff=%8.4g)',
+                   self.shape, cutoff, self.B.shape, cutoffB)
         eigB = self.B.eig(cutoffB, exact)
-        _LOG.info('%s B %s largest eig predicted %8.4g actual %8.4g',
-                  self.shape, self.B.shape, largeB,
-                  eigB[0] if len(eigB) > 0 else 0)
+        _LOG.debug('%s B %s largest eig predicted %8.4g actual %8.4g',
+                   self.shape, self.B.shape, largeB,
+                   eigB[0] if len(eigB) > 0 else 0)
 
         # Can use smarter filter here - don't need to generate every eigenvalue
         # from the outer product if the smallest is less than the fixed cutoff

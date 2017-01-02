@@ -116,7 +116,7 @@ class LMCTest(RandomTest):
         actual = lmc.normal_quadratic()
         np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
 
-    def check_fit(self, ea, noise_sd, true_func):
+    def check_fit(self, ea, noise_sd, true_func): # pylint: disable=too-many-locals
         assert all(x < 0.1 for x in noise_sd)
         assert len(noise_sd) == len(true_func)
         noises = [np.random.randn(len(xs)) * sd
@@ -159,7 +159,7 @@ class LMCTest(RandomTest):
             self.assertGreater(actual_sd, sd / 10)
             self.assertGreater(sd * 10, actual_sd)
 
-        # Better verification necessary, as soon as we get better
+        # TODO better verification necessary, as soon as we get better
         # optimization.
 
     def test_no_kernel(self):

@@ -64,7 +64,6 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. logging - success for minres, params changed, Toeplitz eigen, LMC creation general info, Kronecker eig lower verbosity, `runlmc.linalg.test_sum_matrix` logdet acc.
 0. Put image into this README (link to ipynb in `examples/`)
 0. Review docs in general
 0. Rank > 1 coregionalization
