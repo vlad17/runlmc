@@ -165,7 +165,10 @@ class MultiGP(Model):
         `kwargs` are passed to the optimizer. See parameters for handled
         keywords.
 
-        TODO: do these parameters actually do anything?
+        TODO: do these parameters actually do anything? Check the paramz
+        code that's actually called here (or just use your own
+        `paramz.optimization.Optimizer`, see `examples/example.ipynb`).
+
         :param max_iters: maximum number of function evaluations
         :type max_iters: int
         :messages: whether to display during optimisation

@@ -86,7 +86,7 @@ class PSDDecomposableMatrix(PSDMatrix):
     eigendecomposition and bounding. This adheres to the following
     mathematical property manifested by the API :func:`eig`.
 
-    * Positive eigenvalues: `len(K.eig(cutoff=0)) == K.shape[0]`
+    * Positive eigenvalues: `len(K.eig(cutoff=0, exact=True)) == K.shape[0]`
     """
 
     def __init__(self, n):

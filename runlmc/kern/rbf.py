@@ -27,8 +27,8 @@ class RBF(StationaryKern):
 
        k(r) = \sigma^2 \exp \\frac{-\gamma r^2}{2}
 
-    :param variance: :math:`sigma^2`, above.
-    :param inv_lengthscale: :math:`gamma`, above.
+    :param variance: :math:`\sigma^2`, above.
+    :param inv_lengthscale: :math:`\gamma`, above.
     :param name:
     """
     def __init__(self, variance=1, inv_lengthscale=1, name='rbf'):

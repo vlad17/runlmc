@@ -27,7 +27,7 @@ class Toeplitz(PSDDecomposableMatrix):
     In addition, :math:`T` must be PSD.
 
     The :func:`eig` implementation assumes an ordering and positivity
-    :math:`0\le t_{1i}\le t_{1j}` for :math:`i\le j`.
+    :math:`0\le t_{1i}\le t_{1j}` for :math:`i\ge j`.
 
     :param top: 1-dimensional :mod:`numpy` array, used as the underlying
                 storage, which represents the first row :math:`t_{1j}`.

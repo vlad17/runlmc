@@ -15,7 +15,7 @@ class Constant(MeanFunction):
     This mean function is not useful with normalization activated.
 
     It may be useful if you would like to have no normalization
-    _and_ want to impose priors on the mean adjustment.
+    *and* want to impose priors on the mean adjustment.
 
     :param input_dim:
     :param output_dim:
