@@ -36,12 +36,12 @@ Full example
     lmc = LMC(xss, yss, kernels=ks)
     # ... plotting code
         
-![unopt](examples/unopt.png) TODO unoptimized
+![unopt](https://raw.githubusercontent.com/vlad17/runlmc/master/examples/unopt.png)
 
-    lmc.optimize(optimizer=DerivFree())
+    lmc.optimize(optimizer=DerivFree()) # deriv-free for now
     # ... more plotting code
     
-![opt](examples/opt.png) TODO optimized
+![opt](https://raw.githubusercontent.com/vlad17/runlmc/master/examples/opt.png)
         
 ### Running the Examples and Benchmarks
 
