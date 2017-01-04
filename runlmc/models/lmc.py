@@ -34,7 +34,8 @@ class LMC(MultiGP):
 
     .. math::
 
-        K_{\\text{exact}}=\sum_{q=1}^QA_qA_q^\\top
+        K_{\\text{exact}}=\sum_{q=1}^Q\\left(A_qA_q^\\top+
+             \\boldsymbol\\kappa_q I\\right)
              \circ [k_q(X_i, X_j)]_{ij\in[D]^2} +
              \\boldsymbol\epsilon I
 
@@ -50,6 +51,9 @@ class LMC(MultiGP):
     :math:`\\textbf{x}_a^{(i)}` as the
     :math:`a`-th input of the input set :math:`X_i` (and correspondingly for
     :math:`j`).
+
+    The :math:`\\left(A_qA_q^\\top+ \\boldsymbol\\kappa_q I\\right)` terms
+    create a kernel which captures some linear correlation between outputs.
 
     This class uses the SKI approximation, which shares a single grid
     :math:`U` as the input array for all the outputs. Then,
@@ -136,6 +140,13 @@ class LMC(MultiGP):
             self.coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
             self.link_parameter(self.coreg_vecs[-1])
 
+        self.coreg_diags = []
+        for i in range(len(self.kernels)):
+            coreg_diag = np.ones(self.output_dim)
+            self.coreg_diags.append(
+                Param('kappa{}'.format(i), coreg_diag, Logexp()))
+            self.link_parameter(self.coreg_diags[-1])
+
         # Corresponds to epsilon
         self.noise = Param('noise', np.ones(self.output_dim), Logexp())
         self.link_parameter(self.noise)
@@ -220,7 +231,8 @@ class LMC(MultiGP):
             (data, col_indices, ind_ptr), shape=(order, ncols))
 
     def _generate_ski(self):
-        coreg_mats = [np.outer(a, a) for a in self.coreg_vecs]
+        coreg_mats = [np.outer(a, a) + np.diag(k)
+                      for a, k in zip(self.coreg_vecs, self.coreg_diags)]
         kernels = [Toeplitz(k.from_dist(self.dists))
                    for k in self.kernels]
         products = [Kronecker(A, K) for A, K in zip(coreg_mats, kernels)]
@@ -297,7 +309,11 @@ class LMC(MultiGP):
         Ainv_KXU = la.solve(A, K_XU, sym_pos=True, overwrite_a=True)
         nu = np.diag(K_XU.T.dot(Ainv_KXU))
 
+        # A bit obscure; the native covariance K_** for each output
+        # is given by diag(K(0, 0)). This happens to be efficiently computed
+        # here.
         coregs = np.square(np.column_stack(self.coreg_vecs))
+        coregs += np.column_stack(self.coreg_diags)
         kerns = [k.from_dist(0) for k in self.kernels]
         native_output_var = coregs.dot(kerns).reshape(-1)
         native_var = native_output_var + self.noise
@@ -328,6 +344,7 @@ class LMC(MultiGP):
         mean = W.dot(self.alpha)
 
         native_var = np.repeat(self.native_var, lens)
+
         var = native_var - W.dot(self.nu)
         var[var < 0] = 0
 

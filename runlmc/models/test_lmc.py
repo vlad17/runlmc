@@ -22,12 +22,15 @@ class DerivFree(paramz.optimization.Optimizer):
         self.x_opt = scipy.optimize.fmin_cobyla(f, x_init, constraints, disp=0)
 
 class ExactAnalogue:
-    def __init__(self, kerns, sizes, coregs):
+    def __init__(self, kerns, sizes, coregs, diags=None):
         assert len(coregs) == len(kerns)
         assert set(map(len, coregs)) == {len(sizes)}
         self.kerns = kerns
         self.sizes = sizes
         self.coregs = coregs
+        self.diags = (
+            [np.ones(len(sizes)) for _ in coregs]
+            if diags is None else diags)
 
         self.xss = [np.random.rand(sz) for sz in sizes]
         self.yss = [np.random.rand(sz) for sz in sizes]
@@ -36,13 +39,16 @@ class ExactAnalogue:
         lmc = LMC(self.xss, self.yss, normalize=False, kernels=self.kerns, m=m)
         for lmc_coreg, coreg in zip(lmc.coreg_vecs, self.coregs):
             lmc_coreg[:] = coreg
+        for lmc_coreg, coreg in zip(lmc.coreg_diags, self.diags):
+            lmc_coreg[:] = coreg
         lmc.noise[:] = np.ones(len(self.sizes))
         return lmc
 
     def gen_exact_mat(self):
         exact_mat = np.identity(sum(self.sizes))
-        for coreg, kern in zip(self.coregs, self.kerns):
-            coreg_mat = np.outer(coreg, coreg)
+        for coreg, diag, kern in zip(self.coregs, self.diags, self.kerns):
+            coreg_mat = np.outer(coreg, coreg).astype(float)
+            coreg_mat += np.diag(diag)
             exact_mat += np.bmat(
                 [[coreg_mat[i, j] *
                   self.pairwise_dists(kern, self.xss[i], self.xss[j])
