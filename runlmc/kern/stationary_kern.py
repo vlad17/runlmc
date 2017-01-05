@@ -6,6 +6,10 @@ This file contains :class:`StationaryKern`, the kernel base class.
 
 Note this class does not accomplish as much as the corresponding
 one does in `GPy`. See the class documentation for details.
+
+Note that the corresponding :mod:`GPy` versions of these kernels
+have a scaling parameter that's avoided inthe LMC case because it
+would be redundant with the coregionalization constants.
 """
 
 from ..parameterization.parameterized import Parameterized

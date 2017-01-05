@@ -19,7 +19,7 @@ class ExactLMCTest(unittest.TestCase):
 
         self.basic_kernels = [
             RBF(name='rbf1'),
-            RBF(variance=2, inv_lengthscale=2, name='rbf2')]
+            RBF(inv_lengthscale=2, name='rbf2')]
         self.basic_Xs = mapnp([[0, 1, 2], [0.5, 1.5, 2.5]])
         self.basic_Ys = mapnp([[5, 6, 7], [7, 6, 5]])
         self.basic_predict_Xs = mapnp([[0.5, 1.5], [1.0, 2.0]])

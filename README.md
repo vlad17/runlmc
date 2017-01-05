@@ -67,7 +67,6 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. No variance in RBF / fixed variance in GPy conversion.
 0. create an LMC test for checking a no-covariance multioutput case detected (requires rank-2 kernel to learn the identity matrix as its coregionalization). Similarly for a with-covariance. Both cases should be 2-output, single kernel, non-noisy.
 0. Add StdPeriodic, Matern kernel (add a PSD test)
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh

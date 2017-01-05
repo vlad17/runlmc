@@ -69,24 +69,24 @@ class LMCTest(RandomTest):
 
     @staticmethod
     def case_1d():
-        kerns = [RBF(variance=2, inv_lengthscale=3)]
+        kerns = [RBF(inv_lengthscale=3)]
         szs = [15]
         coregs = [[1]]
         return ExactAnalogue(kerns, szs, coregs)
 
     @staticmethod
     def case_2d():
-        kerns = [RBF(variance=2, inv_lengthscale=3),
-                 RBF(variance=3, inv_lengthscale=2)]
+        kerns = [RBF(inv_lengthscale=3),
+                 RBF(inv_lengthscale=2)]
         szs = [15, 20]
         coregs = [[1, 2], [3, 4]]
         return ExactAnalogue(kerns, szs, coregs)
 
     @staticmethod
     def case_large():
-        kerns = [RBF(variance=2, inv_lengthscale=3),
-                 RBF(variance=3, inv_lengthscale=2),
-                 RBF(variance=1, inv_lengthscale=1)]
+        kerns = [RBF(inv_lengthscale=3),
+                 RBF(inv_lengthscale=2),
+                 RBF(inv_lengthscale=1)]
         szs = [15, 20, 10, 12, 13]
         coregs = [[1, 1, 1, 1, 2], [2, 1, 2, 1, 2], [-1, 1, -1, -1, -1]]
         return ExactAnalogue(kerns, szs, coregs)
