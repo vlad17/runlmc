@@ -67,10 +67,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. create an LMC test for checking a no-covariance multioutput case detected (requires rank-2 kernel to learn the identity matrix as its coregionalization). Similarly for a with-covariance. Both cases should be 2-output, single kernel, non-noisy.
 0. Add StdPeriodic, Matern kernel (add a PSD test)
-0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
-0. Figure out eigenvalue issues - ; log
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
 0. Write up the current algorithm (PDF)
@@ -102,6 +99,8 @@ All below invocations should be done from the repo root.
 
 ### Low-priority Tasks
 
+0. Allow extrapolation in util.interpolation.py
+0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
 0. rank > 1
 0. rename `rand_psd` -> `rand_pd`
 0. Continuous integration for unit tests
