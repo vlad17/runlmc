@@ -15,11 +15,13 @@ import unittest
 
 import numpy as np
 from paramz.optimization import Optimizer
+import scipy.linalg
 
 from ..linalg.kronecker import Kronecker
 from ..linalg.sum_matrix import SumMatrix
 from ..linalg.toeplitz import Toeplitz
 from ..linalg.numpy_matrix import NumpyMatrix
+from ..parameterization.model import Model
 from .numpy_convenience import smallest_eig
 
 class RandomTest(unittest.TestCase):
@@ -165,9 +167,10 @@ def check_np_lists(a, b, atol=0):
             sub_a, sub_b, err_msg='output {}'.format(i), atol=atol)
 
 class SingleGradOptimizer(Optimizer):
-    def __init__(self):
+    def __init__(self, lipschitz=1):
         super().__init__()
         self.gradient_observed = None
+        self.L = lipschitz
 
     def opt(self, x_init, f_fp=None, f=None, fp=None):
         # 1 iteration only
@@ -175,4 +178,37 @@ class SingleGradOptimizer(Optimizer):
         # the Model class will implicitly flip the objective's sign
         # to make the likelihood maximization into a minimization problem.
         self.gradient_observed = -fp(x_init)
-        self.x_opt = x_init + self.gradient_observed
+        self.x_opt = x_init + self.gradient_observed / self.L
+
+class BasicModel(Model):
+    def __init__(self, dists, Y, kern):
+        super().__init__('single-kern')
+        self.link_parameter(kern)
+        self.dists = dists
+        self.kern = kern
+        self.Y = Y
+
+    def log_likelihood(self):
+        K_top = self.kern.from_dist(self.dists)
+        KinvY = scipy.linalg.solve_toeplitz(K_top, self.Y)
+        # Prevent slight negative eigenvalues from roundoff.
+        sign, logdet = np.linalg.slogdet(
+            scipy.linalg.toeplitz(K_top) + 1e-10 * np.identity(len(K_top)))
+        assert sign > 0, sign
+        return -0.5 * self.Y.dot(KinvY) - 0.5 * logdet
+
+    def parameters_changed(self):
+        # maximize -0.5 * (y . K^-1 y) - 0.5 log |K|
+        # gradient wrt t is 0.5 tr((a a^T - K^-1)dK/dt), a = K^-1 a
+        K_top = self.kern.from_dist(self.dists)
+        a = scipy.linalg.solve_toeplitz(K_top, self.Y)
+        all_grad = self.kern.kernel_gradient(self.dists)
+        likelihood_grad = np.zeros(len(all_grad))
+        for i, grad in enumerate(all_grad):
+            dKdt = scipy.linalg.toeplitz(grad)
+            Kinv_dKdt = scipy.linalg.solve_toeplitz(K_top, dKdt)
+            aaT_dKdt = np.outer(a, dKdt.dot(a))
+            trace = np.trace(aaT_dKdt - Kinv_dKdt)
+            likelihood_grad[i] = 0.5 * trace
+
+        self.kern.update_gradient(likelihood_grad)

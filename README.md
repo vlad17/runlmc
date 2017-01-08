@@ -67,7 +67,9 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Add StdPeriodic, Matern kernel (add a PSD test)
+0. numerical gradient check for kernels (create a generic func/test it first) [should replace the gradient tests]
+0. Kernels add a PSD-checking test;
+0. Matern kernel 
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
 0. Write up the current algorithm (PDF)
@@ -99,6 +101,7 @@ All below invocations should be done from the repo root.
 
 ### Low-priority Tasks
 
+0. BSD 3-clasue -> APACHE 2.0
 0. Allow extrapolation in util.interpolation.py
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
 0. rank > 1
