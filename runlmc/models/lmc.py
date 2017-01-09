@@ -289,8 +289,11 @@ class LMC(MultiGP):
         Kinv_y, succ = scipy.sparse.linalg.minres(
             op, y, tol=self.TOL, maxiter=self.m)
         if succ != 0:
-            _LOG.critical('MINRES (m = %d) for LMC %s did not converge.'
-                          'Error %d', self.m, self.name, succ)
+            _LOG.critical('MINRES (m = %d) for LMC %s did not converge.\n'
+                          'Error %d\nReconstruction %f\nTolerance %f',
+                          self.m, self.name, succ,
+                          np.linalg.norm(y - op.matvec(Kinv_y)),
+                          self.TOL)
         return Kinv_y
 
     def _precompute_predict(self):

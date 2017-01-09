@@ -67,8 +67,9 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. numerical gradient check for kernels (create a generic func/test it first) [should replace the gradient tests]
-0. Kernels add a PSD-checking test;
+0. learning from numerical derivatives / true derivatives? - get this to work first; need preconditioners? (validate by letting MINRES run fully)
+0. Add a numerical gradient check for kernels using numdifftools package.
+0. Kernels add a PSD-checking test (induced covariance matrix should be PSD)
 0. Matern kernel 
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
