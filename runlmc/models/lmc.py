@@ -288,8 +288,7 @@ class LMC(MultiGP):
                   :math:`\\log\\det K_{\text{exact}}`
         """
         # return np.linalg.slogdet(self.K_SKI())[1]
-        min_noise = min(self.noise.min(), self.TOL)
-        eigs = self.ski_kernel.K_sum.approx_eigs(min_noise)
+        eigs = self.ski_kernel.K_sum.approx_eigs(0)
         # noise needs to be adjusted dimensionally. Idea: use top eigs?
         eigs[::-1].sort()
         noise = np.repeat(self.noise, list(map(len, self.Ys)))
@@ -299,7 +298,7 @@ class LMC(MultiGP):
         # The numerical treatment of integral equation
         # This converges to the upper bound in the number of examples.
         top_eigs = eigs[:len(noise)] * len(noise) / len(self.inducing_grid)
-        return np.log(top_eigs + noise + self.TOL).sum()
+        return np.log(top_eigs + noise).sum()
 
     def _invmul(self, y):
         # K = self.K_SKI()
