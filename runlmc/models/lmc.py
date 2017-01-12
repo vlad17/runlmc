@@ -246,13 +246,28 @@ class LMC(MultiGP):
     def parameters_changed(self):
         # derivatives w.r.t. ordinary covariance hyperparameters
         # d lam(K) = diag(V'*dK*V), for psd matrix K = V*diag(lam)*V'.
-        if _LOG.isEnabledFor(logging.DEBUG):
-            _LOG.debug('params changed for LMC\n%s', str(self))
+
         self.ski_kernel = self._generate_ski()
 
         self.nu = None
         self.alpha = None
         self.native_var = None
+
+        if _LOG.isEnabledFor(logging.DEBUG):
+            fmt = '{:7.6e}'.format
+            def np_print(x):
+                return np.array2string(np.copy(x), formatter={'float':fmt})
+            _LOG.debug('Parameters changed')
+            _LOG.debug('log likelihood   %f', self.log_likelihood())
+            _LOG.debug('normal quadratic %f', self.normal_quadratic())
+            _LOG.debug('log det K        %f', self.log_det_K())
+            _LOG.debug('noise %s', np_print(self.noise))
+            _LOG.debug('coreg vecs')
+            for i, a in enumerate(self.coreg_vecs):
+                _LOG.debug('  a%d %s', i, np_print(a))
+            _LOG.debug('coreg diags')
+            for i, a in enumerate(self.coreg_diags):
+                _LOG.debug('  kappa%d %s', i, np_print(a))
 
     def K_SKI(self):
         """
@@ -271,6 +286,7 @@ class LMC(MultiGP):
                   upper bound for
                   :math:`\\log\\det K_{\text{exact}}`
         """
+        # return np.linalg.slogdet(self.K_SKI())[1]
         min_noise = min(self.noise.min(), self.TOL)
         eigs = self.ski_kernel.K_sum.approx_eigs(min_noise)
         # noise needs to be adjusted dimensionally. Idea: use top eigs?
@@ -285,15 +301,17 @@ class LMC(MultiGP):
         return np.log(top_eigs + noise + self.TOL).sum()
 
     def _invmul(self, y):
+        # K = self.K_SKI()
+        # return la.solve(K, y, sym_pos=True, overwrite_a=True)
         op = self.ski_kernel.as_linear_operator()
         Kinv_y, succ = scipy.sparse.linalg.minres(
-            op, y, tol=self.TOL, maxiter=self.m)
-        if succ != 0:
+            op, y, tol=0, maxiter=(self.m ** 2))
+        error = np.linalg.norm(y - op.matvec(Kinv_y))
+        if error > 1e-4 or succ != 0:
             _LOG.critical('MINRES (m = %d) for LMC %s did not converge.\n'
-                          'Error %d\nReconstruction %f\nTolerance %f',
-                          self.m, self.name, succ,
-                          np.linalg.norm(y - op.matvec(Kinv_y)),
-                          self.TOL)
+                          'Error Code %d\nReconstruction Error %f',
+                          self.m, self.name, succ, error)
+
         return Kinv_y
 
     def _precompute_predict(self):

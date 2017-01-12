@@ -196,7 +196,7 @@ class MultiGP(Model):
             _LOG.info('%s: about to start optimizing - options:\n%s',
                       self.name, dfldict)
             super().optimize(**dfldict)
-            _LOG.info('%s: completed optimization')
+            _LOG.info('%s: completed optimization', self.name)
         except KeyboardInterrupt:
             print('{}: KeyboardInterrupt caught, terminating optimization.'
                   .format(self.name))

@@ -67,7 +67,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. learning from numerical derivatives / true derivatives? - get this to work first; need preconditioners? (validate by letting MINRES run fully)
+0. learning from numerical derivatives / true derivatives? - get this to work first; need preconditioners? (validate by letting MINRES run fully) - maximal accuracy eigenvalues, maybe? - try full logdet, exactify everything. Where is the problem?
 0. Add a numerical gradient check for kernels using numdifftools package.
 0. Kernels add a PSD-checking test (induced covariance matrix should be PSD)
 0. Matern kernel 
