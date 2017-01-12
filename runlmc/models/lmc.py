@@ -16,6 +16,7 @@ from ..linalg.sum_matrix import SumMatrix
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 from ..util.interpolation import interp_cubic
+from ..util.numpy_convenience import EPS
 
 _LOG = logging.getLogger(__name__)
 
@@ -161,7 +162,7 @@ class LMC(MultiGP):
 
         _LOG.info('LMC %s fully initialized', self.name)
 
-    TOL = 1e-4
+    TOL = 1e-4 # for reporting, not convergence
 
     class _SKI(PSDMatrix):
         def __init__(self, K_sum, W, noise, Xs):
@@ -303,11 +304,15 @@ class LMC(MultiGP):
     def _invmul(self, y):
         # K = self.K_SKI()
         # return la.solve(K, y, sym_pos=True, overwrite_a=True)
+
+        # tolerance can't be better than flop error
+        tol = EPS * len(y) * 2
+
         op = self.ski_kernel.as_linear_operator()
         Kinv_y, succ = scipy.sparse.linalg.minres(
-            op, y, tol=0, maxiter=(self.m ** 2))
+            op, y, tol=tol, maxiter=(self.m ** 2))
         error = np.linalg.norm(y - op.matvec(Kinv_y))
-        if error > 1e-4 or succ != 0:
+        if error > self.TOL or succ != 0:
             _LOG.critical('MINRES (m = %d) for LMC %s did not converge.\n'
                           'Error Code %d\nReconstruction Error %f',
                           self.m, self.name, succ, error)
