@@ -98,13 +98,14 @@ class LMCTest(RandomTest):
     def check_kernel_reconstruction(self, exact):
         actual = exact.gen_lmc(sum(exact.sizes)).K_SKI()
         exact_mat = exact.gen_exact_mat()
+        tol=1e-4
         np.testing.assert_allclose(
-            exact_mat, actual, rtol=LMC.TOL, atol=LMC.TOL)
+            exact_mat, actual, rtol=tol, atol=tol)
         avg_diff_sz = self.avg_entry_diff(exact_mat, actual)
 
         actual = exact.gen_lmc(sum(exact.sizes) * 2).K_SKI()
         np.testing.assert_allclose(
-            exact_mat, actual, rtol=LMC.TOL, atol=LMC.TOL)
+            exact_mat, actual, rtol=tol, atol=tol)
         avg_diff_2sz = self.avg_entry_diff(exact_mat, actual)
 
         self.assertGreater(avg_diff_sz, avg_diff_2sz)
