@@ -310,9 +310,11 @@ class LMC(MultiGP):
             op, y, tol=self.TOL, maxiter=(self.m ** 2))
         error = np.linalg.norm(y - op.matvec(Kinv_y))
         if error > math.sqrt(self.TOL) or succ != 0:
-            _LOG.critical('MINRES (m = %d) for LMC %s did not converge.\n'
-                          'Error Code %d\nReconstruction Error %f',
-                          self.m, self.name, succ, error)
+            _LOG.critical('MINRES (m = %d) did not converge.\n'
+                          'LMC %s\n'
+                          'iterations = m*m = %d\n'
+                          'error code %d\nReconstruction Error %f',
+                          self.m, self.name, succ, self.m ** 2, error)
 
         return Kinv_y
 
