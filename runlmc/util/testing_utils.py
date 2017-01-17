@@ -131,8 +131,6 @@ def run_main(f, help_str):
         ('linear decrease (poor-cond)', poor_cond_toep),
         ('exponentially decreasing (realistic)', exp_decr_toep)]
 
-    noise = np.ones(n * d) * eps
-
     for name, generator in cases:
         print(name)
         dense_mats = [rand_psd(d) for _ in range(q)]

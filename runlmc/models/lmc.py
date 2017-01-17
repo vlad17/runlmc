@@ -17,7 +17,6 @@ from ..linalg.sum_matrix import SumMatrix
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 from ..util.interpolation import interp_cubic
-from ..util.numpy_convenience import EPS
 
 _LOG = logging.getLogger(__name__)
 
