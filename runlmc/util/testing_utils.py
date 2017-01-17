@@ -142,7 +142,7 @@ def run_main(f, help_str):
         # added noise
         my_mat.orig_matvec = my_mat.matvec
         my_mat.matvec = lambda x: my_mat.orig_matvec(x) + eps * x # pylint:disable=cell-var-from-loop
-        my_mat.logdet = lambda: np.log(my_mat.approx_eigs(eps) + noise).sum() # pylint:disable=cell-var-from-loop
+        my_mat.logdet = lambda: np.log(my_mat.approx_eigs(0) + eps).sum() # pylint:disable=cell-var-from-loop
         f(my_mat)
 
 def rand_psd(n):

@@ -55,7 +55,7 @@ Similarly, for examples:
         
 ## Dev Stuff
 
-Required packages for development (Python 3 versions): `pylint nose paramz gpy sphinx contexttimer`.
+Required packages for development (Python 3 versions): `pylint nose paramz gpy sphinx contexttimer numdifftools`.
 
 All below invocations should be done from the repo root.
  
@@ -67,20 +67,17 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. learning from numerical derivatives / true derivatives? - get this to work first; need preconditioners? (validate by letting MINRES run fully) - maximal accuracy eigenvalues, maybe? - try full logdet, exactify everything. Where is the problem?
 0. Add a numerical gradient check for kernels using numdifftools package.
 0. Kernels add a PSD-checking test (induced covariance matrix should be PSD)
-0. Matern kernel 
 0. Benchmark/evaluate reconstruction error for K (on various example kernels)
 0. Benchmark/evaluate reconstruction error for log likelihood
+0. Benchmark/evaluate accuracy on synthetic examples (real examples?) - do Toeplitz eigen approximations need to be more accurate (i.e., preconditioned)?
 0. Write up the current algorithm (PDF)
-0. Model learning
-    * derivative-free opt first -> common bottlenecks?
-    * numerical derivative opt -> numerical derivation class (use MAT321 method)
-    * derivatives -> hopefully it doesn't come to this, lot more work.
-0. Add tests to verify gradient (for a particular model, with and without prior, use the MAT321 method)
-0. Beat GPy; iterate for speed.
-0. TODO(PAPER) - add references to paper (in README, too)
+0. Diagonal matrix -> for noise (and exact eigen)
+0. Does chan Preconditioner carry over to SKI approximation?
+0. Do other inner circulant preconditioners (e.g., whittle) help inversion?
+0. Recalculation (cache partial eigenvalues, partial solutions, etc. -> O(1) derivatives).
+0. Matern kernel
 
 ### Considerations 
 
@@ -110,7 +107,7 @@ All below invocations should be done from the repo root.
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests) - requires exact kernel cholesky impl
 0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
-0. multidimensional inputs and ARD.
+;l0. multidimensional inputs and ARD.
 0. product kernels (multiple factors) and active dimensions
 
 ### Thesis Plan
