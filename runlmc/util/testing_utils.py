@@ -192,7 +192,7 @@ class BasicModel(Model):
         # Prevent slight negative eigenvalues from roundoff.
         sign, logdet = np.linalg.slogdet(
             scipy.linalg.toeplitz(K_top) + 1e-10 * np.identity(len(K_top)))
-        assert sign > 0, sign
+        assert sign > 0, (sign, logdet)
         return -0.5 * self.Y.dot(KinvY) - 0.5 * logdet
 
     def parameters_changed(self):
