@@ -8,7 +8,7 @@ import numdifftools as nd
 import numpy as np
 
 from .rbf import RBF
-from ..util.numpy_convenience import map_entries
+from ..util.numpy_convenience import map_entries, smallest_eig
 from ..util.testing_utils import BasicModel, check_np_lists
 
 class RBFTest(unittest.TestCase):
@@ -58,6 +58,10 @@ class RBFTest(unittest.TestCase):
                                self.inv_lengthscale ** -0.5)
         self.assertEqual(gpy.ARD, False)
         self.assertEqual(gpy.active_dims, [0])
+
+    def test_psd(self):
+        top = self.testK.from_dist(self.cases)
+        self.assertGreaterEqual(smallest_eig(top), 0)
 
     def test_optimization(self):
         dists = np.arange(10)

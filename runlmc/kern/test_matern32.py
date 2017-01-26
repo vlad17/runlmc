@@ -8,7 +8,7 @@ import numdifftools as nd
 import numpy as np
 
 from .matern32 import Matern32
-from ..util.numpy_convenience import map_entries
+from ..util.numpy_convenience import map_entries, smallest_eig
 from ..util.testing_utils import BasicModel, check_np_lists
 
 class RBFTest(unittest.TestCase):
@@ -39,6 +39,10 @@ class RBFTest(unittest.TestCase):
             return nd.Derivative(lambda l: Matern32(l).from_dist(x))
         expected = [deriv(x)(self.inv_lengthscale)[0] for x in self.cases]
         check_np_lists(actual, [expected])
+
+    def test_psd(self):
+        top = self.testK.from_dist(self.cases)
+        self.assertGreaterEqual(smallest_eig(top), 0)
 
     def test_to_gpy(self):
         gpy = self.testK.to_gpy()

@@ -8,7 +8,7 @@ import numdifftools as nd
 import numpy as np
 
 from .std_periodic import StdPeriodic
-from ..util.numpy_convenience import map_entries
+from ..util.numpy_convenience import map_entries, smallest_eig
 from ..util.testing_utils import BasicModel, check_np_lists
 
 class StdPeriodicTest(unittest.TestCase):
@@ -64,6 +64,10 @@ class StdPeriodicTest(unittest.TestCase):
         expected = np.array([deriv(x)([self.inv_lengthscale, self.period])
                              for x in self.cases]).T
         check_np_lists(actual, expected, atol=1e-5)
+
+    def test_psd(self):
+        top = self.testK.from_dist(self.cases)
+        self.assertGreaterEqual(smallest_eig(top), -1e-15)
 
     def test_to_gpy(self):
         gpy = self.testK.to_gpy()
