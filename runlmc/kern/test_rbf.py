@@ -4,6 +4,7 @@
 import unittest
 import math
 
+import numdifftools as nd
 import numpy as np
 
 from .rbf import RBF
@@ -40,6 +41,13 @@ class RBFTest(unittest.TestCase):
         actual = self.testK.kernel_gradient(self.cases)
         expected = [map_entries(self.df_dl, self.cases)]
         check_np_lists(actual, expected)
+
+    def test_numerical_gradients(self):
+        actual = self.testK.kernel_gradient(self.cases)
+        def deriv(x):
+            return nd.Derivative(lambda l: RBF(l).from_dist(x))
+        expected = [deriv(x)(self.inv_lengthscale)[0] for x in self.cases]
+        check_np_lists(actual, [expected])
 
     def test_to_gpy(self):
         gpy = self.testK.to_gpy()

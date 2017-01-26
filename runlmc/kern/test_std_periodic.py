@@ -4,6 +4,7 @@
 import unittest
 import math
 
+import numdifftools as nd
 import numpy as np
 
 from .std_periodic import StdPeriodic
@@ -54,6 +55,15 @@ class StdPeriodicTest(unittest.TestCase):
             map_entries(self.df_dl, self.cases),
             map_entries(self.df_dT, self.cases)]
         check_np_lists(actual, expected)
+
+    def test_numerical_gradients(self):
+        actual = self.testK.kernel_gradient(self.cases)
+        def deriv(x):
+            return nd.Gradient(lambda lT:
+                               StdPeriodic(lT[0], lT[1]).from_dist(x))
+        expected = np.array([deriv(x)([self.inv_lengthscale, self.period])
+                             for x in self.cases]).T
+        check_np_lists(actual, expected, atol=1e-5)
 
     def test_to_gpy(self):
         gpy = self.testK.to_gpy()

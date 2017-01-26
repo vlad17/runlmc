@@ -69,16 +69,13 @@ All below invocations should be done from the repo root.
 
 0. Add a numerical gradient check for kernels using numdifftools package.
 0. Kernels add a PSD-checking test (induced covariance matrix should be PSD)
-0. Diagonal matrix (linalg)
-0. eigvals - no cutoff; just allow approx (change interface)
-0. create SKI folder - interpolation should be there too
-0. put approx methods (eigvalue mixing, etc) in linalg folder.
+0. create SKI folder - interpolation should be there too; -  Diagonal matrix (linalg)?
+0. Try stochastic log deriv for above (Cutajar paper) - rm eigenvalue stuff?
 0. Implement exact derivatives: the quadratic term and log
 0. Redo benchmarks: lots of kernels (Matern kernel?), lots of Q, different param config grid:
     *  Benchmark/evaluate reconstruction error for K (on various example kernels)
     *  Benchmark/evaluate reconstruction error for log likelihood
     *  Benchmark/evaluate accuracy on synthetic examples (real examples?) - do Toeplitz eigen approximations need to be more accurate (i.e., preconditioned)?
-0. Try stochastic log deriv for above (Cutajar paper)
 0. Write up the current algorithm (PDF)
 0. Investigate: when is iteration NOT converging (critical log) - what's the condition number in that case.
 0. Does chan Preconditioner carry over to SKI approximation?
