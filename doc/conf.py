@@ -34,6 +34,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
+    'sphinx.ext.githubpages',
     'sphinx.ext.viewcode',
 ]
 
@@ -297,3 +298,13 @@ intersphinx_mapping = {
     'paramz': ('http://pythonhosted.org/paramz/', None)}
 
 html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'], }
+
+# http://www.sphinx-doc.org/en/1.5.1/ext/linkcode.html
+def linkcode_resolve(domain, info):
+    if domain != 'py':
+        return None
+    if not info['module']:
+        return None
+    filename = info['module'].replace('.', '/')
+    return "https://github.com/vlad17/runlmc/blob/master/{}.py".format(
+        filename)
