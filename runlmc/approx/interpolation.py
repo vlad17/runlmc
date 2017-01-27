@@ -1,7 +1,7 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-# The code below was modified from MSGP demo code provided by
+# The interp_cubic code below was modified from MSGP demo code provided by
 # Wilson. The demo code itself is based off of extending components
 # in GPML, which is BSD 2-clause licenced. I've replicated the
 # copyrights and/or licences to both code source in this repository's
@@ -17,7 +17,9 @@ def cubic_kernel(x):
     coefficients. Its definition is taken from:
 
     Cubic Convolution Interpolation for Digital Image Processing by
-    Robert G. Keys. It is supported on values of absolute magnitude less than
+    Robert G. Keys.
+
+    It is supported on values of absolute magnitude less than
     2 and is defined as:
 
     .. math::
@@ -101,3 +103,47 @@ def interp_cubic(grid, samples):
         csr += scipy.sparse.csr_matrix((data, col_idx, ind_ptr),
                                        shape=(n_samples, grid_size))
     return csr
+
+def multi_interpolant(Xs, inducing_grid): # pylint: disable=too-many-locals
+    """
+    Creates a sparse CSR matrix across multiple inputs `Xs`.
+
+    Each input is mapped onto the inducing grid with a cubic interpolation,
+    with :func:`runlmc.approx.interpolation.interp_cubic`.
+
+    This induces :math:`n_i\\times m` interpolation matrices :math:`W_i` for
+    the :math:`i`-th element of `Xs` onto the shared inducing grid.
+
+    :param Xs: list of 1-dimensional numpy vectors, the inputs.
+    :param inducing_gird: 1-dimensional vector of grid points
+    :return: the rectangular block diagonal matrix of :math:`W_i`.
+    """
+    multiout_grid_sizes = np.arange(len(Xs)) * len(inducing_grid)
+    Ws = [interp_cubic(inducing_grid, X) for X in Xs]
+
+    row_lens = [len(X) for X in Xs]
+    row_ends = np.add.accumulate(row_lens)
+    row_begins = np.roll(row_ends, 1)
+    row_begins[0] = 0
+    order = row_ends[-1]
+
+    col_lens = [W.nnz for W in Ws]
+    col_ends = np.add.accumulate(col_lens)
+    col_begins = np.roll(col_ends, 1)
+    col_begins[0] = 0
+    width = col_ends[-1]
+
+    ind_starts = np.roll(np.add.accumulate([W.indptr[-1] for W in Ws]), 1)
+    ind_starts[0] = 0
+    ind_ptr = np.append(np.repeat(ind_starts, row_lens), width)
+    data = np.empty(width)
+    col_indices = np.repeat(multiout_grid_sizes, col_lens)
+    for rbegin, rend, cbegin, cend, W in zip(
+            row_begins, row_ends, col_begins, col_ends, Ws):
+        ind_ptr[rbegin:rend] += W.indptr[:-1]
+        data[cbegin:cend] = W.data
+        col_indices[cbegin:cend] += W.indices
+
+    ncols = len(Xs) * len(inducing_grid)
+    return scipy.sparse.csr_matrix(
+        (data, col_indices, ind_ptr), shape=(order, ncols))

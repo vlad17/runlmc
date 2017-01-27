@@ -67,7 +67,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. create SKI folder: move interpolation code there, LMC matrix there, SKI matrix there (handles noise)
+0. appx folder: SKI handles interp + noise. linalg: GridLMC matrix instead of SumMatrix (document all)
 0. Stochastic log deriv for above (Cutajar paper)
 0. Redo benchmarks: lots of kernels, lots of Q, different param config grid:
     *  Evaluate reconstruction error for K (on various example kernels)
@@ -98,15 +98,19 @@ All below invocations should be done from the repo root.
 
 ### Low-priority Tasks
 
-0. BSD 3-clasue -> APACHE 2.0
+0. BSD 3-clause
 0. Allow extrapolation in util.interpolation.py
-0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
+0. test multi_interpolant
+0. test SKI
+0. test lmc._autogrid for edge cases.
+0. test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math
 0. rank > 1
+0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
 0. rename `rand_psd` -> `rand_pd`
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests) - requires exact kernel cholesky impl
 0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
-;l0. multidimensional inputs and ARD.
+0. multidimensional inputs and ARD.
 0. product kernels (multiple factors) and active dimensions
 
 ### Thesis Plan
@@ -118,6 +122,3 @@ All below invocations should be done from the repo root.
 0. experimental proof of above
 0. algorithm for runlmc kernel; explain/prove fast structural runtimes
 0. experimental proof for above; comparison to gpy exact/ssgp
-0. test lmc._autogrid for edge cases.
-0. test lmc kernel reconstruction, quadratic with ExactAnalogue with different gaussian noise (not all 1s)
-0. test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math

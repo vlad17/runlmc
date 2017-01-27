@@ -2,21 +2,19 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import logging
-import math
 
 import numpy as np
 import scipy.linalg as la
-import scipy.sparse.linalg
 from paramz.transformations import Logexp
 
 from .multigp import MultiGP
+from ..approx.interpolation import multi_interpolant
+from ..approx.ski import repeat_noise, SKI
 from ..linalg.toeplitz import Toeplitz
 from ..linalg.kronecker import Kronecker
-from ..linalg.psd_matrix import PSDMatrix
 from ..linalg.sum_matrix import SumMatrix
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
-from ..util.interpolation import interp_cubic
 
 _LOG = logging.getLogger(__name__)
 
@@ -129,7 +127,7 @@ class LMC(MultiGP):
         self.dists = self.inducing_grid - self.inducing_grid[0]
 
         # Corresponds to W; block diagonal matrix.
-        self.interpolant = self._interpolant(self.Xs, self.inducing_grid)
+        self.interpolant = multi_interpolant(self.Xs, self.inducing_grid)
 
         _LOG.info('LMC %s grid (n = %d, m = %d) complete, '
                   'generating first SKI kernel',
@@ -162,25 +160,6 @@ class LMC(MultiGP):
 
         _LOG.info('LMC %s fully initialized', self.name)
 
-    TOL = 1e-10 # Target tolerance. Only errors > sqrt(TOL) reported.
-
-    class _SKI(PSDMatrix):
-        def __init__(self, K_sum, W, noise, Xs):
-            lens = [len(X) for X in Xs]
-            super().__init__(sum(lens))
-            self.K_sum = K_sum
-            self.W = W
-            self.WT = self.W.transpose().tocsr()
-            self.noise = np.repeat(noise, lens)
-
-        def as_numpy(self):
-            WKT = self.W.dot(self.K_sum.as_numpy().T)
-            return self.W.dot(WKT.T) + np.diag(self.noise)
-
-        def matvec(self, x):
-            return self.W.dot(self.K_sum.matvec(self.WT.dot(x))) \
-                + x * self.noise
-
     @staticmethod
     def _autogrid(Xs, lo, hi, m):
         if m is None:
@@ -195,41 +174,9 @@ class LMC(MultiGP):
         delta = (hi - lo) / m
         lo -= 2 * delta
         hi += 2 * delta
-        m += 2
+        m += 4
 
         return np.linspace(lo, hi, m), m
-
-    @staticmethod
-    def _interpolant(Xs, inducing_grid): # pylint: disable=too-many-locals
-        multiout_grid_sizes = np.arange(len(Xs)) * len(inducing_grid)
-        Ws = [interp_cubic(inducing_grid, X) for X in Xs]
-
-        row_lens = [len(X) for X in Xs]
-        row_ends = np.add.accumulate(row_lens)
-        row_begins = np.roll(row_ends, 1)
-        row_begins[0] = 0
-        order = row_ends[-1]
-
-        col_lens = [W.nnz for W in Ws]
-        col_ends = np.add.accumulate(col_lens)
-        col_begins = np.roll(col_ends, 1)
-        col_begins[0] = 0
-        width = col_ends[-1]
-
-        ind_starts = np.roll(np.add.accumulate([W.indptr[-1] for W in Ws]), 1)
-        ind_starts[0] = 0
-        ind_ptr = np.append(np.repeat(ind_starts, row_lens), width)
-        data = np.empty(width)
-        col_indices = np.repeat(multiout_grid_sizes, col_lens)
-        for rbegin, rend, cbegin, cend, W in zip(
-                row_begins, row_ends, col_begins, col_ends, Ws):
-            ind_ptr[rbegin:rend] += W.indptr[:-1]
-            data[cbegin:cend] = W.data
-            col_indices[cbegin:cend] += W.indices
-
-        ncols = len(Xs) * len(inducing_grid)
-        return scipy.sparse.csr_matrix(
-            (data, col_indices, ind_ptr), shape=(order, ncols))
 
     def _generate_ski(self):
         coreg_mats = [np.outer(a, a) + np.diag(k)
@@ -238,11 +185,10 @@ class LMC(MultiGP):
                    for k in self.kernels]
         products = [Kronecker(A, K) for A, K in zip(coreg_mats, kernels)]
         kern_sum = SumMatrix(products)
-        return LMC._SKI(
+        return SKI(
             kern_sum,
             self.interpolant,
-            self.noise,
-            self.Xs)
+            repeat_noise(self.Xs, self.noise))
 
     def parameters_changed(self):
         # derivatives w.r.t. ordinary covariance hyperparameters
@@ -300,30 +246,13 @@ class LMC(MultiGP):
         top_eigs = eigs[:len(noise)] * len(noise) / len(self.inducing_grid)
         return np.log(top_eigs + noise).sum()
 
-    def _invmul(self, y):
-        # K = self.K_SKI()
-        # return la.solve(K, y, sym_pos=True, overwrite_a=True)
-
-        op = self.ski_kernel.as_linear_operator()
-        Kinv_y, succ = scipy.sparse.linalg.minres(
-            op, y, tol=self.TOL, maxiter=(self.m ** 2))
-        error = np.linalg.norm(y - op.matvec(Kinv_y))
-        if error > math.sqrt(self.TOL) or succ != 0:
-            _LOG.critical('MINRES (m = %d) did not converge.\n'
-                          'LMC %s\n'
-                          'iterations = m*m = %d\n'
-                          'error code %d\nReconstruction Error %f',
-                          self.m, self.name, succ, self.m ** 2, error)
-
-        return Kinv_y
-
     def _precompute_predict(self):
         # Not optimized for speed - this performs dense linear algebra
         # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
         # This can probably be sped up (even by e.g., using the approximations
         # offered in those sections, or perhaps some less coarse ones).
         # However, it's the training that's the bottleneck, not prediction.
-        nongrid_alpha = self._invmul(self.y)
+        nongrid_alpha = self.ski_kernel.solve(self.y)
         WT = self.ski_kernel.WT
         K_UU = self.ski_kernel.K_sum
         alpha = K_UU.matvec(WT.dot(nongrid_alpha))
@@ -351,7 +280,7 @@ class LMC(MultiGP):
 
         :returns: the normal quadratic term for the current outputs `Ys`.
         """
-        return self.y.dot(self._invmul(self.y))
+        return self.y.dot(self.ski_kernel.solve(self.y))
 
     def log_likelihood(self):
         nll = self.log_det_K() + self.normal_quadratic()
@@ -362,7 +291,7 @@ class LMC(MultiGP):
         if self.alpha is None:
             self.alpha, self.nu, self.native_var = self._precompute_predict()
 
-        W = self._interpolant(Xs, self.inducing_grid)
+        W = multi_interpolant(Xs, self.inducing_grid)
         lens = [len(X) for X in Xs]
 
         mean = W.dot(self.alpha)
