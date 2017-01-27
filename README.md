@@ -11,6 +11,7 @@ In other words, this provides a matrix-free implementation of multi-output GPs f
 ## Usage Notes
 
 * Currently, I'm only supporting 1 input dimension.
+* Docs avaliable [on the product page](https://vlad17.github.io/runlmc)
 
 ## A note on GPy
 
@@ -63,6 +64,7 @@ All below invocations should be done from the repo root.
 | ----------------- | -------- |
 | `./style.sh`      | Check style with pylint, ignoring TODOs and locally-disabled warnings. |
 | `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/runlmc.html`) |
+| `./docpush.sh`   | Publish current docs (requries write access to repo) |
 | `nosetests -l DEBUG`       | Run unit tests |
 
 ### Roadmap
