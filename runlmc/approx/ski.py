@@ -22,12 +22,12 @@ def repeat_noise(Xs, noise):
     return np.repeat(noise, lens)
 
 class SKI(PSDMatrix):
-    def __init__(self, K_sum, W, noise):
+    def __init__(self, K, W, WT, noise):
         super().__init__(W.shape[0])
         self.m = W.shape[1]
-        self.K_sum = K_sum
+        self.K = K
         self.W = W
-        self.WT = self.W.transpose().tocsr()
+        self.WT = WT
         self.noise = noise
         self.op = self.as_linear_operator()
 
@@ -35,12 +35,14 @@ class SKI(PSDMatrix):
     """Target solve() tolerance. Only errors > sqrt(TOL) reported."""
 
     def as_numpy(self):
-        WKT = self.W.dot(self.K_sum.as_numpy().T)
+        WKT = self.W.dot(self.K.as_numpy().T)
         return self.W.dot(WKT.T) + np.diag(self.noise)
 
     def matvec(self, x):
-        return self.W.dot(self.K_sum.matvec(self.WT.dot(x))) \
+        return self.W.dot(self.K.matvec(self.WT.dot(x))) \
             + x * self.noise
+
+    # TODO: move below to more abstract interface?
 
     def solve(self, y):
         """
@@ -57,9 +59,20 @@ class SKI(PSDMatrix):
         error = np.linalg.norm(y - self.op.matvec(Kinv_y))
         if error > math.sqrt(self.TOL) or succ != 0:
             _LOG.critical('MINRES (m = %d) did not converge.\n'
-                          'LMC %s\n'
                           'iterations = m*m = %d\n'
                           'error code %d\nReconstruction Error %f',
-                          self.m, self.name, succ, self.m ** 2, error)
+                          self.m, self.m ** 2, succ, error)
 
         return Kinv_y
+
+    def logdet_deriv(self, dKdt):
+        # Preconditioning Kernel Matrices, Cutajar 2016
+        trace = 0
+        n = self.shape[0]
+        n_it = 4
+        for _ in range(n_it):
+            r = np.random.randint(0, 2, n) * 2 - 1
+            rinv = self.solve(r)
+            dr = dKdt.matvec(r)
+            trace += rinv.dot(dr)
+        return trace / n_it

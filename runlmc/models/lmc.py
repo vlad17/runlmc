@@ -128,6 +128,7 @@ class LMC(MultiGP):
 
         # Corresponds to W; block diagonal matrix.
         self.interpolant = multi_interpolant(self.Xs, self.inducing_grid)
+        self.interpolantT = self.interpolant.transpose().tocsr()
 
         _LOG.info('LMC %s grid (n = %d, m = %d) complete, '
                   'generating first SKI kernel',
@@ -188,12 +189,10 @@ class LMC(MultiGP):
         return SKI(
             kern_sum,
             self.interpolant,
+            self.interpolantT,
             repeat_noise(self.Xs, self.noise))
 
     def parameters_changed(self):
-        # derivatives w.r.t. ordinary covariance hyperparameters
-        # d lam(K) = diag(V'*dK*V), for psd matrix K = V*diag(lam)*V'.
-
         self.ski_kernel = self._generate_ski()
 
         self.nu = None
@@ -226,6 +225,8 @@ class LMC(MultiGP):
         """
         return self.ski_kernel.as_numpy()
 
+    # TODO: create exact kernel method for dense computations?
+
     def log_det_K(self):
         """
         :returns: an upper bound of the approximate log determinant,
@@ -233,8 +234,18 @@ class LMC(MultiGP):
                   upper bound for
                   :math:`\\log\\det K_{\text{exact}}`
         """
-        # return np.linalg.slogdet(self.K_SKI())[1]
-        eigs = self.ski_kernel.K_sum.approx_eigs(0)
+        return self._eigenvalue_logdet()
+        sgn, lgdet = np.linalg.slogdet(self.K_SKI())
+        if sgn <= 0:
+            _LOG.critical('Log determinant nonpos! sgn %f lgdet %f '
+                          'returning -inf', sgn, lgdet)
+            return -np.inf
+        return lgdet
+
+    def _eigenvalue_logdet(self):
+        # Method based on a very flimsy fiedler-bound-based approximation
+
+        eigs = self.ski_kernel.K.approx_eigs(0)
         # noise needs to be adjusted dimensionally. Idea: use top eigs?
         eigs[::-1].sort()
         noise = np.repeat(self.noise, list(map(len, self.Ys)))
@@ -254,7 +265,7 @@ class LMC(MultiGP):
         # However, it's the training that's the bottleneck, not prediction.
         nongrid_alpha = self.ski_kernel.solve(self.y)
         WT = self.ski_kernel.WT
-        K_UU = self.ski_kernel.K_sum
+        K_UU = self.ski_kernel.K
         alpha = K_UU.matvec(WT.dot(nongrid_alpha))
 
         A = self.K_SKI()

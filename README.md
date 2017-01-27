@@ -69,7 +69,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. appx folder: SKI handles interp + noise. linalg: GridLMC matrix instead of SumMatrix (document all)
+0. appx folder: SKI handles interp + noise. linalg: GridLMC matrix which uses SumMatrix - but switches to block-Toeplitz representation (Block matrix?)
 0. Stochastic log deriv for above (Cutajar paper)
 0. Redo benchmarks: lots of kernels, lots of Q, different param config grid:
     *  Evaluate reconstruction error for K (on various example kernels)
@@ -102,6 +102,7 @@ All below invocations should be done from the repo root.
 
 0. BSD 3-clause
 0. Allow extrapolation in util.interpolation.py
+0. document SKI
 0. test multi_interpolant
 0. test SKI
 0. test lmc._autogrid for edge cases.
