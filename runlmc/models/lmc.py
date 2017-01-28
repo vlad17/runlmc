@@ -5,10 +5,12 @@ import logging
 
 import numpy as np
 import scipy.linalg as la
+import scipy.spatial.distance as dist
 from paramz.transformations import Logexp
 
 from .multigp import MultiGP
 from ..approx.interpolation import multi_interpolant
+from ..derivative.lmc_deriv import ExactLMCDerivative, ApproxLMCDerivative
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 
@@ -96,6 +98,7 @@ class LMC(MultiGP):
     :param m: number of inducing points to use (by default, the total number
               of input points)
     :param str name:
+    :param exact: whether to use the naive algorithm
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
     :raises: :class:`ValueError` if normalization if any `Ys` have no variance
                                  or values in `Xs` have multiple identical
@@ -103,7 +106,7 @@ class LMC(MultiGP):
     :raises: :class:`ValueError` if no kernels
     """
     def __init__(self, Xs, Ys, normalize=True, kernels=None,
-                 lo=None, hi=None, m=None, name='lmc'):
+                 lo=None, hi=None, m=None, name='lmc', exact=False):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
 
         if not kernels:
@@ -113,7 +116,8 @@ class LMC(MultiGP):
         for k in self.kernels:
             self.link_parameter(k)
 
-        self.n = sum(map(len, Xs))
+        self.lens = list(map(len, Xs))
+        self.n = sum(self.lens)
         _LOG.info('LMC %s generating inducing grid n = %d',
                   self.name, self.n)
         # Grid corresponds to U
@@ -147,13 +151,14 @@ class LMC(MultiGP):
         self.noise = Param('noise', np.ones(self.output_dim), Logexp())
         self.link_parameter(self.noise)
 
-        self.ski_kernel = self._generate_ski()
+        self.exact = exact
         self.y = np.hstack(self.Ys)
 
-        # Predictive weights
+        self.kernel = None
         self.alpha = None
         self.nu = None
         self.native_var = None
+        self._materialized_kernel = None
 
         _LOG.info('LMC %s fully initialized', self.name)
 
@@ -175,15 +180,31 @@ class LMC(MultiGP):
 
         return np.linspace(lo, hi, m), m
 
-    def _generate_ski(self):
-        return S
+    # TODO clear up *LMCDerivative <> Kernel confusion
+
+    def _exact_kernel(self):
+        pdists = dist.squareform(dist.pdist(np.hstack(self.Xs).reshape(-1, 1)))
+        return ExactLMCDerivative(
+            self.coreg_vecs, self.coreg_diags, self.kernels,
+            pdists, self.lens, self.y, self.noise)
+
+    def _apprx_kernel(self):
+        return ApproxLMCDerivative(
+            self.coreg_vecs, self.coreg_diags, self.kernels,
+            self.dists, self.interpolant, self.interpolantT,
+            self.lens, self.y, self.noise)
 
     def parameters_changed(self):
-        self.ski_kernel = self._generate_ski()
+        if self.exact:
+            self.kernel = self._exact_kernel()
+        else:
+            self.kernel = self._apprx_kernel()
 
+        # uncache if were defined before
         self.nu = None
         self.alpha = None
         self.native_var = None
+        self._materialized_kernel = None
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
@@ -201,7 +222,24 @@ class LMC(MultiGP):
             for i, a in enumerate(self.coreg_diags):
                 _LOG.debug('  kappa%d %s', i, np_print(a))
 
-    def K_SKI(self):
+        for x, dx in zip(self.coreg_vecs, self.kernel.coreg_vec_gradients()):
+            x.gradient = dx
+        for x, dx in zip(self.coreg_diags, self.kernel.coreg_diag_gradients()):
+            x.gradient = dx
+        for k, dk in zip(self.kernels, self.kernel.kernel_gradients()):
+            k.update_gradient(dk)
+        self.noise.gradient = self.kernel.noise_gradient()
+
+    def _dense(self):
+        if self.exact:
+            return self.kernel
+
+        if self._materialized_kernel is None:
+            self._materialized_kernel = self._exact_kernel()
+
+        return self._materialized_kernel
+
+    def K(self):
         """
         .. warning:: This generates the entire kernel, a quadratic operation
                      in memory and time.
@@ -209,9 +247,7 @@ class LMC(MultiGP):
         :returns: :math:`K_{\\text{SKI}}`, the approximation of the exact
                   kernel.
         """
-        return self.ski_kernel.as_numpy()
-
-    # TODO: create exact kernel method for dense computations?
+        return self._dense().K
 
     def log_det_K(self):
         """
@@ -220,41 +256,27 @@ class LMC(MultiGP):
                   upper bound for
                   :math:`\\log\\det K_{\text{exact}}`
         """
-        return self._eigenvalue_logdet()
-        sgn, lgdet = np.linalg.slogdet(self.K_SKI())
+        sgn, lgdet = np.linalg.slogdet(self.K())
         if sgn <= 0:
             _LOG.critical('Log determinant nonpos! sgn %f lgdet %f '
                           'returning -inf', sgn, lgdet)
             return -np.inf
         return lgdet
 
-    def _eigenvalue_logdet(self):
-        # Method based on a very flimsy fiedler-bound-based approximation
-
-        eigs = self.ski_kernel.K.approx_eigs(0)
-        # noise needs to be adjusted dimensionally. Idea: use top eigs?
-        eigs[::-1].sort()
-        noise = np.repeat(self.noise, list(map(len, self.Ys)))
-        noise.sort()
-        # KISS-GP section 2.3.1 from Wilson 2015
-        # Theorem 3.4 of Baker 1977 in
-        # The numerical treatment of integral equation
-        # This converges to the upper bound in the number of examples.
-        top_eigs = eigs[:len(noise)] * len(noise) / len(self.inducing_grid)
-        return np.log(top_eigs + noise).sum()
-
     def _precompute_predict(self):
+        assert not self.exact
+
         # Not optimized for speed - this performs dense linear algebra
         # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
         # This can probably be sped up (even by e.g., using the approximations
         # offered in those sections, or perhaps some less coarse ones).
         # However, it's the training that's the bottleneck, not prediction.
-        nongrid_alpha = self.ski_kernel.solve(self.y)
-        WT = self.ski_kernel.WT
-        K_UU = self.ski_kernel.K
+        nongrid_alpha = self.kernel.deriv.alpha
+        WT = self.interpolantT
+        K_UU = self.kernel.ski.K
         alpha = K_UU.matvec(WT.dot(nongrid_alpha))
 
-        A = self.K_SKI()
+        A = self.K()
         K_XU = self.interpolant.dot(K_UU.as_numpy())
         Ainv_KXU = la.solve(A, K_XU, sym_pos=True, overwrite_a=True)
         nu = np.diag(K_XU.T.dot(Ainv_KXU))
@@ -277,7 +299,7 @@ class LMC(MultiGP):
 
         :returns: the normal quadratic term for the current outputs `Ys`.
         """
-        return self.y.dot(self.ski_kernel.solve(self.y))
+        return self.y.dot(self.kernel.deriv.alpha)
 
     def log_likelihood(self):
         nll = self.log_det_K() + self.normal_quadratic()
@@ -285,6 +307,9 @@ class LMC(MultiGP):
         return -0.5 * nll
 
     def _raw_predict(self, Xs):
+        if self.exact:
+            raise NotImplementedError
+
         if self.alpha is None:
             self.alpha, self.nu, self.native_var = self._precompute_predict()
 

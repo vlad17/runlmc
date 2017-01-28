@@ -57,12 +57,12 @@ class SKI(PSDMatrix):
         # return scipy.linalg.solve(K, y, sym_pos=True, overwrite_a=True)
 
         Kinv_y, succ = scipy.sparse.linalg.minres(
-            self.op, y, tol=self.TOL, maxiter=(self.m ** 2))
+            self.op, y, tol=self.TOL, maxiter=(self.m ** 3))
         error = np.linalg.norm(y - self.op.matvec(Kinv_y))
         if error > math.sqrt(self.TOL) or succ != 0:
             _LOG.critical('MINRES (m = %d) did not converge.\n'
-                          'iterations = m*m = %d\n'
+                          'iterations = m^3 = %d\n'
                           'error code %d\nReconstruction Error %f',
-                          self.m, self.m ** 2, succ, error)
+                          self.m, self.m ** 3, succ, error)
 
         return Kinv_y

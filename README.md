@@ -70,7 +70,7 @@ All below invocations should be done from the repo root.
 ### Roadmap
 
 0. Move to Cutajar approach. Use tests. Dedup/cleanup (benchmark code too).
-0. Remove linalg approximate eigenvalue code, old benchmarks.
+0. Remove linalg approximate eigenvalue code, old benchmarks, PSD stuff.
 0. Re-run examples
 0. Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation?
@@ -80,6 +80,7 @@ All below invocations should be done from the repo root.
 0. Write up the current algorithm (PDF)
 0. multidimensional inputs and ARD.
 0. rank > 1
+0. fast predictions
 
 ### Considerations 
 

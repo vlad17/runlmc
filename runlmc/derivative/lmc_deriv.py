@@ -1,4 +1,4 @@
-b# Copyright (c) 2016, Vladimir Feinberg
+# Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import itertools
@@ -26,7 +26,7 @@ class LMCDerivative:
     def kernel_gradients(self):
         raise NotImplementedError
 
-    def noise_gradients(self):
+    def noise_gradient(self):
         raise NotImplementedError
 
 class ApproxLMCDerivative(LMCDerivative):
@@ -107,7 +107,7 @@ class ApproxLMCDerivative(LMCDerivative):
             return self.v * x
 
     def noise_gradient(self):
-        grad = np.zeros_like(self.noise)
+        grad = np.zeros(len(self.noise))
         for i in range(self.D):
             d_noise = np.zeros(self.D)
             d_noise[i] = 1
@@ -186,7 +186,7 @@ class ExactLMCDerivative:
         return grads
 
     def noise_gradient(self):
-        grad = np.zeros_like(self.noise)
+        grad = np.zeros(len(self.noise))
         for i in range(self.D):
             d_noise = np.zeros(self.D)
             d_noise[i] = 1

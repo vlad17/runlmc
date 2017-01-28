@@ -33,7 +33,7 @@ class Toeplitz(PSDDecomposableMatrix):
                 storage, which represents the first row :math:`t_{1j}`.
                 Should be castable to a float64.
     :raises ValueError: if `top` isn't of the right shape or is empty.
-    :raises RuntimError: if induced Toeplitz matrix
+    :raises RuntimeError: if induced Toeplitz matrix
                          is not PSD (if logger with this module's fully
                          qualified name is set to debug mode)
     """
@@ -49,13 +49,6 @@ class Toeplitz(PSDDecomposableMatrix):
         self.top = top.astype('float64', casting='safe')
         circ = self._cyclic_extend(top)
         self._circ_fft = np.fft.fft(circ)
-
-        if _LOG.isEnabledFor(logging.DEBUG):
-            sm = smallest_eig(self.top)
-            cutoff = len(top) ** 2 * EPS
-            if sm < -cutoff:
-                raise RuntimeError('Eigenvalue {} below tolerance {}\n{!s}'
-                                   .format(sm, -cutoff, self))
 
     @staticmethod
     def _cyclic_extend(x):

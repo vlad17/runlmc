@@ -52,13 +52,3 @@ class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
     def test_bad_type(self):
         cplx = np.arange(5) * 1j
         self.assertRaises(Exception, Toeplitz, cplx)
-
-    def test_throws_nonpsd_log_on(self):
-        logger = logging.getLogger('runlmc.linalg.toeplitz')
-        non_psd = np.array([2, 3])
-        orig_lvl = logger.level
-        logger.setLevel(logging.DEBUG)
-        self.assertRaises(RuntimeError, Toeplitz, non_psd)
-        logger.setLevel(logging.INFO)
-        Toeplitz(non_psd)
-        logger.setLevel(orig_lvl)
