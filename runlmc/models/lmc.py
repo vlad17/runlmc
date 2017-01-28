@@ -9,10 +9,6 @@ from paramz.transformations import Logexp
 
 from .multigp import MultiGP
 from ..approx.interpolation import multi_interpolant
-from ..approx.ski import repeat_noise, SKI
-from ..linalg.toeplitz import Toeplitz
-from ..linalg.kronecker import Kronecker
-from ..linalg.sum_matrix import SumMatrix
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 
@@ -180,17 +176,7 @@ class LMC(MultiGP):
         return np.linspace(lo, hi, m), m
 
     def _generate_ski(self):
-        coreg_mats = [np.outer(a, a) + np.diag(k)
-                      for a, k in zip(self.coreg_vecs, self.coreg_diags)]
-        kernels = [Toeplitz(k.from_dist(self.dists))
-                   for k in self.kernels]
-        products = [Kronecker(A, K) for A, K in zip(coreg_mats, kernels)]
-        kern_sum = SumMatrix(products)
-        return SKI(
-            kern_sum,
-            self.interpolant,
-            self.interpolantT,
-            repeat_noise(self.Xs, self.noise))
+        return S
 
     def parameters_changed(self):
         self.ski_kernel = self._generate_ski()

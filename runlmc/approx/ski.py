@@ -11,6 +11,7 @@ from ..linalg.psd_matrix import PSDMatrix
 
 _LOG = logging.getLogger(__name__)
 
+# TODO this is dumb, get rid of it.
 def repeat_noise(Xs, noise):
     """
     :param Xs: inputs
@@ -36,11 +37,12 @@ class SKI(PSDMatrix):
 
     def as_numpy(self):
         WKT = self.W.dot(self.K.as_numpy().T)
-        return self.W.dot(WKT.T) + np.diag(self.noise)
+        n = 0 if self.noise is None else np.diag(self.noise)
+        return self.W.dot(WKT.T) + n
 
     def matvec(self, x):
-        return self.W.dot(self.K.matvec(self.WT.dot(x))) \
-            + x * self.noise
+        n = 0 if self.noise is None else x * self.noise
+        return self.W.dot(self.K.matvec(self.WT.dot(x))) + n
 
     # TODO: move below to more abstract interface?
 
@@ -64,15 +66,3 @@ class SKI(PSDMatrix):
                           self.m, self.m ** 2, succ, error)
 
         return Kinv_y
-
-    def logdet_deriv(self, dKdt):
-        # Preconditioning Kernel Matrices, Cutajar 2016
-        trace = 0
-        n = self.shape[0]
-        n_it = 4
-        for _ in range(n_it):
-            r = np.random.randint(0, 2, n) * 2 - 1
-            rinv = self.solve(r)
-            dr = dKdt.matvec(r)
-            trace += rinv.dot(dr)
-        return trace / n_it

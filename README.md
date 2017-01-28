@@ -69,19 +69,21 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. appx folder: SKI handles interp + noise. linalg: GridLMC matrix which uses SumMatrix - but switches to block-Toeplitz representation (Block matrix?)
-0. Stochastic log deriv for above (Cutajar paper)
-0. Redo benchmarks: lots of kernels, lots of Q, different param config grid:
-    *  Evaluate reconstruction error for K (on various example kernels)
-    *  Evaluate reconstruction error for derivatives of likelihood
+0. Move to Cutajar approach. Use tests. Dedup/cleanup (benchmark code too).
+0. Remove linalg approximate eigenvalue code, old benchmarks.
+0. Re-run examples
+0. Preconditioner?
+    * Does chan Preconditioner carry over to SKI approximation?
+    * Do other inner circulant preconditioners (e.g., whittle) help inversion?
+0. Minor perf improvements: what helps? (MKL, CPython)
+0. Apply to synthetic and real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
 0. Write up the current algorithm (PDF)
-0. Investigate: when is iteration NOT converging (critical log) - what's the condition number in that case.
-0. Does chan Preconditioner carry over to SKI approximation?
-0. Do other inner circulant preconditioners (e.g., whittle) help inversion?
-0. Remove SumMatrix / linalg approximate eigenvalue code
+0. multidimensional inputs and ARD.
+0. rank > 1
 
 ### Considerations 
 
+* Investigate: when is iteration NOT converging (critical log) - what's the condition number in that case.
 * SEED=3333617092 nosetests runlmc.models.test_lmc breaks Toeplitz PSD strictly (currently has large negative eigval cutoff)
 * SLFM approach -> can we take determeinant in this representation?
    0. SLFM approach work for computing deriv of log det / log det exactly (pg. 16 in vector-valued-lmc.pdf)
@@ -107,14 +109,13 @@ All below invocations should be done from the repo root.
 0. test SKI
 0. test lmc._autogrid for edge cases.
 0. test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math
-0. rank > 1
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
 0. rename `rand_psd` -> `rand_pd`
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests) - requires exact kernel cholesky impl
 0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
-0. multidimensional inputs and ARD.
-0. product kernels (multiple factors) and active dimensions
+0. product kernels (multiple factors) 
+0. active dimension optimization
 
 ### Thesis Plan
 
