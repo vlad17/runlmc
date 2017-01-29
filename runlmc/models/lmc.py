@@ -241,7 +241,7 @@ class LMC(MultiGP):
                   :math:`\\log\\det K_{\text{exact}}`
         """
         diag = np.diag(self._cached_dense().L[0])
-        lgdet = np.log(diag).sum() ** 2
+        lgdet = np.log(diag).sum() * 2
         sgn = np.sign(diag).prod()
         if sgn <= 0:
             _LOG.critical('Log determinant nonpos! sgn %f lgdet %f '

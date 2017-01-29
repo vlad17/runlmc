@@ -20,7 +20,7 @@ from runlmc.lmc.parameter_values import ParameterValues
 from runlmc.lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 
 _HELP_STR = """
-Usage: python bench.py n_o d q eps [kern] [seed] [inversion-only]
+Usage: python bench.py n_o d q eps [kern] [seed] [test-type]
 
 n_o > 7 is the number of inputs per output
 d > 0 is the number of outputs
@@ -28,7 +28,8 @@ q > 0 is the number of LMC kernel terms
 eps > 0 is the constant diagonal perturbation mean (a float)
 kern is the kernel type, default rbf, one of 'rbf' 'periodic' 'matern' 'mix'
 seed is the random seed, default 1234
-inversion-only, if set to anything, only tests inversion
+test-type performs a particular test, default inversion:
+  'inversion' 'logdet' 'gradients'
 
 For all benchmarks, this constructs a variety of LMC kernels,
 all of which conform to the parameters n_o,d,q,eps specified
@@ -65,19 +66,21 @@ def _main():
     eps = float(sys.argv[4])
     kern = sys.argv[5] if len(sys.argv) > 5 else 'rbf'
     seed = int(sys.argv[6]) if len(sys.argv) > 6 else 1234
-    inversion_only = True if len(sys.argv) > 7 else False
+    testtype = sys.argv[7] if len(sys.argv) > 7 else 'inversion'
     kerntypes = ['rbf', 'periodic', 'matern', 'mix']
+    testtypes = ['inversion', 'logdet', 'gradients']
 
     assert n_o > 7
     assert d > 0
     assert q > 0
     assert eps > 0
     assert kern in kerntypes
+    assert testtype in testtypes
     np.random.seed(seed)
     n = n_o * d
 
-    print('n_o {} d {} q {} eps {} kern {} seed {} inversion-only {}'.format(
-        n_o, d, q, eps, kern, seed, inversion_only))
+    print('n_o {} d {} q {} eps {} kern {} seed {} test-type {}'.format(
+        n_o, d, q, eps, kern, seed, testtype))
 
     coreg_vecs = np.random.randn(q, d)
     coreg_diags = np.reciprocal(np.random.gamma(shape=1, scale=1, size=(q, d)))
@@ -96,7 +99,7 @@ def _main():
     Xs, Ys = np.random.rand(2, d, n_o)
 
     dists, grid_dists, interpolant, interpolant_T = prep(
-        d, n_o, Xs, not inversion_only)
+        d, n_o, Xs)
 
     k, desc = kdict[kern]
     print()
@@ -106,9 +109,9 @@ def _main():
         coreg_vecs, coreg_diags, k, [len(X) for X in Xs], np.hstack(Ys), noise)
 
     run_kernel_benchmark(
-        params, dists, grid_dists, interpolant, interpolant_T, inversion_only)
+        params, dists, grid_dists, interpolant, interpolant_T, testtype)
 
-def prep(d, n_o, Xs, verbose):
+def prep(d, n_o, Xs):
     # Replicates LMC (runlmc.models.lmc) code minimally.
     with contexttimer.Timer() as exact:
         dists = scipy.spatial.distance.pdist(Xs.reshape(-1, 1))
@@ -119,31 +122,33 @@ def prep(d, n_o, Xs, verbose):
         interpolant = multi_interpolant(Xs, grid)
         interpolantT = interpolant.transpose().tocsr()
 
-    if verbose:
-        print()
-        print('preparation time (once per optimization)')
-        print('    {:8.4f} sec exact - pairwise distances'
-              .format(exact.elapsed))
-        print('    {:8.4f} sec apprx - linear interpolation'
-              .format(apprx.elapsed))
+    print()
+    print('preparation time (once per optimization)')
+    print('    {:8.4f} sec exact - pairwise distances'
+          .format(exact.elapsed))
+    print('    {:8.4f} sec apprx - linear interpolation'
+          .format(apprx.elapsed))
 
     return dists, grid_dists, interpolant, interpolantT
 
 def run_kernel_benchmark(
-    params, dists, grid_dists, interpolant, interpolantT, inv_only):
+        params, dists, grid_dists, interpolant, interpolantT, testtype):
 
     with contexttimer.Timer() as t:
         exact = ExactLMCKernel(params, dists)
+    chol_time = t.elapsed
     eigs = np.fabs(np.linalg.eigvalsh(exact.K))
-    print('    covariance matrix info')
-    print('        largest  eig        {:8.4e}'.format(eigs.max()))
-    print('        smallest eig        {:8.4e}'.format(eigs.min()))
-    print('        l2 condition number {:8.4e}'.format(eigs.max() / eigs.min()))
-    print('    matrix materialization/inversion time')
-    print('        {:10.4f} sec exact - cholesky'.format(t.elapsed))
-
     with contexttimer.Timer() as t:
         apprx = ApproxLMCKernel(params, grid_dists, interpolant, interpolantT)
+    print('    covariance matrix info')
+    print('        largest  eig        {:8.4e}'.format(eigs.max()))
+    print('           -> (predicted)   {:8.4e}'
+          .format(apprx.ski.upper_eig_bound()))
+    print('        smallest eig        {:8.4e}'.format(eigs.min()))
+    print('        l2 condition number {:8.4e}'
+          .format(eigs.max() / eigs.min()))
+    print('    matrix materialization/inversion time')
+    print('        {:10.4f} sec exact - cholesky'.format(chol_time))
     print('        {:10.4f} sec apprx - solve K*alpha=y'.format(t.elapsed))
 
     matrix_diff = np.fabs(apprx.ski.as_numpy() - exact.K).mean()
@@ -152,8 +157,74 @@ def run_kernel_benchmark(
     print('        {:9.4e} |alpha_exact - alpha_apprx|_1 / n'
           .format(alpha_diff))
 
-    if inv_only:
-        print('    krylov subspace methods m={}'.format(apprx.m))
+    if testtype == 'logdet':
+        print('    logdet')
+        sgn, tru = np.linalg.slogdet(exact.K)
+        assert sgn > 0
+
+        # TODO: generalize logdet, abstract algorithms, use in optimization?
+        # TODO: in abstracted algorithms, need more robust 'cutoffs':
+        #       e.g., when convergence stalls
+
+        def minres(mvm):
+            ctr = 0
+            def cb(_):
+                nonlocal ctr
+                ctr += 1
+            m = len(apprx.grid_dists)
+            n = params.n
+            lo = sla.LinearOperator((n, n), matvec=mvm)
+
+            def inv_mvm(x):
+                Kinv_x, succ = sla.minres(
+                    lo, x, tol=1e-10, maxiter=m, callback=cb)
+                error = np.linalg.norm(x - mvm(Kinv_x))
+                #print('            '
+                #      'minres conv recon {:8.4e} it {:6d} m {:6d} succ {}'
+                #      .format(error, ctr, m, succ))
+                return Kinv_x
+
+            return inv_mvm
+
+        dd = np.diag(exact.K) # actual constructor harder w/o exact
+        D = lambda x: dd * x
+        N = lambda x: apprx.ski.matvec(x) - D(x)
+        delta0 = np.log(dd).sum()
+
+        def mvm(t):
+            ndtn = lambda x: D(x) + t * N(x)
+            invmvm = minres(ndtn)
+            return lambda x: N(invmvm(x))
+
+        def apx_tr(mvm, n):
+            rs = np.random.randint(0, 2, (n, params.n)) * 2 - 1
+            trace = 0
+            var = 0
+            for r in rs:
+                x = r.dot(mvm(r))
+                trace += x
+            trace /= len(rs)
+            return trace
+
+        def sample(t):
+            return apx_tr(mvm(t), 2)
+
+        vs = np.vectorize(sample)
+
+        import scipy
+        #integ = scipy.integrate.fixed_quad(vs, 0, 1, n=10)[0]
+        integ, _, _, _ = scipy.integrate.quad(
+            sample, 0, 1, limit=1, full_output=1)
+        trace = integ + delta0
+
+        print('        true value from exact {:8.4e}'.format(tru))
+        chol = np.log(np.diag(exact.L[0])).sum() * 2
+        print('        from cholesky diag    {:8.4e}'.format(chol))
+        print('        from         trace    {:8.4e}'.format(trace))
+        return
+
+    if testtype == 'inversion':
+        print('    krylov subspace methods m={}'.format(len(apprx.grid_dists)))
 
         chol = lambda y: (la.cho_solve(exact.deriv.L, y), 0)
         lcg = lambda y: apprx.ski.solve(y, verbose=True, method=sla.cg)
@@ -166,8 +237,8 @@ def run_kernel_benchmark(
 
         for f, name in methods:
             with contexttimer.Timer() as t:
-                x, it = f(y)
-            recon_err = np.linalg.norm(y - exact.K.dot(x))
+                x, it = f(params.y)
+            recon_err = np.linalg.norm(params.y - exact.K.dot(x))
             print('        {:9.4e} reconstruction {:10.4f} '
                   'sec {:8d} iterations {}'
                   .format(recon_err, t.elapsed, it, name))

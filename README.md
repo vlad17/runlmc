@@ -75,13 +75,14 @@ All below invocations should be done from the repo root.
     * Do other inner circulant preconditioners (e.g., whittle) help inversion?
     * Cache LCG solutions over iterations?
 0. Explore different optimization approaches with climin + Stochastic Logarithmic Expansion (offer the function?)?
-0. TODO(fix): switchto adagrad if log still isn't working? Better lmc tests.
+0. TODO(fix): switchto adagrad if log still isn't working? Better lmc tests (log_det_K, analogous reconstruction tests)
 0. Minor perf improvements: what helps?
     * MKL
     * CPython
     * Non-sum representation: TODO(SLFM-representation)
     * Non-sum representation: TODO(block-Toeplitz representation)
     * TODO(sparse-derivatives)
+0. For pretty pictures: debug log with timings printed everywhere
 0. Apply to synthetic and real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
 0. Write up the current algorithm (PDF)
 0. TODO(fix) Investigate: when is iteration NOT converging (critical log) - what's the condition number in that case. - see skipped tests in test_lmc
