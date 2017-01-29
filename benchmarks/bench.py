@@ -140,7 +140,7 @@ def run_kernel_benchmark(
     chol_time = t.elapsed
     eigs = np.fabs(np.linalg.eigvalsh(exact.K))
     with contexttimer.Timer() as t:
-        apprx = ApproxLMCKernel(SumGridKernel(
+        apprx = ApproxLMCKernel(gen_grid_kernel(
             params, grid_dists, interpolant, interpolantT))
     print('    covariance matrix info')
     print('        largest  eig        {:8.4e}'.format(eigs.max()))
@@ -233,7 +233,7 @@ def run_kernel_benchmark(
 
         chol = lambda y: (la.cho_solve(exact.deriv.L, y), 0)
 
-        basic = SumGridKernel(params, grid_dists, interpolant, interpolantT)
+        basic = SumGrid(params, grid_dists, interpolant, interpolantT)
         lcg = lambda y: solve(basic, y, verbose=True, minres=False)
         minres = lambda y: solve(basic, y, verbose=True, minres=True)
 

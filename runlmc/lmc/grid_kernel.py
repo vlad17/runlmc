@@ -2,17 +2,17 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import numpy as np
-from scipy.fftpack import fft, ifft
-import scipy.linalg as la
-import scipy.sparse.linalg as sla
 
 from ..approx.ski import SKI
+from ..linalg.block_matrix import BlockMatrix
 from ..linalg.symmetric_matrix import SymmetricMatrix
 from ..linalg.toeplitz import Toeplitz
 from ..linalg.kronecker import Kronecker
 from ..linalg.sum_matrix import SumMatrix
 from ..util.docs import inherit_doc
+from ..util.numpy_convenience import symm_2d_list_map
 
+# TODO(test)
 class GridKernel(SymmetricMatrix):
     def __init__(self, params, grid_dists, interpolant, interpolantT):
         super().__init__(params.n)
@@ -24,47 +24,15 @@ class GridKernel(SymmetricMatrix):
     def grid_only(self):
         raise NotImplementedError
 
+# TODO(test)
 def gen_grid_kernel(params, grid_dists, interpolant, interpolantT):
-    sum_grid = SumGridKernel(params, grid_dists, interpolant, interpolantT)
-    return sum_grid
+    if params.Q > 2 * params.D:
+        ktype = BlockToeplitz
+    else:
+        ktype = SumGrid
+    return ktype(params, grid_dists, interpolant, interpolantT)
 
-# TODO(SLFM-representation)
-
-def _symm_2d_list_map(f, arr, D):
-    out = np.empty((D, D), dtype='object')
-    for i in range(D):
-        for j in range(i, D):
-            out[i, j] = f(arr[i, j])
-            out[j, i] = out[i, j]
-    return out
-
-# TODO(cleanup): move to linalg
-@inherit_doc
-class BlockMatrix(SymmetricMatrix):
-    def __init__(self, blocks):
-        super().__init__(len(blocks) * blocks[0][0].shape[0])
-        self.blocks = blocks
-        self.D = len(blocks)
-
-    def matvec(self, x):
-        # potential optimization - rm split, use slices
-        shards = np.split(x, self.D)
-        result = np.split(np.zeros_like(x), self.D)
-        for i, row in enumerate(self.blocks):
-            for j, shard in enumerate(shards):
-                result[i] += row[j].matvec(shard)
-        return np.hstack(result)
-
-    def as_numpy(self):
-        mats = _symm_2d_list_map(lambda x: x.as_numpy(), self.blocks, self.D)
-        return np.bmat(mats).A
-
-    def upper_eig_bound(self):
-        bounds = _symm_2d_list_map(lambda x: x.upper_eig_bound(),
-                                   self.blocks, self.D)
-        bounds = bounds.astype(float)
-        return np.linalg.norm(bounds, 1)
-
+# TODO(test)
 @inherit_doc
 class BlockToeplitz(GridKernel):
     def __init__(self, params, grid_dists, interpolant, interpolantT):
@@ -73,7 +41,7 @@ class BlockToeplitz(GridKernel):
         tops = np.array([k.from_dist(grid_dists) for k in params.kernels])
         Bs = np.array(params.coreg_mats)
         bt = np.tensordot(Bs, tops, axes=(0, 0))
-        blocked = _symm_2d_list_map(Toeplitz, bt, params.D)
+        blocked = symm_2d_list_map(Toeplitz, bt, params.D)
         blocked = BlockMatrix(blocked)
         self.ski = SKI(blocked, interpolant, interpolantT)
         self.noise = np.repeat(params.noise, params.lens)
@@ -90,8 +58,9 @@ class BlockToeplitz(GridKernel):
     def grid_only(self):
         return self.ski.K
 
+# TODO(test)
 @inherit_doc
-class SumGridKernel(GridKernel):
+class SumGrid(GridKernel):
     def __init__(self, params, grid_dists, interpolant, interpolantT):
         super().__init__(params, grid_dists, interpolant, interpolantT)
         kerns_on_grid = [Toeplitz(k.from_dist(grid_dists))

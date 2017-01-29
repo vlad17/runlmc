@@ -113,6 +113,7 @@ All below invocations should be done from the repo root.
 0. TODO(cleanup)
 0. Allow extrapolation in util.interpolation.py
 0. document SKI
+0. test symm_2d_list_map
 0. test multi_interpolant
 0. test SKI
 0. test lmc._autogrid for edge cases.
