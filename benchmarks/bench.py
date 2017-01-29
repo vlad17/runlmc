@@ -238,15 +238,14 @@ def run_kernel_benchmark(
         minres = lambda y: solve(basic, y, verbose=True, minres=True)
 
         pre = SumGridKernel(params, grid_dists, interpolant, interpolantT)
-        pre.preconditioner = mkpre(
-            params, grid_dists, interpolant, interpolantT)
+        #pre.preconditioner =
         lcgp = lambda y: solve(pre, y, verbose=True, minres=False)
 
         methods = [
             (chol, 'chol'),
             (lcg, 'lcg'),
-            (minres, 'minres'),
-            (lcgp, 'lcg + pre')]
+            #(lcgp, 'lcg + pre'),
+            (minres, 'minres')]
 
         for f, name in methods:
             with contexttimer.Timer() as t:
