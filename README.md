@@ -69,7 +69,6 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. rename derivative to lmc (models/lmc should be something else)
 0. extract K construction in lmc
 0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation?

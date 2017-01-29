@@ -16,7 +16,8 @@ from runlmc.kern.rbf import RBF
 from runlmc.kern.matern32 import Matern32
 from runlmc.kern.std_periodic import StdPeriodic
 from runlmc.models.lmc import LMC
-from runlmc.lmc.deriv import ExactLMCDerivative, ApproxLMCDerivative
+from runlmc.lmc.parameter_values import ParameterValues
+from runlmc.lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 
 _HELP_STR = """
 Usage: python bench.py n_o d q eps [kern] [seed] [inversion-only]
@@ -100,10 +101,12 @@ def _main():
     k, desc = kdict[kern]
     print()
     print(desc)
-    run_kernel_benchmark(
-        k, desc, coreg_vecs, coreg_diags, noise, Xs, np.hstack(Ys),
-        dists, grid_dists, interpolant, interpolant_T, inversion_only)
 
+    params = ParameterValues(
+        coreg_vecs, coreg_diags, k, [len(X) for X in Xs], np.hstack(Ys), noise)
+
+    run_kernel_benchmark(
+        params, dists, grid_dists, interpolant, interpolant_T, inversion_only)
 
 def prep(d, n_o, Xs, verbose):
     # Replicates LMC (runlmc.models.lmc) code minimally.
@@ -127,13 +130,10 @@ def prep(d, n_o, Xs, verbose):
     return dists, grid_dists, interpolant, interpolantT
 
 def run_kernel_benchmark(
-        kernels, desc, coreg_vecs, coreg_diags, noise, Xs, y,
-        dists, grid_dists, interpolant, interpolantT, inversion_only):
-    lens = [len(X) for X in Xs]
+    params, dists, grid_dists, interpolant, interpolantT, inv_only):
 
     with contexttimer.Timer() as t:
-        exact = ExactLMCDerivative(
-            coreg_vecs, coreg_diags, kernels, dists, lens, y, noise)
+        exact = ExactLMCKernel(params, dists)
     eigs = np.fabs(np.linalg.eigvalsh(exact.K))
     print('    covariance matrix info')
     print('        largest  eig        {:8.4e}'.format(eigs.max()))
@@ -143,9 +143,7 @@ def run_kernel_benchmark(
     print('        {:10.4f} sec exact - cholesky'.format(t.elapsed))
 
     with contexttimer.Timer() as t:
-        apprx = ApproxLMCDerivative(
-            coreg_vecs, coreg_diags, kernels, grid_dists,
-            interpolant, interpolantT, lens, y, noise)
+        apprx = ApproxLMCKernel(params, grid_dists, interpolant, interpolantT)
     print('        {:10.4f} sec apprx - solve K*alpha=y'.format(t.elapsed))
 
     matrix_diff = np.fabs(apprx.ski.as_numpy() - exact.K).mean()
@@ -154,7 +152,7 @@ def run_kernel_benchmark(
     print('        {:9.4e} |alpha_exact - alpha_apprx|_1 / n'
           .format(alpha_diff))
 
-    if inversion_only:
+    if inv_only:
         print('    krylov subspace methods m={}'.format(apprx.m))
 
         chol = lambda y: (la.cho_solve(exact.deriv.L, y), 0)

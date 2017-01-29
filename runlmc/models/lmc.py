@@ -10,6 +10,7 @@ from paramz.transformations import Logexp
 
 from .multigp import MultiGP
 from ..approx.interpolation import multi_interpolant
+from ..lmc.parameter_values import ParameterValues
 from ..lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
@@ -116,12 +117,11 @@ class LMC(MultiGP):
         for k in self.kernels:
             self.link_parameter(k)
 
-        self.lens = list(map(len, Xs))
-        self.n = sum(self.lens)
+        n = sum(map(len, self.Xs))
         _LOG.info('LMC %s generating inducing grid n = %d',
-                  self.name, self.n)
+                  self.name, n)
         # Grid corresponds to U
-        self.inducing_grid, self.m = self._autogrid(Xs, lo, hi, m)
+        self.inducing_grid, m = self._autogrid(Xs, lo, hi, m)
 
         # Toeplitz(self.dists) is the pairwise distance matrix of U
         self.dists = self.inducing_grid - self.inducing_grid[0]
@@ -131,8 +131,7 @@ class LMC(MultiGP):
         self.interpolantT = self.interpolant.transpose().tocsr()
 
         _LOG.info('LMC %s grid (n = %d, m = %d) complete, '
-                  'generating first SKI kernel',
-                  self.name, self.n, self.m)
+                  'generating first SKI kernel', self.name, n, m)
 
         self.coreg_vecs = []
         for i in range(len(self.kernels)):
@@ -179,21 +178,13 @@ class LMC(MultiGP):
 
         return np.linspace(lo, hi, m), m
 
-    def _exact_kernel(self):
-        pdists = dist.squareform(dist.pdist(np.hstack(self.Xs).reshape(-1, 1)))
-        return ExactLMCKernel(
-            self.coreg_vecs, self.coreg_diags, self.kernels,
-            pdists, self.lens, self.y, self.noise)
-
-    def _apprx_kernel(self):
-        return ApproxLMCKernel(
-            self.coreg_vecs, self.coreg_diags, self.kernels,
-            self.dists, self.interpolant, self.interpolantT,
-            self.lens, self.y, self.noise)
-
     def parameters_changed(self):
-        self.exact_kerenel = None
-        self.kernel = self._apprx_kernel()
+        self.exact_kernel = None
+        self.kernel = ApproxLMCKernel(
+            ParameterValues.generate(self),
+            self.dists,
+            self.interpolant,
+            self.interpolantT)
 
         # uncache if were defined before
         self.nu = None
@@ -226,7 +217,10 @@ class LMC(MultiGP):
 
     def _cached_dense(self):
         if self.exact_kernel is None:
-            self.exact_kernel = self._exact_kernel()
+            pdists = dist.pdist(np.hstack(self.Xs).reshape(-1, 1))
+            pdists = dist.squareform(pdists)
+            self.exact_kernel = ExactLMCKernel(
+                ParameterValues.generate(self), pdists)
         return self.exact_kernel
 
     def K(self):

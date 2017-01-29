@@ -13,97 +13,101 @@ from ..linalg.kronecker import Kronecker
 from ..linalg.sum_matrix import SumMatrix
 
 # TODO(cleanup): document purpose: separated from paramz logic <- document
-# TODO(cleanup): extract common functionality into the base class somehow?
 # TODO(cleanup): extract K construction away from the derivative
 
 class LMCKernel:
 
+    def __init__(self, params):
+        self.params = params
 
-
-    def coreg_vec_gradients(self):
+    def _dKdt_from_dAdt(self, dAdt, q):
         raise NotImplementedError
 
-    def coreg_diag_gradients(self):
+    def _dKdts_from_dKqdts(self, A, q):
         raise NotImplementedError
 
-    def kernel_gradients(self):
+    def _dKdt_from_dEpsdt(self, dEpsdt):
         raise NotImplementedError
 
-    def noise_gradient(self):
+    def _dLdt_from_dKdt(self, dKdt):
         raise NotImplementedError
-
-class ApproxLMCKernel(LMCKernel):
-    # TODO(SLFM-representation)
-    def __init__(self, coreg_vecs, coreg_diags, kernels,
-                 dists, interpolant, interpolantT, lens, y, noise):
-        self.coreg_vecs = coreg_vecs
-        self.coreg_diag = coreg_diags
-        self.kernels = kernels
-        self.dists = dists
-        self.coreg_mats = [np.outer(a, a) + np.diag(k)
-                           for a, k in zip(coreg_vecs, self.coreg_diag)]
-        self.materialized_kernels = [Toeplitz(k.from_dist(dists))
-                                     for k in kernels]
-        products = [Kronecker(A, K) for A, K in
-                    zip(self.coreg_mats, self.materialized_kernels)]
-        kern_sum = SumMatrix(products)
-        self.interpolant = interpolant
-        self.interpolantT = interpolantT
-        self.n = len(y)
-        self.D = len(self.coreg_diag[0])
-        self.m = len(self.dists)
-        self.noise = noise
-        self.lens = lens
-        # TODO(block-Toeplitz representation)
-        self.ski = SKI(
-            kern_sum,
-            self.interpolant,
-            self.interpolantT,
-            np.repeat(noise, lens))
-        self.deriv = StochasticDeriv(self.ski, y)
-
-    def _ski_d(self, K):
-        ski = SKI(K, self.interpolant, self.interpolantT, None)
-        return self.deriv.derivative(ski)
 
     def coreg_vec_gradients(self):
         grads = []
-        for a, toep_K in zip(self.coreg_vecs, self.materialized_kernels):
-            grad = np.zeros(self.D)
-            for i in range(self.D):
-                A = np.zeros((self.D, self.D))
-                A[i] += a
-                A.T[i] += a
+        for q, a in enumerate(self.params.coreg_vecs):
+            grad = np.zeros(self.params.D)
+            for i in range(self.params.D):
+                dAdt = np.zeros((self.params.D, self.params.D))
+                dAdt[i] += a
+                dAdt.T[i] += a
                 # TODO(sparse-derivatives)
-                dKdt = Kronecker(A, toep_K)
-                grad[i] = self._ski_d(dKdt)
+                dKdt = self._dKdt_from_dAdt(dAdt, q)
+                grad[i] = self._dLdt_from_dKdt(dKdt)
             grads.append(grad)
         return grads
 
     def coreg_diag_gradients(self):
         grads = []
-        for toep_K in self.materialized_kernels:
-            zeros = np.zeros((self.D, self.D))
-            grad = np.zeros(self.D)
-            for i in range(self.D):
+        for q in range(self.params.Q):
+            zeros = np.zeros((self.params.D, self.params.D))
+            grad = np.zeros(self.params.D)
+            for i in range(self.params.D):
                 zeros[i, i] = 1
                 # TODO(sparse-derivatives)
-                dKdt = Kronecker(zeros, toep_K)
-                grad[i] = self._ski_d(dKdt)
+                dKdt = self._dKdt_from_dAdt(zeros, q)
+                grad[i] = self._dLdt_from_dKdt(dKdt)
                 zeros[i, i] = 0
             grads.append(grad)
         return grads
 
     def kernel_gradients(self):
         grads = []
-        for A, kern in zip(self.coreg_mats, self.kernels):
+        for q, A in enumerate(self.params.coreg_mats):
             kern_grad = []
-            for dKdt_toep in kern.kernel_gradient(self.dists):
-                dKdt = Kronecker(A, Toeplitz(dKdt_toep))
-                dLdt = self._ski_d(dKdt)
+            for dKdt in self._dKdts_from_dKqdts(A, q):
+                dLdt = self._dLdt_from_dKdt(dKdt)
                 kern_grad.append(dLdt)
             grads.append(kern_grad)
         return grads
+
+    def noise_gradient(self):
+        grad = np.zeros(len(self.params.noise))
+        for i in range(self.params.D):
+            d_noise = np.zeros(self.params.D)
+            d_noise[i] = 1
+            dKdt = self._dKdt_from_dEpsdt(d_noise)
+            grad[i] = self._dLdt_from_dKdt(dKdt)
+        return grad
+
+class ApproxLMCKernel(LMCKernel):
+    # TODO(SLFM-representation)
+    def __init__(self, params, grid_dists, interpolant, interpolantT):
+        super().__init__(params)
+        self.grid_dists = grid_dists
+        self.materialized_kernels = [Toeplitz(k.from_dist(grid_dists))
+                                     for k in params.kernels]
+        products = [Kronecker(A, K) for A, K in
+                    zip(params.coreg_mats, self.materialized_kernels)]
+        kern_sum = SumMatrix(products)
+        self.interpolant = interpolant
+        self.interpolantT = interpolantT
+        # TODO(block-Toeplitz representation)
+        self.ski = SKI(
+            kern_sum,
+            self.interpolant,
+            self.interpolantT,
+            np.repeat(params.noise, params.lens))
+        self.deriv = StochasticDeriv(self.ski, self.params.y)
+
+    def _ski(self, X):
+        return SKI(X, self.interpolant, self.interpolantT, None)
+
+    def _dKdt_from_dAdt(self, dAdt, q):
+        return self._ski(Kronecker(dAdt, self.materialized_kernels[q]))
+
+    def _dKdts_from_dKqdts(self, A, q):
+        for dKqdt in self.params.kernels[q].kernel_gradient(self.grid_dists):
+            yield self._ski(Kronecker(A, Toeplitz(dKqdt)))
 
     # TODO(sparse-derivatives) - move to linalg
     class _Diag:
@@ -112,90 +116,48 @@ class ApproxLMCKernel(LMCKernel):
         def matvec(self, x):
             return self.v * x
 
-    def noise_gradient(self):
-        grad = np.zeros(len(self.noise))
-        for i in range(self.D):
-            d_noise = np.zeros(self.D)
-            d_noise[i] = 1
-            d_noise = np.repeat(d_noise, self.lens)
-            grad[i] = self.deriv.derivative(self._Diag(d_noise))
-        return grad
+    def _dKdt_from_dEpsdt(self, dEpsdt):
+        # no SKI approximation necessary for noise
+        return ApproxLMCKernel._Diag(np.repeat(dEpsdt, self.params.lens))
+
+    def _dLdt_from_dKdt(self, dKdt):
+        return self.deriv.derivative(dKdt)
+
 
 class ExactLMCKernel(LMCKernel):
-    def __init__(self, coreg_vecs, coreg_diags,
-                 kernels, dists, lens, y, noise):
-        self.coreg_vecs = coreg_vecs
-        self.coreg_diag = coreg_diags
-        self.kernels = kernels
-        self.coreg_mats = [np.outer(a, a) + np.diag(k)
-                           for a, k in zip(coreg_vecs, self.coreg_diag)]
-        self.materialized_kernels = [k.from_dist(dists) for k in kernels]
-        self.dists = dists
-        self.n = len(y)
-        self.D = len(self.coreg_diag[0])
-        self.noise = noise
-        self.repeated_noise = np.repeat(noise, lens)
-        self.lens = lens
+    def __init__(self, params, pair_dists):
+        super().__init__(params)
+        self.materialized_kernels = [k.from_dist(pair_dists)
+                                     for k in params.kernels]
+        self.pair_dists = pair_dists
         self.K = sum(self.coreg_scale(A, Kq) for A, Kq in
-                     zip(self.coreg_mats, self.materialized_kernels))
-        self.K += np.diag(self.repeated_noise)
+                     zip(params.coreg_mats, self.materialized_kernels))
+        self.K += np.diag(np.repeat(params.noise, params.lens))
         self.L = la.cho_factor(self.K)
-        self.deriv = ExactDeriv(self.L, y)
+        self.deriv = ExactDeriv(self.L, self.params.y)
 
     def coreg_scale(self, A, K):
         # TODO(cleanup): this should be a single method in np convenience
-        ends = np.add.accumulate(self.lens)
+        ends = np.add.accumulate(self.params.lens)
         begins = np.roll(ends, 1)
         begins[0] = 0
         K = np.copy(K)
-        for i, j in itertools.product(range(self.D), range(self.D)):
+        D = self.params.D
+        for i, j in itertools.product(range(D), range(D)):
             rbegin, rend = begins[i], ends[i]
             cbegin, cend = begins[j], ends[j]
             K[rbegin:rend, cbegin:cend] *= A[i, j]
         return K
 
-    def coreg_vec_gradients(self):
-        grads = []
-        for a, Kq in zip(self.coreg_vecs, self.materialized_kernels):
-            grad = np.zeros(self.D)
-            for i in range(self.D):
-                A = np.zeros((self.D, self.D))
-                A[i] += a
-                A.T[i] += a
-                dKdt = self.coreg_scale(A, Kq)
-                grad[i] = self.deriv.derivative(dKdt)
-            grads.append(grad)
-        return grads
+    def _dKdt_from_dAdt(self, dAdt, q):
+        return self.coreg_scale(dAdt, self.materialized_kernels[q])
 
-    def coreg_diag_gradients(self):
-        grads = []
-        for Kq in self.materialized_kernels:
-            zeros = np.zeros((self.D, self.D))
-            grad = np.zeros(self.D)
-            for i in range(self.D):
-                zeros[i, i] = 1
-                dKdt = self.coreg_scale(zeros, Kq)
-                grad[i] = self.deriv.derivative(dKdt)
-                zeros[i, i] = 0
-            grads.append(grad)
-        return grads
+    def _dKdts_from_dKqdts(self, A, q):
+        for dKqdt in self.params.kernels[q].kernel_gradient(self.pair_dists):
+            yield self.coreg_scale(A, dKqdt)
 
-    def kernel_gradients(self):
-        grads = []
-        for A, kern in zip(self.coreg_mats, self.kernels):
-            kern_grad = []
-            for dKdt in kern.kernel_gradient(self.dists):
-                dKdt = self.coreg_scale(A, dKdt)
-                dLdt = self.deriv.derivative(dKdt)
-                kern_grad.append(dLdt)
-            grads.append(kern_grad)
-        return grads
+    def _dKdt_from_dEpsdt(self, dEpsdt):
+        return np.diag(np.repeat(dEpsdt, self.params.lens))
 
-    def noise_gradient(self):
-        grad = np.zeros(len(self.noise))
-        for i in range(self.D):
-            d_noise = np.zeros(self.D)
-            d_noise[i] = 1
-            d_noise = np.repeat(d_noise, self.lens)
-            grad[i] = self.deriv.derivative(np.diag(d_noise))
-        return grad
+    def _dLdt_from_dKdt(self, dKdt):
+        return self.deriv.derivative(dKdt)
