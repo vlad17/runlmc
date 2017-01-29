@@ -11,7 +11,7 @@ from paramz.transformations import Logexp
 from .multigp import MultiGP
 from ..approx.interpolation import multi_interpolant
 from ..lmc.parameter_values import ParameterValues
-from ..lmc.grid_kernel import SumGridKernel
+from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
@@ -182,7 +182,7 @@ class LMC(MultiGP):
     def parameters_changed(self):
         self.exact_kernel = None
         self.kernel = ApproxLMCKernel(
-            SumGridKernel(
+            gen_grid_kernel(
                 ParameterValues.generate(self),
                 self.dists,
                 self.interpolant,

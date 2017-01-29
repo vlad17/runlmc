@@ -231,15 +231,22 @@ def run_kernel_benchmark(
         from runlmc.approx.iterative import Iterative
         solve = Iterative.solve
 
-
         chol = lambda y: (la.cho_solve(exact.deriv.L, y), 0)
-        lcg = lambda y: solve(apprx.K, y, verbose=True, minres=False)
-        minres = lambda y: solve(apprx.K, y, verbose=True, minres=True)
+
+        basic = SumGridKernel(params, grid_dists, interpolant, interpolantT)
+        lcg = lambda y: solve(basic, y, verbose=True, minres=False)
+        minres = lambda y: solve(basic, y, verbose=True, minres=True)
+
+        pre = SumGridKernel(params, grid_dists, interpolant, interpolantT)
+        pre.preconditioner = mkpre(
+            params, grid_dists, interpolant, interpolantT)
+        lcgp = lambda y: solve(pre, y, verbose=True, minres=False)
 
         methods = [
             (chol, 'chol'),
             (lcg, 'lcg'),
-            (minres, 'minres')]
+            (minres, 'minres'),
+            (lcgp, 'lcg + pre')]
 
         for f, name in methods:
             with contexttimer.Timer() as t:
