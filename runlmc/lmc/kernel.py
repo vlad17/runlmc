@@ -3,6 +3,7 @@
 
 import itertools
 import numpy as np
+import scipy.linalg as la
 
 from .exact_deriv import ExactDeriv
 from .stochastic_deriv import StochasticDeriv
@@ -13,8 +14,12 @@ from ..linalg.sum_matrix import SumMatrix
 
 # TODO(cleanup): document purpose: separated from paramz logic <- document
 # TODO(cleanup): extract common functionality into the base class somehow?
+# TODO(cleanup): extract K construction away from the derivative
 
-class LMCDerivative:
+class LMCKernel:
+
+
+
     def coreg_vec_gradients(self):
         raise NotImplementedError
 
@@ -27,7 +32,7 @@ class LMCDerivative:
     def noise_gradient(self):
         raise NotImplementedError
 
-class ApproxLMCDerivative(LMCDerivative):
+class ApproxLMCKernel(LMCKernel):
     # TODO(SLFM-representation)
     def __init__(self, coreg_vecs, coreg_diags, kernels,
                  dists, interpolant, interpolantT, lens, y, noise):
@@ -116,8 +121,7 @@ class ApproxLMCDerivative(LMCDerivative):
             grad[i] = self.deriv.derivative(self._Diag(d_noise))
         return grad
 
-class ExactLMCDerivative:
-
+class ExactLMCKernel(LMCKernel):
     def __init__(self, coreg_vecs, coreg_diags,
                  kernels, dists, lens, y, noise):
         self.coreg_vecs = coreg_vecs
@@ -129,14 +133,14 @@ class ExactLMCDerivative:
         self.dists = dists
         self.n = len(y)
         self.D = len(self.coreg_diag[0])
-        self.m = len(self.dists)
         self.noise = noise
         self.repeated_noise = np.repeat(noise, lens)
         self.lens = lens
         self.K = sum(self.coreg_scale(A, Kq) for A, Kq in
                      zip(self.coreg_mats, self.materialized_kernels))
         self.K += np.diag(self.repeated_noise)
-        self.deriv = ExactDeriv(self.K, y)
+        self.L = la.cho_factor(self.K)
+        self.deriv = ExactDeriv(self.L, y)
 
     def coreg_scale(self, A, K):
         # TODO(cleanup): this should be a single method in np convenience

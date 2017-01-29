@@ -10,7 +10,7 @@ from paramz.transformations import Logexp
 
 from .multigp import MultiGP
 from ..approx.interpolation import multi_interpolant
-from ..derivative.lmc_deriv import ExactLMCDerivative, ApproxLMCDerivative
+from ..lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 
@@ -106,7 +106,7 @@ class LMC(MultiGP):
     :raises: :class:`ValueError` if no kernels
     """
     def __init__(self, Xs, Ys, normalize=True, kernels=None,
-                 lo=None, hi=None, m=None, name='lmc', exact=False):
+                 lo=None, hi=None, m=None, name='lmc'):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
 
         if not kernels:
@@ -151,10 +151,10 @@ class LMC(MultiGP):
         self.noise = Param('noise', np.ones(self.output_dim), Logexp())
         self.link_parameter(self.noise)
 
-        self.exact = exact
         self.y = np.hstack(self.Ys)
 
-        self.kernel = {'exact': None, 'apprx': None}
+        self.kernel = None
+        self.exact_kernel = None
         self.alpha = None
         self.nu = None
         self.native_var = None
@@ -179,30 +179,21 @@ class LMC(MultiGP):
 
         return np.linspace(lo, hi, m), m
 
-    # TODO(cleanup) clear up *LMCDerivative <> Kernel confusion
-
     def _exact_kernel(self):
         pdists = dist.squareform(dist.pdist(np.hstack(self.Xs).reshape(-1, 1)))
-        return ExactLMCDerivative(
+        return ExactLMCKernel(
             self.coreg_vecs, self.coreg_diags, self.kernels,
             pdists, self.lens, self.y, self.noise)
 
     def _apprx_kernel(self):
-        return ApproxLMCDerivative(
+        return ApproxLMCKernel(
             self.coreg_vecs, self.coreg_diags, self.kernels,
             self.dists, self.interpolant, self.interpolantT,
             self.lens, self.y, self.noise)
 
-    def _training_kernel(self):
-        return self.kernel['exact' if self.exact else 'apprx']
-
     def parameters_changed(self):
-        self.kernel['exact'] = None
-
-        if self.exact:
-            self.kernel['exact'] = self._exact_kernel()
-        else:
-            self.kernel['apprx'] = self._apprx_kernel()
+        self.exact_kerenel = None
+        self.kernel = self._apprx_kernel()
 
         # uncache if were defined before
         self.nu = None
@@ -225,19 +216,18 @@ class LMC(MultiGP):
             for i, a in enumerate(self.coreg_diags):
                 _LOG.debug('  kappa%d %s', i, np_print(a))
 
-        kernel = self._training_kernel()
-        for x, dx in zip(self.coreg_vecs, kernel.coreg_vec_gradients()):
+        for x, dx in zip(self.coreg_vecs, self.kernel.coreg_vec_gradients()):
             x.gradient = dx
-        for x, dx in zip(self.coreg_diags, kernel.coreg_diag_gradients()):
+        for x, dx in zip(self.coreg_diags, self.kernel.coreg_diag_gradients()):
             x.gradient = dx
-        for k, dk in zip(self.kernels, kernel.kernel_gradients()):
+        for k, dk in zip(self.kernels, self.kernel.kernel_gradients()):
             k.update_gradient(dk)
-        self.noise.gradient = kernel.noise_gradient()
+        self.noise.gradient = self.kernel.noise_gradient()
 
     def _cached_dense(self):
-        if self.kernel['exact'] is None:
-            self.kernel['exact'] = self._exact_kernel()
-        return self.kernel['exact']
+        if self.exact_kernel is None:
+            self.exact_kernel = self._exact_kernel()
+        return self.exact_kernel
 
     def K(self):
         """
@@ -256,7 +246,9 @@ class LMC(MultiGP):
                   upper bound for
                   :math:`\\log\\det K_{\text{exact}}`
         """
-        sgn, lgdet = np.linalg.slogdet(self.K())
+        diag = np.diag(self._cached_dense().L[0])
+        lgdet = np.log(diag).sum() ** 2
+        sgn = np.sign(diag).prod()
         if sgn <= 0:
             _LOG.critical('Log determinant nonpos! sgn %f lgdet %f '
                           'returning -inf', sgn, lgdet)
@@ -264,16 +256,14 @@ class LMC(MultiGP):
         return lgdet
 
     def _precompute_predict(self):
-        assert not self.exact
-
         # Not optimized for speed - this performs dense linear algebra
         # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
         # This can probably be sped up (even by e.g., using the approximations
         # offered in those sections, or perhaps some less coarse ones).
         # However, it's the training that's the bottleneck, not prediction.
-        nongrid_alpha = self._training_kernel().deriv.alpha
+        nongrid_alpha = self.kernel.deriv.alpha
         WT = self.interpolantT
-        K_UU = self._training_kernel().ski.K
+        K_UU = self.kernel.ski.K
         alpha = K_UU.matvec(WT.dot(nongrid_alpha))
 
         A = self.K()
@@ -299,7 +289,7 @@ class LMC(MultiGP):
 
         :returns: the normal quadratic term for the current outputs `Ys`.
         """
-        return self.y.dot(self._training_kernel().deriv.alpha)
+        return self.y.dot(self.kernel.deriv.alpha)
 
     def log_likelihood(self):
         nll = self.log_det_K() + self.normal_quadratic()
@@ -307,9 +297,6 @@ class LMC(MultiGP):
         return -0.5 * nll
 
     def _raw_predict(self, Xs):
-        if self.exact:
-            raise NotImplementedError
-
         if self.alpha is None:
             self.alpha, self.nu, self.native_var = self._precompute_predict()
 

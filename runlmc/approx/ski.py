@@ -35,26 +35,31 @@ class SKI(SymmetricMatrix):
 
     # TODO(general-solve): move below to more abstract interface?
 
-    def solve(self, y):
+    def solve(self, y, verbose=False, method=scipy.sparse.linalg.minres):
         """
         Solves the linear system :math:`K\\textbf{x}=\\textbf{y}`.
 
         :param y: :math:`\\textbf{y}`
         :return: :math:`\\textbf{x}`
         """
-        # K = self.as_numpy()
-        # return scipy.linalg.solve(K, y, sym_pos=True, overwrite_a=True)
-
-        Kinv_y, succ = scipy.sparse.linalg.minres(
-            self.op, y, tol=self.TOL, maxiter=(self.m ** 3))
+        ctr = 0
+        def cb(_):
+            nonlocal ctr
+            ctr += 1
+        Kinv_y, succ = method(
+            self.op, y, tol=self.TOL, maxiter=self.m,
+            callback=cb)
         error = np.linalg.norm(y - self.op.matvec(Kinv_y))
         if error > math.sqrt(self.TOL) or succ != 0:
             _LOG.critical('MINRES (m = %d) did not converge.\n'
-                          'iterations = m^3 = %d\n'
+                          'iterations = m\n'
                           'error code %d\nReconstruction Error %f',
-                          self.m, self.m ** 3, succ, error)
+                          self.m, succ, error)
 
-        return Kinv_y
+        if verbose:
+            return Kinv_y, ctr
+        else:
+            return Kinv_y
 
     def upper_eig_bound(self):
         return self.K.upper_eig_bound() * self.shape[0] / self.m

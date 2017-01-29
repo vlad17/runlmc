@@ -69,10 +69,14 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Stochastic Logarithmic Expansion (offer the function?)
+0. rename derivative to lmc (models/lmc should be something else)
+0. extract K construction in lmc
 0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation?
     * Do other inner circulant preconditioners (e.g., whittle) help inversion?
+    * Cache LCG solutions over iterations?
+0. Explore different optimization approaches with climin + Stochastic Logarithmic Expansion (offer the function?)?
+0. TODO(fix): switchto adagrad if log still isn't working? Better lmc tests.
 0. Minor perf improvements: what helps?
     * MKL
     * CPython
@@ -113,7 +117,7 @@ All below invocations should be done from the repo root.
 0. test SKI
 0. test lmc._autogrid for edge cases.
 0. test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math
-0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh
+0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh (numpy.linalg -> scipy.linalg as la, scipy.sparse.linalg as sla)
 0. rename `rand_psd` -> `rand_pd`
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests) - requires exact kernel cholesky impl
