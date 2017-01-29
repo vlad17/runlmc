@@ -240,11 +240,15 @@ def run_kernel_benchmark(
         bt = BlockToeplitz(params, grid_dists, interpolant, interpolantT)
         minresbt = lambda y: solve(bt, y, verbose=True, minres=True)
 
+        sl = GridSLFM(params, grid_dists, interpolant, interpolantT)
+        minressl = lambda y: solve(sl, y, verbose=True, minres=True)
+
         methods = [
             (chol, 'chol'),
             (lcg, 'lcg (sum)'),
             (minres, 'minres (sum)'),
-            (minresbt, 'minres (bt)')]
+            (minresbt, 'minres (bt)'),
+            (minressl, 'minres (slfm)')]
 
         for f, name in methods:
             with contexttimer.Timer() as t:

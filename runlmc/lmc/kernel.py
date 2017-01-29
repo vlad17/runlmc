@@ -10,8 +10,11 @@ from .stochastic_deriv import StochasticDeriv
 from ..approx.ski import SKI
 from ..linalg.toeplitz import Toeplitz
 from ..linalg.kronecker import Kronecker
+from ..util.numpy_convenience import begin_end_indices
 
 # TODO(cleanup): document purpose: separated from paramz logic <- document
+# TODO(test): all of below. Should be able to copy flow of benchmark,
+# more or less
 
 class LMCKernel:
 
@@ -125,10 +128,7 @@ class ExactLMCKernel(LMCKernel):
         self.deriv = ExactDeriv(self.L, self.params.y)
 
     def coreg_scale(self, A, K):
-        # TODO(cleanup): this should be a single method in np convenience
-        ends = np.add.accumulate(self.params.lens)
-        begins = np.roll(ends, 1)
-        begins[0] = 0
+        begins, ends = begin_end_indices(self.params.lens)
         K = np.copy(K)
         D = self.params.D
         for i, j in itertools.product(range(D), range(D)):

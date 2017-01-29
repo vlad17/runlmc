@@ -78,6 +78,7 @@ All below invocations should be done from the repo root.
 0. Minor perf improvements: what helps?
     * MKL
     * CPython
+    * In-place multiplication where possible
     * Non-sum representation: TODO(SLFM-representation)
     * Non-sum representation: TODO(block-Toeplitz representation)
     * TODO(sparse-derivatives)
@@ -112,11 +113,7 @@ All below invocations should be done from the repo root.
 0. BSD 3-clause
 0. TODO(cleanup)
 0. Allow extrapolation in util.interpolation.py
-0. document SKI
-0. test symm_2d_list_map
-0. test multi_interpolant
-0. test SKI
-0. test lmc._autogrid for edge cases.
+0. TODO(test) - document everything that's missing documentation along the way.
 0. test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh (numpy.linalg -> scipy.linalg as la, scipy.sparse.linalg as sla)
 0. rename `rand_psd` -> `rand_pd`

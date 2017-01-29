@@ -9,6 +9,7 @@ import scipy.sparse.linalg as sla
 
 _LOG = logging.getLogger(__name__)
 
+# TODO(test) + classdoc
 class Iterative:
     TOL = 1e-10
     """Target solve() tolerance. Only errors > sqrt(TOL) reported."""

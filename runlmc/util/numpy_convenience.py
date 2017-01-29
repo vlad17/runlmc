@@ -86,3 +86,10 @@ def symm_2d_list_map(f, arr, D, dtype='object'):
             out[i, j] = f(arr[i, j])
             out[j, i] = out[i, j]
     return out
+
+# TODO(test)
+def begin_end_indices(lens):
+    ends = np.add.accumulate(lens)
+    begins = np.roll(ends, 1)
+    begins[0] = 0
+    return begins, ends

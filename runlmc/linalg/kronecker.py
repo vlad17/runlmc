@@ -11,6 +11,21 @@ from ..util.docs import inherit_doc
 
 _LOG = logging.getLogger(__name__)
 
+# TODO(cleanup) Only part of symmetry
+# necessary here is that we can transform the linear opreator
+# with matvec = rmatvec -> move this into a function that explicitly makes
+# that assumption.
+
+# TODO(test)
+def kron_mvprod(A, B, x):
+    # This differs from the paper's MVM, but is the equivalent for
+    # a C-style ordering of arrays.
+    for M in [B, A]:
+        n = M.shape[1]
+        x = x.reshape(-1, n).T
+        x = M.matmat(x)
+    return x.reshape(-1)
+
 @inherit_doc
 class Kronecker(SymmetricMatrix):
     """
@@ -56,13 +71,7 @@ class Kronecker(SymmetricMatrix):
         return np.kron(self.A.as_numpy(), self.B.as_numpy())
 
     def matvec(self, x):
-        # This differs from the paper's MVM, but is the equivalent for
-        # a C-style ordering of arrays.
-        for M in [self.B, self.A]:
-            n = M.shape[1]
-            x = x.reshape(-1, n).T
-            x = M.matmat(x)
-        return x.reshape(-1)
+        return kron_mvprod(self.A, self.B, x)
 
     def upper_eig_bound(self):
         return self.A.upper_eig_bound() * self.B.upper_eig_bound()

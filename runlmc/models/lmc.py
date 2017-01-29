@@ -161,6 +161,7 @@ class LMC(MultiGP):
 
         _LOG.info('LMC %s fully initialized', self.name)
 
+    # TODO(cleanup): move to interpolation as its own method; test it.
     @staticmethod
     def _autogrid(Xs, lo, hi, m):
         if m is None:

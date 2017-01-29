@@ -3,6 +3,7 @@
 
 from ..linalg.symmetric_matrix import SymmetricMatrix
 
+# TODO(test)
 class SKI(SymmetricMatrix):
     def __init__(self, K, W, WT):
         super().__init__(W.shape[0])

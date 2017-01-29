@@ -153,7 +153,7 @@ attr-rgx=[a-zA-Z_][a-z0-9A-Z_]{0,30}$
 attr-name-hint=[a-z_][a-z0-9_]{2,30}$
 
 # Regular expression matching correct argument names
-argument-rgx=([a-z_][a-z0-9A-Z_]{0,30})$
+argument-rgx=([a-z0-9A-Z_]{0,30})$
 
 # Naming hint for argument names
 argument-name-hint=[a-z_][a-z0-9_]{2,30}$

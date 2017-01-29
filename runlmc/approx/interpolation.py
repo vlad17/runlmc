@@ -11,6 +11,8 @@ import numpy as np
 import scipy
 import scipy.sparse
 
+from ..util.numpy_convenience import begin_end_indices
+
 def cubic_kernel(x):
     """
     The cubic convolution kernel can be used to compute interpolation
@@ -104,6 +106,8 @@ def interp_cubic(grid, samples):
                                        shape=(n_samples, grid_size))
     return csr
 
+# TODO(test)
+# TODO(cleanup) - refactor to get rid of pylint warning
 def multi_interpolant(Xs, inducing_grid): # pylint: disable=too-many-locals
     """
     Creates a sparse CSR matrix across multiple inputs `Xs`.
@@ -122,15 +126,11 @@ def multi_interpolant(Xs, inducing_grid): # pylint: disable=too-many-locals
     Ws = [interp_cubic(inducing_grid, X) for X in Xs]
 
     row_lens = [len(X) for X in Xs]
-    row_ends = np.add.accumulate(row_lens)
-    row_begins = np.roll(row_ends, 1)
-    row_begins[0] = 0
+    row_begins, row_ends = begin_end_indices(row_lens)
     order = row_ends[-1]
 
     col_lens = [W.nnz for W in Ws]
-    col_ends = np.add.accumulate(col_lens)
-    col_begins = np.roll(col_ends, 1)
-    col_begins[0] = 0
+    col_begins, col_ends = begin_end_indices(col_lens)
     width = col_ends[-1]
 
     ind_starts = np.roll(np.add.accumulate([W.indptr[-1] for W in Ws]), 1)

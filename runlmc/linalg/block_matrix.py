@@ -26,8 +26,11 @@ class BlockMatrix(SymmetricMatrix):
         return result
 
     def as_numpy(self):
-        mats = symm_2d_list_map(lambda x: x.as_numpy(), self.blocks, self.D)
-        return np.bmat(mats).A
+        z = np.zeros(self.shape)
+        for rbegin, rend, row in zip(self.begins, self.ends, self.blocks):
+            for cbegin, cend, block in zip(self.begins, self.ends, row):
+                z[rbegin:rend, cbegin:cend] = block.as_numpy()
+        return z
 
     def upper_eig_bound(self):
         bounds = symm_2d_list_map(lambda x: x.upper_eig_bound(),
