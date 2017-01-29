@@ -97,7 +97,7 @@ class ApproxLMCKernel(LMCKernel):
         for dKqdt in self.params.kernels[q].kernel_gradient(self.K.dists):
             yield self._ski(Kronecker(A, Toeplitz(dKqdt)))
 
-    # TODO(sparse-derivatives) - move to linalg
+    # TODO(cleanup) - move to linalg
     class _Diag:
         def __init__(self, v):
             self.v = v
