@@ -4,11 +4,11 @@
 import numpy as np
 import scipy.linalg
 
-from .test_matrix_base import DecomposableMatrixTestBase
+from .test_matrix_base import MatrixTestBase
 from .numpy_matrix import NumpyMatrix
 from ..util.testing_utils import RandomTest
 
-class NumpyMatrixTest(RandomTest, DecomposableMatrixTestBase):
+class NumpyMatrixTest(RandomTest, MatrixTestBase):
 
     def setUp(self):
         super().setUp()
@@ -33,8 +33,6 @@ class NumpyMatrixTest(RandomTest, DecomposableMatrixTestBase):
             np.kron(np.identity(2), np.identity(3) * self.eigtol / 2),
             np.kron(np.identity(2), np.identity(3) * self.eigtol),
             np.kron(np.identity(2), np.identity(3) * self.eigtol * 2)]]
-
-        self.approx_examples = self.examples
 
     def test_as_numpy(self):
         for n in self.examples:

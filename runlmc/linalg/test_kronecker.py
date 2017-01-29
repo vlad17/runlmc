@@ -1,17 +1,15 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-from functools import reduce
-
 import numpy as np
 import scipy.linalg
 
-from .test_matrix_base import DecomposableMatrixTestBase
+from .test_matrix_base import MatrixTestBase
 from .kronecker import Kronecker
 from .toeplitz import Toeplitz
 from ..util import testing_utils as utils
 
-class KroneckerTest(utils.RandomTest, DecomposableMatrixTestBase):
+class KroneckerTest(utils.RandomTest, MatrixTestBase):
 
     def setUp(self):
         super().setUp()
@@ -37,15 +35,13 @@ class KroneckerTest(utils.RandomTest, DecomposableMatrixTestBase):
             [self._rpsd(100), self._rpsd(5)],
             [np.identity(2), np.identity(3) * self.eigtol / 2],
             [np.identity(2), np.identity(3) * self.eigtol],
-            [np.identity(2), np.identity(3) * self.eigtol * 2]]
-
-        self.examples = list(map(lambda x: Kronecker(*x), examples))
-
-        self.approx_examples = [reduce(Kronecker, x) for x in [
+            [np.identity(2), np.identity(3) * self.eigtol * 2],
             [self._rpsd(5), Toeplitz(utils.exp_decr_toep(10))],
             [self._rpsd(5), Toeplitz(utils.exp_decr_toep(100))],
             [Toeplitz(utils.exp_decr_toep(10)),
-             Toeplitz(utils.exp_decr_toep(10))]]]
+             Toeplitz(utils.exp_decr_toep(10))]]
+
+        self.examples = [Kronecker(*x) for x in examples]
 
     def test_as_numpy(self):
         for k in self.examples:

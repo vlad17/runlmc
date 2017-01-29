@@ -7,7 +7,7 @@ import scipy.linalg
 from .test_matrix_base import MatrixTestBase
 from .kronecker import Kronecker
 from .numpy_matrix import NumpyMatrix
-from .psd_matrix import PSDMatrix
+from .symmetric_matrix import SymmetricMatrix
 from .sum_matrix import SumMatrix
 from .toeplitz import Toeplitz
 from ..util.testing_utils import RandomTest, exp_decr_toep
@@ -70,7 +70,7 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
 
     @staticmethod
     def _generate(mats):
-        my_mats = [NumpyMatrix(x) if not isinstance(x, PSDMatrix) else x
+        my_mats = [NumpyMatrix(x) if not isinstance(x, SymmetricMatrix) else x
                    for x in mats]
         return SumMatrix(my_mats)
 

@@ -4,27 +4,13 @@
 import numpy as np
 import scipy.sparse.linalg
 
-from ..util.docs import inherit_doc
-
-class PSDMatrix:
+class SymmetricMatrix:
     """
     An abstract class defining the interface for the necessary
     sparse matrix operations.
 
     We consider a very restricted class of matrices only, namely
-    positive semi-definite, symmetric, real matrices. In other words,
-    the matrix :math:`K` represented by instances of this class is expected to
-    adhere to the following semantic laws:
-
-    #. :math:`\\forall\\textbf{x}`,
-       :math:`\\textbf{x}^\\top K\\textbf{x} \ge 0`
-    #. :math:`K^\\top = K`
-
-    These laws manifest themselves the following property, with
-    the actual API, which exposes :func:`matvec` for matrix-vector
-    multiplication.
-
-    * Positivity: `K.matvec(x).dot(x) >= 0`
+    symmetric, real matrices.
 
     :param n: number of rows in this square matrix
     :raises ValueError: if `n < 1`
@@ -40,7 +26,8 @@ class PSDMatrix:
         """
         .. Note:: The :func:`scipy.sparse.linalg.aslinearoperator`
                   converter does not do the same work this does - it doesn't
-                  correctly interpret what a PSD operator has to offer.
+                  correctly interpret what a symmetric real operator has to
+                  offer.
 
         :returns: this matrix as a
                   :class:`scipy.sparse.linalg.LinearOperator`
@@ -79,43 +66,13 @@ class PSDMatrix:
         """
         return np.hstack([self.matvec(col).reshape(-1, 1) for col in X.T])
 
-@inherit_doc
-class PSDDecomposableMatrix(PSDMatrix):
-    """
-    An extention to a regular :class:`PSDMatrix` which allows for efficient
-    eigendecomposition and bounding. This adheres to the following
-    mathematical property manifested by the API :func:`eig`.
-
-    * Positive eigenvalues: `len(K.eig(cutoff=0, exact=True)) == K.shape[0]`
-    """
-
-    def __init__(self, n):
-        super().__init__(n)
-
-    def eig(self, cutoff, exact):
-        """
-        Finds the eigenvalues of this matrix of magnitude above the cutoff.
-
-        The approximate eigenvalues are only good for computing
-        log-determinants, though there's no good guarantee there.
-        The approximation generally holds well for well-conditioned matrices.
-
-        :param cutoff: eigenvalue cutoff
-        :param exact: whether to use exact computation, or approximate.
-        :returns: a numpy array of eigenvalues in decreasing order, repeated by
-                  multiplicity.
-        """
-        raise NotImplementedError
 
     def upper_eig_bound(self):
         """
-        Returns an upper bound :math:`B` for the largest eigenvalue of this
-        PSD matrix.
-
         Impementations can rely on the fairly tight and efficient-to-compute
         Gershgorin circle theorem, which implies that the largest eigenvalue
         is bounded by the largest absolute row sum in PSD matices.
-
-        :return: :math:`B`
+        :return: an upper bound for the largest eigenvalue of this
+                 (necessarily diagonalizable) matrix.
         """
         raise NotImplementedError

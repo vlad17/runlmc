@@ -7,11 +7,11 @@ import math
 import numpy as np
 import scipy.sparse.linalg
 
-from ..linalg.psd_matrix import PSDMatrix
+from ..linalg.symmetric_matrix import SymmetricMatrix
 
 _LOG = logging.getLogger(__name__)
 
-class SKI(PSDMatrix):
+class SKI(SymmetricMatrix):
     def __init__(self, K, W, WT, noise):
         super().__init__(W.shape[0])
         self.m = W.shape[1]
@@ -55,3 +55,6 @@ class SKI(PSDMatrix):
                           self.m, self.m ** 3, succ, error)
 
         return Kinv_y
+
+    def upper_eig_bound(self):
+        return self.K.upper_eig_bound() * self.shape[0] / self.m

@@ -7,16 +7,11 @@ class MatrixTestBase:
 
     def __init__(self):
         super().__init__()
-        # Attributes to be filled in by subclasses
 
-        # Eigenvalue cutoff
-        self.eigtol = None
+        # Attributes to be filled in by subclasses:
 
-        self.examples = None # List of PSDMatrix being tested
-
-        # Same as above, but for testing approximate eigenvalues
-        # matrices here should be well-behaved.
-        self.approx_examples = None
+        # list of SymmetricMatrix being tested
+        self.examples = None
 
     @staticmethod
     def _rpsd(n):
@@ -40,18 +35,6 @@ class MatrixTestBase:
             np_mat = my_mat.as_numpy()
             x = np.arange(len(np_mat)) + 1
             np.testing.assert_allclose(my_mat.matvec(x), np_mat.dot(x),
-                                       err_msg='\n{!s}\n'.format(my_mat))
-
-class DecomposableMatrixTestBase(MatrixTestBase):
-
-    def test_exact_eig(self):
-        for my_mat in self.examples:
-            np_mat = my_mat.as_numpy()
-            np_eigs = np.linalg.eigvalsh(np_mat).real
-            np_eigs = np_eigs[np_eigs > self.eigtol]
-            np_eigs[::-1].sort()
-            np.testing.assert_allclose(my_mat.eig(self.eigtol, exact=True),
-                                       np_eigs,
                                        err_msg='\n{!s}\n'.format(my_mat))
 
     def test_bound(self):

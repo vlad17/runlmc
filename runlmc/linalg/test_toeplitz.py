@@ -1,16 +1,14 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-import logging
-
 import numpy as np
 import scipy.linalg
 
-from .test_matrix_base import DecomposableMatrixTestBase
+from .test_matrix_base import MatrixTestBase
 from .toeplitz import Toeplitz
 from ..util import testing_utils as utils
 
-class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
+class ToeplitzTest(utils.RandomTest, MatrixTestBase):
 
     @staticmethod
     def down(x):
@@ -31,9 +29,6 @@ class ToeplitzTest(utils.RandomTest, DecomposableMatrixTestBase):
             self._toep_eig(self.eigtol, 5),
             self._toep_eig(self.eigtol * 2, 5),
             self.down(10),
-            utils.exp_decr_toep(30)]]
-
-        self.approx_examples = [Toeplitz(x) for x in [
             utils.exp_decr_toep(10),
             utils.exp_decr_toep(50),
             utils.exp_decr_toep(100)]]

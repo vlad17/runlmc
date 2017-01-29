@@ -5,21 +5,21 @@ import unittest
 
 import numpy as np
 
-from .psd_matrix import PSDMatrix
+from .symmetric_matrix import SymmetricMatrix
 
-class PSDMatrixTest(unittest.TestCase):
+class SymmetricMatrixTest(unittest.TestCase):
 
     def test_attributes(self):
-        m = PSDMatrix(3)
+        m = SymmetricMatrix(3)
         self.assertEqual(m.dtype, np.float64)
         self.assertEqual(m.shape, (3, 3))
 
     def test_linear_operator(self):
-        m = PSDMatrix(3)
+        m = SymmetricMatrix(3)
         lo = m.as_linear_operator()
         self.assertEqual(lo.dtype, np.float64)
         self.assertEqual(lo.shape, (3, 3))
 
     def test_bad_size(self):
-        self.assertRaises(ValueError, PSDMatrix, 0)
-        self.assertRaises(ValueError, PSDMatrix, -2)
+        self.assertRaises(ValueError, SymmetricMatrix, 0)
+        self.assertRaises(ValueError, SymmetricMatrix, -2)

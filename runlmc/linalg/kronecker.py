@@ -6,17 +6,16 @@ import logging
 import numpy as np
 
 from .numpy_matrix import NumpyMatrix
-from .psd_matrix import PSDDecomposableMatrix
+from .symmetric_matrix import SymmetricMatrix
 from ..util.docs import inherit_doc
-from ..util.numpy_convenience import EPS
 
 _LOG = logging.getLogger(__name__)
 
 @inherit_doc
-class Kronecker(PSDDecomposableMatrix):
+class Kronecker(SymmetricMatrix):
     """
     Creates a class with a parsimonious representation of a Kronecker product
-    of two :class:`runlmc.linalg.psd_matrix.PSDDecomposableMatrix` instances.
+    of two :class:`runlmc.linalg.symmetric_matrix.SymmetricMatrix` instances.
     For the Kronecker matrix
     :math:`K=A\\otimes B`, the :math:`ij`-th block entry is
     :math:`a_{ij}B`.
@@ -44,13 +43,13 @@ class Kronecker(PSDDecomposableMatrix):
 
     @staticmethod
     def _to_mat(X):
-        if isinstance(X, PSDDecomposableMatrix):
+        if isinstance(X, SymmetricMatrix):
             return X
         elif isinstance(X, np.ndarray):
             return NumpyMatrix(X)
         else:
             raise TypeError('Inputs have to be '
-                            'runlmc.linalg.psd_matrix.PSDDecomposableMatrix'
+                            'runlmc.linalg.symmetric_matrix.SymmetricMatrix'
                             ' or numpy.ndarray instances')
 
     def as_numpy(self):
@@ -67,44 +66,6 @@ class Kronecker(PSDDecomposableMatrix):
 
     def upper_eig_bound(self):
         return self.A.upper_eig_bound() * self.B.upper_eig_bound()
-
-    @staticmethod
-    def _conservative_cutoff_factor(cutoff, factor):
-        if factor == 0:
-            return 0
-        return cutoff / factor * (1 - 2 * EPS)
-
-    def eig(self, cutoff, exact):
-        if self.shape[0] == 1:
-            eigs = self.A.eig(0, exact=True) * self.B.eig(0, exact=True)
-            return eigs if eigs[0] > cutoff else np.array([])
-
-        largeA = self.A.upper_eig_bound()
-        largeB = self.B.upper_eig_bound()
-        cutoffA = self._conservative_cutoff_factor(cutoff, largeB)
-        cutoffB = self._conservative_cutoff_factor(cutoff, largeA)
-
-        _LOG.debug('%s eig(cutoff=%8.4g) -> A %s eig(cutoff=%8.4g)',
-                   self.shape, cutoff, self.A.shape, cutoffA)
-        eigA = self.A.eig(cutoffA, exact)
-        _LOG.debug('%s A %s largest eig predicted %8.4g actual %8.4g',
-                   self.shape, self.A.shape, largeA,
-                   eigA[0] if len(eigA) > 0 else 0)
-
-        _LOG.debug('%s eig(cutoff=%8.4g) -> B %s eig(cutoff=%8.4g)',
-                   self.shape, cutoff, self.B.shape, cutoffB)
-        eigB = self.B.eig(cutoffB, exact)
-        _LOG.debug('%s B %s largest eig predicted %8.4g actual %8.4g',
-                   self.shape, self.B.shape, largeB,
-                   eigB[0] if len(eigB) > 0 else 0)
-
-        # Can use smarter filter here - don't need to generate every eigenvalue
-        # from the outer product if the smallest is less than the fixed cutoff
-        eigs = np.outer(eigA, eigB).reshape(-1)
-        # eigs[::-1].sort()[::-1]?
-        # mergesort?
-        eigs.sort()
-        return eigs[np.searchsorted(eigs, cutoff, 'right'):][::-1]
 
     def __str__(self):
         return 'Kron(A, B)\nA\n{!s}\nB\n{!s}'.format(self.A, self.B)

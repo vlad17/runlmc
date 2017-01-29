@@ -3,18 +3,16 @@
 
 import itertools
 import numpy as np
-import scipy.spatial.distance
 
 from .exact_deriv import ExactDeriv
 from .stochastic_deriv import StochasticDeriv
-from ..approx.ski import repeat_noise, SKI
+from ..approx.ski import SKI
 from ..linalg.toeplitz import Toeplitz
 from ..linalg.kronecker import Kronecker
 from ..linalg.sum_matrix import SumMatrix
 
-# Separated from paramz logic <- document
-
-# TODO extract common functionality into the base class somehow?
+# TODO(cleanup): document purpose: separated from paramz logic <- document
+# TODO(cleanup): extract common functionality into the base class somehow?
 
 class LMCDerivative:
     def coreg_vec_gradients(self):
@@ -120,7 +118,8 @@ class ApproxLMCDerivative(LMCDerivative):
 
 class ExactLMCDerivative:
 
-    def __init__(self, coreg_vecs, coreg_diags, kernels, dists, lens, y, noise):
+    def __init__(self, coreg_vecs, coreg_diags,
+                 kernels, dists, lens, y, noise):
         self.coreg_vecs = coreg_vecs
         self.coreg_diag = coreg_diags
         self.kernels = kernels

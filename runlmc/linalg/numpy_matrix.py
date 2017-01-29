@@ -3,14 +3,14 @@
 
 import numpy as np
 
-from .psd_matrix import PSDDecomposableMatrix
+from .symmetric_matrix import SymmetricMatrix
 from ..util.docs import inherit_doc
 from ..util.numpy_convenience import EPS
 
 @inherit_doc
-class NumpyMatrix(PSDDecomposableMatrix):
+class NumpyMatrix(SymmetricMatrix):
     """
-    Adapter to :class:`PSDDecomposableMatrix` with :mod:`numpy` arrays.
+    Adapter to :class:`SymmetricMatrix` with :mod:`numpy` arrays.
 
     Creates a :class:`NumpyMatrix` matrix. Its positivity is assumed.
 
@@ -35,12 +35,6 @@ class NumpyMatrix(PSDDecomposableMatrix):
 
     def matvec(self, x):
         return self.A.dot(x)
-
-    def eig(self, cutoff, exact):
-        sol = np.linalg.eigvalsh(self.A).real
-        sol = np.sort(sol)
-        cut = np.searchsorted(sol, cutoff, 'right')
-        return sol[cut:][::-1]
 
     def upper_eig_bound(self):
         return np.abs(self.A).sum(axis=1).max()
