@@ -95,7 +95,7 @@ def _main():
             dists, grid_dists, interpolant, interpolant_T)
 
 def prep(d, n_o, Xs):
-    # TODO get rid of duplication with lmc.py
+    # Replicates LMC (runlmc.models.lmc) code minimally.
     with contexttimer.Timer() as exact:
         dists = scipy.spatial.distance.pdist(Xs.reshape(-1, 1))
         dists = scipy.spatial.distance.squareform(dists)
