@@ -69,7 +69,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Re-run examples
+0. Stochastic Logarithmic Expansion (offer the function?)
 0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation?
     * Do other inner circulant preconditioners (e.g., whittle) help inversion?
@@ -81,7 +81,7 @@ All below invocations should be done from the repo root.
     * TODO(sparse-derivatives)
 0. Apply to synthetic and real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
 0. Write up the current algorithm (PDF)
-0. Investigate: when is iteration NOT converging (critical log) - what's the condition number in that case. - see skipped test in test_lmc
+0. TODO(fix) Investigate: when is iteration NOT converging (critical log) - what's the condition number in that case. - see skipped tests in test_lmc
 0. multidimensional inputs and ARD.
 0. rank > 1
 0. fast predictions

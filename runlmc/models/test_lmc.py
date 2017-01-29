@@ -199,9 +199,10 @@ class LMCTest(RandomTest):
         true_func = [np.sin]
         self.check_fit(ea, noise_sd, true_func)
 
-    # TODO(cleanup): fix broken unit tests
     # TODO(cleanup): introduce testing for exact analogue, compare
     #                side-by-side.
+
+    # TODO(fix): fix broken unit tests
 
     @unittest.skip('broken')
     def test_2d_fit(self):
