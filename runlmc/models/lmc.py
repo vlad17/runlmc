@@ -154,11 +154,10 @@ class LMC(MultiGP):
         self.exact = exact
         self.y = np.hstack(self.Ys)
 
-        self.kernel = None
+        self.kernel = {'exact': None, 'apprx': None}
         self.alpha = None
         self.nu = None
         self.native_var = None
-        self._materialized_kernel = None
 
         _LOG.info('LMC %s fully initialized', self.name)
 
@@ -194,17 +193,21 @@ class LMC(MultiGP):
             self.dists, self.interpolant, self.interpolantT,
             self.lens, self.y, self.noise)
 
+    def _training_kernel(self):
+        return self.kernel['exact' if self.exact else 'apprx']
+
     def parameters_changed(self):
+        self.kernel['exact'] = None
+
         if self.exact:
-            self.kernel = self._exact_kernel()
+            self.kernel['exact'] = self._exact_kernel()
         else:
-            self.kernel = self._apprx_kernel()
+            self.kernel['apprx'] = self._apprx_kernel()
 
         # uncache if were defined before
         self.nu = None
         self.alpha = None
         self.native_var = None
-        self._materialized_kernel = None
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
@@ -222,22 +225,19 @@ class LMC(MultiGP):
             for i, a in enumerate(self.coreg_diags):
                 _LOG.debug('  kappa%d %s', i, np_print(a))
 
-        for x, dx in zip(self.coreg_vecs, self.kernel.coreg_vec_gradients()):
+        kernel = self._training_kernel()
+        for x, dx in zip(self.coreg_vecs, kernel.coreg_vec_gradients()):
             x.gradient = dx
-        for x, dx in zip(self.coreg_diags, self.kernel.coreg_diag_gradients()):
+        for x, dx in zip(self.coreg_diags, kernel.coreg_diag_gradients()):
             x.gradient = dx
-        for k, dk in zip(self.kernels, self.kernel.kernel_gradients()):
+        for k, dk in zip(self.kernels, kernel.kernel_gradients()):
             k.update_gradient(dk)
-        self.noise.gradient = self.kernel.noise_gradient()
+        self.noise.gradient = kernel.noise_gradient()
 
-    def _dense(self):
-        if self.exact:
-            return self.kernel
-
-        if self._materialized_kernel is None:
-            self._materialized_kernel = self._exact_kernel()
-
-        return self._materialized_kernel
+    def _cached_dense(self):
+        if self.kernel['exact'] is None:
+            self.kernel['exact'] = self._exact_kernel()
+        return self.kernel['exact']
 
     def K(self):
         """
@@ -247,7 +247,7 @@ class LMC(MultiGP):
         :returns: :math:`K_{\\text{SKI}}`, the approximation of the exact
                   kernel.
         """
-        return self._dense().K
+        return self._cached_dense().K
 
     def log_det_K(self):
         """
@@ -271,9 +271,9 @@ class LMC(MultiGP):
         # This can probably be sped up (even by e.g., using the approximations
         # offered in those sections, or perhaps some less coarse ones).
         # However, it's the training that's the bottleneck, not prediction.
-        nongrid_alpha = self.kernel.deriv.alpha
+        nongrid_alpha = self._training_kernel().deriv.alpha
         WT = self.interpolantT
-        K_UU = self.kernel.ski.K
+        K_UU = self._training_kernel().ski.K
         alpha = K_UU.matvec(WT.dot(nongrid_alpha))
 
         A = self.K()
@@ -299,7 +299,7 @@ class LMC(MultiGP):
 
         :returns: the normal quadratic term for the current outputs `Ys`.
         """
-        return self.y.dot(self.kernel.deriv.alpha)
+        return self.y.dot(self._training_kernel().deriv.alpha)
 
     def log_likelihood(self):
         nll = self.log_det_K() + self.normal_quadratic()

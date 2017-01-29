@@ -69,7 +69,6 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. rename ski vs exact kernel instances
 0. Re-run examples
 0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation?
