@@ -73,7 +73,7 @@ All below invocations should be done from the repo root.
 0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation?
     * Do other inner circulant preconditioners (e.g., whittle) help inversion?
-    * Cache LCG solutions over iterations?
+    * Cache LCG solutions over iterations? Cutajar approach?
 0. Explore different optimization approaches with climin + Stochastic Logarithmic Expansion (offer the function?)?
 0. TODO(fix): switchto adagrad if log still isn't working? Better lmc tests (log_det_K, analogous reconstruction tests)
 0. Minor perf improvements: what helps?
@@ -82,6 +82,7 @@ All below invocations should be done from the repo root.
     * Non-sum representation: TODO(SLFM-representation)
     * Non-sum representation: TODO(block-Toeplitz representation)
     * TODO(sparse-derivatives)
+    * Short-circuit minres if no progress on convergence?
 0. For pretty pictures: debug log with timings printed everywhere
 0. Apply to synthetic and real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
 0. Write up the current algorithm (PDF)

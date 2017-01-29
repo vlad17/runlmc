@@ -17,6 +17,7 @@ from runlmc.kern.matern32 import Matern32
 from runlmc.kern.std_periodic import StdPeriodic
 from runlmc.models.lmc import LMC
 from runlmc.lmc.parameter_values import ParameterValues
+from runlmc.lmc.grid_kernel import *
 from runlmc.lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 
 _HELP_STR = """
@@ -139,11 +140,12 @@ def run_kernel_benchmark(
     chol_time = t.elapsed
     eigs = np.fabs(np.linalg.eigvalsh(exact.K))
     with contexttimer.Timer() as t:
-        apprx = ApproxLMCKernel(params, grid_dists, interpolant, interpolantT)
+        apprx = ApproxLMCKernel(SumGridKernel(
+            params, grid_dists, interpolant, interpolantT))
     print('    covariance matrix info')
     print('        largest  eig        {:8.4e}'.format(eigs.max()))
     print('           -> (predicted)   {:8.4e}'
-          .format(apprx.ski.upper_eig_bound()))
+          .format(apprx.K.upper_eig_bound()))
     print('        smallest eig        {:8.4e}'.format(eigs.min()))
     print('        l2 condition number {:8.4e}'
           .format(eigs.max() / eigs.min()))
@@ -151,7 +153,7 @@ def run_kernel_benchmark(
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))
     print('        {:10.4f} sec apprx - solve K*alpha=y'.format(t.elapsed))
 
-    matrix_diff = np.fabs(apprx.ski.as_numpy() - exact.K).mean()
+    matrix_diff = np.fabs(apprx.K.as_numpy() - exact.K).mean()
     print('        {:9.4e} |K_exact - K_apprx|_1 / n^2'.format(matrix_diff))
     alpha_diff = np.fabs(apprx.deriv.alpha - exact.deriv.alpha).mean()
     print('        {:9.4e} |alpha_exact - alpha_apprx|_1 / n'
@@ -188,7 +190,7 @@ def run_kernel_benchmark(
 
         dd = np.diag(exact.K) # actual constructor harder w/o exact
         D = lambda x: dd * x
-        N = lambda x: apprx.ski.matvec(x) - D(x)
+        N = lambda x: apprx.K.matvec(x) - D(x)
         delta0 = np.log(dd).sum()
 
         def mvm(t):
@@ -212,9 +214,9 @@ def run_kernel_benchmark(
         vs = np.vectorize(sample)
 
         import scipy
-        #integ = scipy.integrate.fixed_quad(vs, 0, 1, n=10)[0]
-        integ, _, _, _ = scipy.integrate.quad(
-            sample, 0, 1, limit=1, full_output=1)
+        integ = scipy.integrate.fixed_quad(vs, 0, 1, n=10)[0]
+        #integ, _, _, _ = scipy.integrate.quad(
+        # sample, 0, 1, limit=1, full_output=1)
         trace = integ + delta0
 
         print('        true value from exact {:8.4e}'.format(tru))
@@ -224,11 +226,15 @@ def run_kernel_benchmark(
         return
 
     if testtype == 'inversion':
-        print('    krylov subspace methods m={}'.format(len(apprx.grid_dists)))
+        print('    krylov subspace methods m={}'.format(len(grid_dists)))
+
+        from runlmc.approx.iterative import Iterative
+        solve = Iterative.solve
+
 
         chol = lambda y: (la.cho_solve(exact.deriv.L, y), 0)
-        lcg = lambda y: apprx.ski.solve(y, verbose=True, method=sla.cg)
-        minres = lambda y: apprx.ski.solve(y, verbose=True, method=sla.minres)
+        lcg = lambda y: solve(apprx.K, y, verbose=True, minres=False)
+        minres = lambda y: solve(apprx.K, y, verbose=True, minres=True)
 
         methods = [
             (chol, 'chol'),

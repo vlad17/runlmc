@@ -11,6 +11,7 @@ from paramz.transformations import Logexp
 from .multigp import MultiGP
 from ..approx.interpolation import multi_interpolant
 from ..lmc.parameter_values import ParameterValues
+from ..lmc.grid_kernel import SumGridKernel
 from ..lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
@@ -181,10 +182,11 @@ class LMC(MultiGP):
     def parameters_changed(self):
         self.exact_kernel = None
         self.kernel = ApproxLMCKernel(
-            ParameterValues.generate(self),
-            self.dists,
-            self.interpolant,
-            self.interpolantT)
+            SumGridKernel(
+                ParameterValues.generate(self),
+                self.dists,
+                self.interpolant,
+                self.interpolantT))
 
         # uncache if were defined before
         self.nu = None
@@ -257,7 +259,7 @@ class LMC(MultiGP):
         # However, it's the training that's the bottleneck, not prediction.
         nongrid_alpha = self.kernel.deriv.alpha
         WT = self.interpolantT
-        K_UU = self.kernel.ski.K
+        K_UU = self.kernel.K.grid_only()
         alpha = K_UU.matvec(WT.dot(nongrid_alpha))
 
         A = self.K()

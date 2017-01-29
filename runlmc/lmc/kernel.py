@@ -10,10 +10,8 @@ from .stochastic_deriv import StochasticDeriv
 from ..approx.ski import SKI
 from ..linalg.toeplitz import Toeplitz
 from ..linalg.kronecker import Kronecker
-from ..linalg.sum_matrix import SumMatrix
 
 # TODO(cleanup): document purpose: separated from paramz logic <- document
-# TODO(cleanup): extract K construction away from the derivative
 
 class LMCKernel:
 
@@ -80,33 +78,23 @@ class LMCKernel:
         return grad
 
 class ApproxLMCKernel(LMCKernel):
-    # TODO(SLFM-representation)
-    def __init__(self, params, grid_dists, interpolant, interpolantT):
-        super().__init__(params)
-        self.grid_dists = grid_dists
-        self.materialized_kernels = [Toeplitz(k.from_dist(grid_dists))
-                                     for k in params.kernels]
-        products = [Kronecker(A, K) for A, K in
-                    zip(params.coreg_mats, self.materialized_kernels)]
-        kern_sum = SumMatrix(products)
-        self.interpolant = interpolant
-        self.interpolantT = interpolantT
-        # TODO(block-Toeplitz representation)
-        self.ski = SKI(
-            kern_sum,
-            self.interpolant,
-            self.interpolantT,
-            np.repeat(params.noise, params.lens))
-        self.deriv = StochasticDeriv(self.ski, self.params.y)
+    def __init__(self, grid_kern):
+        super().__init__(grid_kern.params)
+        self.materialized_kernels = [Toeplitz(k.from_dist(grid_kern.dists))
+                                     for k in self.params.kernels]
+        self.interpolant = grid_kern.interpolant
+        self.interpolantT = grid_kern.interpolantT
+        self.K = grid_kern
+        self.deriv = StochasticDeriv(self.K, self.params.y)
 
     def _ski(self, X):
-        return SKI(X, self.interpolant, self.interpolantT, None)
+        return SKI(X, self.interpolant, self.interpolantT)
 
     def _dKdt_from_dAdt(self, dAdt, q):
         return self._ski(Kronecker(dAdt, self.materialized_kernels[q]))
 
     def _dKdts_from_dKqdts(self, A, q):
-        for dKqdt in self.params.kernels[q].kernel_gradient(self.grid_dists):
+        for dKqdt in self.params.kernels[q].kernel_gradient(self.K.dists):
             yield self._ski(Kronecker(A, Toeplitz(dKqdt)))
 
     # TODO(sparse-derivatives) - move to linalg

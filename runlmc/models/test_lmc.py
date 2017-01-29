@@ -88,7 +88,7 @@ class LMCTest(RandomTest):
         return np.fabs(x1 - x2).mean()
 
     def check_kernel_reconstruction(self, exact):
-        reconstruct = lambda x: x.kernel.ski.as_numpy()
+        reconstruct = lambda x: x.kernel.K.as_numpy()
         actual = reconstruct(exact.gen_lmc(sum(exact.sizes)))
         exact_mat = exact.gen_exact_mat()
         tol = 1e-4

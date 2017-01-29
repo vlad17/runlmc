@@ -21,6 +21,7 @@ class SymmetricMatrix:
             raise ValueError('Size of the matrix {} < 1'.format(n))
         self.dtype = np.float64
         self.shape = (n, n)
+        self._op = None
 
     def as_linear_operator(self):
         """
@@ -32,12 +33,14 @@ class SymmetricMatrix:
         :returns: this matrix as a
                   :class:`scipy.sparse.linalg.LinearOperator`
         """
-        return scipy.sparse.linalg.LinearOperator(
-            shape=self.shape,
-            dtype=self.dtype,
-            matvec=self.matvec,
-            rmatvec=self.matvec,
-            matmat=self.matmat)
+        if self._op is None:
+            self._op = scipy.sparse.linalg.LinearOperator(
+                shape=self.shape,
+                dtype=self.dtype,
+                matvec=self.matvec,
+                rmatvec=self.matvec,
+                matmat=self.matmat)
+        return self._op
 
     def as_numpy(self):
         """
