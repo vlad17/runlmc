@@ -72,5 +72,5 @@ class RBFTest(unittest.TestCase):
         self.assertGreaterEqual(m.log_likelihood(), ll_before)
 
     def test_optimization_priors_one_step(self):
-        # TODO: check that priors propogate
+        # TODO(priors): check that priors propogate
         pass

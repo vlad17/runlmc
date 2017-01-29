@@ -180,7 +180,7 @@ class LMC(MultiGP):
 
         return np.linspace(lo, hi, m), m
 
-    # TODO clear up *LMCDerivative <> Kernel confusion
+    # TODO(cleanup) clear up *LMCDerivative <> Kernel confusion
 
     def _exact_kernel(self):
         pdists = dist.squareform(dist.pdist(np.hstack(self.Xs).reshape(-1, 1)))

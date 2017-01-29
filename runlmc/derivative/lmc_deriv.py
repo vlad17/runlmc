@@ -30,7 +30,7 @@ class LMCDerivative:
         raise NotImplementedError
 
 class ApproxLMCDerivative(LMCDerivative):
-    # TODO: think about SLFM rank-decomposed version later
+    # TODO(SLFM-representation)
     def __init__(self, coreg_vecs, coreg_diags, kernels,
                  dists, interpolant, interpolantT, lens, y, noise):
         self.coreg_vecs = coreg_vecs
@@ -51,7 +51,7 @@ class ApproxLMCDerivative(LMCDerivative):
         self.m = len(self.dists)
         self.noise = noise
         self.lens = lens
-        # TODO: think about D^2 block-Toeplitz representation later
+        # TODO(block-Toeplitz representation)
         self.ski = SKI(
             kern_sum,
             self.interpolant,
@@ -71,7 +71,8 @@ class ApproxLMCDerivative(LMCDerivative):
                 A = np.zeros((self.D, self.D))
                 A[i] += a
                 A.T[i] += a
-                dKdt = Kronecker(A, toep_K) # TODO sparse scaled block here?
+                # TODO(sparse-derivatives)
+                dKdt = Kronecker(A, toep_K)
                 grad[i] = self._ski_d(dKdt)
             grads.append(grad)
         return grads
@@ -83,7 +84,8 @@ class ApproxLMCDerivative(LMCDerivative):
             grad = np.zeros(self.D)
             for i in range(self.D):
                 zeros[i, i] = 1
-                dKdt = Kronecker(zeros, toep_K) # TODO block diag here?
+                # TODO(sparse-derivatives)
+                dKdt = Kronecker(zeros, toep_K)
                 grad[i] = self._ski_d(dKdt)
                 zeros[i, i] = 0
             grads.append(grad)
@@ -100,6 +102,7 @@ class ApproxLMCDerivative(LMCDerivative):
             grads.append(kern_grad)
         return grads
 
+    # TODO(sparse-derivatives) - move to linalg
     class _Diag:
         def __init__(self, v):
             self.v = v
@@ -137,7 +140,7 @@ class ExactLMCDerivative:
         self.deriv = ExactDeriv(self.K, y)
 
     def coreg_scale(self, A, K):
-        # TODO this should be a single method in np convenience
+        # TODO(cleanup): this should be a single method in np convenience
         ends = np.add.accumulate(self.lens)
         begins = np.roll(ends, 1)
         begins[0] = 0

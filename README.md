@@ -70,21 +70,26 @@ All below invocations should be done from the repo root.
 ### Roadmap
 
 0. Move to Cutajar approach. Use tests. Dedup/cleanup (benchmark code too).
-0. Remove linalg approximate eigenvalue code, old benchmarks, PSD stuff.
+0. Remove linalg approximate eigenvalue code, old benchmarks, PSD stuff (linalg) -> just hermitian?.
 0. Re-run examples
-0. Preconditioner?
+0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation?
     * Do other inner circulant preconditioners (e.g., whittle) help inversion?
-0. Minor perf improvements: what helps? (MKL, CPython)
+0. Minor perf improvements: what helps?
+    * MKL
+    * CPython
+    * Non-sum representation: TODO(SLFM-representation)
+    * Non-sum representation: TODO(block-Toeplitz representation)
+    * TODO(sparse-derivatives)
 0. Apply to synthetic and real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
 0. Write up the current algorithm (PDF)
+0. Investigate: when is iteration NOT converging (critical log) - what's the condition number in that case. - see skipped test in test_lmc
 0. multidimensional inputs and ARD.
 0. rank > 1
 0. fast predictions
 
 ### Considerations 
 
-* Investigate: when is iteration NOT converging (critical log) - what's the condition number in that case.
 * SEED=3333617092 nosetests runlmc.models.test_lmc breaks Toeplitz PSD strictly (currently has large negative eigval cutoff)
 * SLFM approach -> can we take determeinant in this representation?
    0. SLFM approach work for computing deriv of log det / log det exactly (pg. 16 in vector-valued-lmc.pdf)
@@ -93,7 +98,6 @@ All below invocations should be done from the repo root.
    0. Rank >1 reduction to rank 1 (use constant kq terms)
    0. multidimensional proof; requires cubic interpol from SKI (again, for multioutput)
    0. SLFM code up; GP code up; do K, dK/dL reconstruction experiments.
-* TODO(MSGP) - fast toeplitz eig
 * MINRES or LCG?
 * How can we add good preconditioners? How much do they help?
 * What are condition numbers in practice?
@@ -104,6 +108,7 @@ All below invocations should be done from the repo root.
 ### Low-priority Tasks
 
 0. BSD 3-clause
+0. TODO(cleanup)
 0. Allow extrapolation in util.interpolation.py
 0. document SKI
 0. test multi_interpolant

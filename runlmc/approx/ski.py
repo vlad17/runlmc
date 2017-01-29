@@ -11,17 +11,6 @@ from ..linalg.psd_matrix import PSDMatrix
 
 _LOG = logging.getLogger(__name__)
 
-# TODO this is dumb, get rid of it.
-def repeat_noise(Xs, noise):
-    """
-    :param Xs: inputs
-    :param noise: noise to repeat
-    :returns: concatenated noise vector from the per-output noise vector,
-              repeated according to the number of inputs.
-    """
-    lens = [len(X) for X in Xs]
-    return np.repeat(noise, lens)
-
 class SKI(PSDMatrix):
     def __init__(self, K, W, WT, noise):
         super().__init__(W.shape[0])
@@ -44,7 +33,7 @@ class SKI(PSDMatrix):
         n = 0 if self.noise is None else x * self.noise
         return self.W.dot(self.K.matvec(self.WT.dot(x))) + n
 
-    # TODO: move below to more abstract interface?
+    # TODO(general-solve): move below to more abstract interface?
 
     def solve(self, y):
         """
