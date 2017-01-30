@@ -296,7 +296,7 @@ def run_kernel_benchmark(
         tot_exact_time += exact_time
         tot_apprx_time += apprx_time
 
-    print('    total gradient runtime summary')
+    print('    total gradient runtime summary #', len(errs))
     print('        {:10.4f} sec exact all gradients'.format(tot_exact_time))
     print('        {:10.4f} sec apprx all gradients'.format(tot_apprx_time))
     print('        {:9.4e} avg grad error'.format(np.fabs(errs).mean()))
