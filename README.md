@@ -91,7 +91,7 @@ All below invocations should be done from the repo root.
     * Short-circuit minres if no progress on convergence?
 0. TODO(fix) - better lmc testing. Also investigate: when is iteration NOT converging (critical log) - what's the condition number in that case.
 0. multidimensional inputs and ARD.
-0. fast predictions
+0. TODO(fast-prediction) fast predictions
 
 ### Considerations 
 

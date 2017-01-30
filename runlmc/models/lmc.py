@@ -252,33 +252,6 @@ class LMC(MultiGP):
             return -np.inf
         return lgdet
 
-    def _precompute_predict(self):
-        # Not optimized for speed - this performs dense linear algebra
-        # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
-        # This can probably be sped up (even by e.g., using the approximations
-        # offered in those sections, or perhaps some less coarse ones).
-        # However, it's the training that's the bottleneck, not prediction.
-        nongrid_alpha = self.kernel.deriv.alpha
-        WT = self.interpolantT
-        K_UU = self.kernel.K.grid_only()
-        alpha = K_UU.matvec(WT.dot(nongrid_alpha))
-
-        A = self.K()
-        K_XU = self.interpolant.dot(K_UU.as_numpy())
-        Ainv_KXU = la.solve(A, K_XU, sym_pos=True, overwrite_a=True)
-        nu = np.diag(K_XU.T.dot(Ainv_KXU))
-
-        # A bit obscure; the native covariance K_** for each output
-        # is given by diag(K(0, 0)). This happens to be efficiently computed
-        # here.
-        coregs = np.square(np.column_stack(self.coreg_vecs))
-        coregs += np.column_stack(self.coreg_diags)
-        kerns = [k.from_dist(0) for k in self.kernels]
-        native_output_var = coregs.dot(kerns).reshape(-1)
-        native_var = native_output_var + self.noise
-
-        return alpha, nu, native_var
-
     def normal_quadratic(self):
         """
         If the flattened (Stacked)outputs are written as :math:`\\textbf{y}`,
@@ -294,10 +267,38 @@ class LMC(MultiGP):
         return -0.5 * nll
 
     def _raw_predict(self, Xs):
+        return self._raw_predict_apprx(Xs)
+
+    def _precompute_predict(self):
+        nongrid_alpha = self.kernel.deriv.alpha
+        WT = self.interpolantT
+        K_UU = self.kernel.K.grid_only()
+        alpha = K_UU.matvec(WT.dot(nongrid_alpha))
+
+        # Not optimized for speed - this performs dense linear algebra
+        # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
+        # This can probably be sped up (even by e.g., using the approximations
+        # offered in those sections, or perhaps some less coarse ones).
+        # However, it's the training that's the bottleneck, not prediction.
+        # TODO(fast-prediction)
+        L = self._cached_dense().L
+        K_XU = self.interpolant.dot(K_UU.as_numpy())
+        Ainv_KXU = la.cho_solve(L, K_XU, overwrite_b=True)
+        nu = np.diag(K_XU.T.dot(Ainv_KXU))
+
+        # A bit obscure; the native covariance K_** for each output
+        # is given by diag(K(0, 0)). This happens to be efficiently computed
+        # here.
+        coregs = np.square(np.column_stack(self.coreg_vecs))
+        coregs += np.column_stack(self.coreg_diags)
+        kerns = [k.from_dist(0) for k in self.kernels]
+        native_output_var = coregs.dot(kerns).reshape(-1)
+        native_var = native_output_var + self.noise
+
+        return alpha, nu, native_var
+
+    def _raw_predict_apprx(self, Xs):
         if self.alpha is None:
-            print('recomputing alpha')
-            print(self)
-            print(self.noise)
             self.alpha, self.nu, self.native_var = self._precompute_predict()
 
         W = multi_interpolant(Xs, self.inducing_grid)
