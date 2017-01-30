@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
 # runlmc
 
 Do you like to apply Bayesian nonparameteric methods to your regressions? Are you frequently tempted by the flexibility that kernel-based learning provides? Do you have trouble getting structured kernel interpolation or various training conditional inducing point approaches to work in a non-stationary multi-output setting?
@@ -39,7 +41,7 @@ Full example
         
 ![unopt](https://raw.githubusercontent.com/vlad17/runlmc/master/examples/unopt.png)
 
-    lmc.optimize(optimizer=DerivFree()) # deriv-free for now
+    lmc.optimize(optimizer=AdaDelta()) # batteries included!
     # ... more plotting code
     
 ![opt](https://raw.githubusercontent.com/vlad17/runlmc/master/examples/opt.png)
@@ -89,6 +91,7 @@ All below invocations should be done from the repo root.
     * Non-sum representation: TODO(block-Toeplitz representation)
     * TODO(sparse-derivatives)
     * Short-circuit minres if no progress on convergence?
+0. travis-ci, read the docs automatic doc builds
 0. TODO(fix) - better lmc testing. Also investigate: when is iteration NOT converging (critical log) - what's the condition number in that case.
 0. multidimensional inputs and ARD.
 0. TODO(fast-prediction) fast predictions
