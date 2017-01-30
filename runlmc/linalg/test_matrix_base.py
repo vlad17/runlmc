@@ -10,7 +10,7 @@ class MatrixTestBase:
 
         # Attributes to be filled in by subclasses:
 
-        # list of SymmetricMatrix being tested
+        # list of Matrix being tested
         self.examples = None
 
     @staticmethod
@@ -33,14 +33,13 @@ class MatrixTestBase:
     def test_matvec(self):
         for my_mat in self.examples:
             np_mat = my_mat.as_numpy()
-            x = np.arange(len(np_mat)) + 1
+            x = np.arange(np_mat.shape[1]) + 1
             np.testing.assert_allclose(my_mat.matvec(x), np_mat.dot(x),
                                        err_msg='\n{!s}\n'.format(my_mat))
 
-    def test_bound(self):
+    def test_matmat(self):
         for my_mat in self.examples:
             np_mat = my_mat.as_numpy()
-            np_eig = np.linalg.eigvalsh(np_mat).real.max()
-            ub = my_mat.upper_eig_bound()
-            self.assertGreaterEqual(ub, np_eig,
-                                    msg='\n{!s}\n'.format(my_mat))
+            x = np.arange(np_mat.shape[1] * 2).reshape(-1, 2)
+            np.testing.assert_allclose(my_mat.matmat(x), np_mat.dot(x),
+                                       err_msg='\n{!s}\n'.format(my_mat))

@@ -1,11 +1,11 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-from .symmetric_matrix import SymmetricMatrix
+from .matrix import Matrix
 from ..util.docs import inherit_doc
 
 @inherit_doc
-class SumMatrix(SymmetricMatrix):
+class SumMatrix(Matrix):
     """
     The sum matrix represents a sum of other possibly sparse
     :class:`runlmc.linalg.SymmetricMatrix` instances :math:`A_i`,
@@ -24,7 +24,7 @@ class SumMatrix(SymmetricMatrix):
             raise ValueError('At most one distinct shape expected in sum, '
                              'found shapes:\n{}'.format(shapes))
 
-        super().__init__(shapes[0][0])
+        super().__init__(*shapes[0])
         self.Ks = Ks
 
     def matvec(self, x):

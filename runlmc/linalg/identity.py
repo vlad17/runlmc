@@ -3,14 +3,14 @@
 
 import numpy as np
 
-from .symmetric_matrix import SymmetricMatrix
+from .matrix import Matrix
 from ..util.docs import inherit_doc
 
 # TODO(test)
 @inherit_doc
-class Identity(SymmetricMatrix):
+class Identity(Matrix):
     def __init__(self, n):
-        super().__init__(n)
+        super().__init__(n, n)
 
     def matvec(self, x):
         return x

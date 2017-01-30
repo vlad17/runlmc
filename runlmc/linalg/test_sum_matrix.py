@@ -7,7 +7,7 @@ import scipy.linalg
 from .test_matrix_base import MatrixTestBase
 from .kronecker import Kronecker
 from .numpy_matrix import NumpyMatrix
-from .symmetric_matrix import SymmetricMatrix
+from .matrix import Matrix
 from .sum_matrix import SumMatrix
 from .toeplitz import Toeplitz
 from ..util.testing_utils import RandomTest, exp_decr_toep
@@ -26,6 +26,7 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
         # to test the sum_matrix algorithm; using the approximation
         # of eigenvalues in Toeplitz is too dangerous.
         examples = [
+            # Square
             [up(1), up(1), up(1), np.diag(np.ones(1))],
 
             [up(3), down(3), up(3), np.diag(np.ones(3))],
@@ -49,28 +50,34 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
             [Toeplitz(exp_decr_toep(5))
              for _ in range(5)] + [np.diag(np.ones(5) * 1e-4)],
 
-            [Kronecker(self._rpsd(2), Toeplitz(exp_decr_toep(5)))
+            [Kronecker(NumpyMatrix(self._rpsd(2)), Toeplitz(exp_decr_toep(5)))
              for _ in range(5)] + [np.diag(np.ones(10) * 1e-4)],
 
-            [Kronecker(self._rpsd(2), self._rpsd(2))
+            [Kronecker(NumpyMatrix(self._rpsd(2)),
+                       NumpyMatrix(self._rpsd(2)))
              for _ in range(2)] + [np.diag(np.ones(4) * 1e-4)],
 
             [Toeplitz(exp_decr_toep(5)) for _ in range(5)] +
 
             [np.diag(np.ones(5) * 1e-4)],
 
-            [Kronecker(self._rpsd(2),
-                       Kronecker(self._rpsd(2), self._rpsd(10)))
+            [Kronecker(NumpyMatrix(self._rpsd(2)),
+                       Kronecker(NumpyMatrix(self._rpsd(2)),
+                                 NumpyMatrix(self._rpsd(10))))
              for _ in range(2)] + [np.diag(np.ones(40) * 1e-4)],
 
             [self._rpsd(100) for _ in range(10)] +
-            [np.diag(np.random.rand(100))]]
+            [np.diag(np.random.rand(100))],
+            # Rectangle
+            [np.random.rand(2, 3), np.random.rand(2, 3)],
+            [np.random.rand(3, 2) for _ in range(4)],
+            [np.random.rand(3, 4) for _ in range(4)]]
 
         self.examples = list(map(self._generate, examples))
 
     @staticmethod
     def _generate(mats):
-        my_mats = [NumpyMatrix(x) if not isinstance(x, SymmetricMatrix) else x
+        my_mats = [NumpyMatrix(x) if not isinstance(x, Matrix) else x
                    for x in mats]
         return SumMatrix(my_mats)
 

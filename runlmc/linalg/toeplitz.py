@@ -7,16 +7,17 @@ import numpy as np
 import scipy.linalg
 import scipy.sparse.linalg
 
-from .symmetric_matrix import SymmetricMatrix
+from .matrix import Matrix
 from ..util.docs import inherit_doc
 from ..util.numpy_convenience import EPS
 
 _LOG = logging.getLogger(__name__)
 
 @inherit_doc
-class Toeplitz(SymmetricMatrix):
+class Toeplitz(Matrix):
     """
-    Creates a class with a parsimonious representation of a PSD
+    Creates a class with a parsimonious representation of a symmetric,
+    square
     Toeplitz matrix; that is, a matrix :math:`T` with entries :math:`T_{ij}`
     which for all :math:`i,j` and :math:`i'=i+1, j'=j+1` satisfy:
 
@@ -36,7 +37,7 @@ class Toeplitz(SymmetricMatrix):
         if len(top) == 0:
             raise ValueError('top is empty')
 
-        super().__init__(len(top))
+        super().__init__(len(top), len(top))
 
         self.top = top.astype('float64', casting='safe')
         circ = self._cyclic_extend(top)

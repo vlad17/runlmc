@@ -92,8 +92,7 @@ def _main():
         'rbf only - inverse lengthscales in logspace(0, 1, q)',
         'periodic only - inverse lengthscale is 1, periods in logspace',
         'matern32 only - invers lenngthscales in logspace',
-        'mixed - all the above, with lengthscales/periods in'
-        ' logspace(0, 1, max(q // 3, 1)']
+        'mixed - all the above']
     kdict = {k_name: (k, desc) for k_name, k, desc in
              zip(kerntypes, kernels, descriptions)}
 
@@ -144,8 +143,6 @@ def run_kernel_benchmark(
             params, grid_dists, interpolant, interpolantT))
     print('    covariance matrix info')
     print('        largest  eig        {:8.4e}'.format(eigs.max()))
-    print('           -> (predicted)   {:8.4e}'
-          .format(apprx.K.upper_eig_bound()))
     print('        smallest eig        {:8.4e}'.format(eigs.min()))
     print('        l2 condition number {:8.4e}'
           .format(eigs.max() / eigs.min()))
@@ -173,7 +170,7 @@ def run_kernel_benchmark(
             def cb(_):
                 nonlocal ctr
                 ctr += 1
-            m = len(apprx.grid_dists)
+            m = len(grid_dists)
             n = params.n
             lo = sla.LinearOperator((n, n), matvec=mvm)
 
@@ -306,10 +303,15 @@ def gen_kernels(q):
     kernels = [[kfunc(gamma)
                 for gamma in np.logspace(0, 1, q)]
                for kfunc in kern_funcs]
-    kernels.append([kfunc(gamma)
-                    for gamma in np.logspace(0, 1, max(q // 3, 1))
-                    for kfunc in kern_funcs])
-    return kernels
+    mix = [kfunc(gamma)
+           for gamma in np.logspace(0, 1, max(q // 3, 1))
+           for kfunc in kern_funcs]
+    if len(mix) > q:
+        mix = mix[:q]
+    else:
+        for i in range(len(mix), q):
+            mix.append(RBF(1))
+    return kernels + [mix]
 
 if __name__ == '__main__':
     _main()

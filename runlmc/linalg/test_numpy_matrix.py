@@ -22,7 +22,8 @@ class NumpyMatrixTest(RandomTest, MatrixTestBase):
         down = lambda x: up(x)[::-1, ::-1]
 
         self.eigtol = 1e-3
-        self.examples = [NumpyMatrix(x) for x in [
+
+        square_ex = [
             np.identity(1),
             np.identity(2),
             up(3),
@@ -32,7 +33,13 @@ class NumpyMatrixTest(RandomTest, MatrixTestBase):
             self._rpsd(100),
             np.kron(np.identity(2), np.identity(3) * self.eigtol / 2),
             np.kron(np.identity(2), np.identity(3) * self.eigtol),
-            np.kron(np.identity(2), np.identity(3) * self.eigtol * 2)]]
+            np.kron(np.identity(2), np.identity(3) * self.eigtol * 2)]
+        rect_ex = [np.random.rand(*x) for x in [
+            [1, 1],
+            [2, 1],
+            [1, 2],
+            [3, 4]]]
+        self.examples = [NumpyMatrix(x) for x in square_ex + rect_ex]
 
     def test_as_numpy(self):
         for n in self.examples:
@@ -42,7 +49,3 @@ class NumpyMatrixTest(RandomTest, MatrixTestBase):
         A = np.arange(3 * 4 * 5).reshape(3, 4, 5)
         self.assertRaises(ValueError, NumpyMatrix, A)
         self.assertRaises(ValueError, NumpyMatrix, A.reshape(-1))
-
-    def test_nonsymm(self):
-        A = np.array([[1, 1], [0, 1]])
-        self.assertRaises(ValueError, NumpyMatrix, A)

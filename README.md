@@ -69,6 +69,9 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
+0. new linalg heierarchy
+0. low-rank SumKernel speedups
+0. linalg in-place optimization
 0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation?
     * Do other inner circulant preconditioners (e.g., whittle) help inversion?
@@ -78,7 +81,7 @@ All below invocations should be done from the repo root.
 0. Minor perf improvements: what helps?
     * MKL
     * CPython
-    * In-place multiplication where possible
+    * In-place multiplication where possible; square optimizations
     * Non-sum representation: TODO(SLFM-representation)
     * Non-sum representation: TODO(block-Toeplitz representation)
     * TODO(sparse-derivatives)

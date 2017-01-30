@@ -8,8 +8,10 @@ import scipy.linalg as la
 from .exact_deriv import ExactDeriv
 from .stochastic_deriv import StochasticDeriv
 from ..approx.ski import SKI
+from ..linalg.diag import Diag
 from ..linalg.toeplitz import Toeplitz
 from ..linalg.kronecker import Kronecker
+from ..linalg.numpy_matrix import NumpyMatrix
 from ..util.numpy_convenience import begin_end_indices
 
 # TODO(cleanup): document purpose: separated from paramz logic <- document
@@ -94,22 +96,17 @@ class ApproxLMCKernel(LMCKernel):
         return SKI(X, self.interpolant, self.interpolantT)
 
     def _dKdt_from_dAdt(self, dAdt, q):
-        return self._ski(Kronecker(dAdt, self.materialized_kernels[q]))
+        return self._ski(Kronecker(
+            NumpyMatrix(dAdt), self.materialized_kernels[q]))
 
     def _dKdts_from_dKqdts(self, A, q):
         for dKqdt in self.params.kernels[q].kernel_gradient(self.K.dists):
-            yield self._ski(Kronecker(A, Toeplitz(dKqdt)))
-
-    # TODO(cleanup) - move to linalg
-    class _Diag:
-        def __init__(self, v):
-            self.v = v
-        def matvec(self, x):
-            return self.v * x
+            yield self._ski(Kronecker(
+                NumpyMatrix(A), Toeplitz(dKqdt)))
 
     def _dKdt_from_dEpsdt(self, dEpsdt):
         # no SKI approximation necessary for noise
-        return ApproxLMCKernel._Diag(np.repeat(dEpsdt, self.params.lens))
+        return Diag(np.repeat(dEpsdt, self.params.lens))
 
     def _dLdt_from_dKdt(self, dKdt):
         return self.deriv.derivative(dKdt)

@@ -4,32 +4,27 @@
 import numpy as np
 import scipy.sparse.linalg
 
-class SymmetricMatrix:
+class Matrix:
     """
     An abstract class defining the interface for the necessary
     sparse matrix operations.
 
-    We consider a very restricted class of matrices only, namely
-    symmetric, real matrices.
+    All matrices are assumed real.
 
-    :param n: number of rows in this square matrix
-    :raises ValueError: if `n < 1`
+    :param n: number of rows in this matrix
+    :param m: number of columns in this matrix
+    :raises ValueError: if `n < 1 or m < 1`
     """
 
-    def __init__(self, n):
-        if n < 1:
-            raise ValueError('Size of the matrix {} < 1'.format(n))
+    def __init__(self, n, m):
+        if n < 1 or m < 1:
+            raise ValueError('Size of the matrix {} < 1'.format((n, m)))
         self.dtype = np.float64
-        self.shape = (n, n)
+        self.shape = (n, m)
         self._op = None
 
     def as_linear_operator(self):
         """
-        .. Note:: The :func:`scipy.sparse.linalg.aslinearoperator`
-                  converter does not do the same work this does - it doesn't
-                  correctly interpret what a symmetric real operator has to
-                  offer.
-
         :returns: this matrix as a
                   :class:`scipy.sparse.linalg.LinearOperator`
         """
@@ -38,7 +33,6 @@ class SymmetricMatrix:
                 shape=self.shape,
                 dtype=self.dtype,
                 matvec=self.matvec,
-                rmatvec=self.matvec,
                 matmat=self.matmat)
         return self._op
 
@@ -46,7 +40,7 @@ class SymmetricMatrix:
         """
         :returns: numpy matrix equivalent, as a 2D :class:`numpy.ndarray`
         """
-        raise NotImplementedError
+        return self.matmat(np.identity(self.shape[1]))
 
     def matvec(self, x):
         """
@@ -61,21 +55,28 @@ class SymmetricMatrix:
     def matmat(self, X):
         """
         Multiply a matrix :math:`X` by this matrix,
-        :math:`K`, yielding :math:`KX`. This just repeatedly calls
+        :math:`K`, yielding :math:`KX`. By default, this just repeatedly calls
         :func:`matvec`.
 
-        :param X: a (possibly rectangular) matrix.
+        :param X: a (possibly rectangular) dense matrix.
         :returns: the matrix-matrix product
         """
-        return np.hstack([self.matvec(col).reshape(-1, 1) for col in X.T])
+        result = np.empty(shape=(X.shape[1], self.shape[0]))
+        for i, col in enumerate(X.T):
+            result[i] = self.matvec(col)
+        return result.T
 
+    def is_square(self):
+        return self.shape[0] == self.shape[1]
 
-    def upper_eig_bound(self):
-        """
-        Impementations can rely on the fairly tight and efficient-to-compute
-        Gershgorin circle theorem, which implies that the largest eigenvalue
-        is bounded by the largest absolute row sum in PSD matices.
-        :return: an upper bound for the largest eigenvalue of this
-                 (necessarily diagonalizable) matrix.
-        """
-        raise NotImplementedError
+    @staticmethod
+    def wrap(shape, mvm):
+        return _MatrixImpl(shape, mvm)
+
+class _MatrixImpl(Matrix):
+    def __init__(self, shape, mvm):
+        super().__init__(*shape)
+        self._mvm = mvm
+
+    def matvec(self, x):
+        return self._mvm(x)
