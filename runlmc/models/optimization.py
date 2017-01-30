@@ -5,8 +5,6 @@ import climin
 from paramz.optimization import Optimizer
 import numpy as np
 
-# TODO: log instead of print
-
 class AdaDelta(Optimizer):
 
     def __init__(self, **kwargs):
@@ -35,7 +33,7 @@ class AdaDelta(Optimizer):
         for info in ada:
             gn = np.linalg.norm(info['gradient'], np.inf)
             if verbosity and info['n_iter'] % delta == 0:
-                print('iteration', info['n_iter'],
+                print('iteration {:8d}'.format(info['n_iter']),
                       'grad inf-norm {:10.4e}'.format(gn))
             if info['n_iter'] >= max_it or gn < gn_cut:
                 break

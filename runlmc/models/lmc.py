@@ -295,6 +295,9 @@ class LMC(MultiGP):
 
     def _raw_predict(self, Xs):
         if self.alpha is None:
+            print('recomputing alpha')
+            print(self)
+            print(self.noise)
             self.alpha, self.nu, self.native_var = self._precompute_predict()
 
         W = multi_interpolant(Xs, self.inducing_grid)
