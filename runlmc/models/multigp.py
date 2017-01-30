@@ -165,30 +165,17 @@ class MultiGP(Model):
         `kwargs` are passed to the optimizer. See parameters for handled
         keywords.
 
-        TODO: do these parameters actually do anything? Check the paramz
-        code that's actually called here (or just use your own
-        `paramz.optimization.Optimizer`, see `examples/example.ipynb`).
+        :param optimizer: A :py:class:`paramz.optimization.Optimizer`.
+                          Pre-built ones available in
+                          :py:mod:`runlmc.models.optimization`.
 
-        :param max_iters: maximum number of function evaluations
-        :type max_iters: int
-        :messages: whether to display during optimisation
-        :type messages: bool
-        :param optimizer: which optimizer to use (defaults to `'lbfgsb'`),
-                          options include `'scg'`, `'org-bfgs'`, `'tnc'`,
-                          `'adadelta'`, `'rprop'`, `'simplex'`. This can either
-                          be a `str` or `paramz.optimization.Optimizer`.
-        :param bool ipython_notebook: whether to use ipython notebook widgets
-                                      or not (default true)
-        :param bool clear_after_finish: if in ipython notebook, we can clear
-                                        the widgets after optimization.
-                                        Default false.
         """
         try:
             dfldict = {
                 'optimizer': None,
                 'start': None,
                 'messages': False,
-                'max_iters': 1000,
+                'max_iters': 1,
                 'ipython_notebook': True,
                 'clear_after_finish': False
             }
