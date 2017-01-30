@@ -89,10 +89,10 @@ def _main():
         shape=(1 + (1 / eps)), scale=1, size=d))
     kernels = gen_kernels(q)
     descriptions = [
-        'rbf only - inverse lengthscales in logspace(0, 1, q)',
-        'periodic only - inverse lengthscale is 1, periods in logspace',
-        'matern32 only - invers lenngthscales in logspace',
-        'mixed - all the above']
+        'rbf only - inv lengthscales in logspace(0, 1, q)',
+        'periodic only - inv lengthscale is 1, periods in logspace(0, 1, q)',
+        'matern32 only - inv lengthscales in logspace(0, 1, q)',
+        'mixed - rbf, periodic, matern varying params added together']
     kdict = {k_name: (k, desc) for k_name, k, desc in
              zip(kerntypes, kernels, descriptions)}
 
@@ -124,9 +124,9 @@ def prep(d, n_o, Xs):
 
     print()
     print('preparation time (once per optimization)')
-    print('    {:8.4f} sec exact - pairwise distances'
+    print('    {:8.4f} sec exact - pairwise distances (for dense approaches)'
           .format(exact.elapsed))
-    print('    {:8.4f} sec apprx - linear interpolation'
+    print('    {:8.4f} sec apprx - linear interpolation (for approximations)'
           .format(apprx.elapsed))
 
     return dists, grid_dists, interpolant, interpolantT
@@ -146,6 +146,44 @@ def run_kernel_benchmark(
     print('        smallest eig        {:8.4e}'.format(eigs.min()))
     print('        l2 condition number {:8.4e}'
           .format(eigs.max() / eigs.min()))
+
+    if testtype == 'inversion':
+        print('    krylov subspace methods m={}'.format(len(grid_dists)))
+
+        from runlmc.approx.iterative import Iterative
+        solve = Iterative.solve
+
+        basic = SumGrid(params, grid_dists, interpolant, interpolantT)
+        lcg = lambda y: solve(basic, y, verbose=True, minres=False)
+        minres = lambda y: solve(basic, y, verbose=True, minres=True)
+
+        bt = BlockToeplitz(params, grid_dists, interpolant, interpolantT)
+        minresbt = lambda y: solve(bt, y, verbose=True, minres=True)
+
+        sl = GridSLFM(params, grid_dists, interpolant, interpolantT)
+        minressl = lambda y: solve(sl, y, verbose=True, minres=True)
+
+        methods = [
+            (lcg, 'lcg (sum)'),
+            (minres, 'minres (sum)'),
+            (minresbt, 'minres (bt)'),
+            (minressl, 'minres (slfm)')]
+
+        print('        {:9.4e} reconstruction {:10.4f} '
+              'sec {:8d} iterations {}'
+              .format(
+                  np.linalg.norm(params.y - exact.K.dot(exact.deriv.alpha)),
+                  chol_time, 0, 'chol'))
+
+        for f, name in methods:
+            with contexttimer.Timer() as t:
+                x, it = f(params.y)
+            recon_err = np.linalg.norm(params.y - exact.K.dot(x))
+            print('        {:9.4e} reconstruction {:10.4f} '
+                  'sec {:8d} iterations {}'
+                  .format(recon_err, t.elapsed, it, name))
+        return
+
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))
     print('        {:10.4f} sec apprx - solve K*alpha=y'.format(t.elapsed))
@@ -220,40 +258,6 @@ def run_kernel_benchmark(
         chol = np.log(np.diag(exact.L[0])).sum() * 2
         print('        from cholesky diag    {:8.4e}'.format(chol))
         print('        from         trace    {:8.4e}'.format(trace))
-        return
-
-    if testtype == 'inversion':
-        print('    krylov subspace methods m={}'.format(len(grid_dists)))
-
-        from runlmc.approx.iterative import Iterative
-        solve = Iterative.solve
-
-        chol = lambda y: (la.cho_solve(exact.deriv.L, y), 0)
-
-        basic = SumGrid(params, grid_dists, interpolant, interpolantT)
-        lcg = lambda y: solve(basic, y, verbose=True, minres=False)
-        minres = lambda y: solve(basic, y, verbose=True, minres=True)
-
-        bt = BlockToeplitz(params, grid_dists, interpolant, interpolantT)
-        minresbt = lambda y: solve(bt, y, verbose=True, minres=True)
-
-        sl = GridSLFM(params, grid_dists, interpolant, interpolantT)
-        minressl = lambda y: solve(sl, y, verbose=True, minres=True)
-
-        methods = [
-            (chol, 'chol'),
-            (lcg, 'lcg (sum)'),
-            (minres, 'minres (sum)'),
-            (minresbt, 'minres (bt)'),
-            (minressl, 'minres (slfm)')]
-
-        for f, name in methods:
-            with contexttimer.Timer() as t:
-                x, it = f(params.y)
-            recon_err = np.linalg.norm(params.y - exact.K.dot(x))
-            print('        {:9.4e} reconstruction {:10.4f} '
-                  'sec {:8d} iterations {}'
-                  .format(recon_err, t.elapsed, it, name))
         return
 
     def check_grads(f, name):

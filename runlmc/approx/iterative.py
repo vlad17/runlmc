@@ -41,7 +41,7 @@ class Iterative:
         if error > math.sqrt(Iterative.TOL) or succ != 0:
             _LOG.critical('MINRES (n = %d) did not converge.\n'
                           'iterations = n\n'
-                          'error code %d\nReconstruction Error %f',
+                          'error code %d\nReconstruction Error %e',
                           n, succ, error)
 
         if verbose:
