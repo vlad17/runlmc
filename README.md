@@ -76,7 +76,6 @@ All below invocations should be done from the repo root.
 0. Apply to synthetic datasets: compare to other LMC solutions. Should be customizable from GPyLMC.
 0. Write up ICML paper.
 0. Apply to real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
-0. low-rank dense multiplications give SumKernel speedups?
 0. linalg in-place optimization; square matrices optimization
 0. Early cutoff for minres
 0. TODO(general-solve) Preconditioner?
@@ -91,6 +90,7 @@ All below invocations should be done from the repo root.
     * Non-sum representation: TODO(block-Toeplitz representation)
     * TODO(sparse-derivatives)
     * Short-circuit minres if no progress on convergence?
+    * low-rank dense multiplications give SumKernel speedups?
 0. travis-ci, read the docs automatic doc builds
 0. TODO(fix) - better lmc testing. Also investigate: when is iteration NOT converging (critical log) - what's the condition number in that case.
 0. multidimensional inputs and ARD.

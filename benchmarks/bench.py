@@ -12,6 +12,7 @@ import scipy.spatial.distance
 import scipy.sparse.linalg as sla
 
 from runlmc.approx.interpolation import multi_interpolant
+from runlmc.approx.iterative import Iterative
 from runlmc.kern.rbf import RBF
 from runlmc.kern.matern32 import Matern32
 from runlmc.kern.std_periodic import StdPeriodic
@@ -21,10 +22,11 @@ from runlmc.lmc.grid_kernel import *
 from runlmc.lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 
 _HELP_STR = """
-Usage: python bench.py n_o d q eps [kern] [seed] [test-type]
+Usage: python bench.py n_o d r_q q eps [kern] [seed] [test-type]
 
 n_o > 7 is the number of inputs per output
 d > 0 is the number of outputs
+r_q in [1, d] is the added coregionalization rank per kernel
 q > 0 is the number of LMC kernel terms
 eps > 0 is the constant diagonal perturbation mean (a float)
 kern is the kernel type, default rbf, one of 'rbf' 'periodic' 'matern' 'mix'
@@ -37,8 +39,9 @@ all of which conform to the parameters n_o,d,q,eps specified
 above. The particular kernel constructed is the sum of q ICM
 terms:
 
-  Aq = aa^T, a ~ Normal(mean=0, cov=I)
+  aq = aa^T, a ~ Normal(mean=0, cov=I)
   kappa ~ vector of InverseGamma(shape=1, scale=1)
+  Aq = sum r_q iid samples of aq
   Bq = Aq + kappa I
   Kq = one of RBF, Matern32, StdPeriodic applied to inputs
   entire term: HadamardProduct(KroneckerProduct(Bq, 1), Kq
@@ -49,13 +52,24 @@ from InverseGamma(shape=(1 + eps^-1), scale=1)
 Choose q = d = 1 and n large to test Toeplitz, mainly
 Choose q = 1 and n ~ d^2 > 7 to test Kronecker, mainly
 
+For the three quantities:
+
+R = r_q * q (total added rank)
+d^2 (coregionalization dimension)
+d*q (kernel sum size)
+
+The three decompositions SLFM (slfm), block-Toeplitz (bt), and sum (sum)
+do best when R, d^2, and d*q are the smallest of the three, respectively.
+Note that while R <= d*q, the constants involved with slfm might make
+sum preferable on rare occasion.
+
 Inputs/outputs are random and uniform in (0, 1). The interpolation grid
 used by the SKI approximation is a grid with n_o datapoints.
 """
 
 def _main():
     """Runs the benchmarking program."""
-    min_args = 5
+    min_args = 6
     max_args = min_args + 3
     if len(sys.argv) not in range(min_args, max_args + 1):
         print(_HELP_STR)
@@ -63,16 +77,19 @@ def _main():
 
     n_o = int(sys.argv[1])
     d = int(sys.argv[2])
-    q = int(sys.argv[3])
-    eps = float(sys.argv[4])
-    kern = sys.argv[5] if len(sys.argv) > 5 else 'rbf'
-    seed = int(sys.argv[6]) if len(sys.argv) > 6 else 1234
-    testtype = sys.argv[7] if len(sys.argv) > 7 else 'inversion'
+    r_q = int(sys.argv[3])
+    q = int(sys.argv[4])
+    eps = float(sys.argv[5])
+    kern = sys.argv[6] if len(sys.argv) > 6 else 'rbf'
+    seed = int(sys.argv[7]) if len(sys.argv) > 7 else 1234
+    testtype = sys.argv[8] if len(sys.argv) > 8 else 'inversion'
     kerntypes = ['rbf', 'periodic', 'matern', 'mix']
     testtypes = ['inversion', 'logdet', 'gradients']
 
     assert n_o > 7
     assert d > 0
+    assert r_q > 0
+    assert r_q <= d
     assert q > 0
     assert eps > 0
     assert kern in kerntypes
@@ -80,10 +97,10 @@ def _main():
     np.random.seed(seed)
     n = n_o * d
 
-    print('n_o {} d {} q {} eps {} kern {} seed {} test-type {}'.format(
-        n_o, d, q, eps, kern, seed, testtype))
+    print('n_o {} d {} r_q {} q {} eps {} kern {} seed {} test-type {}'.format(
+        n_o, d, r_q, q, eps, kern, seed, testtype))
 
-    coreg_vecs = np.random.randn(q, 1, d)
+    coreg_vecs = np.random.randn(q, r_q, d)
     coreg_diags = np.reciprocal(np.random.gamma(shape=1, scale=1, size=(q, d)))
     noise = np.reciprocal(np.random.gamma(
         shape=(1 + (1 / eps)), scale=1, size=d))
@@ -150,7 +167,6 @@ def run_kernel_benchmark(
     if testtype == 'inversion':
         print('    krylov subspace methods m={}'.format(len(grid_dists)))
 
-        from runlmc.approx.iterative import Iterative
         solve = Iterative.solve
 
         basic = SumGrid(params, grid_dists, interpolant, interpolantT)
@@ -186,7 +202,8 @@ def run_kernel_benchmark(
 
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))
-    print('        {:10.4f} sec apprx - solve K*alpha=y'.format(t.elapsed))
+    print('        {:10.4f} sec apprx - solve K*alpha=y, solve {} trace terms'
+          .format(t.elapsed, Iterative.N_IT))
 
     matrix_diff = np.fabs(apprx.K.as_numpy() - exact.K).mean()
     print('        {:9.4e} |K_exact - K_apprx|_1 / n^2'.format(matrix_diff))
