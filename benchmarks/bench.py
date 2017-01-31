@@ -18,6 +18,7 @@ from runlmc.kern.matern32 import Matern32
 from runlmc.kern.std_periodic import StdPeriodic
 from runlmc.models.lmc import LMC
 from runlmc.lmc.parameter_values import ParameterValues
+from runlmc.lmc.stochastic_deriv import StochasticDeriv
 from runlmc.lmc.grid_kernel import *
 from runlmc.lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 
@@ -203,7 +204,7 @@ def run_kernel_benchmark(
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))
     print('        {:10.4f} sec apprx - solve K*alpha=y, solve {} trace terms'
-          .format(t.elapsed, Iterative.N_IT))
+          .format(t.elapsed, StochasticDeriv.N_IT))
 
     matrix_diff = np.fabs(apprx.K.as_numpy() - exact.K).mean()
     print('        {:9.4e} |K_exact - K_apprx|_1 / n^2'.format(matrix_diff))
