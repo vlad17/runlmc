@@ -1,6 +1,8 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
+from multiprocessing import Pool
+
 import numpy as np
 
 from .derivative import Derivative
@@ -12,14 +14,26 @@ class StochasticDeriv(Derivative):
     # This code accepts arbitrary linear operators for the derivatives
     # K, however, should have a "solve" function
 
-    N_IT = 2
+    N_IT = 3
 
     def __init__(self, K, y):
         self.n = K.shape[0]
         self.K = K
-        self.alpha = Iterative.solve(K, y)
+
         self.rs = np.random.randint(0, 2, (self.N_IT, self.n)) * 2 - 1
-        self.inv_rs = [Iterative.solve(K, r) for r in self.rs]
+
+        to_invert = np.concatenate(([y], self.rs))
+        solved = StochasticDeriv._concurrent_solve(K, to_invert)
+
+        self.alpha = solved[0]
+        self.inv_rs = solved[1:]
+
+    @staticmethod
+    def _concurrent_solve(K, ls):
+        # no parallel
+        # return list(map(lambda x: Iterative.solve(K, x), ls))
+        with Pool(processes=4) as pool:
+            return pool.starmap(Iterative.solve, ((K, x) for x in ls))
 
     def d_normal_quadratic(self, dKdt):
         return self.alpha.dot(dKdt.matvec(self.alpha))
