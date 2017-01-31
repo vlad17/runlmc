@@ -275,11 +275,10 @@ def run_kernel_benchmark(
               .format(t.elapsed / ngrad))
         tot_apprx_time = t.elapsed
         exact_kgrad = np.hstack(exact_kgrad)
-        apprx_kgrad = np.hstack(exact_kgrad)
+        apprx_kgrad = np.hstack(apprx_kgrad)
         err = exact_kgrad - apprx_kgrad
         print('        {:9.4e} avg grad error'.format(np.fabs(err).mean()))
-        print('        {:9.4e} avg signed error'.format(err.mean()))
-        return err, tot_exact_time, tot_apprx_time
+        return err, tot_exact_time, tot_apprx_time, exact_kgrad
 
     gradient_type = [
         (lambda x: x.kernel_gradients(), 'kernel'),
@@ -290,17 +289,22 @@ def run_kernel_benchmark(
     errs = np.array([])
     tot_exact_time = 0
     tot_apprx_time = 0
+    grads = np.array([])
     for f, name in gradient_type:
-        err, exact_time, apprx_time = check_grads(f, name)
+        err, exact_time, apprx_time, grad = check_grads(f, name)
+        grads = np.append(grads, grad)
         errs = np.append(errs, err)
         tot_exact_time += exact_time
         tot_apprx_time += apprx_time
 
-    print('    total gradient runtime summary #', len(errs))
+    print('    total gradient runtime summary ({} partial derivatives)'
+          .format(len(errs)))
     print('        {:10.4f} sec exact all gradients'.format(tot_exact_time))
     print('        {:10.4f} sec apprx all gradients'.format(tot_apprx_time))
     print('        {:9.4e} avg grad error'.format(np.fabs(errs).mean()))
-    print('        {:9.4e} avg signed error'.format(errs.mean()))
+    print('        {:9.4e} avg grad magnitude'.format(np.fabs(grad).mean()))
+    print('        {:9.4e} err:grad l2 ratio'.format(
+        np.linalg.norm(errs) / np.linalg.norm(grad)))
 
 def gen_kernels(q):
     kern_funcs = [RBF, lambda period: StdPeriodic(1, period), Matern32]

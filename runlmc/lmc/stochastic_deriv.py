@@ -12,7 +12,7 @@ class StochasticDeriv(Derivative):
     # This code accepts arbitrary linear operators for the derivatives
     # K, however, should have a "solve" function
 
-    N_IT = 1 # TODO: investigate this constant
+    N_IT = 2
 
     def __init__(self, K, y):
         self.n = K.shape[0]

@@ -21,5 +21,5 @@ echo 'N=4000 R=1 D=4 Q=4 GRADIENTS'
 PYTHONPATH=. python3 benchmarks/bench.py 1000 4 4 $eps mix 1234 gradients > /tmp/out
 head -n1 /tmp/out
 grep -A 4 "matrix materialization" /tmp/out
-tail -n5 /tmp/out
+tail -n6 /tmp/out
 
