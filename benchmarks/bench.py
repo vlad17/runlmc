@@ -32,8 +32,9 @@ q > 0 is the number of LMC kernel terms
 eps > 0 is the constant diagonal perturbation mean (a float)
 kern is the kernel type, default rbf, one of 'rbf' 'periodic' 'matern' 'mix'
 seed is the random seed, default 1234
-test-type performs a particular test, default inversion:
-   'inversion' 'gradients'
+test-type performs a particular test, default 'inv': 'inv' 'opt'
+    'inv' - single iteration-based inversion
+    'opt' - optimization step
 
 For all benchmarks, this constructs a variety of LMC kernels,
 all of which conform to the parameters n_o,d,q,eps specified
@@ -85,7 +86,7 @@ def _main():
     seed = int(sys.argv[7]) if len(sys.argv) > 7 else 1234
     testtype = sys.argv[8] if len(sys.argv) > 8 else 'inversion'
     kerntypes = ['rbf', 'periodic', 'matern', 'mix']
-    testtypes = ['inversion', 'gradients']
+    testtypes = ['inv', 'opt']
 
     assert n_o > 7
     assert d > 0
@@ -156,16 +157,13 @@ def run_kernel_benchmark(
         exact = ExactLMCKernel(params, dists)
     chol_time = t.elapsed
     eigs = np.fabs(np.linalg.eigvalsh(exact.K))
-    with contexttimer.Timer() as t:
-        apprx = ApproxLMCKernel(gen_grid_kernel(
-            params, grid_dists, interpolant, interpolantT))
     print('    covariance matrix info')
     print('        largest  eig        {:8.4e}'.format(eigs.max()))
     print('        smallest eig        {:8.4e}'.format(eigs.min()))
     print('        l2 condition number {:8.4e}'
           .format(eigs.max() / eigs.min()))
 
-    if testtype == 'inversion':
+    if testtype == 'inv':
         print('    krylov subspace methods m={}'.format(len(grid_dists)))
 
         solve = Iterative.solve
@@ -201,10 +199,14 @@ def run_kernel_benchmark(
                   .format(recon_err, t.elapsed, it, name))
         return
 
+    with contexttimer.Timer() as t:
+        apprx = ApproxLMCKernel(gen_grid_kernel(
+            params, grid_dists, interpolant, interpolantT))
+    aprx_time = t.elapsed
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))
     print('        {:10.4f} sec apprx - solve K*alpha=y, solve {} trace terms'
-          .format(t.elapsed, StochasticDeriv.N_IT))
+          .format(aprx_time, StochasticDeriv.N_IT))
 
     matrix_diff = np.fabs(apprx.K.as_numpy() - exact.K).mean()
     print('        {:9.4e} |K_exact - K_apprx|_1 / n^2'.format(matrix_diff))
@@ -257,6 +259,9 @@ def run_kernel_benchmark(
     print('        {:9.4e} avg grad magnitude'.format(np.fabs(grad).mean()))
     print('        {:9.4e} err:grad l2 ratio'.format(
         np.linalg.norm(errs) / np.linalg.norm(grad)))
+    print('    total optimization iteration time')
+    print('        {:10.4f} sec cholesky'.format(tot_exact_time + chol_time))
+    print('        {:10.4f} sec runlmc'.format(tot_apprx_time + aprx_time))
 
 def gen_kernels(q):
     kern_funcs = [RBF, lambda period: StdPeriodic(1, period), Matern32]
