@@ -153,7 +153,7 @@ def rand_psd(n):
     return A + D
 
 
-def check_np_lists(a, b, atol=0):
+def check_np_lists(a, b, atol=1e-7, rtol=1e-7):
     """
     Verifies that two lists of numpy arrays are all close.
     :param a:
@@ -162,7 +162,7 @@ def check_np_lists(a, b, atol=0):
     assert len(a) == len(b), 'a {} b {}'.format(len(a), len(b))
     for i, (sub_a, sub_b) in enumerate(zip(a, b)):
         np.testing.assert_allclose(
-            sub_a, sub_b, err_msg='output {}'.format(i), atol=atol)
+            sub_a, sub_b, err_msg='output {}'.format(i), atol=atol, rtol=rtol)
 
 class SingleGradOptimizer(Optimizer):
     def __init__(self, lipschitz=1):

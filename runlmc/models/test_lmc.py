@@ -11,7 +11,7 @@ from .optimization import AdaDelta
 from ..kern.rbf import RBF
 from ..lmc.parameter_values import ParameterValues
 from ..lmc.kernel import ExactLMCKernel
-from ..util.testing_utils import RandomTest
+from ..util.testing_utils import RandomTest, check_np_lists
 
 class ExactAnalogue:
     def __init__(self, kerns, sizes, coregs, xss=None, yss=None):
@@ -114,6 +114,32 @@ class LMCTest(RandomTest):
 
         self.assertGreater(avg_diff_sz, avg_diff_2sz)
 
+    def check_kernels_equal(self, tol, a, b, check_gradients=True):
+        np.testing.assert_allclose(
+            a.alpha(), b.alpha(), tol, tol)
+        if check_gradients:
+            check_np_lists(
+                a.coreg_vec_gradients(), b.coreg_vec_gradients(),
+                atol=tol, rtol=tol)
+            check_np_lists(
+                a.coreg_diag_gradients(), b.coreg_diag_gradients(),
+                atol=tol, rtol=tol)
+            check_np_lists(
+                a.kernel_gradients(), b.kernel_gradients(),
+                atol=tol, rtol=tol)
+            np.testing.assert_allclose(
+                a.noise_gradient(), b.noise_gradient(), tol, tol)
+
+    def check_kernel(self, ea):
+        m = sum(ea.params.lens) / len(ea.params.lens)
+        actual = ea.gen_lmc(m)
+        exact = ea.gen_exact()
+
+        tol = 1e-3
+        self.check_kernels_equal(tol, exact, actual._cached_dense())
+        self.check_kernels_equal(
+            tol, exact, actual.kernel, check_gradients=False)
+
     def check_normal_quadratic(self, exact):
         exact_mat = exact.gen_exact().K
         y = np.hstack(exact.yss)
@@ -154,6 +180,18 @@ class LMCTest(RandomTest):
     def test_kernel_reconstruction_large(self):
         ea = self.case_large()
         self.check_kernel_reconstruction(ea)
+
+    def test_kernel_1d(self):
+        ea = self.case_1d()
+        self.check_kernel(ea)
+
+    def test_kernel_2d(self):
+        ea = self.case_2d()
+        self.check_kernel(ea)
+
+    def test_kernel_large(self):
+        ea = self.case_large()
+        self.check_kernel(ea)
 
     def test_normal_quadratic_1d(self):
         ea = self.case_1d()

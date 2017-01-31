@@ -258,7 +258,7 @@ class LMC(MultiGP):
 
         :returns: the normal quadratic term for the current outputs `Ys`.
         """
-        return self.y.dot(self.kernel.deriv.alpha)
+        return self.y.dot(self.kernel.alpha())
 
     def log_likelihood(self):
         nll = self.log_det_K() + self.normal_quadratic()
@@ -269,7 +269,7 @@ class LMC(MultiGP):
         return self._raw_predict_apprx(Xs)
 
     def _precompute_predict(self):
-        nongrid_alpha = self.kernel.deriv.alpha
+        nongrid_alpha = self.kernel.alpha()
         WT = self.interpolantT
         K_UU = self.kernel.K.grid_only()
         alpha = K_UU.matvec(WT.dot(nongrid_alpha))

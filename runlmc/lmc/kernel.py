@@ -35,6 +35,9 @@ class LMCKernel:
     def _dLdt_from_dKdt(self, dKdt):
         raise NotImplementedError
 
+    def alpha(self):
+        raise NotImplementedError
+
     def coreg_vec_gradients(self):
         grads = []
         for q, a in enumerate(self.params.coreg_vecs):
@@ -111,6 +114,8 @@ class ApproxLMCKernel(LMCKernel):
     def _dLdt_from_dKdt(self, dKdt):
         return self.deriv.derivative(dKdt)
 
+    def alpha(self):
+        return self.deriv.alpha
 
 class ExactLMCKernel(LMCKernel):
     def __init__(self, params, pair_dists):
@@ -146,3 +151,6 @@ class ExactLMCKernel(LMCKernel):
 
     def _dLdt_from_dKdt(self, dKdt):
         return self.deriv.derivative(dKdt)
+
+    def alpha(self):
+        return self.deriv.alpha
