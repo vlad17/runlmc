@@ -60,8 +60,8 @@ class GridSLFM(GridKernel):
         left = Kronecker(NumpyMatrix(A_star), I_m)
         right = Kronecker(NumpyMatrix(A_star.T), I_m)
         deduped_toeps = [Toeplitz(top) for top in tops]
-        toeps = np.repeat(deduped_toeps, ranks)
-        coreg_Ks = Composition([left, BlockDiag(toeps), right])
+        toeps = BlockDiag(np.repeat(deduped_toeps, ranks))
+        coreg_Ks = Composition([left, toeps, right])
         return coreg_Ks
 
     @staticmethod

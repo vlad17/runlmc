@@ -83,7 +83,7 @@ def _main():
     print('n_o {} d {} q {} eps {} kern {} seed {} test-type {}'.format(
         n_o, d, q, eps, kern, seed, testtype))
 
-    coreg_vecs = np.random.randn(q, d)
+    coreg_vecs = np.random.randn(q, 1, d)
     coreg_diags = np.reciprocal(np.random.gamma(shape=1, scale=1, size=(q, d)))
     noise = np.reciprocal(np.random.gamma(
         shape=(1 + (1 / eps)), scale=1, size=d))

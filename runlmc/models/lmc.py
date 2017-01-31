@@ -139,7 +139,6 @@ class LMC(MultiGP):
             rank = 1 if ranks is None else ranks[i]
             coreg_vec = np.random.randn(rank, self.output_dim)
             self.coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
-            print(type(self.coreg_vecs[-1]))
             self.link_parameter(self.coreg_vecs[-1])
 
         self.coreg_diags = []
