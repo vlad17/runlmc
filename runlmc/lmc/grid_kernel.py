@@ -44,24 +44,32 @@ class GridSLFM(GridKernel):
     def __init__(self, params, grid_dists, interpolant, interpolantT):
         super().__init__(params, grid_dists, interpolant, interpolantT)
 
-        # TODO(cleanup) refactor into two methods
-
-        ranks = np.array([len(coreg) for coreg in params.coreg_vecs])
-        A_star = np.vstack(params.coreg_vecs).T
-        I_m = Identity(len(grid_dists))
-        left = Kronecker(NumpyMatrix(A_star), I_m)
-        right = Kronecker(NumpyMatrix(A_star.T), I_m)
         tops = np.array([k.from_dist(grid_dists) for k in params.kernels])
-        toeps = np.repeat([Toeplitz(top) for top in tops], ranks)
-        coreg_Ks = Composition([left, BlockDiag(toeps), right])
-
-        diag_tops = np.column_stack(params.coreg_diag).dot(tops)
-        diag_Ks = BlockDiag([Toeplitz(top) for top in diag_tops])
+        coreg_Ks = GridSLFM._gen_coreg_Ks(params, tops)
+        diag_Ks = GridSLFM._gen_diag_Ks(params, tops)
 
         self.ski = SKI(SumMatrix([coreg_Ks, diag_Ks]),
                        interpolant, interpolantT)
         self.noise = np.repeat(params.noise, params.lens)
 
+    @staticmethod
+    def _gen_coreg_Ks(params, tops):
+        ranks = np.array([len(coreg) for coreg in params.coreg_vecs])
+        A_star = np.vstack(params.coreg_vecs).T
+        I_m = Identity(tops.shape[1])
+        left = Kronecker(NumpyMatrix(A_star), I_m)
+        right = Kronecker(NumpyMatrix(A_star.T), I_m)
+        deduped_toeps = [Toeplitz(top) for top in tops]
+        toeps = np.repeat(deduped_toeps, ranks)
+        coreg_Ks = Composition([left, BlockDiag(toeps), right])
+        return coreg_Ks
+
+    @staticmethod
+    def _gen_diag_Ks(params, tops):
+        diags = np.column_stack(params.coreg_diag)
+        diag_tops = diags.dot(tops)
+        diag_Ks = BlockDiag([Toeplitz(top) for top in diag_tops])
+        return diag_Ks
 
     def matvec(self, x):
         return self.ski.matvec(x) + self.noise * x

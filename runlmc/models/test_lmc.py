@@ -1,8 +1,6 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-import unittest
-
 import numpy as np
 import scipy.spatial.distance as dist
 
@@ -74,14 +72,14 @@ class LMCTest(RandomTest):
         super().setUp()
 
     @staticmethod
-    def case_1d():
+    def _case_1d():
         kerns = [RBF(inv_lengthscale=3)]
         szs = [30]
         coregs = [np.array([[1]])]
         return ExactAnalogue(kerns, szs, coregs)
 
     @staticmethod
-    def case_2d():
+    def _case_2d():
         kerns = [RBF(inv_lengthscale=3),
                  RBF(inv_lengthscale=2)]
         szs = [30, 40]
@@ -89,7 +87,7 @@ class LMCTest(RandomTest):
         return ExactAnalogue(kerns, szs, coregs)
 
     @staticmethod
-    def case_multirank():
+    def _case_multirank():
         kerns = [RBF(inv_lengthscale=3),
                  RBF(inv_lengthscale=2)]
         szs = [30, 40]
@@ -97,7 +95,7 @@ class LMCTest(RandomTest):
         return ExactAnalogue(kerns, szs, coregs)
 
     @staticmethod
-    def case_large():
+    def _case_large():
         kerns = [RBF(inv_lengthscale=3),
                  RBF(inv_lengthscale=2),
                  RBF(inv_lengthscale=1)]
@@ -107,26 +105,26 @@ class LMCTest(RandomTest):
         return ExactAnalogue(kerns, szs, coregs)
 
     @staticmethod
-    def avg_entry_diff(x1, x2):
+    def _avg_entry_diff(x1, x2):
         return np.fabs(x1 - x2).mean()
 
-    def check_kernel_reconstruction(self, exact):
+    def _check_kernel_reconstruction(self, exact):
         reconstruct = lambda x: x.kernel.K.as_numpy()
         actual = reconstruct(exact.gen_lmc(sum(exact.params.lens)))
         exact_mat = exact.gen_exact().K
         tol = 1e-4
         np.testing.assert_allclose(
             exact_mat, actual, rtol=tol, atol=tol)
-        avg_diff_sz = self.avg_entry_diff(exact_mat, actual)
+        avg_diff_sz = self._avg_entry_diff(exact_mat, actual)
 
         actual = reconstruct(exact.gen_lmc(sum(exact.params.lens) * 2))
         np.testing.assert_allclose(
             exact_mat, actual, rtol=tol, atol=tol)
-        avg_diff_2sz = self.avg_entry_diff(exact_mat, actual)
+        avg_diff_2sz = self._avg_entry_diff(exact_mat, actual)
 
         self.assertGreater(avg_diff_sz, avg_diff_2sz)
 
-    def check_kernels_equal(self, tol, a, b, check_gradients=True):
+    def _check_kernels_equal(self, tol, a, b, check_gradients=True):
         np.testing.assert_allclose(
             a.alpha(), b.alpha(), tol, tol)
         if check_gradients:
@@ -142,17 +140,17 @@ class LMCTest(RandomTest):
             np.testing.assert_allclose(
                 a.noise_gradient(), b.noise_gradient(), tol, tol)
 
-    def check_kernel(self, ea):
+    def _check_kernel_params(self, ea):
         m = sum(ea.params.lens) / len(ea.params.lens)
         actual = ea.gen_lmc(m)
         exact = ea.gen_exact()
 
         tol = 1e-3
-        self.check_kernels_equal(tol, exact, actual._cached_dense())
-        self.check_kernels_equal(
+        self._check_kernels_equal(tol, exact, actual._dense())
+        self._check_kernels_equal(
             tol, exact, actual.kernel, check_gradients=False)
 
-    def check_normal_quadratic(self, exact):
+    def _check_normal_quadratic(self, exact):
         exact_mat = exact.gen_exact().K
         y = np.hstack(exact.yss)
         Kinv_y = np.linalg.solve(exact_mat, y)
@@ -165,7 +163,7 @@ class LMCTest(RandomTest):
         actual = lmc.normal_quadratic()
         np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
 
-    def check_fit(self, ea):
+    def _check_fit(self, ea):
         lmc = ea.gen_lmc(sum(ea.params.lens))
 
         ll_before = lmc.log_likelihood()
@@ -182,89 +180,89 @@ class LMCTest(RandomTest):
                           basic_Xs, basic_Ys, kernels=[])
 
     def test_kernel_reconstruction_1d(self):
-        ea = self.case_1d()
-        self.check_kernel_reconstruction(ea)
+        ea = self._case_1d()
+        self._check_kernel_reconstruction(ea)
 
     def test_kernel_reconstruction_2d(self):
-        ea = self.case_2d()
-        self.check_kernel_reconstruction(ea)
+        ea = self._case_2d()
+        self._check_kernel_reconstruction(ea)
 
     def test_kernel_reconstruction_multirank(self):
-        ea = self.case_multirank()
-        self.check_kernel_reconstruction(ea)
+        ea = self._case_multirank()
+        self._check_kernel_reconstruction(ea)
 
     def test_kernel_reconstruction_large(self):
-        ea = self.case_large()
-        self.check_kernel_reconstruction(ea)
+        ea = self._case_large()
+        self._check_kernel_reconstruction(ea)
 
-    def test_kernel_1d(self):
-        ea = self.case_1d()
-        self.check_kernel(ea)
+    def test_kernel_params_1d(self):
+        ea = self._case_1d()
+        self._check_kernel_params(ea)
 
-    def test_kernel_2d(self):
-        ea = self.case_2d()
-        self.check_kernel(ea)
+    def test_kernel_params_2d(self):
+        ea = self._case_2d()
+        self._check_kernel_params(ea)
 
-    def test_kernel_multirank(self):
-        ea = self.case_multirank()
-        self.check_kernel(ea)
+    def test_kernel_params_multirank(self):
+        ea = self._case_multirank()
+        self._check_kernel_params(ea)
 
-    def test_kernel_large(self):
-        ea = self.case_large()
-        self.check_kernel(ea)
+    def test_kernel_params_large(self):
+        ea = self._case_large()
+        self._check_kernel_params(ea)
 
     def test_normal_quadratic_1d(self):
-        ea = self.case_1d()
-        self.check_normal_quadratic(ea)
+        ea = self._case_1d()
+        self._check_normal_quadratic(ea)
 
     def test_normal_quadratic_2d(self):
-        ea = self.case_2d()
-        self.check_normal_quadratic(ea)
+        ea = self._case_2d()
+        self._check_normal_quadratic(ea)
 
     def test_normal_quadratic_multirank(self):
-        ea = self.case_multirank()
-        self.check_normal_quadratic(ea)
+        ea = self._case_multirank()
+        self._check_normal_quadratic(ea)
 
     def test_normal_quadratic_large(self):
-        ea = self.case_large()
-        self.check_normal_quadratic(ea)
+        ea = self._case_large()
+        self._check_normal_quadratic(ea)
 
     def test_1d_fit(self):
-        ea = self.case_1d()
+        ea = self._case_1d()
         noise_sd = [0.05]
         true_func = [np.sin]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
                            ea.params.coreg_vecs, ea.xss, yss)
-        self.check_fit(ea)
+        self._check_fit(ea)
 
     def test_2d_fit(self):
-        ea = self.case_2d()
+        ea = self._case_2d()
         noise_sd = [0.05, 0.08]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
                            ea.params.coreg_vecs, ea.xss, yss)
-        self.check_fit(ea)
+        self._check_fit(ea)
 
 
     def test_multirank_fit(self):
-        ea = self.case_multirank()
+        ea = self._case_multirank()
         noise_sd = [0.05, 0.08]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
                            ea.params.coreg_vecs, ea.xss, yss)
-        self.check_fit(ea)
+        self._check_fit(ea)
 
     def test_2d_fit_noisediff(self):
-        ea = self.case_2d()
+        ea = self._case_2d()
         noise_sd = [1e-8, 0.09]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
                            ea.params.coreg_vecs, ea.xss, yss)
-        self.check_fit(ea)
+        self._check_fit(ea)
 
     def test_2d_1k_fit_large_offset(self):
         kerns = [RBF(inv_lengthscale=3)]
@@ -276,4 +274,4 @@ class LMCTest(RandomTest):
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
                            ea.params.coreg_vecs, ea.xss, yss)
-        self.check_fit(ea)
+        self._check_fit(ea)

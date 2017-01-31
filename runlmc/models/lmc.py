@@ -156,10 +156,8 @@ class LMC(MultiGP):
         self.y = np.hstack(self.Ys)
 
         self.kernel = None
-        self.exact_kernel = None
-        self.alpha = None
-        self.nu = None
-        self.native_var = None
+        self._cache = {k: None for k in
+                       ('exact_kernel', 'grid_alpha', 'nu', 'native_var')}
 
         _LOG.info('LMC %s fully initialized', self.name)
 
@@ -182,19 +180,19 @@ class LMC(MultiGP):
 
         return np.linspace(lo, hi, m), m
 
+    def _clear_cache(self, name):
+        self._cache[name] = None
+
     def parameters_changed(self):
-        self.exact_kernel = None
+        for key in ('exact_kernel', 'grid_alpha', 'nu', 'native_var'):
+            self._clear_cache(key)
+
         self.kernel = ApproxLMCKernel(
             gen_grid_kernel(
                 ParameterValues.generate(self),
                 self.dists,
                 self.interpolant,
                 self.interpolantT))
-
-        # uncache if were defined before
-        self.nu = None
-        self.alpha = None
-        self.native_var = None
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
@@ -220,13 +218,13 @@ class LMC(MultiGP):
             k.update_gradient(dk)
         self.noise.gradient = self.kernel.noise_gradient()
 
-    def _cached_dense(self):
-        if self.exact_kernel is None:
+    def _dense(self):
+        if self._cache['exact_kernel'] is None:
             pdists = dist.pdist(np.hstack(self.Xs).reshape(-1, 1))
             pdists = dist.squareform(pdists)
-            self.exact_kernel = ExactLMCKernel(
+            self._cache['exact_kernel'] = ExactLMCKernel(
                 ParameterValues.generate(self), pdists)
-        return self.exact_kernel
+        return self._cache['exact_kernel']
 
     def K(self):
         """
@@ -236,7 +234,7 @@ class LMC(MultiGP):
         :returns: :math:`K_{\\text{SKI}}`, the approximation of the exact
                   kernel.
         """
-        return self._cached_dense().K
+        return self._dense().K
 
     def log_det_K(self):
         """
@@ -245,7 +243,7 @@ class LMC(MultiGP):
                   upper bound for
                   :math:`\\log\\det K_{\text{exact}}`
         """
-        diag = np.diag(self._cached_dense().L[0])
+        diag = np.diag(self._dense().L[0])
         lgdet = np.log(diag).sum() * 2
         sgn = np.sign(diag).prod()
         if sgn <= 0:
@@ -275,7 +273,7 @@ class LMC(MultiGP):
         nongrid_alpha = self.kernel.alpha()
         WT = self.interpolantT
         K_UU = self.kernel.K.grid_only()
-        alpha = K_UU.matvec(WT.dot(nongrid_alpha))
+        grid_alpha = K_UU.matvec(WT.dot(nongrid_alpha))
 
         # Not optimized for speed - this performs dense linear algebra
         # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
@@ -283,7 +281,7 @@ class LMC(MultiGP):
         # offered in those sections, or perhaps some less coarse ones).
         # However, it's the training that's the bottleneck, not prediction.
         # TODO(fast-prediction)
-        L = self._cached_dense().L
+        L = self._dense().L
         K_XU = self.interpolant.dot(K_UU.as_numpy())
         Ainv_KXU = la.cho_solve(L, K_XU, overwrite_b=True)
         nu = np.diag(K_XU.T.dot(Ainv_KXU))
@@ -298,20 +296,22 @@ class LMC(MultiGP):
         native_output_var = coregs.dot(kerns).reshape(-1)
         native_var = native_output_var + self.noise
 
-        return alpha, nu, native_var
+        self._cache['grid_alpha'] = grid_alpha
+        self._cache['nu'] = nu
+        self._cache['native_var'] = native_var
 
     def _raw_predict_apprx(self, Xs):
-        if self.alpha is None:
-            self.alpha, self.nu, self.native_var = self._precompute_predict()
+        if self._cache['alpha'] is None:
+            self._precompute_predict()
 
         W = multi_interpolant(Xs, self.inducing_grid)
         lens = [len(X) for X in Xs]
 
-        mean = W.dot(self.alpha)
+        mean = W.dot(self._cache['alpha'])
 
-        native_var = np.repeat(self.native_var, lens)
+        native_var = np.repeat(self._cache['native_var'], lens)
 
-        var = native_var - W.dot(self.nu)
+        var = native_var - W.dot(self._cache['nu'])
         var[var < 0] = 0
 
         endpoints = np.add.accumulate(lens)[:-1]
