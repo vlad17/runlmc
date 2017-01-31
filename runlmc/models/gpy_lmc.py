@@ -16,9 +16,9 @@ from ..util.docs import inherit_doc
 from ..util.numpy_convenience import tesselate
 
 @inherit_doc
-class ExactLMC(MultiGP):
+class GPyLMC(MultiGP):
     """
-    The exact Gaussian Process model for multioutput regression
+    This wraps GPy for the Gaussian Process model for multioutput regression
     under a Linear Model of Coregionalization.
 
     This performs the inversion-based cubic-time algorithm.
@@ -40,9 +40,10 @@ class ExactLMC(MultiGP):
     :param name: model name
     :type name: string
     """
-    def __init__(self, Xs, Ys, kernels, ranks, name='ExactLMC'):
+    def __init__(self, Xs, Ys, kernels, ranks, name='GPyLMC'):
+
         super().__init__(Xs, Ys, normalize=False, name=name)
-        self.gpy_model = ExactLMC._construct_gpy(
+        self.gpy_model = GPyLMC._construct_gpy(
             Xs, Ys, kernels, ranks)
 
     def _raw_predict(self, Xs):
@@ -50,12 +51,6 @@ class ExactLMC(MultiGP):
 
     def parameters_changed(self):
         pass
-
-    def _parameters_changed(self):
-        # Temporarily exposing this while we have a dummy
-        # exact LMC implementation - won't be necessary when the real
-        # parameters_changed is no longer a no-op.
-        self.gpy_model.parameters_changed()
 
     def log_likelihood(self):
         return self.gpy_model.log_likelihood()

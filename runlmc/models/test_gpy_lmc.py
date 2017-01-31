@@ -8,10 +8,10 @@ import numpy as np
 from GPy.models import GPCoregionalizedRegression
 from GPy.util.multioutput import LCM
 
-from .exact import ExactLMC
+from .gpy_lmc import GPyLMC
 from ..kern.rbf import RBF
 
-class ExactLMCTest(unittest.TestCase):
+class GPyLMCTest(unittest.TestCase):
 
     def setUp(self):
         super().setUp()
@@ -33,7 +33,7 @@ class ExactLMCTest(unittest.TestCase):
             W_rank=1)
 
     def generate_basic(self):
-        basic = ExactLMC(
+        basic = GPyLMC(
             self.basic_Xs,
             self.basic_Ys,
             self.basic_kernels,

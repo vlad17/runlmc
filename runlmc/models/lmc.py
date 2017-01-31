@@ -100,7 +100,6 @@ class LMC(MultiGP):
     :param m: number of inducing points to use (by default, the total number
               of input points)
     :param str name:
-    :param exact: whether to use the naive algorithm
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
     :raises: :class:`ValueError` if normalization if any `Ys` have no variance
                                  or values in `Xs` have multiple identical
@@ -131,8 +130,8 @@ class LMC(MultiGP):
         self.interpolant = multi_interpolant(self.Xs, self.inducing_grid)
         self.interpolantT = self.interpolant.transpose().tocsr()
 
-        _LOG.info('LMC %s grid (n = %d, m = %d) complete, '
-                  'generating first SKI kernel', self.name, n, m)
+        _LOG.info('LMC %s grid (n = %d, m = %d) complete, ',
+                  self.name, n, m)
 
         self.coreg_vecs = []
         for i in range(len(self.kernels)):

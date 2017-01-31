@@ -73,7 +73,7 @@ All below invocations should be done from the repo root.
 
 0. rank > 1
 0. Explore different optimization approaches with climin + Stochastic Logarithmic Expansion (offer the function?)? rely on dense checks? if log still isn't working? Better lmc tests (`log_det_K`, analogous reconstruction tests)
-0. Apply to synthetic datasets: compare to other LMC solutions (ssgp, fitc)
+0. Apply to synthetic datasets: compare to other LMC solutions. Should be customizable from GPyLMC.
 0. Write up ICML paper.
 0. Apply to real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
 0. low-rank dense multiplications give SumKernel speedups?
@@ -124,6 +124,7 @@ All below invocations should be done from the repo root.
 0. rename `rand_psd` -> `rand_pd`
 0. Continuous integration for unit tests
 0. Drop gpy dep (in non-tests) - requires exact kernel cholesky impl
+0. mean functions
 0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 0. product kernels (multiple factors) 
 0. active dimension optimization
