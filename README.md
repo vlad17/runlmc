@@ -71,8 +71,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. rank > 1
-0. Explore different optimization approaches with climin + Stochastic Logarithmic Expansion (offer the function?)? rely on dense checks? if log still isn't working? Better lmc tests (`log_det_K`, analogous reconstruction tests)
+0. Explore different optimization approaches with climin + Stochastic Logarithmic Expansion (offer the function?)? rely on dense checks? if log still isn't working?
 0. Apply to synthetic datasets: compare to other LMC solutions. Should be customizable from GPyLMC.
 0. Write up ICML paper.
 0. Apply to real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
