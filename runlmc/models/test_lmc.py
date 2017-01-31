@@ -16,7 +16,9 @@ from ..util.testing_utils import RandomTest, check_np_lists
 class ExactAnalogue:
     def __init__(self, kerns, sizes, coregs, xss=None, yss=None):
         assert len(coregs) == len(kerns)
-        assert set(map(len, coregs)) == {len(sizes)}
+        assert set(map(lambda x: x.shape[1], coregs)) == {len(sizes)}
+        for coreg in coregs:
+            assert coreg.shape[0] <= len(sizes), (coreg.shape, len(sizes))
 
         diags = [np.ones(len(sizes)) for _ in coregs]
         noise = np.ones(len(sizes))
@@ -34,8 +36,9 @@ class ExactAnalogue:
         self.exact = None
 
     def gen_lmc(self, m):
-        lmc = LMC(self.xss, self.yss,
-                  normalize=False, kernels=self.params.kernels, m=m)
+        ranks = [len(x) for x in self.params.coreg_vecs]
+        lmc = LMC(self.xss, self.yss, normalize=False,
+                  kernels=self.params.kernels, ranks=ranks, m=m)
         for lmc_coreg, coreg in zip(lmc.coreg_vecs, self.params.coreg_vecs):
             lmc_coreg[:] = coreg
         for lmc_coreg, coreg in zip(lmc.coreg_diags, self.params.coreg_diag):
@@ -74,7 +77,7 @@ class LMCTest(RandomTest):
     def case_1d():
         kerns = [RBF(inv_lengthscale=3)]
         szs = [30]
-        coregs = [[1]]
+        coregs = [np.array([[1]])]
         return ExactAnalogue(kerns, szs, coregs)
 
     @staticmethod
@@ -82,7 +85,15 @@ class LMCTest(RandomTest):
         kerns = [RBF(inv_lengthscale=3),
                  RBF(inv_lengthscale=2)]
         szs = [30, 40]
-        coregs = [[1, 2], [3, 4]]
+        coregs = [np.array(x).reshape(1, -1) for x in [[1, 2], [3, 4]]]
+        return ExactAnalogue(kerns, szs, coregs)
+
+    @staticmethod
+    def case_multirank():
+        kerns = [RBF(inv_lengthscale=3),
+                 RBF(inv_lengthscale=2)]
+        szs = [30, 40]
+        coregs = [np.array([[1, 2], [3, 4]]), np.array([[1, 1]])]
         return ExactAnalogue(kerns, szs, coregs)
 
     @staticmethod
@@ -91,7 +102,8 @@ class LMCTest(RandomTest):
                  RBF(inv_lengthscale=2),
                  RBF(inv_lengthscale=1)]
         szs = [10, 12, 14, 12, 10]
-        coregs = [[1, 1, 1, 1, 2], [2, 1, 2, 1, 2], [-1, 1, -1, -1, -1]]
+        coregs = [np.array(x).reshape(1, -1) for x in
+                  [[1, 1, 1, 1, 2], [2, 1, 2, 1, 2], [-1, 1, -1, -1, -1]]]
         return ExactAnalogue(kerns, szs, coregs)
 
     @staticmethod
@@ -177,6 +189,10 @@ class LMCTest(RandomTest):
         ea = self.case_2d()
         self.check_kernel_reconstruction(ea)
 
+    def test_kernel_reconstruction_multirank(self):
+        ea = self.case_multirank()
+        self.check_kernel_reconstruction(ea)
+
     def test_kernel_reconstruction_large(self):
         ea = self.case_large()
         self.check_kernel_reconstruction(ea)
@@ -189,6 +205,10 @@ class LMCTest(RandomTest):
         ea = self.case_2d()
         self.check_kernel(ea)
 
+    def test_kernel_multirank(self):
+        ea = self.case_multirank()
+        self.check_kernel(ea)
+
     def test_kernel_large(self):
         ea = self.case_large()
         self.check_kernel(ea)
@@ -199,6 +219,10 @@ class LMCTest(RandomTest):
 
     def test_normal_quadratic_2d(self):
         ea = self.case_2d()
+        self.check_normal_quadratic(ea)
+
+    def test_normal_quadratic_multirank(self):
+        ea = self.case_multirank()
         self.check_normal_quadratic(ea)
 
     def test_normal_quadratic_large(self):
@@ -223,6 +247,16 @@ class LMCTest(RandomTest):
                            ea.params.coreg_vecs, ea.xss, yss)
         self.check_fit(ea)
 
+
+    def test_multirank_fit(self):
+        ea = self.case_multirank()
+        noise_sd = [0.05, 0.08]
+        true_func = [np.sin, np.cos]
+        yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
+        ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
+                           ea.params.coreg_vecs, ea.xss, yss)
+        self.check_fit(ea)
+
     def test_2d_fit_noisediff(self):
         ea = self.case_2d()
         noise_sd = [1e-8, 0.09]
@@ -235,7 +269,7 @@ class LMCTest(RandomTest):
     def test_2d_1k_fit_large_offset(self):
         kerns = [RBF(inv_lengthscale=3)]
         szs = [30, 40]
-        coregs = [[1, 1]]
+        coregs = [np.array([[1, 1]])]
         ea = ExactAnalogue(kerns, szs, coregs)
         noise_sd = [0.02, 0.08]
         true_func = [np.sin, lambda x: np.cos(x) + 100]

@@ -6,9 +6,9 @@ import numpy as np
 class ParameterValues:
     def __init__(self, coreg_vecs, coreg_diags, kernels, lens, y, noise):
         self.coreg_vecs = coreg_vecs
-        self.coreg_diag = coreg_diags
+        self.coreg_diag = coreg_diags # TODO(cleanup): coreg_diags
         self.kernels = kernels
-        self.coreg_mats = [np.outer(a, a) + np.diag(k)
+        self.coreg_mats = [a.T.dot(a) + np.diag(k)
                            for a, k in zip(coreg_vecs, self.coreg_diag)]
         self.lens = lens
         self.noise = noise

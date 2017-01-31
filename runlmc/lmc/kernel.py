@@ -41,14 +41,15 @@ class LMCKernel:
     def coreg_vec_gradients(self):
         grads = []
         for q, a in enumerate(self.params.coreg_vecs):
-            grad = np.zeros(self.params.D)
-            for i in range(self.params.D):
-                dAdt = np.zeros((self.params.D, self.params.D))
-                dAdt[i] += a
-                dAdt.T[i] += a
-                # TODO(sparse-derivatives)
-                dKdt = self._dKdt_from_dAdt(dAdt, q)
-                grad[i] = self._dLdt_from_dKdt(dKdt)
+            grad = np.zeros(a.shape)
+            for i, ai in enumerate(a):
+                for j in range(self.params.D):
+                    dAdt = np.zeros((self.params.D, self.params.D))
+                    dAdt[j] += ai
+                    dAdt.T[j] += ai
+                    # TODO(sparse-derivatives)
+                    dKdt = self._dKdt_from_dAdt(dAdt, q)
+                    grad[i, j] = self._dLdt_from_dKdt(dKdt)
             grads.append(grad)
         return grads
 

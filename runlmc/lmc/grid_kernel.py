@@ -44,17 +44,18 @@ class GridSLFM(GridKernel):
     def __init__(self, params, grid_dists, interpolant, interpolantT):
         super().__init__(params, grid_dists, interpolant, interpolantT)
 
-        # when rank > 1 need to decompose
-        A_star = np.array(params.coreg_vecs).T
+        # TODO(cleanup) refactor into two methods
+
+        ranks = np.array([len(coreg) for coreg in params.coreg_vecs])
+        A_star = np.vstack(params.coreg_vecs).T
         I_m = Identity(len(grid_dists))
         left = Kronecker(NumpyMatrix(A_star), I_m)
         right = Kronecker(NumpyMatrix(A_star.T), I_m)
         tops = np.array([k.from_dist(grid_dists) for k in params.kernels])
-        Ks = BlockDiag([Toeplitz(top) for top in tops])
-        coreg_Ks = Composition([left, Ks, right])
+        toeps = np.repeat([Toeplitz(top) for top in tops], ranks)
+        coreg_Ks = Composition([left, BlockDiag(toeps), right])
 
-        diags = np.array(params.coreg_diag).T
-        diag_tops = diags.dot(tops)
+        diag_tops = np.column_stack(params.coreg_diag).dot(tops)
         diag_Ks = BlockDiag([Toeplitz(top) for top in diag_tops])
 
         self.ski = SKI(SumMatrix([coreg_Ks, diag_Ks]),

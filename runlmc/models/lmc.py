@@ -80,7 +80,6 @@ class LMC(MultiGP):
     number.
 
     TODO(new parameters)
-    ranks - currently everything will be rank-1
     mean-function - zero-mean for now
 
     :param Xs: input observations, should be a list of numpy arrays,
@@ -93,6 +92,8 @@ class LMC(MultiGP):
                     terms of the LMC sums prior to coregionalization. The
                     :math:`q`-th index here corresponds to :math:`k_q` above.
                     This list's length is :math:`Q`
+    :param ranks: list of integer ranks for coregionalization factors,
+                  defaults to 1 everywhere.
     :param lo: lexicographically smallest point in inducing point grid used
                (by default, a bit less than the minimum of input)
     :param hi: lexicographically largest point in inducing point grid used
@@ -107,7 +108,7 @@ class LMC(MultiGP):
     :raises: :class:`ValueError` if no kernels
     """
     def __init__(self, Xs, Ys, normalize=True, kernels=None,
-                 lo=None, hi=None, m=None, name='lmc'):
+                 ranks=None, lo=None, hi=None, m=None, name='lmc'):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
 
         if not kernels:
@@ -135,8 +136,10 @@ class LMC(MultiGP):
 
         self.coreg_vecs = []
         for i in range(len(self.kernels)):
-            coreg_vec = np.random.randn(self.output_dim)
+            rank = 1 if ranks is None else ranks[i]
+            coreg_vec = np.random.randn(rank, self.output_dim)
             self.coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
+            print(type(self.coreg_vecs[-1]))
             self.link_parameter(self.coreg_vecs[-1])
 
         self.coreg_diags = []
@@ -288,7 +291,8 @@ class LMC(MultiGP):
         # A bit obscure; the native covariance K_** for each output
         # is given by diag(K(0, 0)). This happens to be efficiently computed
         # here.
-        coregs = np.square(np.column_stack(self.coreg_vecs))
+        coregs = np.column_stack(np.square(per_output.T).sum(axis=0)
+                                 for per_output in self.coreg_vecs)
         coregs += np.column_stack(self.coreg_diags)
         kerns = [k.from_dist(0) for k in self.kernels]
         native_output_var = coregs.dot(kerns).reshape(-1)

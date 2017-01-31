@@ -48,8 +48,6 @@ class SymmSquareBlockTest(RandomTest, MatrixTestBase):
         for s, ex in zip(self.examples, self.raw_examples):
             np_mat = np.bmat([[ex[i, j] for j in range(ex.shape[1])]
                               for i in range(ex.shape[0])]).A
-            print(np_mat)
-            print(s)
             np.testing.assert_allclose(s.as_numpy(), np_mat)
 
     def test_empty(self):
