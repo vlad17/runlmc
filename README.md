@@ -71,7 +71,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Explore different optimization approaches with climin + Stochastic Logarithmic Expansion (offer the function?)? rely on dense checks? if log still isn't working?
+0. Explore different optimization approaches with climin + Stochastic Logarithmic Expansion (offer the function?)? rely on amortized dense checks if log still isn't working?
 0. Apply to synthetic datasets: compare to other LMC solutions. Should be customizable from GPyLMC.
 0. Write up ICML paper.
 0. Apply to real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
@@ -84,9 +84,7 @@ All below invocations should be done from the repo root.
 0. Minor perf improvements: what helps?
     * MKL
     * CPython
-    * In-place multiplication where possible; square optimizations
-    * Non-sum representation: TODO(SLFM-representation)
-    * Non-sum representation: TODO(block-Toeplitz representation)
+    * In-place multiplication where possible; square matrix optimizations
     * TODO(sparse-derivatives)
     * Short-circuit minres if no progress on convergence?
     * low-rank dense multiplications give SumKernel speedups?
@@ -97,20 +95,10 @@ All below invocations should be done from the repo root.
 
 ### Considerations 
 
-* SEED=3333617092 nosetests runlmc.models.test_lmc breaks Toeplitz PSD strictly (currently has large negative eigval cutoff)
-* SLFM approach -> can we take determeinant in this representation?
-   0. SLFM approach work for computing deriv of log det / log det exactly (pg. 16 in vector-valued-lmc.pdf)
-   0. How to take determinant? Derivatives?
-   0. Re-prove (legitimately); start by showing wilson SKI m^(-3) conv (in multioutput case), then prove SLFM for 1 input dim, rank 1
-   0. Rank >1 reduction to rank 1 (use constant kq terms)
-   0. multidimensional proof; requires cubic interpol from SKI (again, for multioutput)
-   0. SLFM code up; GP code up; do K, dK/dL reconstruction experiments.
 * MINRES or LCG?
-* How can we add good preconditioners? How much do they help?
-* What are condition numbers in practice?
 * Why are sparse eigensolvers poor? Can we use them as an accurate general-purpose solution if all else fails?
 * Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
-0. New logdet algo? [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet)
+0. Logdet Approximations? (1) [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet) (2) [Integral Probing](https://arxiv.org/abs/1504.02661).
 
 ### Low-priority Tasks
 
@@ -127,13 +115,3 @@ All below invocations should be done from the repo root.
 0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 0. product kernels (multiple factors) 
 0. active dimension optimization
-
-### Thesis Plan
-
-0. Intro
-0. Related Work - see detailed-plan.md; proposal; close loose ends here
-0. SKI - prove O(m^-3) formalism (one-input case)
-0. runlmc theoretical kernel re-creation error (can we re-prove? what are the bounds) (one-input case) (SLFM approach, if viable)
-0. experimental proof of above
-0. algorithm for runlmc kernel; explain/prove fast structural runtimes
-0. experimental proof for above; comparison to gpy exact/ssgp
