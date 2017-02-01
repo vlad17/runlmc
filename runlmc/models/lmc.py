@@ -288,7 +288,7 @@ class LMC(MultiGP):
         # A bit obscure; the native covariance K_** for each output
         # is given by diag(K(0, 0)). This happens to be efficiently computed
         # here.
-        coregs = np.column_stack(np.square(per_output.T).sum(axis=0)
+        coregs = np.column_stack(np.square(per_output).sum(axis=0)
                                  for per_output in self.coreg_vecs)
         coregs += np.column_stack(self.coreg_diags)
         kerns = [k.from_dist(0) for k in self.kernels]
@@ -300,13 +300,13 @@ class LMC(MultiGP):
         self._cache['native_var'] = native_var
 
     def _raw_predict_apprx(self, Xs):
-        if self._cache['alpha'] is None:
+        if self._cache['grid_alpha'] is None:
             self._precompute_predict()
 
         W = multi_interpolant(Xs, self.inducing_grid)
         lens = [len(X) for X in Xs]
 
-        mean = W.dot(self._cache['alpha'])
+        mean = W.dot(self._cache['grid_alpha'])
 
         native_var = np.repeat(self._cache['native_var'], lens)
 
