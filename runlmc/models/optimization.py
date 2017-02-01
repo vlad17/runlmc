@@ -32,8 +32,8 @@ class AdaDelta(Optimizer):
     def __init__(self, **kwargs):
         super().__init__()
         default = {
-            'step_rate':1, 'decay':0.5, 'momentum':0.5, 'offset':1e-4,
-            'max_it':100, 'verbosity':0, 'min_grad_ratio':0.5, 'roll':3}
+            'step_rate':1, 'decay':0.9, 'momentum':0.5, 'offset':1e-4,
+            'max_it':100, 'verbosity':0, 'min_grad_ratio':0.5, 'roll':2}
         default.update(**kwargs)
         self.kwargs = default
 
