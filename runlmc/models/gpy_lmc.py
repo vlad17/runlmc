@@ -10,6 +10,8 @@
 from itertools import count
 
 import numpy as np
+import GPy.models as models
+from GPy.util.multioutput import ICM
 
 from .multigp import MultiGP
 from ..util.docs import inherit_doc
@@ -29,6 +31,10 @@ class GPyLMC(MultiGP):
     Uses the Gaussian likelihood. See :class:`runlmc.models.lmc.LMC` for the
     explicit LMC formula.
 
+    The DTCVAR algorithm (the `sparse` parameter) is based on Efficient
+    Multioutput Gaussian Processes through Variational Inducing Kernels
+    by Álvarez et al. 2010.
+
     :param Xs: input observations, should be a list of numpy arrays,
                where the numpy arrays are one dimensional.
     :param Ys: output observations, this must be a list of one-dimensional
@@ -39,12 +45,17 @@ class GPyLMC(MultiGP):
     :type ranks: list of integer
     :param name: model name
     :type name: string
+    :param sparse: an integer. If 0, uses
+                   :py:class:`GPy.models.GPCoregionalizedRegression`,
+                   the typical cholesky algorithm.
+                   If >0, then this determines the number of inducing points
+                   used by the DTCVAR algorithm in
+                   use :py:class:`GPy.models.SparseGPCoregionalizedRegression`
     """
-    def __init__(self, Xs, Ys, kernels, ranks, name='GPyLMC'):
-
+    def __init__(self, Xs, Ys, kernels, ranks, name='GPyLMC', sparse=0):
         super().__init__(Xs, Ys, normalize=False, name=name)
         self.gpy_model = GPyLMC._construct_gpy(
-            Xs, Ys, kernels, ranks)
+            Xs, Ys, kernels, ranks, sparse)
 
     def _raw_predict(self, Xs):
         pass
@@ -81,18 +92,21 @@ class GPyLMC(MultiGP):
         return tesselate(Qs.T, map(len, Xs))
 
     @staticmethod
-    def _construct_gpy(Xs, Ys, kernels, ranks):
+    def _construct_gpy(Xs, Ys, kernels, ranks, sparse):
         kernels = [k.to_gpy() for k in kernels]
         input_dim = 1
         num_outputs = len(Ys)
         Xs = [X.reshape(-1, 1) for X in Xs]
         Ys = [Y.reshape(-1, 1) for Y in Ys]
 
-        from GPy.util.multioutput import ICM
-        from GPy.models import GPCoregionalizedRegression
+
         K = ICM(input_dim, num_outputs, kernels[0], ranks[0], name='ICM0')
         for kernel, rank, idx in zip(kernels[1:], ranks[1:], count(1)):
             K += ICM(
                 input_dim, num_outputs, kernel, rank, name='ICM{}'.format(idx))
         K.name = 'LCM'
-        return GPCoregionalizedRegression(Xs, Ys, kernel=K)
+        if sparse > 0:
+            return models.SparseGPCoregionalizedRegression(
+                Xs, Ys, kernel=K, num_inducing=sparse)
+        else:
+            return models.GPCoregionalizedRegression(Xs, Ys, kernel=K)
