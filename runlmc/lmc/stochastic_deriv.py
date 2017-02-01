@@ -14,6 +14,8 @@ class StochasticDeriv(Derivative):
     # This code accepts arbitrary linear operators for the derivatives
     # K, however, should have a "solve" function
 
+    PARALLEL = False #True
+
     N_IT = 3
 
     def __init__(self, K, y, metrics):
@@ -38,12 +40,13 @@ class StochasticDeriv(Derivative):
         self.alpha = solved[0]
         self.inv_rs = solved[1:]
 
-    @staticmethod
-    def _concurrent_solve(ls):
-        # no parallel
-        return [Iterative.solve(*x) for x in ls]
-        with Pool(processes=4) as pool:
-            return pool.starmap(Iterative.solve, ls)
+    @classmethod
+    def _concurrent_solve(cls, ls):
+        if cls.PARALLEL:
+            with Pool(processes=4) as pool:
+                return pool.starmap(Iterative.solve, ls)
+        else:
+            return [Iterative.solve(*x) for x in ls]
 
     def d_normal_quadratic(self, dKdt):
         return self.alpha.dot(dKdt.matvec(self.alpha))

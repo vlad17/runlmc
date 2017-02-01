@@ -166,6 +166,8 @@ class LMC(MultiGP):
 
         _LOG.info('LMC %s fully initialized', self.name)
 
+    EVAL_NORM = np.inf
+
     # TODO(cleanup): move to interpolation as its own method; test it.
     @staticmethod
     def _autogrid(Xs, lo, hi, m):
@@ -230,7 +232,7 @@ class LMC(MultiGP):
         self.noise.gradient = self.kernel.noise_gradient()
 
         if self.metrics is not None:
-            grad_norm = np.linalg.norm(self.gradient)
+            grad_norm = np.linalg.norm(self.gradient, self.EVAL_NORM)
             ordered_grad = np.concatenate((
                 np.concatenate(
                     [x.gradient for x in self.coreg_vecs]).reshape(-1),
@@ -247,8 +249,8 @@ class LMC(MultiGP):
 
             self.metrics.grad_norms.append(grad_norm)
             self.metrics.grad_error.append(
-                np.linalg.norm(ordered_grad - exact_grad)
-                / np.linalg.norm(exact_grad))
+                np.linalg.norm(ordered_grad - exact_grad, self.EVAL_NORM)
+                / np.linalg.norm(exact_grad, self.EVAL_NORM))
             self.metrics.log_likely.append(self.log_likelihood())
 
     def _dense(self):
