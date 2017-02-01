@@ -299,10 +299,35 @@ class LMC(MultiGP):
         nll += len(self.y) * np.log(2*np.pi)
         return -0.5 * nll
 
+    # TODO(test)
     def _raw_predict(self, Xs):
-        return self._raw_predict_apprx(Xs)
+        # return self._raw_predict_apprx(Xs)
+        # Use dense prediction until TODO(fast-prediction) done
+        # TODO(cleanup): refactor ExactLMCKernel so theat below is easier.
+        exact = self._dense()
+
+        test_Xs = np.hstack(Xs).reshape(-1, 1)
+        train_Xs = np.hstack(self.Xs).reshape(-1, 1)
+        params = ParameterValues.generate(self)
+        params.lens_x = [len(X) for X in Xs]
+        K_test_X = ExactLMCKernel(params,
+                                  dist.cdist(test_Xs, train_Xs),
+                                  invert=False, noise=False).K
+        mean = K_test_X.dot(exact.alpha()).reshape(-1)
+        var_explained = K_test_X.dot(la.cho_solve(exact.L, K_test_X.T))
+        params.lens = params.lens_x
+        var = ExactLMCKernel(params, dist.cdist(test_Xs, test_Xs),
+                             invert=False, noise=True).K
+        var = np.diag(var) - np.diag(var_explained)
+
+        endpoints = np.add.accumulate(params.lens)[:-1]
+        return np.split(mean, endpoints), np.split(var, endpoints)
+
 
     def _precompute_predict(self):
+        # TODO(fast-prediction) - the interpolation code doesn't currently
+        # allow extrapolation, low-memory prediction depends on it.
+
         nongrid_alpha = self.kernel.alpha()
         WT = self.interpolantT
         K_UU = self.kernel.K.grid_only()

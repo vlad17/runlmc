@@ -118,24 +118,28 @@ class ApproxLMCKernel(LMCKernel):
         return self.deriv.alpha
 
 class ExactLMCKernel(LMCKernel):
-    def __init__(self, params, pair_dists):
+    def __init__(self, params, pair_dists, invert=True, noise=True):
         super().__init__(params)
         self.materialized_kernels = [k.from_dist(pair_dists)
                                      for k in params.kernels]
         self.pair_dists = pair_dists
         self.K = sum(self.coreg_scale(A, Kq) for A, Kq in
                      zip(params.coreg_mats, self.materialized_kernels))
-        self.K += np.diag(np.repeat(params.noise, params.lens))
-        self.L = la.cho_factor(self.K)
-        self.deriv = ExactDeriv(self.L, self.params.y)
+        if noise:
+            self.K += np.diag(np.repeat(params.noise, params.lens))
+        if invert:
+            self.L = la.cho_factor(self.K)
+            self.deriv = ExactDeriv(self.L, self.params.y)
 
     def coreg_scale(self, A, K):
-        begins, ends = begin_end_indices(self.params.lens)
+        rbegins, rends = begin_end_indices(
+            getattr(self.params, 'lens_x', self.params.lens))
+        cbegins, cends = begin_end_indices(self.params.lens)
         K = np.copy(K)
         D = self.params.D
         for i, j in itertools.product(range(D), range(D)):
-            rbegin, rend = begins[i], ends[i]
-            cbegin, cend = begins[j], ends[j]
+            rbegin, rend = rbegins[i], rends[i]
+            cbegin, cend = cbegins[j], cends[j]
             K[rbegin:rend, cbegin:cend] *= A[i, j]
         return K
 
