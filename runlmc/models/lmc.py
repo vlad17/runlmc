@@ -12,6 +12,7 @@ from .multigp import MultiGP
 from ..approx.interpolation import multi_interpolant
 from ..lmc.parameter_values import ParameterValues
 from ..lmc.grid_kernel import gen_grid_kernel
+from ..lmc.metrics import Metrics
 from ..lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
@@ -101,6 +102,8 @@ class LMC(MultiGP):
     :param m: number of inducing points to use (by default, the total number
               of input points)
     :param str name:
+    :param metrics: whether to record optimization metrics during optimization
+                    (runs exact solution alongside this one, may be slow).
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
     :raises: :class:`ValueError` if normalization if any `Ys` have no variance
                                  or values in `Xs` have multiple identical
@@ -108,7 +111,8 @@ class LMC(MultiGP):
     :raises: :class:`ValueError` if no kernels
     """
     def __init__(self, Xs, Ys, normalize=True, kernels=None,
-                 ranks=None, lo=None, hi=None, m=None, name='lmc'):
+                 ranks=None, lo=None, hi=None, m=None, name='lmc',
+                 metrics=False):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
 
         if not kernels:
@@ -158,6 +162,8 @@ class LMC(MultiGP):
         self._cache = {k: None for k in
                        ('exact_kernel', 'grid_alpha', 'nu', 'native_var')}
 
+        self.metrics = Metrics() if metrics else None
+
         _LOG.info('LMC %s fully initialized', self.name)
 
     # TODO(cleanup): move to interpolation as its own method; test it.
@@ -182,6 +188,11 @@ class LMC(MultiGP):
     def _clear_cache(self, name):
         self._cache[name] = None
 
+    def optimize(self, **kwargs):
+        if self.metrics is not None:
+            self.metrics = Metrics()
+        super().optimize(**kwargs)
+
     def parameters_changed(self):
         for key in ('exact_kernel', 'grid_alpha', 'nu', 'native_var'):
             self._clear_cache(key)
@@ -191,7 +202,8 @@ class LMC(MultiGP):
                 ParameterValues.generate(self),
                 self.dists,
                 self.interpolant,
-                self.interpolantT))
+                self.interpolantT),
+            self.metrics)
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
@@ -216,6 +228,28 @@ class LMC(MultiGP):
         for k, dk in zip(self.kernels, self.kernel.kernel_gradients()):
             k.update_gradient(dk)
         self.noise.gradient = self.kernel.noise_gradient()
+
+        if self.metrics is not None:
+            grad_norm = np.linalg.norm(self.gradient)
+            ordered_grad = np.concatenate((
+                np.concatenate(
+                    [x.gradient for x in self.coreg_vecs]).reshape(-1),
+                np.concatenate([x.gradient for x in self.coreg_diags]),
+                np.concatenate([x.gradient for x in self.kernels]),
+                self.noise.gradient))
+            exact = self._dense()
+            exact_grad = np.concatenate((
+                np.concatenate(
+                    exact.coreg_vec_gradients()).reshape(-1),
+                np.concatenate(exact.coreg_diag_gradients()),
+                np.concatenate(exact.kernel_gradients()),
+                exact.noise_gradient()))
+
+            self.metrics.grad_norms.append(grad_norm)
+            self.metrics.grad_error.append(
+                np.linalg.norm(ordered_grad - exact_grad)
+                / np.linalg.norm(exact_grad))
+            self.metrics.log_likely.append(self.log_likelihood())
 
     def _dense(self):
         if self._cache['exact_kernel'] is None:

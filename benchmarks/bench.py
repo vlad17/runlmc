@@ -192,8 +192,7 @@ def run_kernel_benchmark(
 
         for f, name in methods:
             with contexttimer.Timer() as t:
-                x, it = f(params.y)
-            recon_err = np.linalg.norm(params.y - exact.K.dot(x))
+                x, it, recon_err = f(params.y)
             print('        {:9.4e} reconstruction {:10.4f} '
                   'sec {:8d} iterations {}'
                   .format(recon_err, t.elapsed, it, name))
@@ -201,7 +200,7 @@ def run_kernel_benchmark(
 
     with contexttimer.Timer() as t:
         apprx = ApproxLMCKernel(gen_grid_kernel(
-            params, grid_dists, interpolant, interpolantT))
+            params, grid_dists, interpolant, interpolantT), None)
     aprx_time = t.elapsed
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))

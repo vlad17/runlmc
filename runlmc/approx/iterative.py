@@ -23,7 +23,7 @@ class Iterative:
         :param y: :math:`\\textbf{y}`
         :param verbose: whether to return number of iterations
         :param minres: uses minres if true, else lcg
-        :return: :math:`\\textbf{x}`, number of iterations if verbose
+        :return: :math:`\\textbf{x}`, number of iterations and error if verbose
         """
         ctr = 0
         def cb(_):
@@ -45,6 +45,6 @@ class Iterative:
                           n, succ, error)
 
         if verbose:
-            return Kinv_y, ctr
+            return Kinv_y, ctr, error
         else:
             return Kinv_y

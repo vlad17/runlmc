@@ -14,7 +14,6 @@ class AdaDelta(Optimizer):
             'max_it':100, 'verbosity':0, 'min_grad':1e-3}
         default.update(**kwargs)
         self.kwargs = default
-        print(default)
 
     def opt(self, x, f_fp=None, f=None, fp=None):
         exclude = {'verbosity', 'min_grad', 'max_it'}

@@ -16,24 +16,34 @@ class StochasticDeriv(Derivative):
 
     N_IT = 3
 
-    def __init__(self, K, y):
+    def __init__(self, K, y, metrics):
         self.n = K.shape[0]
         self.K = K
 
         self.rs = np.random.randint(0, 2, (self.N_IT, self.n)) * 2 - 1
 
-        to_invert = np.concatenate(([y], self.rs))
-        solved = StochasticDeriv._concurrent_solve(K, to_invert)
+        record_metrics = metrics is not None
+        to_invert = [(K, y, record_metrics)] + [
+            (K, x, record_metrics) for x in self.rs]
+
+        if record_metrics:
+            solved, ctrs, errs = zip(
+                *StochasticDeriv._concurrent_solve(to_invert))
+            metrics.iterations.append(np.mean(ctrs))
+            metrics.solv_error.append(np.mean(errs))
+            solved = list(solved)
+        else:
+            solved = StochasticDeriv._concurrent_solve(to_invert)
 
         self.alpha = solved[0]
         self.inv_rs = solved[1:]
 
     @staticmethod
-    def _concurrent_solve(K, ls):
+    def _concurrent_solve(ls):
         # no parallel
-        # return list(map(lambda x: Iterative.solve(K, x), ls))
+        return [Iterative.solve(*x) for x in ls]
         with Pool(processes=4) as pool:
-            return pool.starmap(Iterative.solve, ((K, x) for x in ls))
+            return pool.starmap(Iterative.solve, ls)
 
     def d_normal_quadratic(self, dKdt):
         return self.alpha.dot(dKdt.matvec(self.alpha))
