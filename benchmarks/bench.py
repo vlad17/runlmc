@@ -167,40 +167,33 @@ def run_kernel_benchmark(
         print('    krylov subspace methods m={}'.format(len(grid_dists)))
 
         solve = Iterative.solve
-
-        basic = SumGrid(params, grid_dists, interpolant, interpolantT)
-        lcg = lambda y: solve(basic, y, verbose=True, minres=False)
-        minres = lambda y: solve(basic, y, verbose=True, minres=True)
-
-        bt = BlockToeplitz(params, grid_dists, interpolant, interpolantT)
-        minresbt = lambda y: solve(bt, y, verbose=True, minres=True)
-
-        sl = GridSLFM(params, grid_dists, interpolant, interpolantT)
-        minressl = lambda y: solve(sl, y, verbose=True, minres=True)
+        def make_solve(k, minres):
+            k = GridKernel(params, grid_dists, interpolant, interpolantT, k)
+            return lambda y: solve(k, y, verbose=True, minres=minres)
 
         methods = [
-            (lcg, 'lcg (sum)'),
-            (minres, 'minres (sum)'),
-            (minresbt, 'minres (bt)'),
-            (minressl, 'minres (slfm)')]
+            ('sum', True),
+            ('bt', True),
+            ('slfm', True),
+            ('slfm', False)]
 
-        print('        {:9.4e} reconstruction {:10.4f} '
-              'sec {:8d} iterations {}'
-              .format(
-                  np.linalg.norm(params.y - exact.K.dot(exact.deriv.alpha)),
-                  chol_time, 0, 'chol'))
+        chol_err = np.linalg.norm(params.y - exact.K.dot(exact.deriv.alpha))
+        fmt = '        {:9.4e} reconstruction {:10.4f} sec {:8d} iterations {}'
+        print(fmt.format(chol_err, chol_time, 0, 'chol'))
 
-        for f, name in methods:
+        for name, minres in methods:
+            f = make_solve(name, minres)
             with contexttimer.Timer() as t:
                 x, it, recon_err = f(params.y)
-            print('        {:9.4e} reconstruction {:10.4f} '
-                  'sec {:8d} iterations {}'
-                  .format(recon_err, t.elapsed, it, name))
+            name = '{:5} ({})'.format(name, 'minres' if minres else 'lcg')
+            print(fmt.format(recon_err, t.elapsed, it, name))
+
         return
 
     with contexttimer.Timer() as t:
-        apprx = ApproxLMCKernel(gen_grid_kernel(
-            params, grid_dists, interpolant, interpolantT), None)
+        grid_kernel = gen_grid_kernel(
+            params, grid_dists, interpolant, interpolantT)
+        apprx = ApproxLMCKernel(params, grid_kernel, grid_dists, None)
     aprx_time = t.elapsed
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))

@@ -199,13 +199,11 @@ class LMC(MultiGP):
         for key in ('exact_kernel', 'grid_alpha', 'nu', 'native_var'):
             self._clear_cache(key)
 
+        params = ParameterValues.generate(self)
+        grid_kernel = gen_grid_kernel(
+            params, self.dists, self.interpolant, self.interpolantT)
         self.kernel = ApproxLMCKernel(
-            gen_grid_kernel(
-                ParameterValues.generate(self),
-                self.dists,
-                self.interpolant,
-                self.interpolantT),
-            self.metrics)
+            params, grid_kernel, self.dists, self.metrics)
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format

@@ -87,7 +87,7 @@ All below invocations should be done from the repo root.
     * In-place multiplication where possible; square matrix optimizations
     * TODO(sparse-derivatives)
     * Short-circuit minres if no progress on convergence?
-    * low-rank dense multiplications give SumKernel speedups?
+    * low-rank dense multiplications give SumKernel speedups? TODO(sum-fast)
 0. travis-ci, read the docs automatic doc builds
 0. TODO(fix) - better lmc testing. Also investigate: when is iteration NOT converging (critical log) - what's the condition number in that case.
 0. multidimensional inputs and ARD.

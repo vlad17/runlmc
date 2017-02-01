@@ -20,9 +20,9 @@ class ParameterValues:
     @staticmethod
     def generate(lmc_model):
         return ParameterValues(
-            lmc_model.coreg_vecs,
-            lmc_model.coreg_diags,
+            [x.values for x in lmc_model.coreg_vecs],
+            [x.values for x in lmc_model.coreg_diags],
             lmc_model.kernels,
             list(map(len, lmc_model.Xs)),
             lmc_model.y,
-            lmc_model.noise)
+            lmc_model.noise.values)
