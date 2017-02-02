@@ -54,10 +54,15 @@ class GridKernel(Matrix):
 
 # TODO(test)
 def gen_grid_kernel(params, grid_dists, interpolant, interpolantT):
-    if params.Q > 2 * params.D:
-        ktype = 'bt'
-    else:
+    if params.Q == 1:
         ktype = 'sum'
+    else:
+        tot_rank = sum(len(coreg) for coreg in params.coreg_vecs)
+        dsq = params.D ** 2
+        if tot_rank < dsq:
+            ktype = 'slfm'
+        else:
+            ktype = 'bt'
     return GridKernel(params, grid_dists, interpolant, interpolantT, ktype)
 
 def _gen_slfm_grid(params, tops):
