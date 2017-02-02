@@ -6,3 +6,5 @@ Just like in https://github.com/trungngv/cogp/tree/master/data/fx
 
 Input: day
 Output: exchange rate vs USD of top 10 currencies and 3 precious metals
+
+I removed the headers and footers from the downloaded csv files.
