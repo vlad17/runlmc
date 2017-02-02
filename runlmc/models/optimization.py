@@ -50,7 +50,7 @@ class AdaDelta(Optimizer):
         rolling_ave = MovingAverage(roll)
 
         if self.kwargs['verbosity']:
-            print('starting AdaDelta', self.kwargs)
+            print('starting adadelta', self.kwargs)
 
         info = None
         for info in ada:
