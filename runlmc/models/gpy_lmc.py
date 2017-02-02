@@ -70,16 +70,18 @@ class GPyLMC(MultiGP):
         self.gpy_model.optimize(**kwargs)
 
     def predict(self, Xs):
-        X = np.vstack(Xs)
+        X = np.hstack(Xs)
         lenls = list(map(len, Xs))
         meta = np.repeat(range(len(Xs)), lenls).reshape(-1, 1)
         mu, var = self.gpy_model.predict(
             np.hstack([X.reshape(-1, 1), meta]),
             Y_metadata={'output_index': meta})
+        mu = mu.reshape(-1)
+        var = var.reshape(-1)
         return tesselate(mu, lenls), tesselate(var, lenls)
 
     def predict_quantiles(self, Xs, quantiles=(2.5, 97.5)):
-        X = np.vstack(Xs)
+        X = np.hstack(Xs)
         meta = np.repeat(range(len(Xs)), list(map(len, Xs))).reshape(-1, 1)
         Qs = np.array(self.gpy_model.predict_quantiles(
             np.hstack([X.reshape(-1, 1), meta]),
