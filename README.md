@@ -71,10 +71,8 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Explore different optimization approaches with climin + Stochastic Logarithmic Expansion (offer the function?)? rely on amortized dense checks if log still isn't working?
-0. Apply to synthetic datasets: compare to other LMC solutions. Should be customizable from GPyLMC.
+0. FX test - compare DTCVAR, COGP, runlmc on small 3K + large FX datasets
 0. Write up ICML paper.
-0. Apply to real datasets [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP.
 0. linalg in-place optimization; square matrices optimization
 0. Early cutoff for minres
 0. TODO(general-solve) Preconditioner?
@@ -92,9 +90,12 @@ All below invocations should be done from the repo root.
 0. multidimensional inputs and ARD.
 0. TODO(fast-prediction) fast predictions
 0. low-rank dense multiplications give SumKernel speedups? TODO(sum-fast)
+0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
+
 
 ### Considerations 
 
+* Real datasets: [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) 
 * MINRES or LCG?
 * Why are sparse eigensolvers poor? Can we use them as an accurate general-purpose solution if all else fails?
 * Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
@@ -110,8 +111,6 @@ All below invocations should be done from the repo root.
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh (numpy.linalg -> scipy.linalg as la, scipy.sparse.linalg as sla)
 0. rename `rand_psd` -> `rand_pd`
 0. Continuous integration for unit tests
-0. Drop gpy dep (in non-tests) - requires exact kernel cholesky impl
 0. mean functions
-0. TODO(priors) - Incorporating priors (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 0. product kernels (multiple factors) 
 0. active dimension optimization
