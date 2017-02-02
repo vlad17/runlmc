@@ -40,7 +40,7 @@ PYTHONPATH=. python3 benchmarks/bench.py $n 10 1 10 $eps $kern 1234 opt >$out 2>
 head -n1 $out
 tail -n9 $out
 
-echo "N=$N D=10 R=10 Q=2"
+echo "N=$N D=10 R=10 Q=1"
 n=$((N / 10))
 PYTHONPATH=. python3 benchmarks/bench.py $n 10 10 1 $eps $kern 1234 opt >$out 2>>$err
 head -n1 $out
