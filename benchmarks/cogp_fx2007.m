@@ -69,6 +69,8 @@ for r=1:runs
   fvar = vaar.*repmat(ystd.^2,size(mu,1),1);
   per_out_smses = zeros(3, 1);
   per_out_nlpds = zeros(3, 1);
+  csvwrite('/tmp/cogp-fx2007-mu', mu(:, outputs))
+  csvwrite('/tmp/cogp-fx2007-var', fvar(:, outputs))
   for i=1:3
     t = outputs(i);
     per_out_smses(i) = mysmse(ytest(xtest{i},t),mu(xtest{i},t),ymean(t));

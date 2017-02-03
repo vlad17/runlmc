@@ -92,7 +92,6 @@ All below invocations should be done from the repo root.
 0. low-rank dense multiplications give SumKernel speedups? TODO(sum-fast)
 0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 
-
 ### Considerations 
 
 * Real datasets: [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) 

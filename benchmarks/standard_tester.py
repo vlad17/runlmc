@@ -41,27 +41,28 @@ def foreign_exchange_2007():
     for col in fx2007.columns:
         if col not in holdout:
             holdout[col] = slice(0, 0)
-    holdin = {col: np.r_[0:ixs.start, ixs.stop:len(fx2007)]
-              for col, ixs in holdout.items()}
+    holdin = {}
+    for col in fx2007.columns:
+        select = np.ones(len(fx2007), dtype=bool)
+        select[fx2007[col].isnull().values] = False
+        select[holdout[col]] = False
+        holdin[col] = np.r_[np.flatnonzero(select)]
 
     xss = []
     yss = []
     all_ixs = np.arange(len(fx2007))
     for col in fx2007.columns:
-        select = np.ones(len(fx2007), dtype=bool)
-        select[holdout[col]] = False
-        select[fx2007[col].isnull().values] = False
-        xss.append(all_ixs[select])
-        currency2usd = fx2007_train[col][select].values
+        xss.append(all_ixs[holdin[col]])
+        currency2usd = fx2007_train[col][holdin[col]].values
         # Don't ask me, this was in the Nguyen 2014 paper code
         usd2currency = np.reciprocal(currency2usd)
         yss.append(usd2currency)
 
     test_fx = ['CAD', 'JPY', 'AUD']
-
     test_xss = [all_ixs[holdout[col]] for col in fx2007.columns]
-    test_yss = [np.reciprocal(fx2007.ix[holdout[col], col]) for col in fx2007.columns]
-    return xss, yss, test_xss, test_yss, fx2007, all_ixs, holdout, holdin
+    test_yss = [np.reciprocal(fx2007.ix[holdout[col], col])
+                for col in fx2007.columns]
+    return xss, yss, test_xss, test_yss, test_fx, fx2007.columns
 
 def foreign_exchange_mixed_holdout():
     # This example uses only 2007 data
@@ -92,8 +93,9 @@ def foreign_exchange_mixed_holdout():
         yss.append(usd2currency)
 
     test_xss = [all_ixs[holdout[col]] for col in fx2007.columns]
-    test_yss = [np.reciprocal(fx2007.ix[holdout[col], col]) for col in fx2007.columns]
-    return xss, yss, test_xss, test_yss, fx2007, all_ixs, holdout, holdin
+    test_yss = [np.reciprocal(fx2007.ix[holdout[col], col])
+                for col in fx2007.columns]
+    return xss, yss, test_xss, test_yss
 
 def toy_sinusoid():
     # Adapts the 2-output toy problem from
@@ -140,21 +142,18 @@ def nlpd(test_yss, pred_yss, pred_vss):
 
 def runlmc(num_runs, m, xss, yss, test_xss, test_yss,
            kerns, ranks, optimizer_opts):
-    times, smses, nlpds, lls = [], [], [], []
-    best = None
+    times, smses, nlpds = [], [], []
     for _ in range(num_runs):
         lmc = LMC(xss, yss, kernels=kerns, ranks=ranks, normalize=True, m=m)
         opt = AdaDelta(**optimizer_opts)
         with contexttimer.Timer() as t:
             lmc.optimize(optimizer=opt)
         times.append(t.elapsed)
-        lls.append(lmc.log_likelihood())
         pred_yss, pred_vss = lmc.predict(test_xss)
         smses.append(smse(test_yss, pred_yss, yss))
         nlpds.append(nlpd(test_yss, pred_yss, pred_vss))
-        if min(lls) == lls[-1]:
-            best = lmc
-    return np.mean(times), np.mean(smses), np.mean(nlpds), best
+        last = lmc
+    return np.mean(times), np.mean(smses), np.mean(nlpds), last
 
 def dtcvar(num_runs, m, xss, yss, test_xss, test_yss,
            kerns, ranks, optimizer_opts):
@@ -197,4 +196,10 @@ def cogp_fx2007(num_runs, num_inducing):
     smse = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
     ending = ending[ending.find('mean nlpds'):]
     nlpd = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
-    return time, smse, nlpd
+
+    # the matlab script writes to this file
+    test_fx = ['CAD', 'JPY', 'AUD']
+    cogp_mu = pd.read_csv('/tmp/cogp-fx2007-mu', header=None, names=test_fx)
+    cogp_var = pd.read_csv('/tmp/cogp-fx2007-var', header=None, names=test_fx)
+
+    return time, smse, nlpd, cogp_mu, cogp_var
