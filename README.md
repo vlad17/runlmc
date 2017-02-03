@@ -71,7 +71,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. FX test - compare DTCVAR, COGP, runlmc on small 3K + large FX datasets
+0. large FX test - need to implement COGP, runlmc on small 3K + large FX datasets; may have to set up python on fat server
 0. Write up ICML paper.
 0. linalg in-place optimization; square matrices optimization
 0. Early cutoff for minres
