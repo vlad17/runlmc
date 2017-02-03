@@ -156,10 +156,12 @@ def cogp_fx2007(num_runs, num_inducing):
         universal_newlines=True,
         cwd=os.getcwd())
     mout = process.communicate()[0]
+    with open('/tmp/out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
+        f.write(mout)
     ending = mout[mout.find('mean times'):]
-    time = float(re.match('\D*((\.|\d)*)', ending).groups()[0])
+    time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
     ending = ending[ending.find('mean smses'):]
-    smse = float(re.match('\D*((\.|\d)*)', ending).groups()[0])
+    smse = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
     ending = ending[ending.find('mean nlpds'):]
-    nlpd = float(re.match('\D*((\.|\d)*)', ending).groups()[0])
+    nlpd = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
     return time, smse, nlpd

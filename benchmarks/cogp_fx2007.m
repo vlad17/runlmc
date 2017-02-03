@@ -27,7 +27,7 @@ y(50:100,4) = nan;
 y(100:150,6) = nan;
 y(150:200,9) = nan;
 
-rng(1110,'twister');
+rng(1234,'twister');
 
 [y,ymean,ystd] = standardize(y,[],[]);
 
