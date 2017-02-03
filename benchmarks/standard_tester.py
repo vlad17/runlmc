@@ -169,18 +169,21 @@ def dtcvar(num_runs, m, xss, yss, test_xss, test_yss,
         nlpds.append(nlpd(test_yss, pred_yss, pred_vss))
     return np.mean(times), np.mean(smses), np.mean(nlpds), best
 
-def cogp_fx2007(num_runs, num_inducing):
+def _download_cogp():
     # Download paper code if it is not there
     if not os.path.isdir('/tmp/cogp'):
         print('cloning COGP repo')
-        subprocess.call(['git', 'clone', 'git@github.com:vlad17/cogp.git', '/tmp/cogp'])
-    if not os.path.isfile('/tmp/fx2007.csv'):
-        print('exporting fx2007 to csv')
-        fx2007.fillna(-1).to_csv('/tmp/fx2007.csv', header=False, index=False)
+        repo = 'git@github.com:vlad17/cogp.git'
+        subprocess.call(['git', 'clone', repo, '/tmp/cogp'])
+
+def cogp_fx2007(num_runs, num_inducing):
+    _download_cogp()
+    datafile = '../data/fx/fx2007_matlab.csv'
+    assert os.path.isfile(datafile)
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """infile='/tmp/fx2007.csv';M={};runs={};cogp_fx2007;exit"""
-           .format(num_inducing, num_runs)]
+           """infile='{}';M={};runs={};cogp_fx2007;exit"""
+           .format(datafile, num_inducing, num_runs)]
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -203,3 +206,6 @@ def cogp_fx2007(num_runs, num_inducing):
     cogp_var = pd.read_csv('/tmp/cogp-fx2007-var', header=None, names=test_fx)
 
     return time, smse, nlpd, cogp_mu, cogp_var
+
+def _cogp_fx2007(num_runs, num_inducing):
+    pass
