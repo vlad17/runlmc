@@ -2,6 +2,7 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 from multiprocessing import Pool
+from contextlib import closing
 
 import numpy as np
 
@@ -44,7 +45,7 @@ class StochasticDeriv(Derivative):
     @staticmethod
     def _concurrent_solve(parallel, ls):
         if parallel:
-            with Pool(processes=4) as pool:
+            with closing(Pool(processes=4)) as pool:
                 return pool.starmap(Iterative.solve, ls)
         else:
             return [Iterative.solve(*x) for x in ls]
