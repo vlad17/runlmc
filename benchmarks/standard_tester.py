@@ -11,6 +11,7 @@ import scipy.io as sio
 import contexttimer
 import numpy as np
 import pandas as pd
+import numpy as np
 
 from runlmc.models.lmc import LMC
 from runlmc.kern.rbf import RBF
@@ -57,6 +58,38 @@ def foreign_exchange_2007():
         yss.append(usd2currency)
 
     test_fx = ['CAD', 'JPY', 'AUD']
+
+    test_xss = [all_ixs[holdout[col]] for col in fx2007.columns]
+    test_yss = [np.reciprocal(fx2007.ix[holdout[col], col]) for col in fx2007.columns]
+    return xss, yss, test_xss, test_yss, fx2007, all_ixs, holdout, holdin
+
+def foreign_exchange_mixed_holdout():
+    # This example uses only 2007 data
+    fx = _foreign_exchange_shared()
+    fx2007 = fx.ix['2007/01/01':'2008/01/01']
+    fx2007_train = fx2007.copy()
+
+    available = {col: np.flatnonzero((~fx2007[col].isnull()).values)
+                 for col in fx2007.columns}
+    holdout = {col: np.r_[np.random.choice(
+        available[col], len(available[col]) // 2, replace=False)]
+               for col in fx2007.columns}
+    holdin = {}
+    for col in fx2007.columns:
+        select = np.zeros(len(fx2007), dtype=bool)
+        select[available[col]] = True
+        select[holdout[col]] = False
+        holdin[col] = np.r_[np.flatnonzero(select)]
+
+    xss = []
+    yss = []
+    all_ixs = np.arange(len(fx2007))
+    for col in fx2007.columns:
+        xss.append(all_ixs[holdin[col]])
+        currency2usd = fx2007_train[col][holdin[col]].values
+        # Don't ask me, this was in the Nguyen 2014 paper code
+        usd2currency = np.reciprocal(currency2usd)
+        yss.append(usd2currency)
 
     test_xss = [all_ixs[holdout[col]] for col in fx2007.columns]
     test_yss = [np.reciprocal(fx2007.ix[holdout[col], col]) for col in fx2007.columns]

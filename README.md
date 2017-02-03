@@ -58,7 +58,7 @@ Similarly, for examples:
         
 ## Dev Stuff
 
-Required packages for development (Python 3 versions): `pylint nose paramz gpy sphinx contexttimer numdifftools`.
+Required packages for running (Python 3 versions): `numpy scipy climin gpy paramz contexttimer pandas`. For dev `nose sphinx`.
 
 All below invocations should be done from the repo root.
  
