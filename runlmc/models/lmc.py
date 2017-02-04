@@ -1,7 +1,9 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
+from contextlib import closing
 import logging
+from multiprocessing import Pool, cpu_count
 
 import numpy as np
 import scipy.linalg as la
@@ -10,6 +12,9 @@ from paramz.transformations import Logexp
 
 from .multigp import MultiGP
 from ..approx.interpolation import multi_interpolant
+from ..approx.iterative import Iterative
+from ..linalg.composition import Composition
+from ..linalg.matrix import Matrix
 from ..lmc.parameter_values import ParameterValues
 from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
@@ -259,6 +264,8 @@ class LMC(MultiGP):
                 ParameterValues.generate(self), pdists)
         return self._cache['exact_kernel']
 
+    DENSE_CUTOFF = 10000
+
     def K(self):
         """
         .. warning:: This generates the entire kernel, a quadratic operation
@@ -267,6 +274,10 @@ class LMC(MultiGP):
         :returns: :math:`K_{\\text{SKI}}`, the approximation of the exact
                   kernel.
         """
+        n = len(self.y)
+        if n > self.DENSE_CUTOFF:
+            raise ValueError('Matrix size {} too large for dense computation'
+                             .format(n))
         return self._dense().K
 
     def log_det_K(self):
@@ -301,7 +312,11 @@ class LMC(MultiGP):
 
     # TODO(test)
     def _raw_predict(self, Xs):
-        # return self._raw_predict_apprx(Xs)
+        if len(self.inducing_grid) * len(self.Xs) > self.DENSE_CUTOFF:
+            return self._raw_predict_apprx(Xs)
+        return self._raw_predict_exact(Xs)
+
+    def _raw_predict_exact(self, Xs):
         # Use dense prediction until TODO(fast-prediction) done
         # TODO(cleanup): refactor ExactLMCKernel so theat below is easier.
         exact = self._dense()
@@ -323,26 +338,32 @@ class LMC(MultiGP):
         endpoints = np.add.accumulate(params.lens)[:-1]
         return np.split(mean, endpoints), np.split(var, endpoints)
 
-
     def _precompute_predict(self):
-        # TODO(fast-prediction) - the interpolation code doesn't currently
-        # allow extrapolation, low-memory prediction depends on it.
-
+        # Not optimized for speed - this performs linear algebra
+        # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
+        # The assumption is that training is the bottleneck, not prediction.
+        #
+        # We can't use MSGP sampling-based variance technique here since
+        # it requires taking the square root of the covariance matrix.
+        #
+        # This is fine for IMC (q=1) kernels that preserve grid structure,
+        # but fails for LMC kernels that don't have the structure.
         nongrid_alpha = self.kernel.alpha()
+        W = self.interpolant
         WT = self.interpolantT
         K_UU = self.kernel.K.grid_only()
         grid_alpha = K_UU.matvec(WT.dot(nongrid_alpha))
+        # TODO(cleanup) kernel should have an ski() method, SKI should
+        # have a half_matrix() method returning these two.
+        K_XU = Composition([Matrix.wrap(W.shape, W.dot), K_UU])
+        K_UX = Composition([K_UU, Matrix.wrap(WT.shape, WT.dot)])
 
-        # Not optimized for speed - this performs dense linear algebra
-        # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
-        # This can probably be sped up (even by e.g., using the approximations
-        # offered in those sections, or perhaps some less coarse ones).
-        # However, it's the training that's the bottleneck, not prediction.
-        # TODO(fast-prediction)
-        L = self._dense().L
-        K_XU = self.interpolant.dot(K_UU.as_numpy())
-        Ainv_KXU = la.cho_solve(L, K_XU, overwrite_b=True)
-        nu = np.diag(K_XU.T.dot(Ainv_KXU))
+        par = max(cpu_count(), 1)
+        chunks = K_XU.shape[1] // (3 * par)
+        ls = [(i, self.kernel.K, K_XU, K_UX, chunks)
+              for i in range(K_XU.shape[1])]
+        with closing(Pool(processes=par)) as pool:
+            nu = pool.starmap(LMC._var_solve, ls, chunks)
 
         # A bit obscure; the native covariance K_** for each output
         # is given by diag(K(0, 0)). This happens to be efficiently computed
@@ -355,8 +376,8 @@ class LMC(MultiGP):
         native_var = native_output_var + self.noise
 
         self._cache['grid_alpha'] = grid_alpha
-        self._cache['nu'] = nu
         self._cache['native_var'] = native_var
+        self._cache['nu'] = nu
 
     def _raw_predict_apprx(self, Xs):
         if self._cache['grid_alpha'] is None:
@@ -374,3 +395,14 @@ class LMC(MultiGP):
 
         endpoints = np.add.accumulate(lens)[:-1]
         return np.split(mean, endpoints), np.split(var, endpoints)
+
+    def _var_solve(i, K, K_XU, K_UX, chunks):
+        x = np.zeros(K_XU.shape[1])
+        x[i] = 1
+        x = K_XU.matvec(x)
+        x = Iterative.solve(K, x)
+        x = K_UX.matvec(x)
+        if (i + 1) % chunks == 0:
+            _LOG.info('prediction: solved additional %d points, total %d',
+                      chunks, K_XU.shape[1])
+        return x[i]
