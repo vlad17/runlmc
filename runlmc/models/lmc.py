@@ -360,8 +360,10 @@ class LMC(MultiGP):
 
         par = max(cpu_count(), 1)
         chunks = K_XU.shape[1] // (3 * par)
-        ls = [(i, self.kernel.K, K_XU, K_UX, chunks)
+        ls = [(i, self.kernel.K, K_XU, K_UX)
               for i in range(K_XU.shape[1])]
+        print('Using {} processors in parallel to precompute predictive'
+              ' variances'.format(par))
         with closing(Pool(processes=par)) as pool:
             nu = pool.starmap(LMC._var_solve, ls, chunks)
 
@@ -396,13 +398,11 @@ class LMC(MultiGP):
         endpoints = np.add.accumulate(lens)[:-1]
         return np.split(mean, endpoints), np.split(var, endpoints)
 
-    def _var_solve(i, K, K_XU, K_UX, chunks):
+    @staticmethod
+    def _var_solve(i, K, K_XU, K_UX):
         x = np.zeros(K_XU.shape[1])
         x[i] = 1
         x = K_XU.matvec(x)
         x = Iterative.solve(K, x)
         x = K_UX.matvec(x)
-        if (i + 1) % chunks == 0:
-            _LOG.info('prediction: solved additional %d points, total %d',
-                      chunks, K_XU.shape[1])
         return x[i]
