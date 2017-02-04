@@ -9,10 +9,15 @@ import scipy.sparse.linalg as sla
 
 _LOG = logging.getLogger(__name__)
 
+class _EarlyTerm(Exception):
+    def __init__(self, x):
+        super().__init__('')
+        self.x = x
+
 # TODO(test) + classdoc
 class Iterative:
-    TOL = 1e-10
-    """Target solve() tolerance. Only errors > sqrt(TOL) reported."""
+    TOL = 1e-4
+    """Target solve() tolerance. Only errors > TOL reported."""
 
     @staticmethod
     def solve(K, y, verbose=False, minres=True):
@@ -26,19 +31,26 @@ class Iterative:
         :return: :math:`\\textbf{x}`, number of iterations and error if verbose
         """
         ctr = 0
-        def cb(_):
-            nonlocal ctr
+        def cb(x):
+            nonlocal ctr, y
             ctr += 1
+            if ctr % 100 == 0: # early termination
+                reconstruction = np.linalg.norm(y - op.matvec(x))
+                if reconstruction < Iterative.TOL:
+                    raise _EarlyTerm(x)
 
         method = sla.minres if minres else sla.cg
         n = K.shape[0]
         op = K.as_linear_operator()
         M = getattr(K, 'preconditioner', None)
 
-        Kinv_y, succ = method(
-            op, y, tol=Iterative.TOL, maxiter=n, M=M, callback=cb)
+        try:
+            Kinv_y, succ = method(
+                op, y, tol=1e-10, maxiter=n, M=M, callback=cb)
+        except _EarlyTerm as e:
+            Kinv_y, succ = e.x, 0
         error = np.linalg.norm(y - op.matvec(Kinv_y))
-        if error > math.sqrt(Iterative.TOL) or succ != 0:
+        if error > Iterative.TOL or succ != 0:
             _LOG.critical('MINRES (n = %d) did not converge.\n'
                           'iterations = n\n'
                           'error code %d\nReconstruction Error %e',

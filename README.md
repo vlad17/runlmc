@@ -74,7 +74,6 @@ All below invocations should be done from the repo root.
 0. large FX test - need to implement COGP, runlmc on small 3K + large FX datasets; may have to set up python on fat server
 0. Write up ICML paper.
 0. linalg in-place optimization; square matrices optimization
-0. Early cutoff for minres
 0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation?
     * Do other inner circulant preconditioners (e.g., whittle) help inversion?
