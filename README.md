@@ -50,12 +50,9 @@ Full example
 
 Make sure that the directory root is in the `PYTHONPATH` when running the benchmarks. E.g., from the directory root:
 
-    PYTHONPATH=. python benchmark/inversion.py
+    PYTHONPATH=.. jupyter notebook examples/example.ipynb
+    PYTHONPATH=. python benchmarks/bench.py
     
-Similarly, for examples:
-
-    cd examples; PYTHONPATH=.. jupyter notebook example.ipynb
-        
 ## Dev Stuff
 
 Required packages for running (Python 3 versions): `numpy scipy climin gpy paramz contexttimer pandas`. For dev `nose sphinx`.
