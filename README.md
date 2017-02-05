@@ -102,7 +102,7 @@ All below invocations should be done from the repo root.
 ### Low-priority Tasks
 
 0. BSD 3-clause
-0. TODO(cleanup)
+0. TODO(cleanup) - apprx to approx everywhere
 0. Allow extrapolation in util.interpolation.py
 0. TODO(test) - document everything that's missing documentation along the way.
 0. test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math

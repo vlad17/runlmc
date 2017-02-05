@@ -15,6 +15,9 @@ from ..approx.interpolation import multi_interpolant
 from ..approx.iterative import Iterative
 from ..linalg.composition import Composition
 from ..linalg.matrix import Matrix
+from ..linalg.numpy_matrix import NumpyMatrix
+from ..linalg.kronecker import Kronecker
+from ..linalg.diag import Diag
 from ..lmc.parameter_values import ParameterValues
 from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
@@ -109,6 +112,11 @@ class LMC(MultiGP):
     :param str name:
     :param metrics: whether to record optimization metrics during optimization
                     (runs exact solution alongside this one, may be slow).
+    :param prediction: one of `'on-the-fly', 'precompute', 'exact', 'sample'`.
+                       everything but `'exact'` is matrix-free.
+    :param variance_samples: only used if `prediction` is set to `'sample'`.
+                             number of variance samples used for predictive
+                             variance.
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
     :raises: :class:`ValueError` if normalization if any `Ys` have no variance
                                  or values in `Xs` have multiple identical
@@ -117,11 +125,17 @@ class LMC(MultiGP):
     """
     def __init__(self, Xs, Ys, normalize=True, kernels=None,
                  ranks=None, lo=None, hi=None, m=None, name='lmc',
-                 metrics=False):
+                 metrics=False, prediction='on-the-fly',
+                 variance_samples=20):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
 
         if not kernels:
             raise ValueError('Number of kernels should be >0')
+        self.variance_samples = variance_samples
+        self.prediction = prediction
+        if prediction not in self._prediction_methods():
+            raise ValueError('Variance prediction method {} unrecognized'
+                             .format(prediction))
 
         self.kernels = kernels
         for k in self.kernels:
@@ -164,9 +178,7 @@ class LMC(MultiGP):
         self.y = np.hstack(self.Ys)
 
         self.kernel = None
-        self._cache = {k: None for k in
-                       ('exact_kernel', 'grid_alpha', 'nu', 'native_var')}
-
+        self._cache = {}
         self.metrics = Metrics() if metrics else None
 
         _LOG.info('LMC %s fully initialized', self.name)
@@ -192,17 +204,13 @@ class LMC(MultiGP):
 
         return np.linspace(lo, hi, m), m
 
-    def _clear_cache(self, name):
-        self._cache[name] = None
-
     def optimize(self, **kwargs):
         if self.metrics is not None:
             self.metrics = Metrics()
         super().optimize(**kwargs)
 
     def parameters_changed(self):
-        for key in ('exact_kernel', 'grid_alpha', 'nu', 'native_var'):
-            self._clear_cache(key)
+        self._cache = {}
 
         params = ParameterValues.generate(self)
         grid_kernel = gen_grid_kernel(
@@ -257,14 +265,12 @@ class LMC(MultiGP):
             self.metrics.log_likely.append(self.log_likelihood())
 
     def _dense(self):
-        if self._cache['exact_kernel'] is None:
+        if 'exact_kernel' not in self._cache:
             pdists = dist.pdist(np.hstack(self.Xs).reshape(-1, 1))
             pdists = dist.squareform(pdists)
             self._cache['exact_kernel'] = ExactLMCKernel(
                 ParameterValues.generate(self), pdists)
         return self._cache['exact_kernel']
-
-    DENSE_CUTOFF = 10000
 
     def K(self):
         """
@@ -274,10 +280,6 @@ class LMC(MultiGP):
         :returns: :math:`K_{\\text{SKI}}`, the approximation of the exact
                   kernel.
         """
-        n = len(self.y)
-        if n > self.DENSE_CUTOFF:
-            raise ValueError('Matrix size {} too large for dense computation'
-                             .format(n))
         return self._dense().K
 
     def log_det_K(self):
@@ -310,15 +312,59 @@ class LMC(MultiGP):
         nll += len(self.y) * np.log(2*np.pi)
         return -0.5 * nll
 
-    # TODO(test)
-    def _raw_predict(self, Xs):
-        if len(self.inducing_grid) * len(self.Xs) > self.DENSE_CUTOFF:
-            return self._raw_predict_apprx(Xs)
-        return self._raw_predict_exact(Xs)
+    # Predictive mean for grid points U
+    def _grid_alpha(self):
+        if 'grid_alpha' not in self._cache:
+            self._cache['grid_alpha'] = self.kernel.K.grid_K.matvec(
+                self.interpolantT.dot(self.kernel.alpha()))
+        return self._cache['grid_alpha']
 
-    def _raw_predict_exact(self, Xs):
-        # Use dense prediction until TODO(fast-prediction) done
-        # TODO(cleanup): refactor ExactLMCKernel so theat below is easier.
+    # The native covariance diag(K) for each output, i.e.,
+    # the a priori variance of a single point for each output.
+    def _native_variance(self):
+        if 'native_var' not in self._cache:
+            coregs = np.column_stack(np.square(per_output).sum(axis=0)
+                                     for per_output in self.coreg_vecs)
+            coregs += np.column_stack(self.coreg_diags)
+            kerns = [k.from_dist(0) for k in self.kernels]
+            native_output_var = coregs.dot(kerns).reshape(-1)
+            native_var = native_output_var + self.noise
+            self._cache['native_var'] = native_var
+        return self._cache['native_var']
+
+    def _prediction_methods(self):
+        return {
+            'on-the-fly': self._var_predict_on_the_fly,
+            'precompute': self._var_predict_precompute,
+            'exact': self._var_predict_exact,
+            'sample': self._var_predict_sample
+        }
+
+    def _raw_predict(self, Xs):
+
+        grid_alpha = self._grid_alpha()
+        native_variance = self._native_variance()
+
+        W = multi_interpolant(Xs, self.inducing_grid)
+
+        mean = W.dot(grid_alpha)
+        lens = [len(X) for X in Xs]
+        native_variance = np.repeat(native_variance, lens)
+
+        explained_variance = self._prediction_methods()[self.prediction](
+            W, Xs)
+        var = native_variance - explained_variance
+        var[var < 0] = 0
+
+        endpoints = np.add.accumulate(lens)[:-1]
+        return np.split(mean, endpoints), np.split(var, endpoints)
+
+    # TODO(cleanup) all of the below variance prediction methods should
+    # be cleaned up and moved to a separate module.
+
+    def _var_predict_exact(self, _, Xs):
+        # TODO(cleanup) refactor ExactLMCKernel so that we can reuse code
+        # without the ugly construction and params.lens_x stuff used here.
         exact = self._dense()
 
         test_Xs = np.hstack(Xs).reshape(-1, 1)
@@ -328,75 +374,71 @@ class LMC(MultiGP):
         K_test_X = ExactLMCKernel(params,
                                   dist.cdist(test_Xs, train_Xs),
                                   invert=False, noise=False).K
-        mean = K_test_X.dot(exact.alpha()).reshape(-1)
         var_explained = K_test_X.dot(la.cho_solve(exact.L, K_test_X.T))
-        params.lens = params.lens_x
-        var = ExactLMCKernel(params, dist.cdist(test_Xs, test_Xs),
-                             invert=False, noise=True).K
-        var = np.diag(var) - np.diag(var_explained)
 
-        endpoints = np.add.accumulate(params.lens)[:-1]
-        return np.split(mean, endpoints), np.split(var, endpoints)
+        return np.diag(var_explained)
 
-    def _precompute_predict(self):
-        # Not optimized for speed - this performs linear algebra
+    @staticmethod
+    def _chol_sample(W, B, t, randn_samps, q):
+        LB = np.linalg.cholesky(B)
+        # bareiss and cholesky both work very poorly since we're
+        # numerically rank deficient
+        # from runlmc.linalg.shur import shur
+        # Lt = shur(t).T
+        # Lt = np.linalg.cholesky(la.toeplitz(t))
+        w, v = np.linalg.eigh(la.toeplitz(t))
+        w[w < 0] = 0
+        _LOG.info('encountered incomplete rank %d of %d order kernel %d',
+                  np.count_nonzero(w), len(w), q)
+        Lt = v * np.sqrt(w)
+        L = Kronecker(NumpyMatrix(LB), NumpyMatrix(Lt))
+        return W.dot(L.matmat(randn_samps))
+
+    def _sampled_nu(self):
+        if 'sampled_nu' in self._cache:
+            return self._cache['sampled_nu']
+
+        # This performs linear algebra
         # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
-        # The assumption is that training is the bottleneck, not prediction.
         #
-        # We can't use MSGP sampling-based variance technique here since
-        # it requires taking the square root of the covariance matrix.
-        #
-        # This is fine for IMC (q=1) kernels that preserve grid structure,
-        # but fails for LMC kernels that don't have the structure.
-        nongrid_alpha = self.kernel.alpha()
+        # The MSGP sampling-based variance technique here requires
+        # a cholesky decomposition, done in a parallalized manner.
+        # Thus, we're not matrix-free in the predictions.
+
+        Ns = self.variance_samples
+        Q = len(self.kernels)
+        par = min(max(cpu_count(), 1), Q)
         W = self.interpolant
-        WT = self.interpolantT
-        K_UU = self.kernel.K.grid_only()
-        grid_alpha = K_UU.matvec(WT.dot(nongrid_alpha))
-        # TODO(cleanup) kernel should have an ski() method, SKI should
-        # have a half_matrix() method returning these two.
-        K_XU = Composition([Matrix.wrap(W.shape, W.dot), K_UU])
-        K_UX = Composition([K_UU, Matrix.wrap(WT.shape, WT.dot)])
-
-        par = max(cpu_count(), 1)
-        chunks = K_XU.shape[1] // (3 * par)
-        ls = [(i, self.kernel.K, K_XU, K_UX)
-              for i in range(K_XU.shape[1])]
-        print('Using {} processors in parallel to precompute predictive'
-              ' variances'.format(par))
+        ls = [(W, coreg_mat, toep.top, np.random.randn(W.shape[1], Ns), i)
+              for i, (coreg_mat, toep) in
+              enumerate(zip(self.kernel.params.coreg_mats,
+                            self.kernel.materialized_kernels))]
+        _LOG.info('Using %d processors in parallel to '
+                  'precompute %d kernel factors',
+                  par, Q)
         with closing(Pool(processes=par)) as pool:
-            nu = pool.starmap(LMC._var_solve, ls, chunks)
+            samples = pool.starmap(LMC._chol_sample, ls)
+        samples.append(
+            Diag(np.sqrt(self.kernel.K.noise.v)).matmat(
+                np.random.randn(len(self.y), Ns)))
+        samples = np.array(samples).sum(axis=0).T
 
-        # A bit obscure; the native covariance K_** for each output
-        # is given by diag(K(0, 0)). This happens to be efficiently computed
-        # here.
-        coregs = np.column_stack(np.square(per_output).sum(axis=0)
-                                 for per_output in self.coreg_vecs)
-        coregs += np.column_stack(self.coreg_diags)
-        kerns = [k.from_dist(0) for k in self.kernels]
-        native_output_var = coregs.dot(kerns).reshape(-1)
-        native_var = native_output_var + self.noise
+        par = min(max(cpu_count(), 1), Ns)
+        _LOG.info('Using %d processors in parallel to precompute %d '
+                  'variance samples', par, Ns)
+        ls = [(self.kernel.K, sample) for sample in samples]
+        with closing(Pool(processes=par)) as pool:
+            samples = np.array(pool.starmap(Iterative.solve, ls)).T
 
-        self._cache['grid_alpha'] = grid_alpha
-        self._cache['native_var'] = native_var
-        self._cache['nu'] = nu
+        nu = np.square(self.kernel.K.grid_K.matmat(
+            self.interpolantT.dot(samples))).sum(axis=1) / Ns
 
-    def _raw_predict_apprx(self, Xs):
-        if self._cache['grid_alpha'] is None:
-            self._precompute_predict()
+        self._cache['sampled_nu'] = nu
+        return nu
 
-        W = multi_interpolant(Xs, self.inducing_grid)
-        lens = [len(X) for X in Xs]
-
-        mean = W.dot(self._cache['grid_alpha'])
-
-        native_var = np.repeat(self._cache['native_var'], lens)
-
-        var = native_var - W.dot(self._cache['nu'])
-        var[var < 0] = 0
-
-        endpoints = np.add.accumulate(lens)[:-1]
-        return np.split(mean, endpoints), np.split(var, endpoints)
+    def _var_predict_sample(self, prediction_interpolant, _):
+        nu = self._sampled_nu()
+        return prediction_interpolant.dot(nu)
 
     @staticmethod
     def _var_solve(i, K, K_XU, K_UX):
@@ -406,3 +448,56 @@ class LMC(MultiGP):
         x = Iterative.solve(K, x)
         x = K_UX.matvec(x)
         return x[i]
+
+    def _precomputed_nu(self):
+        if 'precomputed_nu' in self._cache:
+            return self._cache['precomputed_nu']
+
+        W = self.interpolant
+        WT = self.interpolantT
+        K_UU = self.kernel.K.grid_K
+        # SKI should have a half_matrix() method returning these two,
+        # in which case we'd just ask self.kernel.K.ski for them.
+        K_XU = Composition([Matrix.wrap(W.shape, W.dot), K_UU])
+        K_UX = Composition([K_UU, Matrix.wrap(WT.shape, WT.dot)])
+
+        m = len(self.inducing_grid)
+        D = len(self.noise)
+        Dm = D * m
+        assert Dm == K_XU.shape[1] and Dm == K_UX.shape[0]
+
+        par = min(max(cpu_count(), 1), Dm)
+        chunks = max(K_XU.shape[1] // par // 4, 1)
+        ls = [(i, self.kernel.K, K_XU, K_UX) for i in range(Dm)]
+        _LOG.info('Using %d processors in parallel to precompute %d '
+                  'variance terms exactly', par, Dm)
+        with closing(Pool(processes=par)) as pool:
+            nu = pool.starmap(LMC._var_solve, ls, chunks)
+
+        self._cache['precomputed_nu'] = nu
+        return nu
+
+    def _var_predict_precompute(self, prediction_interpolant, _):
+        nu = self._precomputed_nu()
+        return prediction_interpolant.dot(nu)
+
+    def _var_predict_on_the_fly(self, _, Xs):
+        # TODO(cleanup) refactor ExactLMCKernel so that we can reuse code
+        # without the ugly construction and params.lens_x stuff used here.
+
+        test_Xs = np.hstack(Xs).reshape(-1, 1)
+        train_Xs = np.hstack(self.Xs).reshape(-1, 1)
+        params = ParameterValues.generate(self)
+        params.lens_x = [len(X) for X in Xs]
+        K_test_X = ExactLMCKernel(params,
+                                  dist.cdist(test_Xs, train_Xs),
+                                  invert=False, noise=False).K
+        n_test = test_Xs.shape[0]
+        par = min(max(cpu_count(), 1), n_test)
+        _LOG.info('Using %d processors in parallel for %d on-the-fly variance'
+                  ' predictions', par, n_test)
+        ls = [(self.kernel.K, k_star) for k_star in K_test_X]
+        with closing(Pool(processes=par)) as pool:
+            inverted = np.array(pool.starmap(Iterative.solve, ls)).T
+
+        return np.diag(K_test_X.dot(inverted))

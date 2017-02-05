@@ -141,6 +141,13 @@ def smse(test_yss, pred_yss, train_yss):
 def nlpd(test_yss, pred_yss, pred_vss):
     test_yss, pred_yss, pred_vss = filter_nonempty_cols(
         test_yss, pred_yss, pred_vss)
+    err = False
+    for i, vs in enumerate(pred_vss):
+        if np.count_nonzero(vs) < len(vs) and not err:
+            print('warning, zero var found in predictive variance')
+            err = True
+        vs[vs == 0] = 1
+        pred_vss[i] = vs
     return np.mean([0.5 * np.mean(
             np.square(test_ys - pred_ys) / pred_vs
             + np.log(2 * np.pi * pred_vs))
