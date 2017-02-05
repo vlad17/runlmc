@@ -198,14 +198,17 @@ def cogp_fx2007(num_runs, num_inducing):
     cmd = ['matlab', '-nojvm', '-r',
            """infile='{}';M={};runs={};cogp_fx2007;exit"""
            .format(datafile, num_inducing, num_runs)]
+    with open('/tmp/out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
+        f.write(' '.join(cmd))
+    benchmark_dir = os.getcwd() + '/../benchmarks'
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True,
-        cwd=os.getcwd())
+        cwd=benchmark_dir)
     mout = process.communicate()[0]
-    with open('/tmp/out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
+    with open('/tmp/out-{}-{}'.format(num_runs, num_inducing), 'a') as f:
         f.write(mout)
     ending = mout[mout.find('mean times'):]
     time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
