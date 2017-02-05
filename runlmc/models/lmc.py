@@ -342,6 +342,9 @@ class LMC(MultiGP):
 
     def _raw_predict(self, Xs):
 
+        if self.kernel is None:
+            self.parameters_changed()
+
         grid_alpha = self._grid_alpha()
         native_variance = self._native_variance()
 
