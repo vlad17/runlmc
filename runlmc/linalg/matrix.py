@@ -73,6 +73,14 @@ class Matrix:
     def wrap(shape, mvm):
         return _MatrixImpl(shape, mvm)
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state['_op'] = None
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
 class _MatrixImpl(Matrix):
     def __init__(self, shape, mvm):
         super().__init__(*shape)

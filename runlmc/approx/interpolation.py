@@ -70,6 +70,9 @@ def interp_cubic(grid, samples):
     grid_size = len(grid)
     n_samples = samples.size
 
+    if n_samples == 0:
+        return scipy.sparse.csr_matrix((0, grid_size), dtype=float)
+
     if grid.ndim != 1:
         raise ValueError('grid dim {} should be 1'.format(grid.ndim))
 

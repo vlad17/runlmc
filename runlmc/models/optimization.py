@@ -33,19 +33,22 @@ class AdaDelta(Optimizer):
         super().__init__()
         default = {
             'step_rate':1, 'decay':0.9, 'momentum':0.5, 'offset':1e-4,
-            'max_it':100, 'verbosity':0, 'min_grad_ratio':0.5, 'roll':2}
+            'max_it':100, 'verbosity':0, 'min_grad_ratio':0.5, 'roll':1,
+            'permitted_drops':None}
         default.update(**kwargs)
+        if default['permitted_drops'] is None:
+            default['permitted_drops'] = max(default['max_it'] // 20, 1)
         self.kwargs = default
 
     def opt(self, x, f_fp=None, f=None, fp=None):
-        exclude = {'verbosity', 'min_grad_ratio', 'max_it', 'roll'}
+        exclude = ['verbosity', 'min_grad_ratio', 'max_it', 'roll',
+                   'permitted_drops']
         ada_kwargs = {k:v for k, v in self.kwargs.items() if k not in exclude}
         ada = climin.Adadelta(x, fp, **ada_kwargs)
 
-        verbosity, max_it, min_grad_ratio, roll = (
-            self.kwargs[x] for x in
-            ('verbosity', 'max_it', 'min_grad_ratio', 'roll'))
-        delta = max_it // verbosity if verbosity else 0
+        verbosity, min_grad_ratio, max_it, roll, permitted_drops = (
+            self.kwargs[x] for x in exclude)
+        delta = max(max_it // verbosity, 1) if verbosity else 0
         rolling_max = 1e-10
         rolling_ave = MovingAverage(roll)
 
@@ -62,7 +65,12 @@ class AdaDelta(Optimizer):
                 print('iteration {:8d}'.format(info['n_iter']),
                       'grad norm {:10.4e}'.format(gn))
 
-            if info['n_iter'] >= max_it or ave < min_grad_ratio * rolling_max:
+            if ave < min_grad_ratio * rolling_max:
+                permitted_drops -= 1
+                if permitted_drops <= 0:
+                    break
+
+            if info['n_iter'] >= max_it:
                 break
 
         if verbosity:

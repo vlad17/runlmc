@@ -50,12 +50,9 @@ Full example
 
 Make sure that the directory root is in the `PYTHONPATH` when running the benchmarks. E.g., from the directory root:
 
-    PYTHONPATH=. python benchmark/inversion.py
+    PYTHONPATH=.. jupyter notebook examples/example.ipynb
+    PYTHONPATH=. python benchmarks/bench.py
     
-Similarly, for examples:
-
-    cd examples; PYTHONPATH=.. jupyter notebook example.ipynb
-        
 ## Dev Stuff
 
 Required packages for running (Python 3 versions): `numpy scipy climin gpy paramz contexttimer pandas`. For dev `nose sphinx`.
@@ -102,7 +99,7 @@ All below invocations should be done from the repo root.
 ### Low-priority Tasks
 
 0. BSD 3-clause
-0. TODO(cleanup)
+0. TODO(cleanup) - apprx to approx everywhere
 0. Allow extrapolation in util.interpolation.py
 0. TODO(test) - document everything that's missing documentation along the way.
 0. test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math

@@ -35,15 +35,12 @@ class GridKernel(Matrix):
         else:
             assert False, ktype
 
-        ski = SKI(self.grid_K, interpolant, interpolantT)
-        noise = Diag(np.repeat(params.noise, params.lens))
-        self.K = SumMatrix([ski, noise])
+        self.ski = SKI(self.grid_K, interpolant, interpolantT)
+        self.noise = Diag(np.repeat(params.noise, params.lens))
+        self.K = SumMatrix([self.ski, self.noise])
 
     def matvec(self, x):
         return self.K.matvec(x)
-
-    def grid_only(self):
-        return self.grid_K
 
     def interpolants(self):
         ski = self.K.Ks[0]
