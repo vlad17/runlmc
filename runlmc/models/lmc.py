@@ -443,7 +443,7 @@ class LMC(MultiGP):
 
         Ns = self.variance_samples
         Q = len(self.kernels)
-        par = min(max(self.max_procs, 1), Q)
+        par = min(max(self.max_procs, 1), max(Ns, Q))
         W = self.interpolant
         ls = [(W, coreg_mat, toep.top, np.random.randn(W.shape[1], Ns), i)
               for i, (coreg_mat, toep) in
@@ -454,16 +454,15 @@ class LMC(MultiGP):
                   par, Q)
         with closing(Pool(processes=par)) as pool:
             samples = pool.starmap(LMC._chol_sample, ls)
-        samples.append(
-            Diag(np.sqrt(self.kernel.K.noise.v)).matmat(
-                np.random.randn(len(self.y), Ns)))
-        samples = np.array(samples).sum(axis=0).T
+            samples.append(
+                Diag(np.sqrt(self.kernel.K.noise.v)).matmat(
+                    np.random.randn(len(self.y), Ns)))
+            samples = np.array(samples).sum(axis=0).T
 
-        par = min(max(self.max_procs, 1), Ns)
-        _LOG.info('Using %d processors in parallel to precompute %d '
-                  'variance samples', par, Ns)
-        ls = [(self.kernel.K, sample) for sample in samples]
-        with closing(Pool(processes=par)) as pool:
+            # Re-use same pool
+            _LOG.info('Using %d processors in parallel to precompute %d '
+                      'variance samples', par, Ns)
+            ls = [(self.kernel.K, sample) for sample in samples]
             samples = np.array(pool.starmap(Iterative.solve, ls)).T
 
         nu = np.square(self.kernel.K.grid_K.matmat(
