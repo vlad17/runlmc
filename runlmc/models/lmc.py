@@ -232,12 +232,14 @@ class LMC(MultiGP):
         if self.metrics is not None:
             self.metrics = Metrics()
         if self.max_procs == 1 or len(self.y) < 1000:
-            _LOG.info('Optimization starting in serial mode')
+            _LOG.info('Optimization (%d hyperparams) starting in serial mode',
+                      len(self.param_array))
             self.pool = None
             super().optimize(**kwargs)
         else:
             par = min(StochasticDeriv.N_IT + 1, self.max_procs)
-            _LOG.info('Optimization starting with {} workers'.format(par))
+            _LOG.info('Optimization (%d hyperparams) starting with %d workers',
+                      len(self.param_array), par)
             try:
                 with closing(Pool(processes=par)) as pool:
                     self.pool = pool
