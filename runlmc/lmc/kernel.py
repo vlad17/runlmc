@@ -87,13 +87,13 @@ class LMCKernel:
         return grad
 
 class ApproxLMCKernel(LMCKernel):
-    def __init__(self, params, grid_kern, grid_dists, metrics):
+    def __init__(self, params, grid_kern, grid_dists, metrics, pool=None):
         super().__init__(params)
         self.materialized_kernels = [Toeplitz(k.from_dist(grid_dists))
                                      for k in self.params.kernels]
         self.K = grid_kern
         self.dists = grid_dists
-        self.deriv = StochasticDeriv(self.K, self.params.y, metrics)
+        self.deriv = StochasticDeriv(self.K, self.params.y, metrics, pool)
 
     def _ski(self, X):
         return SKI(X, *self.K.interpolants())

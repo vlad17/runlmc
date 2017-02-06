@@ -18,6 +18,7 @@ from ..linalg.matrix import Matrix
 from ..linalg.numpy_matrix import NumpyMatrix
 from ..linalg.kronecker import Kronecker
 from ..linalg.diag import Diag
+from ..lmc.stochastic_deriv import StochasticDeriv
 from ..lmc.parameter_values import ParameterValues
 from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
@@ -146,6 +147,7 @@ class LMC(MultiGP):
                  metrics=False, prediction='matrix-free',
                  variance_samples=20, max_procs=None):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
+        self.update_model(False)
 
         if not kernels:
             raise ValueError('Number of kernels should be >0')
@@ -155,8 +157,6 @@ class LMC(MultiGP):
         if prediction not in self._prediction_methods():
             raise ValueError('Variance prediction method {} unrecognized'
                              .format(prediction))
-
-        self.max_procs = cpu_count() if max_procs is None else max_procs
 
         self.kernels = kernels
         for k in self.kernels:
@@ -201,7 +201,10 @@ class LMC(MultiGP):
         self.kernel = None
         self._cache = {}
         self.metrics = Metrics() if metrics else None
+        self.max_procs = cpu_count() if max_procs is None else max_procs
+        self.pool = None
 
+        self.update_model(True)
         _LOG.info('LMC %s fully initialized', self.name)
 
     EVAL_NORM = np.inf
@@ -228,7 +231,22 @@ class LMC(MultiGP):
     def optimize(self, **kwargs):
         if self.metrics is not None:
             self.metrics = Metrics()
-        super().optimize(**kwargs)
+        if self.max_procs == 1 or len(self.y) < 1000:
+            _LOG.info('Optimization starting in serial mode')
+            self.pool = None
+            super().optimize(**kwargs)
+        else:
+            par = min(StochasticDeriv.N_IT + 1, self.max_procs)
+            _LOG.info('Optimization starting with {} workers'.format(par))
+            try:
+                with closing(Pool(processes=par)) as pool:
+                    self.pool = pool
+                    super().optimize(**kwargs)
+            finally:
+                if self.pool is not None:
+                    self.pool.close()
+                self.pool = None
+                raise
 
     def parameters_changed(self):
         self._cache = {}
@@ -237,7 +255,7 @@ class LMC(MultiGP):
         grid_kernel = gen_grid_kernel(
             params, self.dists, self.interpolant, self.interpolantT)
         self.kernel = ApproxLMCKernel(
-            params, grid_kernel, self.dists, self.metrics)
+            params, grid_kernel, self.dists, self.metrics, self.pool)
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
