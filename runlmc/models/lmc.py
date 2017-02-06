@@ -88,6 +88,22 @@ class LMC(MultiGP):
     this model, with name `a<q>`, where `<q>` is replaced with a specific
     number.
 
+    The functionality for the various prediction modes is summarized below.
+    Note `'matrix-free'` is the default.
+
+    * `'matrix-free'` - If the number of test points is smaller than the
+                        number of grid points, use `'on-the-fly'`. If the
+                        number of points is greater than the number of grid
+                        points, use `'precompute'`, and use that from then
+                        onwards.
+    * `'on-the-fly'` - Use matrix-free inversion to compute the covariance
+                       for the entire set of points on which we're predicting.
+    * `'precompute'` - Compute an auxiliary predictive variance matrix for the
+                       grid points, but then cheaply re-use that work for
+                       prediction.
+    * `'exact'` - Use the exact cholesky-based algorithm (not matrix free)
+    * `'sample'` - Use the sampling algorithm from Wilson 2015.
+
     TODO(new parameters)
     mean-function - zero-mean for now
 
@@ -112,11 +128,13 @@ class LMC(MultiGP):
     :param str name:
     :param metrics: whether to record optimization metrics during optimization
                     (runs exact solution alongside this one, may be slow).
-    :param prediction: one of `'on-the-fly', 'precompute', 'exact', 'sample'`.
-                       everything but `'exact'` is matrix-free.
+    :param prediction: one of `'matrix-free'`, `'on-the-fly'`,
+                              `'precompute'`, `'exact'`, `'sample'`.
     :param variance_samples: only used if `prediction` is set to `'sample'`.
                              number of variance samples used for predictive
                              variance.
+    :param max_procs: maximum number of processes to use for parallelism,
+                      defaults to cpu count.
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
     :raises: :class:`ValueError` if normalization if any `Ys` have no variance
                                  or values in `Xs` have multiple identical
@@ -125,17 +143,20 @@ class LMC(MultiGP):
     """
     def __init__(self, Xs, Ys, normalize=True, kernels=None,
                  ranks=None, lo=None, hi=None, m=None, name='lmc',
-                 metrics=False, prediction='on-the-fly',
-                 variance_samples=20):
+                 metrics=False, prediction='matrix-free',
+                 variance_samples=20, max_procs=None):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
 
         if not kernels:
             raise ValueError('Number of kernels should be >0')
+
         self.variance_samples = variance_samples
         self.prediction = prediction
         if prediction not in self._prediction_methods():
             raise ValueError('Variance prediction method {} unrecognized'
                              .format(prediction))
+
+        self.max_procs = cpu_count() if max_procs is None else max_procs
 
         self.kernels = kernels
         for k in self.kernels:
@@ -334,6 +355,7 @@ class LMC(MultiGP):
 
     def _prediction_methods(self):
         return {
+            'matrix-free': self._var_predict_matrix_free,
             'on-the-fly': self._var_predict_on_the_fly,
             'precompute': self._var_predict_precompute,
             'exact': self._var_predict_exact,
@@ -364,6 +386,17 @@ class LMC(MultiGP):
 
     # TODO(cleanup) all of the below variance prediction methods should
     # be cleaned up and moved to a separate module.
+
+    def _var_predict_matrix_free(self, W, Xs):
+        if 'precomputed_nu' in self._cache:
+            return self._var_predict_precompute(W, Xs)
+
+        tot_pred_size = sum(map(len, Xs))
+        tot_grid_size = len(self.inducing_grid) * len(self.noise)
+        if tot_pred_size > tot_grid_size:
+            return self._var_predict_precompute(W, Xs)
+        else:
+            return self._var_predict_on_the_fly(W, Xs)
 
     def _var_predict_exact(self, _, Xs):
         # TODO(cleanup) refactor ExactLMCKernel so that we can reuse code
@@ -410,7 +443,7 @@ class LMC(MultiGP):
 
         Ns = self.variance_samples
         Q = len(self.kernels)
-        par = min(max(cpu_count(), 1), Q)
+        par = min(max(self.max_procs, 1), Q)
         W = self.interpolant
         ls = [(W, coreg_mat, toep.top, np.random.randn(W.shape[1], Ns), i)
               for i, (coreg_mat, toep) in
@@ -426,7 +459,7 @@ class LMC(MultiGP):
                 np.random.randn(len(self.y), Ns)))
         samples = np.array(samples).sum(axis=0).T
 
-        par = min(max(cpu_count(), 1), Ns)
+        par = min(max(self.max_procs, 1), Ns)
         _LOG.info('Using %d processors in parallel to precompute %d '
                   'variance samples', par, Ns)
         ls = [(self.kernel.K, sample) for sample in samples]
@@ -469,7 +502,7 @@ class LMC(MultiGP):
         Dm = D * m
         assert Dm == K_XU.shape[1] and Dm == K_UX.shape[0]
 
-        par = min(max(cpu_count(), 1), Dm)
+        par = min(max(self.max_procs, 1), Dm)
         chunks = max(K_XU.shape[1] // par // 4, 1)
         ls = [(i, self.kernel.K, K_XU, K_UX) for i in range(Dm)]
         _LOG.info('Using %d processors in parallel to precompute %d '
@@ -496,7 +529,7 @@ class LMC(MultiGP):
                                   dist.cdist(test_Xs, train_Xs),
                                   invert=False, noise=False).K
         n_test = test_Xs.shape[0]
-        par = min(max(cpu_count(), 1), n_test)
+        par = min(max(self.max_procs, 1), n_test)
         _LOG.info('Using %d processors in parallel for %d on-the-fly variance'
                   ' predictions', par, n_test)
         ls = [(self.kernel.K, k_star) for k_star in K_test_X]

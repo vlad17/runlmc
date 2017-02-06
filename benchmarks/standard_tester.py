@@ -17,6 +17,7 @@ from runlmc.models.lmc import LMC
 from runlmc.kern.rbf import RBF
 from runlmc.models.optimization import AdaDelta
 from runlmc.models.gpy_lmc import GPyLMC
+from runlmc.util.numpy_convenience import begin_end_indices
 
 def _foreign_exchange_shared():
     # Adapts the foreign currency exchange problem
@@ -63,19 +64,25 @@ def foreign_exchange_2007():
                 for col in fx2007.columns]
     return xss, yss, test_xss, test_yss, test_fx, fx2007.columns
 
-def foreign_exchange_18k():
+def foreign_exchange_33k():
     fx = _foreign_exchange_shared()
 
     available = {col: np.flatnonzero((~fx[col].isnull()).values)
                  for col in fx.columns}
-    holdout = {col: np.r_[np.random.choice(
-        available[col], len(available[col]) // 2, replace=False)]
-               for col in fx.columns}
+    predictions_per_col = np.repeat(len(fx) // len(fx.columns), len(fx.columns))
+    begins, ends = begin_end_indices(predictions_per_col)
+
+    holdout = {}
     holdin = {}
-    for col in fx.columns:
+    for col, begin, end in zip(fx.columns, begins, ends):
         select = np.zeros(len(fx), dtype=bool)
         select[available[col]] = True
-        select[holdout[col]] = False
+        select[:begin] = False
+        select[end:] = False
+        holdout[col] = np.r_[np.flatnonzero(select)]
+
+        select[available[col]] = True
+        select[begin:end] = False
         holdin[col] = np.r_[np.flatnonzero(select)]
 
     xss = []
@@ -94,13 +101,13 @@ def foreign_exchange_18k():
     fx_train = fx.copy()
     for col in fx.columns:
         fx_train[col][holdout[col]] = np.NaN
-    fx_train.fillna(-1).to_csv('../data/fx/fx18k_train.csv',
+    fx_train.fillna(-1).to_csv('../data/fx/fx33k_train.csv',
                                header=False, index=False)
     for i, xs in enumerate(test_xss):
         # note matlab +1 offset
-        np.savetxt('../data/fx/fx18k_test/x' + str(i), 1 + xs, fmt='%d')
+        np.savetxt('../data/fx/fx33k_test/x' + str(i), 1 + xs, fmt='%d')
     for i, ys in enumerate(test_yss):
-        np.savetxt('../data/fx/fx18k_test/y' + str(i), ys)
+        np.savetxt('../data/fx/fx33k_test/y' + str(i), ys)
 
     return xss, yss, test_xss, test_yss, fx.columns
 
@@ -130,6 +137,9 @@ def filter_nonempty_cols(a, b, c):
     nonempty_ixs = [i for i, x in enumerate(a) if len(x) > 0]
     return (filter_list(x, nonempty_ixs) for x in (a, b, c))
 
+def filter_by_selection(a, b, c, selects):
+    return ([x[select] for x, select in zip(xs, selects)] for xs in (a, b, c))
+
 def smse(test_yss, pred_yss, train_yss):
     test_yss, pred_yss, train_yss = filter_nonempty_cols(
         test_yss, pred_yss, train_yss)
@@ -141,13 +151,18 @@ def smse(test_yss, pred_yss, train_yss):
 def nlpd(test_yss, pred_yss, pred_vss):
     test_yss, pred_yss, pred_vss = filter_nonempty_cols(
         test_yss, pred_yss, pred_vss)
-    err = False
+    selectors = []
+    skipped = 0
     for i, vs in enumerate(pred_vss):
-        if np.count_nonzero(vs) < len(vs) and not err:
-            print('warning, zero var found in predictive variance')
-            err = True
-        vs[vs == 0] = 1
-        pred_vss[i] = vs
+        selectors.append(np.flatnonzero(vs))
+        skipped += len(vs) - len(selectors[-1])
+    if skipped > 0:
+        print('warning: found {} of {} predictive variances set to 0'
+              .format(skipped, sum(map(len, pred_vss))))
+    test_yss, pred_yss, pred_vss = filter_by_selection(
+        test_yss, pred_yss, pred_vss, selectors)
+    test_yss, pred_yss, pred_vss = filter_nonempty_cols(
+        test_yss, pred_yss, pred_vss)
     return np.mean([0.5 * np.mean(
             np.square(test_ys - pred_ys) / pred_vs
             + np.log(2 * np.pi * pred_vs))
@@ -155,10 +170,11 @@ def nlpd(test_yss, pred_yss, pred_vss):
             zip(test_yss, pred_yss, pred_vss)])
 
 def runlmc(num_runs, m, xss, yss, test_xss, test_yss,
-           kerns, ranks, optimizer_opts):
+           kerns, ranks, optimizer_opts, **kwargs):
     times, smses, nlpds = [], [], []
     for _ in range(num_runs):
-        lmc = LMC(xss, yss, kernels=kerns, ranks=ranks, normalize=True, m=m)
+        lmc = LMC(xss, yss, kernels=kerns, ranks=ranks,
+                  normalize=True, m=m, **kwargs)
         opt = AdaDelta(**optimizer_opts)
         with contexttimer.Timer() as t:
             lmc.optimize(optimizer=opt)
@@ -224,20 +240,20 @@ def cogp_fx2007(num_runs, num_inducing):
 
     return time, smse, nlpd, cogp_mu, cogp_var
 
-def cogp_fx18k(num_runs, num_inducing):
+def cogp_fx33k(num_runs, num_inducing):
     _download_cogp()
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """M={};runs={};cogp_fx18k;exit"""
+           """M={};runs={};cogp_fx33k;exit"""
            .format(num_inducing, num_runs)]
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True,
-        cwd=os.getcwd())
+        cwd=(os.getcwd() + '../benchmarks'))
     mout = process.communicate()[0]
-    with open('/tmp/18k-out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
+    with open('/tmp/33k-out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
         f.write(mout)
     ending = mout[mout.find('mean times'):]
     time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
