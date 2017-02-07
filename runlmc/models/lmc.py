@@ -468,10 +468,11 @@ class LMC(MultiGP):
               for i, (coreg_mat, toep) in
               enumerate(zip(self.kernel.params.coreg_mats,
                             self.kernel.materialized_kernels))]
-        _LOG.info('Using %d processors in parallel to '
-                  'precompute %d kernel factors',
-                  par, Q)
+        _LOG.info('Attempting to launch %d workers for prediction', par)
         with closing(Pool(processes=par)) as pool:
+            _LOG.info('Using %d processors in parallel to '
+                      'precompute %d kernel factors',
+                      par, Q)
             samples = pool.starmap(LMC._chol_sample, ls)
             samples.append(
                 Diag(np.sqrt(self.kernel.K.noise.v)).matmat(
@@ -523,9 +524,10 @@ class LMC(MultiGP):
         par = min(max(self.max_procs, 1), Dm)
         chunks = max(K_XU.shape[1] // par // 4, 1)
         ls = [(i, self.kernel.K, K_XU, K_UX) for i in range(Dm)]
-        _LOG.info('Using %d processors in parallel to precompute %d '
-                  'variance terms exactly', par, Dm)
+        _LOG.info('Attempting to launch %d workers for prediction', par)
         with closing(Pool(processes=par)) as pool:
+            _LOG.info('Using %d processors in parallel to precompute %d '
+                      'variance terms exactly', par, Dm)
             nu = pool.starmap(LMC._var_solve, ls, chunks)
 
         self._cache['precomputed_nu'] = nu
