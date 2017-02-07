@@ -248,7 +248,6 @@ class LMC(MultiGP):
                 if self.pool is not None:
                     self.pool.close()
                 self.pool = None
-                raise
 
     def parameters_changed(self):
         self._cache = {}
