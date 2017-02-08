@@ -240,12 +240,12 @@ def cogp_fx2007(num_runs, num_inducing):
 
     return time, smse, nlpd, cogp_mu, cogp_var
 
-def cogp_fx33k(num_runs, num_inducing):
+def cogp_fx33k(num_runs, num_inducing, Q, maxit):
     _download_cogp()
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """M={};runs={};cogp_fx33k;exit"""
-           .format(num_inducing, num_runs)]
+           """Q={};MAXIT={};M={};runs={};cogp_fx33k;exit"""
+           .format(Q, maxit, num_inducing, num_runs)]
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -262,4 +262,7 @@ def cogp_fx33k(num_runs, num_inducing):
     ending = ending[ending.find('mean nlpds'):]
     nlpd = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
 
-    return time, smse, nlpd
+    cogp_mu = pd.read_csv('/tmp/cogp-fx33k-mu-q{}'.format(Q), header=None)
+    cogp_var = pd.read_csv('/tmp/cogp-fx33k-var-q{}'.format(Q), header=None)
+
+    return time, smse, nlpd, cogp_mu, cogp_var

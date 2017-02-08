@@ -2,7 +2,7 @@
 
 addpath(genpath('/tmp/cogp'));
 format long;
-y = csvread('../data/fx/fx18k_train.csv');
+y = csvread('../data/fx/fx33k_train.csv');
 y = 1./y; % usd / currency
 y(y == -1) = nan; % missing data
 x = (1:size(y,1))';
@@ -11,8 +11,8 @@ xtest = cell(nout, 1);
 ytest = cell(nout, 1);
 for i = 1:nout
     % subtract 1 because python is 0 indexed
-    xtest{i} = csvread(['../data/fx/fx18k_test/x', num2str(i - 1)]);
-    ytest{i} = csvread(['../data/fx/fx18k_test/y', num2str(i - 1)]);
+    xtest{i} = csvread(['../data/fx/fx33k_test/x', num2str(i - 1)]);
+    ytest{i} = csvread(['../data/fx/fx33k_test/y', num2str(i - 1)]);
 end
 
 rng(1234,'twister');
@@ -29,15 +29,14 @@ cf.lrate_w    = 1e-5;
 cf.learn_z    = false;
 cf.momentum_z = 0.0;
 cf.lrate_z    = 1e-4;
-cf.maxiter = 500;
+cf.maxiter = MAXIT;
 cf.nbatch = 200;
 cf.beta = 1/0.1;
 cf.initz = 'random';
-cf.w = ones(size(y,2),2);
+cf.w = ones(size(y,2),Q);
 cf.monitor_elbo = 50;
 cf.fix_first = false;
 %M = 100; assumed defined!
-Q = 2;
 
 smses = zeros(runs,1);
 nlpds = zeros(runs,1);
@@ -58,6 +57,10 @@ for r=1:runs % runs assumed defined!
   end
   smses(r) = mean(per_out_smses);
   nlpds(r) = mean(per_out_nlpds);
+  if r == 1
+    csvwrite(['/tmp/cogp-fx33k-mu-q', num2str(Q)], mu);
+    csvwrite(['/tmp/cogp-fx33k-var-q', num2str(Q)], fvar);
+  end
 end
 disp('mean times')
 disp(mean(times))
