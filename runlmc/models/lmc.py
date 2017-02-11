@@ -443,8 +443,10 @@ class LMC(MultiGP):
         # Lt = np.linalg.cholesky(la.toeplitz(t))
         w, v = np.linalg.eigh(la.toeplitz(t))
         w[w < 0] = 0
-        _LOG.info('encountered incomplete rank %d of %d order kernel %d',
-                  np.count_nonzero(w), len(w), q)
+        nnz = np.count_nonzero(w)
+        if nnz < len(w):
+            _LOG.info('encountered incomplete rank %d of %d order kernel %d',
+                      nnz, len(w), q)
         Lt = v * np.sqrt(w)
         L = Kronecker(NumpyMatrix(LB), NumpyMatrix(Lt))
         return W.dot(L.matmat(randn_samps))
