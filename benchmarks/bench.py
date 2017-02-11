@@ -202,9 +202,9 @@ def run_kernel_benchmark(
 
     matrix_diff = np.fabs(apprx.K.as_numpy() - exact.K).mean()
     print('        {:9.4e} |K_exact - K_apprx|_1 / n^2'.format(matrix_diff))
-    alpha_diff = np.fabs(apprx.deriv.alpha - exact.deriv.alpha).mean()
-    print('        {:9.4e} |alpha_exact - alpha_apprx|_1 / n'
-          .format(alpha_diff))
+    alpha1, alpha2 = vector_errors(apprx.deriv.alpha, exact.deriv.alpha)
+    print('        {:9.4e} rel alpha l1 error'.format(alpha1))
+    print('        {:9.4e} rel alpha l2 error'.format(alpha2))
 
     def check_grads(f, name):
         with contexttimer.Timer() as t:
@@ -248,9 +248,10 @@ def run_kernel_benchmark(
     print('        {:10.4f} sec exact all gradients'.format(tot_exact_time))
     print('        {:10.4f} sec apprx all gradients'.format(tot_apprx_time))
     print('        {:9.4e} avg grad error'.format(np.fabs(errs).mean()))
-    print('        {:9.4e} avg grad magnitude'.format(np.fabs(grad).mean()))
-    print('        {:9.4e} err:grad l2 ratio'.format(
-        np.linalg.norm(errs) / np.linalg.norm(grad)))
+    print('        {:9.4e} avg grad magnitude'.format(np.fabs(grads).mean()))
+    grad1, grad2 = vector_errors(errs + grads, grads)
+    print('        {:9.4e} err:grad l1 ratio'.format(grad1))
+    print('        {:9.4e} err:grad l2 ratio'.format(grad2))
     print('    total optimization iteration time')
     print('        {:10.4f} sec cholesky'.format(tot_exact_time + chol_time))
     print('        {:10.4f} sec runlmc'.format(tot_apprx_time + aprx_time))
@@ -269,6 +270,12 @@ def gen_kernels(q):
         for i in range(len(mix), q):
             mix.append(RBF(1))
     return kernels + [mix]
+
+def vector_errors(apprx, exact):
+    diff = apprx - exact
+    e1 = np.linalg.norm(diff, 1) / np.linalg.norm(exact, 1)
+    e2 = np.linalg.norm(diff, 2) / np.linalg.norm(exact, 2)
+    return e1, e2
 
 if __name__ == '__main__':
     _main()
