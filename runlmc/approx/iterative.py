@@ -51,10 +51,9 @@ class Iterative:
             Kinv_y, succ = e.x, 0
         error = np.linalg.norm(y - op.matvec(Kinv_y))
         if error > Iterative.TOL or succ != 0:
-            _LOG.critical('MINRES (n = %d) did not converge.\n'
-                          'iterations = n\n'
-                          'error code %d\nReconstruction Error %e',
-                          n, succ, error)
+            _LOG.critical('MINRES (n = %d) did not converge in n iterations.'
+                          ' Reconstruction error %e',
+                          n, error)
 
         if verbose:
             return Kinv_y, ctr, error
