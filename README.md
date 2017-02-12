@@ -68,37 +68,32 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. large FX test - need to implement COGP, runlmc on small 3K + large FX datasets; may have to set up python on fat server
+0. code/run large benchmarks
 0. Write up ICML paper.
-0. linalg in-place optimization; square matrices optimization
 0. TODO(general-solve) Preconditioner?
-    * Does chan Preconditioner carry over to SKI approximation?
-    * Do other inner circulant preconditioners (e.g., whittle) help inversion?
-    * Cache LCG solutions over iterations? Cutajar approach?
+    * Does chan Preconditioner carry over to SKI approximation? -> no, it doesn't
+    * Do other inner circulant preconditioners (e.g., whittle) help inversion? -> no
+    * Cache LCG solutions over iterations?
+    * Cutajar 2016 iterative inversion approach?
 0. Minor perf improvements: what helps?
-    * MKL
-    * CPython
-    * In-place multiplication where possible; square matrix optimizations
+    * CPython; numba.
+    * In-place multiplication where possible
+    * square matrix optimizations
     * TODO(sparse-derivatives)
-    * Short-circuit minres if no progress on convergence?
 0. travis-ci, read the docs automatic doc builds
-0. TODO(fix) - better lmc testing. Also investigate: when is iteration NOT converging (critical log) - what's the condition number in that case.
+0. TODO(fix) - better lmc testing.
 0. multidimensional inputs and ARD.
-0. TODO(fast-prediction) fast predictions
-0. low-rank dense multiplications give SumKernel speedups? TODO(sum-fast)
+0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups?
 0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 
 ### Considerations 
 
 * Real datasets: [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) 
-* MINRES or LCG?
-* Why are sparse eigensolvers poor? Can we use them as an accurate general-purpose solution if all else fails?
 * Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
 0. Logdet Approximations? (1) [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet) (2) [Integral Probing](https://arxiv.org/abs/1504.02661).
 
 ### Low-priority Tasks
 
-0. BSD 3-clause
 0. TODO(cleanup) - apprx to approx everywhere
 0. Allow extrapolation in util.interpolation.py
 0. TODO(test) - document everything that's missing documentation along the way.
