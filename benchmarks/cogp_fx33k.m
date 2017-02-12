@@ -1,6 +1,6 @@
 % See cogp_fx2007.m for the assumptions this file makes
 
-addpath(genpath('/tmp/cogp'));
+addpath(genpath([tempdir 'cogp']));
 format long;
 y = csvread('../data/fx/fx33k_train.csv');
 y = 1./y; % usd / currency
@@ -58,8 +58,8 @@ for r=1:runs % runs assumed defined!
   smses(r) = mean(per_out_smses);
   nlpds(r) = mean(per_out_nlpds);
   if r == 1
-    csvwrite(['/tmp/cogp-fx33k-mu-q', num2str(Q)], mu);
-    csvwrite(['/tmp/cogp-fx33k-var-q', num2str(Q)], fvar);
+    csvwrite([[tempdir 'cogp-fx33k-mu-q'], num2str(Q)], mu);
+    csvwrite([[tempdir 'cogp-fx33k-var-q'], num2str(Q)], fvar);
   end
 end
 disp('mean times')

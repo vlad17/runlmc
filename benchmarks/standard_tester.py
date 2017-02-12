@@ -19,6 +19,10 @@ from runlmc.models.optimization import AdaDelta
 from runlmc.models.gpy_lmc import GPyLMC
 from runlmc.util.numpy_convenience import begin_end_indices
 
+import tempfile
+
+TMP = tempfile.gettempdir()
+
 def _foreign_exchange_shared():
     # Adapts the foreign currency exchange problem
     # Collaborative Multi-output Gaussian Processes
@@ -201,10 +205,10 @@ def dtcvar(num_runs, m, xss, yss, test_xss, test_yss,
 
 def _download_cogp():
     # Download paper code if it is not there
-    if not os.path.isdir('/tmp/cogp'):
+    if not os.path.isdir(TMP + '/cogp'):
         print('cloning COGP repo')
         repo = 'git@github.com:vlad17/cogp.git'
-        subprocess.call(['git', 'clone', repo, '/tmp/cogp'])
+        subprocess.call(['git', 'clone', repo, TMP + '/cogp'])
 
 def cogp_fx2007(num_runs, num_inducing):
     _download_cogp()
@@ -214,7 +218,7 @@ def cogp_fx2007(num_runs, num_inducing):
     cmd = ['matlab', '-nojvm', '-r',
            """infile='{}';M={};runs={};cogp_fx2007;exit"""
            .format(datafile, num_inducing, num_runs)]
-    with open('/tmp/out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
+    with open(TMP + '/out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
         f.write(' '.join(cmd))
     benchmark_dir = os.getcwd() + '/../benchmarks'
     process = subprocess.Popen(
@@ -224,7 +228,7 @@ def cogp_fx2007(num_runs, num_inducing):
         universal_newlines=True,
         cwd=benchmark_dir)
     mout = process.communicate()[0]
-    with open('/tmp/out-{}-{}'.format(num_runs, num_inducing), 'a') as f:
+    with open(TMP + '/out-{}-{}'.format(num_runs, num_inducing), 'a') as f:
         f.write(mout)
     ending = mout[mout.find('mean times'):]
     time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
@@ -235,8 +239,8 @@ def cogp_fx2007(num_runs, num_inducing):
 
     # the matlab script writes to this file
     test_fx = ['CAD', 'JPY', 'AUD']
-    cogp_mu = pd.read_csv('/tmp/cogp-fx2007-mu', header=None, names=test_fx)
-    cogp_var = pd.read_csv('/tmp/cogp-fx2007-var', header=None, names=test_fx)
+    cogp_mu = pd.read_csv(TMP + '/cogp-fx2007-mu', header=None, names=test_fx)
+    cogp_var = pd.read_csv(TMP + '/cogp-fx2007-var', header=None, names=test_fx)
 
     return time, smse, nlpd, cogp_mu, cogp_var
 
@@ -253,7 +257,7 @@ def cogp_fx33k(num_runs, num_inducing, Q, maxit):
         universal_newlines=True,
         cwd=(os.getcwd() + '../benchmarks'))
     mout = process.communicate()[0]
-    with open('/tmp/33k-out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
+    with open(TMP + '/33k-out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
         f.write(mout)
     ending = mout[mout.find('mean times'):]
     time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
@@ -262,7 +266,7 @@ def cogp_fx33k(num_runs, num_inducing, Q, maxit):
     ending = ending[ending.find('mean nlpds'):]
     nlpd = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
 
-    cogp_mu = pd.read_csv('/tmp/cogp-fx33k-mu-q{}'.format(Q), header=None)
-    cogp_var = pd.read_csv('/tmp/cogp-fx33k-var-q{}'.format(Q), header=None)
+    cogp_mu = pd.read_csv(TMP + '/cogp-fx33k-mu-q{}'.format(Q), header=None)
+    cogp_var = pd.read_csv(TMP + '/cogp-fx33k-var-q{}'.format(Q), header=None)
 
     return time, smse, nlpd, cogp_mu, cogp_var
