@@ -23,7 +23,7 @@ _LOG2.setLevel(logging.INFO)
 ks = [RBF(name='rbf0')]
 ranks = [2]
 # the columns with nonzero test holdout are in test_fx
-xss, yss, test_xss, test_yss, test_fx, cols = foreign_exchange_2007()
+xss, yss, test_xss, test_yss, test_fx, cols = weather()
 
 runs = 5
 llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
@@ -31,5 +31,5 @@ llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
     ks, ranks, {'verbosity': 1})
 
 print('llgp time', llgp_time, 'smse', llgp_smse, 'nlpd', llgp_nlpd)
-cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_fx2007(runs)
+cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_weather(runs)
 print('cogp time', cogp_time, 'smse', cogp_smse, 'nlpd', cogp_nlpd)

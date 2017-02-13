@@ -43,12 +43,12 @@ cf.lrate_w    = 1e-5;
 cf.learn_z    = false;
 cf.momentum_z = 0.0;
 cf.lrate_z    = 1e-4;
-cf.maxiter = 1500;
+cf.maxiter = 10;
 cf.nbatch = 1000;
 cf.beta = 1/0.1;
 cf.initz = 'random';
 cf.w = ones(size(y,2),2);
-cf.monitor_elbo = 50;
+cf.monitor_elbo = 100;
 cf.fix_first = false;
 M = 500;
 Q = 2;
@@ -74,8 +74,9 @@ for r=1:runs
   csvwrite([tempdir 'cogp-weather-var'], fvar(:, outputs))
   for i=1:2
     t = outputs(i);
-    per_out_smses(i) = mysmse(ytest(xtest_ix{i},t),mu(xtest_ix{i},t),ymean(t));
-    per_out_nlpds(i) = mynlpd(ytest(xtest_ix{i},t),mu(xtest_ix{i},t),fvar(xtest_ix{i},t));
+    tmp = ~isnan(ytest(:,t)) & xtest_ix{i};
+    per_out_smses(i) = mysmse(ytest(tmp,t),mu(tmp,t),ymean(t));
+    per_out_nlpds(i) = mynlpd(ytest(tmp,t),mu(tmp,t),fvar(tmp,t));
   end
   smses(r) = mean(per_out_smses);
   nlpds(r) = mean(per_out_nlpds);

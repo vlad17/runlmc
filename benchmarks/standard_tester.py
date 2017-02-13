@@ -68,6 +68,37 @@ def foreign_exchange_2007():
                 for col in fx2007.columns]
     return xss, yss, test_xss, test_yss, test_fx, fx2007.columns
 
+def weather():
+    sensors = ['bra', 'cam', 'chi', 'sot']
+    expected_nas = [100, 0, 15, 1002]
+    holdout = [None, (10.2, 10.8), (13.5, 14.2), None]
+    xss, yss = [], []
+    test_xss, test_yss = [], []
+    for sensor, expected_na, hold in zip(sensors, expected_nas, holdout):
+        y = pd.read_csv('../data/weather/{}y.csv'.format(sensor),
+                        header=None, names=['WSPD','WD','GST','ATMP'],
+                        usecols=['ATMP'])
+        x = pd.read_csv('../data/weather/{}x.csv'.format(sensor),
+                        header=None, names=['time'])
+        assert (x['time'] == -1).sum() == 0
+        assert (y['ATMP'] == -1).sum() == expected_na
+        y['ATMP'][y['ATMP'] == -1] = np.nan
+        y.dropna(inplace=True)
+        xy = pd.concat([x, y], axis=1, join='inner')
+        if hold is None:
+            test_xss.append(np.array([]))
+            test_yss.append(np.array([]))
+            xss.append(xy['time'].values)
+            yss.append(xy['ATMP'].values)
+        else:
+            sel = xy['time'].between(hold[0], hold[1])
+            test_xss.append(xy.loc[sel]['time'].values)
+            test_yss.append(xy.loc[sel]['ATMP'].values)
+            xss.append(xy.loc[~sel]['time'].values)
+            yss.append(xy.loc[~sel]['ATMP'].values)
+
+    return xss, yss, test_xss, test_yss, test_fx, sensors
+
 def toy_sinusoid():
     # Adapts the 2-output toy problem from
     # Collaborative Multi-output Gaussian Processes
