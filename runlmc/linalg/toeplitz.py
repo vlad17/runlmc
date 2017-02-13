@@ -41,7 +41,7 @@ class Toeplitz(Matrix):
 
         self.top = top.astype('float64', casting='safe')
         circ = self._cyclic_extend(top)
-        self._circ_fft = np.fft.fft(circ)
+        self._circ_fft = np.fft.rfft(circ)
 
     @staticmethod
     def _cyclic_extend(x):
@@ -62,9 +62,9 @@ class Toeplitz(Matrix):
         # vector with the circulant matrix (a circular convolution, and
         # therefore Fourier product) gives the Toeplitz-vector product
         # in the first half of the result.
-        assert len(x) * 2 == len(self._circ_fft)
-        x_fft = np.fft.fft(x, n=len(self._circ_fft))
-        return np.fft.ifft(self._circ_fft * x_fft)[:len(x)].real
+        x_fft = np.fft.rfft(x, n=(len(x) * 2))
+        x_fft *= self._circ_fft
+        return np.fft.irfft(x_fft)[:len(x)]
 
     def upper_eig_bound(self):
         # By Gershgorin, we need to find the largest absolute row.
