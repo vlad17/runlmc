@@ -68,53 +68,6 @@ def foreign_exchange_2007():
                 for col in fx2007.columns]
     return xss, yss, test_xss, test_yss, test_fx, fx2007.columns
 
-def foreign_exchange_33k():
-    fx = _foreign_exchange_shared()
-
-    available = {col: np.flatnonzero((~fx[col].isnull()).values)
-                 for col in fx.columns}
-    predictions_per_col = np.repeat(len(fx) // len(fx.columns), len(fx.columns))
-    begins, ends = begin_end_indices(predictions_per_col)
-
-    holdout = {}
-    holdin = {}
-    for col, begin, end in zip(fx.columns, begins, ends):
-        select = np.zeros(len(fx), dtype=bool)
-        select[available[col]] = True
-        select[:begin] = False
-        select[end:] = False
-        holdout[col] = np.r_[np.flatnonzero(select)]
-
-        select[available[col]] = True
-        select[begin:end] = False
-        holdin[col] = np.r_[np.flatnonzero(select)]
-
-    xss = []
-    yss = []
-    all_ixs = np.arange(len(fx))
-    for col in fx.columns:
-        xss.append(all_ixs[holdin[col]])
-        currency2usd = fx[col][holdin[col]].values
-        # Don't ask me, this was in the Nguyen 2014 paper code
-        usd2currency = np.reciprocal(currency2usd)
-        yss.append(usd2currency)
-
-    test_xss = [all_ixs[holdout[col]] for col in fx.columns]
-    test_yss = [np.reciprocal(fx.ix[holdout[col], col]) for col in fx.columns]
-
-    fx_train = fx.copy()
-    for col in fx.columns:
-        fx_train[col][holdout[col]] = np.NaN
-    fx_train.fillna(-1).to_csv('../data/fx/fx33k_train.csv',
-                               header=False, index=False)
-    for i, xs in enumerate(test_xss):
-        # note matlab +1 offset
-        np.savetxt('../data/fx/fx33k_test/x' + str(i), 1 + xs, fmt='%d')
-    for i, ys in enumerate(test_yss):
-        np.savetxt('../data/fx/fx33k_test/y' + str(i), ys)
-
-    return xss, yss, test_xss, test_yss, fx.columns
-
 def toy_sinusoid():
     # Adapts the 2-output toy problem from
     # Collaborative Multi-output Gaussian Processes
@@ -241,32 +194,5 @@ def cogp_fx2007(num_runs, num_inducing):
     test_fx = ['CAD', 'JPY', 'AUD']
     cogp_mu = pd.read_csv(TMP + '/cogp-fx2007-mu', header=None, names=test_fx)
     cogp_var = pd.read_csv(TMP + '/cogp-fx2007-var', header=None, names=test_fx)
-
-    return time, smse, nlpd, cogp_mu, cogp_var
-
-def cogp_fx33k(num_runs, num_inducing, Q, maxit):
-    _download_cogp()
-    # This runs the COGP code; only learning is timed
-    cmd = ['matlab', '-nojvm', '-r',
-           """Q={};MAXIT={};M={};runs={};cogp_fx33k;exit"""
-           .format(Q, maxit, num_inducing, num_runs)]
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
-        cwd=(os.getcwd() + '../benchmarks'))
-    mout = process.communicate()[0]
-    with open(TMP + '/33k-out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
-        f.write(mout)
-    ending = mout[mout.find('mean times'):]
-    time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
-    ending = ending[ending.find('mean smses'):]
-    smse = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
-    ending = ending[ending.find('mean nlpds'):]
-    nlpd = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
-
-    cogp_mu = pd.read_csv(TMP + '/cogp-fx33k-mu-q{}'.format(Q), header=None)
-    cogp_var = pd.read_csv(TMP + '/cogp-fx33k-var-q{}'.format(Q), header=None)
 
     return time, smse, nlpd, cogp_mu, cogp_var
