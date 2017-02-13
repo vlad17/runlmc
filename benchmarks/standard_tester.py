@@ -163,15 +163,15 @@ def _download_cogp():
         repo = 'git@github.com:vlad17/cogp.git'
         subprocess.call(['git', 'clone', repo, TMP + '/cogp'])
 
-def cogp_fx2007(num_runs, num_inducing):
+def cogp_fx2007(num_runs):
     _download_cogp()
     datafile = '../data/fx/fx2007_matlab.csv'
     assert os.path.isfile(datafile)
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """infile='{}';M={};runs={};cogp_fx2007;exit"""
-           .format(datafile, num_inducing, num_runs)]
-    with open(TMP + '/out-{}-{}'.format(num_runs, num_inducing), 'w') as f:
+           """infile='{}';runs={};cogp_fx2007;exit"""
+           .format(datafile, num_runs)]
+    with open(TMP + '/out-{}'.format(num_runs), 'w') as f:
         f.write(' '.join(cmd))
     benchmark_dir = os.getcwd() + '/../benchmarks'
     process = subprocess.Popen(
@@ -181,7 +181,7 @@ def cogp_fx2007(num_runs, num_inducing):
         universal_newlines=True,
         cwd=benchmark_dir)
     mout = process.communicate()[0]
-    with open(TMP + '/out-{}-{}'.format(num_runs, num_inducing), 'a') as f:
+    with open(TMP + '/out-{}'.format(num_runs), 'a') as f:
         f.write(mout)
     ending = mout[mout.find('mean times'):]
     time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
@@ -194,5 +194,39 @@ def cogp_fx2007(num_runs, num_inducing):
     test_fx = ['CAD', 'JPY', 'AUD']
     cogp_mu = pd.read_csv(TMP + '/cogp-fx2007-mu', header=None, names=test_fx)
     cogp_var = pd.read_csv(TMP + '/cogp-fx2007-var', header=None, names=test_fx)
+
+    return time, smse, nlpd, cogp_mu, cogp_var
+
+def cogp_weather(num_runs):
+    _download_cogp()
+    datafile = '../data/weather/'
+    assert os.path.isfile(datafile)
+    # This runs the COGP code; only learning is timed
+    cmd = ['matlab', '-nojvm', '-r',
+           """datadir='{}';runs={};cogp_weather;exit"""
+           .format(datafile, num_runs)]
+    with open(TMP + '/outw-{}'.format(num_runs), 'w') as f:
+        f.write(' '.join(cmd))
+    benchmark_dir = os.getcwd() + '/../benchmarks'
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
+        cwd=benchmark_dir)
+    mout = process.communicate()[0]
+    with open(TMP + '/outw-{}'.format(num_runs), 'a') as f:
+        f.write(mout)
+    ending = mout[mout.find('mean times'):]
+    time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
+    ending = ending[ending.find('mean smses'):]
+    smse = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
+    ending = ending[ending.find('mean nlpds'):]
+    nlpd = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
+
+    # the matlab script writes to this file
+    test_fx = ['cam', 'chi']
+    cogp_mu = pd.read_csv(TMP + '/cogp-weather-mu', header=None, names=test_fx)
+    cogp_var = pd.read_csv(TMP + '/cogp-weather-var', header=None, names=test_fx)
 
     return time, smse, nlpd, cogp_mu, cogp_var

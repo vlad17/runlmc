@@ -3,29 +3,31 @@
 % repo with a argument count bug corrected:
 % https://github.com/vlad17/cogp
 
-% Make sure the vlad17 one is cloned in /tmp/cogp
-% Make sure the csv is in /tmp/
-% this is all done for you in benchmarks/financial_exchange.ipynb
-
-% assume infile,runs are already defined
+% Uses similar assumptions to cogp_fx2007: M should be given.
+% datadir should go the csv directory
+% requires runs and datadir to be defined
 
 addpath(genpath([tempdir 'cogp']));
 format long;
 
-y = csvread(infile);
-y = 1./y; % usd / currency
-y0 = y;
-x = (1:size(y,1))';
+
+bray = csvread([datadir 'bray.csv']);
+camy = csvread([datadir 'camy.csv']);
+chiy = csvread([datadir 'chiy.csv']);
+soty = csvread([datadir 'soty.csv']);
+
+x = csvread([datadir 'sotx.csv']);
+sel = x >= 10 & x <= 15;
+
+x = x(sel);
+y = [bray(:,4), camy(:,4), chiy(:,4), soty(:,4)];
+y = y(sel, :);
 y(y == -1) = nan; % missing data
-
+ytest = y;
 xtest = x;
-ytest = y(xtest,:);
 
-% imput missing data
-% CAD = 4, JPY = 6, AUD = 9
-y(50:100,4) = nan;
-y(100:150,6) = nan;
-y(150:200,9) = nan;
+y(x >= 10.2 & x <= 10.8,2) = nan;
+y(x >= 13.5 & x <= 14.2,3) = nan;
 
 rng(1234,'twister');
 
@@ -41,20 +43,19 @@ cf.lrate_w    = 1e-5;
 cf.learn_z    = false;
 cf.momentum_z = 0.0;
 cf.lrate_z    = 1e-4;
-cf.maxiter = 500;
-cf.nbatch = 200;
+cf.maxiter = 1500;
+cf.nbatch = 1000;
 cf.beta = 1/0.1;
 cf.initz = 'random';
 cf.w = ones(size(y,2),2);
 cf.monitor_elbo = 50;
 cf.fix_first = false;
-M = 100;
+M = 500;
 Q = 2;
-xtest = cell(3,1);
-xtest{1} = (50:100)';
-xtest{2} = (100:150)';
-xtest{3} = (150:200)';
-outputs = [4,6,9];
+xtest_ix = cell(2,1);
+xtest_ix{1} = x >= 10.2 & x <= 10.8;
+xtest_ix{2} = x >= 13.5 & x <= 14.2;
+outputs = [2,3];
 
 smses = zeros(runs,1);
 nlpds = zeros(runs,1);
@@ -67,14 +68,14 @@ for r=1:runs
   [mu,vaar,mu_g,var_g] = slfm2_predict(cf.covfunc_g,par,x,size(y,2));
   mu = mu.*repmat(ystd,size(mu,1),1) + repmat(ymean,size(mu,1),1);
   fvar = vaar.*repmat(ystd.^2,size(mu,1),1);
-  per_out_smses = zeros(3, 1);
-  per_out_nlpds = zeros(3, 1);
-  csvwrite([tempdir 'cogp-fx2007-mu'], mu(:, outputs))
-  csvwrite([tempdir 'cogp-fx2007-var'], fvar(:, outputs))
-  for i=1:3
+  per_out_smses = zeros(2, 1);
+  per_out_nlpds = zeros(2, 1);
+  csvwrite([tempdir 'cogp-weather-mu'], mu(:, outputs))
+  csvwrite([tempdir 'cogp-weather-var'], fvar(:, outputs))
+  for i=1:2
     t = outputs(i);
-    per_out_smses(i) = mysmse(ytest(xtest{i},t),mu(xtest{i},t),ymean(t));
-    per_out_nlpds(i) = mynlpd(ytest(xtest{i},t),mu(xtest{i},t),fvar(xtest{i},t));
+    per_out_smses(i) = mysmse(ytest(xtest_ix{i},t),mu(xtest_ix{i},t),ymean(t));
+    per_out_nlpds(i) = mynlpd(ytest(xtest_ix{i},t),mu(xtest_ix{i},t),fvar(xtest_ix{i},t));
   end
   smses(r) = mean(per_out_smses);
   nlpds(r) = mean(per_out_nlpds);
