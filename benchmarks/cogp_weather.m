@@ -3,7 +3,7 @@
 % repo with a argument count bug corrected:
 % https://github.com/vlad17/cogp
 
-% Uses similar assumptions to cogp_fx2007: M should be given.
+% Uses similar assumptions to cogp_fx2007: datadir and runs required
 % datadir should go the csv directory
 % requires runs and datadir to be defined
 
