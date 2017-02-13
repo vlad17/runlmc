@@ -70,7 +70,7 @@ All below invocations should be done from the repo root.
 
 0. code/run large benchmarks (no ipynb in benchmarks).
 0. Write up ICML paper.
-0. Clean up benchmarks: set tasks for general cleanliness, figure out what to do with standard_tester.py, remove path dependency (right now access `../data` requires you to be in the benchmarks/ directory for invocations). How to run - info should go in their main pages, README should say how to print the help paragraph for all the scripts.
+0. Clean up benchmarks: set tasks for general cleanliness, figure out what to do with standard_tester.py, remove path dependency (right now access `../data` requires you to be in the benchmarks/ directory for invocations). How to run - info should go in their main pages, README should say how to print the help paragraph for all the scripts. Move slurm script for large kernel perf grid into repo, clean it up too.
 0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation? -> no, it doesn't
     * Do other inner circulant preconditioners (e.g., whittle) help inversion? -> no
