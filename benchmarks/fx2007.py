@@ -3,7 +3,6 @@ import logging
 import sys
 
 import numpy as np
-sys.path.append('../benchmarks')
 from standard_tester import *
 
 from runlmc.models.lmc import LMC
