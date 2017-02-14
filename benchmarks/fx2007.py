@@ -16,6 +16,8 @@ logging.getLogger().addHandler(logging.StreamHandler())
 _LOG.setLevel(logging.INFO)
 _LOG2.setLevel(logging.INFO)
 
+np.random.seed(1234)
+
 # Nguyen 2014 COGP uses Q=2 R=1, but that is not LMC
 # Álvarez and Lawrence 2010 Convolved GP has R=4, sort of.
 # Álvarez and Lawrence 2010 find that vanilla LMC works best with Q=1 R=2
@@ -25,7 +27,7 @@ ranks = [2]
 # the columns with nonzero test holdout are in test_fx
 xss, yss, test_xss, test_yss, test_fx, cols = foreign_exchange_2007()
 
-runs = 5
+runs = 10
 llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
     runs, None, xss, yss, test_xss, test_yss,
     ks, ranks, {'verbosity': 1})

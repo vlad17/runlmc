@@ -1,37 +1,72 @@
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f83df39f488>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
 finished adadelta optimization
-            22 iterations
-    1.9914e+02 final grad norm
-    1.9914e+02 final MA(1) grad norm
-    4.1545e+02 max MA(1) grad norm
+            28 iterations
+    1.0152e+02 final grad norm
+    1.0152e+02 final MA(1) grad norm
+    4.0098e+02 max MA(1) grad norm
     norm used inf
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f83df39f488>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
 finished adadelta optimization
-            24 iterations
-    1.3697e+02 final grad norm
-    1.3697e+02 final MA(1) grad norm
-    3.1433e+02 max MA(1) grad norm
+            23 iterations
+    9.0584e+01 final grad norm
+    9.0584e+01 final MA(1) grad norm
+    3.6913e+02 max MA(1) grad norm
     norm used inf
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f83df39f488>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
 finished adadelta optimization
-            19 iterations
-    1.1879e+02 final grad norm
-    1.1879e+02 final MA(1) grad norm
-    2.3789e+02 max MA(1) grad norm
+            20 iterations
+    7.7794e+01 final grad norm
+    7.7794e+01 final MA(1) grad norm
+    2.8591e+02 max MA(1) grad norm
     norm used inf
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f83df39f488>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
+finished adadelta optimization
+            28 iterations
+    1.6087e+02 final grad norm
+    1.6087e+02 final MA(1) grad norm
+    1.0784e+03 max MA(1) grad norm
+    norm used inf
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
+finished adadelta optimization
+            20 iterations
+    1.0702e+02 final grad norm
+    1.0702e+02 final MA(1) grad norm
+    2.3582e+02 max MA(1) grad norm
+    norm used inf
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
+finished adadelta optimization
+            35 iterations
+    2.2278e+02 final grad norm
+    2.2278e+02 final MA(1) grad norm
+    6.2491e+02 max MA(1) grad norm
+    norm used inf
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
 finished adadelta optimization
             25 iterations
-    1.1277e+02 final grad norm
-    1.1277e+02 final MA(1) grad norm
-    2.3717e+02 max MA(1) grad norm
+    1.1425e+02 final grad norm
+    1.1425e+02 final MA(1) grad norm
+    4.0843e+02 max MA(1) grad norm
     norm used inf
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f83df39f488>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
 finished adadelta optimization
-            22 iterations
-    9.9719e+01 final grad norm
-    9.9719e+01 final MA(1) grad norm
-    2.3211e+02 max MA(1) grad norm
+            19 iterations
+    1.2737e+02 final grad norm
+    1.2737e+02 final MA(1) grad norm
+    2.8791e+02 max MA(1) grad norm
     norm used inf
-llgp time 22.618849352 smse 0.218741224089 nlpd -3.92877762308
-cogp time 293.3538346 smse 0.228573369375392 nlpd 10.366370168148503
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
+finished adadelta optimization
+            28 iterations
+    1.0564e+02 final grad norm
+    1.0564e+02 final MA(1) grad norm
+    2.2738e+02 max MA(1) grad norm
+    norm used inf
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 1, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fa62b2c6488>}
+finished adadelta optimization
+            25 iterations
+    1.0165e+02 final grad norm
+    1.0165e+02 final MA(1) grad norm
+    3.4188e+02 max MA(1) grad norm
+    norm used inf
+llgp time 30.0932152003 smse 0.26587882558 nlpd -3.79663640505
+cogp time 299.1190512 smse 0.264205385594139 nlpd 14.522106479511255
