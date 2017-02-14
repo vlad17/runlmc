@@ -72,6 +72,8 @@ All below invocations should be done from the repo root.
 0. Write up ICML paper.
 0. rm 33k stuff from benchmarks
 0. Clean up benchmarks: set tasks for general cleanliness, figure out what to do with standard_tester.py, remove path dependency (right now access `../data` requires you to be in the benchmarks/ directory for invocations). How to run - info should go in their main pages, README should say how to print the help paragraph for all the scripts. Move slurm script for large kernel perf grid into repo, clean it up too.
+0. Coalesce pool (rm extrapool): Starmapper multiprocessing interface - pool-based, within-thread. PoolGenerator - make on-the-fly pools (generator should cleanup on failure), with closing() and cleanup. Use is `self.pool_generator.make(par) as pool:`. If in LMC pool=... specified, then wrap it in a dummy generator that returns the same pool always. If pool=... is unspecified, then pool_generator will make pools on the fly with desired parallelism min with cpu count (but will short-circuit to blocking within-thread parallelism below size threshold/cpu_count=1). no chunks. [bugfix pool](https://github.com/python/cpython/pull/57/files). Update benchmarks to new interface.
+0. Generic benchmarks-run-all script.
 0. TODO(general-solve) Preconditioner?
     * Does chan Preconditioner carry over to SKI approximation? -> no, it doesn't
     * Do other inner circulant preconditioners (e.g., whittle) help inversion? -> no
@@ -82,10 +84,9 @@ All below invocations should be done from the repo root.
     * In-place multiplication where possible
     * square matrix optimizations
     * TODO(sparse-derivatives)
-0. travis-ci, read the docs automatic doc builds
-0. TODO(fix) - better lmc testing.
-0. multidimensional inputs and ARD.
+0. travis-ci, auto doc builds, auto benchmarks
 0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups?
+0. multidimensional inputs and ARD.
 0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 
 ### Considerations 
