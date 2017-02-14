@@ -56,7 +56,7 @@ def gen_grid_kernel(params, grid_dists, interpolant, interpolantT):
     else:
         tot_rank = sum(len(coreg) for coreg in params.coreg_vecs)
         dsq = params.D ** 2
-        if tot_rank < dsq:
+        if tot_rank + params.D < dsq:
             ktype = 'slfm'
         else:
             ktype = 'bt'
