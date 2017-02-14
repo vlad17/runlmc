@@ -52,6 +52,7 @@ Make sure that the directory root is in the `PYTHONPATH` when running the benchm
 
     PYTHONPATH=.. jupyter notebook examples/example.ipynb
     PYTHONPATH=. python benchmarks/bench.py
+    cd benchmarks && OMP_NUM_THREADS=1 PYTHONPATH=.:.. fx2007.py
     
 ## Dev Stuff
 
@@ -68,10 +69,10 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. code/run large benchmarks (no ipynb in benchmarks).
+0. code/run large benchmarks (no ipynb in benchmarks). -> benchmarks should regen kernels.
 0. Write up ICML paper.
 0. rm 33k stuff from benchmarks
-0. Clean up benchmarks: set tasks for general cleanliness, figure out what to do with standard_tester.py, remove path dependency (right now access `../data` requires you to be in the benchmarks/ directory for invocations). How to run - info should go in their main pages, README should say how to print the help paragraph for all the scripts. Move slurm script for large kernel perf grid into repo, clean it up too.
+0. Clean up benchmarks: set tasks for general cleanliness, figure out what to do with standard_tester.py, remove path dependency (right now access `../data` requires you to be in the benchmarks/ directory for invocations). How to run - info should go in their main pages, README should say how to print the help paragraph for all the scripts. Move slurm script for large kernel perf grid into repo, clean it up too. clean up OMP_NUM_THREADS stuff too.
 0. Coalesce pool (rm extrapool): Starmapper multiprocessing interface - pool-based, within-thread. PoolGenerator - make on-the-fly pools (generator should cleanup on failure), with closing() and cleanup. Use is `self.pool_generator.make(par) as pool:`. If in LMC pool=... specified, then wrap it in a dummy generator that returns the same pool always. If pool=... is unspecified, then pool_generator will make pools on the fly with desired parallelism min with cpu count (but will short-circuit to blocking within-thread parallelism below size threshold/cpu_count=1). no chunks. [bugfix pool](https://github.com/python/cpython/pull/57/files). Update benchmarks to new interface.
 0. Generic benchmarks-run-all script.
 0. TODO(general-solve) Preconditioner?

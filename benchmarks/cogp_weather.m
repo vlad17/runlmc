@@ -5,7 +5,7 @@
 
 % Uses similar assumptions to cogp_fx2007: datadir and runs required
 % datadir should go the csv directory
-% requires runs and datadir to be defined
+% requires M, runs and datadir to be defined
 
 addpath(genpath([tempdir 'cogp']));
 format long;
@@ -43,14 +43,13 @@ cf.lrate_w    = 1e-5;
 cf.learn_z    = false;
 cf.momentum_z = 0.0;
 cf.lrate_z    = 1e-4;
-cf.maxiter = 10;
+cf.maxiter = 1500;
 cf.nbatch = 1000;
 cf.beta = 1/0.1;
 cf.initz = 'random';
 cf.w = ones(size(y,2),2);
 cf.monitor_elbo = 100;
 cf.fix_first = false;
-M = 500;
 Q = 2;
 xtest_ix = cell(2,1);
 xtest_ix{1} = x >= 10.2 & x <= 10.8;
@@ -70,8 +69,8 @@ for r=1:runs
   fvar = vaar.*repmat(ystd.^2,size(mu,1),1);
   per_out_smses = zeros(2, 1);
   per_out_nlpds = zeros(2, 1);
-  csvwrite([tempdir 'cogp-weather-mu'], mu(:, outputs))
-  csvwrite([tempdir 'cogp-weather-var'], fvar(:, outputs))
+  csvwrite([tempdir 'cogp-weather-mu' num2str(runs) num2str(M)], mu(:, outputs))
+  csvwrite([tempdir 'cogp-weather-var' num2str(runs) num2str(M)], fvar(:, outputs))
   for i=1:2
     t = outputs(i);
     tmp = ~isnan(ytest(:,t)) & xtest_ix{i};

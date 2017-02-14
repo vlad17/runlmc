@@ -22,6 +22,7 @@ from runlmc.util.numpy_convenience import begin_end_indices
 import tempfile
 
 TMP = tempfile.gettempdir()
+MATLAB_OMP_CNT = 4
 
 def _foreign_exchange_shared():
     # Adapts the foreign currency exchange problem
@@ -194,6 +195,11 @@ def _download_cogp():
         repo = 'git@github.com:vlad17/cogp.git'
         subprocess.call(['git', 'clone', repo, TMP + '/cogp'])
 
+def env_no_omp():
+    env = os.environ.copy()
+    del env['OMP_NUM_THREADS']
+    return env
+
 def cogp_fx2007(num_runs):
     _download_cogp()
     datafile = '../data/fx/fx2007_matlab.csv'
@@ -210,7 +216,8 @@ def cogp_fx2007(num_runs):
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True,
-        cwd=benchmark_dir)
+        cwd=benchmark_dir,
+        env=env_no_omp())
     mout = process.communicate()[0]
     with open(TMP + '/out-{}'.format(num_runs), 'a') as f:
         f.write(mout)
@@ -228,14 +235,14 @@ def cogp_fx2007(num_runs):
 
     return time, smse, nlpd, cogp_mu, cogp_var
 
-def cogp_weather(num_runs):
+def cogp_weather(num_runs, M):
     _download_cogp()
     datafile = '../data/weather/'
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """datadir='{}';runs={};cogp_weather;exit"""
-           .format(datafile, num_runs)]
-    with open(TMP + '/outw-{}'.format(num_runs), 'w') as f:
+           """datadir='{}';M={};runs={};cogp_weather;exit"""
+           .format(datafile, M, num_runs)]
+    with open(TMP + '/outw-{}-{}'.format(num_runs, M), 'w') as f:
         f.write(' '.join(cmd))
     benchmark_dir = os.getcwd() + '/../benchmarks'
     process = subprocess.Popen(
@@ -243,9 +250,10 @@ def cogp_weather(num_runs):
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True,
-        cwd=benchmark_dir)
+        cwd=benchmark_dir,
+        env=env_no_omp())
     mout = process.communicate()[0]
-    with open(TMP + '/outw-{}'.format(num_runs), 'a') as f:
+    with open(TMP + '/outw-{}-{}'.format(num_runs, M), 'a') as f:
         f.write(mout)
     ending = mout[mout.find('mean times'):]
     time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
@@ -256,7 +264,7 @@ def cogp_weather(num_runs):
 
     # the matlab script writes to this file
     test_fx = ['cam', 'chi']
-    cogp_mu = pd.read_csv(TMP + '/cogp-weather-mu', header=None, names=test_fx)
-    cogp_var = pd.read_csv(TMP + '/cogp-weather-var', header=None, names=test_fx)
+    cogp_mu = pd.read_csv(TMP + '/cogp-weather-mu{}{}'.format(num_runs, M), header=None, names=test_fx)
+    cogp_var = pd.read_csv(TMP + '/cogp-weather-var{}{}'.format(num_runs, M))
 
     return time, smse, nlpd, cogp_mu, cogp_var
