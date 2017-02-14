@@ -231,7 +231,6 @@ def cogp_fx2007(num_runs):
 def cogp_weather(num_runs):
     _download_cogp()
     datafile = '../data/weather/'
-    assert os.path.isfile(datafile)
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
            """datadir='{}';runs={};cogp_weather;exit"""
