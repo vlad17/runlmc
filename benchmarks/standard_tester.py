@@ -97,7 +97,7 @@ def weather():
             xss.append(xy.loc[~sel]['time'].values)
             yss.append(xy.loc[~sel]['ATMP'].values)
 
-    return xss, yss, test_xss, test_yss, test_fx, sensors
+    return xss, yss, test_xss, test_yss, sensors
 
 def toy_sinusoid():
     # Adapts the 2-output toy problem from
