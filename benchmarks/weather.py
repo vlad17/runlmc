@@ -9,6 +9,7 @@ from multiprocessing import Pool, cpu_count
 
 from runlmc.models.lmc import LMC
 from runlmc.kern.rbf import RBF
+from runlmc.kern.scaled import Scaled
 from runlmc.models.optimization import AdaDelta
 from runlmc.models.gpy_lmc import GPyLMC
 
@@ -33,6 +34,16 @@ with Pool(cpu_count()) as pool:
     workers = pool.starmap(os.getpid, [[] for _ in range(4 * cpu_count())])
     workers = set(workers)
     print(len(workers), 'distinct workers launched')
+
+    for _ in range(5):
+        ks = []
+        ranks = []
+        llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
+            runs, num_interp, xss, yss, test_xss, test_yss,
+            ks, ranks, {'verbosity': 100}, extrapool=pool,
+            slfm_kerns=[RBF(), RBF()], indep_gp=[Scaled(RBF()) for _ in xss])
+        print('llgp slfm m', num_interp, 'time', llgp_time, 'smse', llgp_smse, 'nlpd', llgp_nlpd)
+        print('!!!!!!!!!!!!!!!!!!!!!')
 
     ks = [RBF(name='rbf0')]
     ranks = [2]

@@ -89,7 +89,4 @@ class Parameterized(paramz.Parameterized, _PriorizableNode):
         :raise TypeError: if `param` is not the `runlmc` (priorizable)
                           parameter.
         """
-        if not isinstance(param, Param):
-            raise TypeError(
-                'Only runlmc.parametrization.Param types should be linked')
         super().link_parameter(param, index)

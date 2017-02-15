@@ -40,7 +40,7 @@ with Pool(cpu_count()) as pool:
     ranks = [2]
     llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
         runs, None, xss, yss, test_xss, test_yss,
-        ks, ranks, {'verbosity': 1}, extrapool=pool)
+        ks, ranks, {'verbosity': 100}, extrapool=pool)
     print('llgp time', llgp_time, 'smse', llgp_smse, 'nlpd', llgp_nlpd)
 
 cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_fx2007(runs)

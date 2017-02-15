@@ -142,6 +142,15 @@ class LMC(MultiGP):
                       defaults to cpu count.
     :param extrapool: temporary pool for re-use in benchmarks - this is an ugly
                       interface option that will be soon removed.
+    :param slfm_kerns: add kernel terms with kernel :math:`k_q` given by this list
+                       using the SLFM model, which means the corresponding rank
+                       is 1 and terms :math:`\\boldsymbol\\kappa_q=\\textbf{0}`
+    :param indep_gp: add in a term for independent GPs for each output,
+                     this must be a list of :math:`D` kernels if specified
+                     at all, corresponding to terms with
+                     :math:`A_q=0,\\boldsymbol\\kappa_q=\\boldsymbol\\kron_d`
+                     for the :math:`d`-th element of this list
+                     :math:`k_d`.
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
     :raises: :class:`ValueError` if normalization if any `Ys` have no variance
                                  or values in `Xs` have multiple identical
@@ -151,12 +160,17 @@ class LMC(MultiGP):
     def __init__(self, Xs, Ys, normalize=True, kernels=None,
                  ranks=None, lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='matrix-free',
-                 variance_samples=20, max_procs=None, extrapool=None):
+                 variance_samples=20, max_procs=None, extrapool=None,
+                 slfm_kerns=[], indep_gp=[]):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
         self.update_model(False)
 
-        if not kernels:
+        if not kernels and not slfm_kerns and not indep_gp:
             raise ValueError('Number of kernels should be >0')
+
+        if len(indep_gp) not in [0, len(Xs)]:
+            raise ValueError('Independent GP kernels should be one-per-output'
+                             ' or not specified at all')
 
         self.variance_samples = variance_samples
         self.prediction = prediction
@@ -164,7 +178,9 @@ class LMC(MultiGP):
             raise ValueError('Variance prediction method {} unrecognized'
                              .format(prediction))
 
-        self.kernels = kernels
+        self.kernels = kernels + slfm_kerns + indep_gp
+        self.nkernels = {
+            'lmc': len(kernels), 'slfm': len(slfm_kerns), 'indep': len(indep_gp)}
         for k in self.kernels:
             self.link_parameter(k)
 
@@ -185,18 +201,35 @@ class LMC(MultiGP):
                   self.name, n, m)
 
         self.coreg_vecs = []
-        for i in range(len(self.kernels)):
-            rank = 1 if ranks is None else ranks[i]
-            coreg_vec = np.random.randn(rank, self.output_dim)
+        if ranks is None:
+            ranks = [1 for _ in kernels]
+        ranks += [1 for _ in slfm_kerns]
+        ranks += [0 for _ in indep_gp]
+        for i, rank in enumerate(ranks):
+            if rank == 0:
+                coreg_vec = np.zeros((1, self.output_dim))
+            else:
+                coreg_vec = np.random.randn(rank, self.output_dim)
             self.coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
             self.link_parameter(self.coreg_vecs[-1])
 
         self.coreg_diags = []
-        for i in range(len(self.kernels)):
+        for _ in range(self.nkernels['lmc']):
             coreg_diag = np.ones(self.output_dim)
             self.coreg_diags.append(
                 Param('kappa{}'.format(i), coreg_diag, Logexp()))
             self.link_parameter(self.coreg_diags[-1])
+        for _ in range(self.nkernels['slfm']):
+            i = len(self.coreg_diags)
+            coreg_diag = np.zeros(self.output_dim)
+            self.coreg_diags.append(Param('kappa{}'.format(i), coreg_diag))
+            self.coreg_diags[-1].constrain_fixed()
+        for d in range(self.nkernels['indep']):
+            i = len(self.coreg_diags)
+            coreg_diag = np.zeros(self.output_dim)
+            coreg_diag[d] = 1
+            self.coreg_diags.append(Param('kappa{}'.format(i), coreg_diag))
+            self.coreg_diags[-1].constrain_fixed()
 
         # Corresponds to epsilon
         self.noise = Param('noise', np.ones(self.output_dim), Logexp())
@@ -384,6 +417,7 @@ class LMC(MultiGP):
             kerns = [k.from_dist(0) for k in self.kernels]
             native_output_var = coregs.dot(kerns).reshape(-1)
             native_var = native_output_var + self.noise
+
             self._cache['native_var'] = native_var
         return self._cache['native_var']
 

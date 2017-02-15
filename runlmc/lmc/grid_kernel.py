@@ -46,17 +46,18 @@ class GridKernel(Matrix):
         ski = self.K.Ks[0]
         return ski.W, ski.WT
 
-# TODO(cleanup) can definately refactor below replication: they're
-# all just summatrix of diag
-
 # TODO(test)
 def gen_grid_kernel(params, grid_dists, interpolant, interpolantT):
     if params.Q == 1:
         ktype = 'sum'
     else:
         tot_rank = sum(len(coreg) for coreg in params.coreg_vecs)
+        no_diag_correction = (
+            params.D if
+            params.nkernels['lmc'] == 0 and params.nkernels['indep'] == 0 else
+            0)
         dsq = params.D ** 2
-        if tot_rank + params.D < dsq:
+        if tot_rank + params.D - no_diag_correction < dsq:
             ktype = 'slfm'
         else:
             ktype = 'bt'
@@ -68,17 +69,20 @@ def _gen_slfm_grid(params, tops):
     return SumMatrix([coreg_Ks, diag_Ks])
 
 def _gen_coreg_Ks(params, tops):
-    ranks = np.array([len(coreg) for coreg in params.coreg_vecs])
-    A_star = np.vstack(params.coreg_vecs).T
+    all_coreg = params.coreg_vecs[:-params.nkernels['indep']]
+    ranks = np.array([len(coreg) for coreg in all_coreg])
+    A_star = np.vstack(all_coreg).T
     I_m = Identity(tops.shape[1])
     left = Kronecker(NumpyMatrix(A_star), I_m)
     right = Kronecker(NumpyMatrix(A_star.T), I_m)
-    deduped_toeps = [Toeplitz(top) for top in tops]
+    deduped_toeps = [Toeplitz(top) for top in tops[:len(all_coreg)]]
     toeps = BlockDiag(np.repeat(deduped_toeps, ranks))
     coreg_Ks = Composition([left, toeps, right])
     return coreg_Ks
 
 def _gen_diag_Ks(params, tops):
+    if params.nkernels['lmc'] == 0 and params.nkernels['indep'] == 0:
+        return Identity(params.n)
     diags = np.column_stack(params.coreg_diag)
     diag_tops = diags.dot(tops)
     diag_Ks = BlockDiag([Toeplitz(top) for top in diag_tops])
