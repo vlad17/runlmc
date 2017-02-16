@@ -157,7 +157,7 @@ class LMC(MultiGP):
                                  values.
     :raises: :class:`ValueError` if no kernels
     """
-    def __init__(self, Xs, Ys, normalize=True, kernels=None,
+    def __init__(self, Xs, Ys, normalize=True, kernels=[],
                  ranks=None, lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='matrix-free',
                  variance_samples=20, max_procs=None, extrapool=None,
@@ -200,18 +200,18 @@ class LMC(MultiGP):
         _LOG.info('LMC %s grid (n = %d, m = %d) complete, ',
                   self.name, n, m)
 
-        self.coreg_vecs = []
         if ranks is None:
             ranks = [1 for _ in kernels]
-        ranks += [1 for _ in slfm_kerns]
-        ranks += [0 for _ in indep_gp]
-        for i, rank in enumerate(ranks):
-            if rank == 0:
-                coreg_vec = np.zeros((1, self.output_dim))
-            else:
-                coreg_vec = np.random.randn(rank, self.output_dim)
+        self.coreg_vecs = []
+        initial_vecs = []
+        initial_vecs += [np.random.randn(rank, self.output_dim) for rank in ranks]
+        initial_vecs += [np.ones((1, self.output_dim)) / self.output_dim
+                         for _ in slfm_kerns]
+        initial_vecs += [np.zeros((1, self.output_dim)) for _ in indep_gp]
+        for i, coreg_vec in enumerate(initial_vecs):
             self.coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
-            self.link_parameter(self.coreg_vecs[-1])
+            if i < self.nkernels['lmc'] + self.nkernels['slfm']:
+                self.link_parameter(self.coreg_vecs[-1])
 
         self.coreg_diags = []
         for _ in range(self.nkernels['lmc']):

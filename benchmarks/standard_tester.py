@@ -159,10 +159,15 @@ def nlpd(test_yss, pred_yss, pred_vss):
             zip(test_yss, pred_yss, pred_vss)])
 
 def runlmc(num_runs, m, xss, yss, test_xss, test_yss,
-           kerns, ranks, optimizer_opts, **kwargs):
+           kgen, rgen, slfmgen, indepgen, optimizer_opts, **kwargs):
     times, smses, nlpds = [], [], []
     for _ in range(num_runs):
-        lmc = LMC(xss, yss, kernels=kerns, ranks=ranks,
+        ks = kgen()
+        rs = rgen()
+        slfm = slfmgen()
+        indep = indepgen()
+        lmc = LMC(xss, yss, kernels=ks, ranks=rs,
+                  slfm_kerns=slfm, indep_gp=indep,
                   normalize=True, m=m, **kwargs)
         opt = AdaDelta(**optimizer_opts)
         with contexttimer.Timer() as t:
@@ -171,22 +176,9 @@ def runlmc(num_runs, m, xss, yss, test_xss, test_yss,
         pred_yss, pred_vss = lmc.predict(test_xss)
         smses.append(smse(test_yss, pred_yss, yss))
         nlpds.append(nlpd(test_yss, pred_yss, pred_vss))
+        print('time', times[-1], 'smse', smses[-1], 'nlpd', nlpds[-1])
         last = lmc
-    return np.mean(times), np.mean(smses), np.mean(nlpds), last
-
-def dtcvar(num_runs, m, xss, yss, test_xss, test_yss,
-           kerns, ranks, optimizer_opts):
-    times, smses, nlpds, lls = [], [], [], []
-    best = None
-    for _ in range(num_runs):
-        dtcvar = GPyLMC(xss, yss, kernels=ks, ranks=ranks, sparse=num_inducing)
-        with contexttimer.Timer() as t:
-            dtcvar.optimize(**optimizer_opts)
-        times.append(t.elapsed)
-        pred_yss, pred_vss = dtcvar.predict(test_xss)
-        smses.append(smse(test_yss, pred_yss, yss))
-        nlpds.append(nlpd(test_yss, pred_yss, pred_vss))
-    return np.mean(times), np.mean(smses), np.mean(nlpds), best
+    return times, smses, nlpds, last
 
 def _download_cogp():
     # Download paper code if it is not there
@@ -197,7 +189,8 @@ def _download_cogp():
 
 def env_no_omp():
     env = os.environ.copy()
-    del env['OMP_NUM_THREADS']
+    if 'OMP_NUM_THREADS' in env:
+        del env['OMP_NUM_THREADS']
     return env
 
 def cogp_fx2007(num_runs):
@@ -268,3 +261,6 @@ def cogp_weather(num_runs, M):
     cogp_var = pd.read_csv(TMP + '/cogp-weather-var{}{}'.format(num_runs, M))
 
     return time, smse, nlpd, cogp_mu, cogp_var
+
+def statprint(x):
+    return '{:10.4f} ({:10.4f})'.format(np.mean(x), np.std(x))

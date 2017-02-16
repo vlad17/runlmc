@@ -1,3 +1,5 @@
+# Run this as follows, in benchmarks/
+# OMP_NUM_THREADS=1 PYTHONPATH=.:.. python -u weather.py 2>&1 | tee example-stdout-weather.txt | egrep -e '--->|launched'
 import os
 import logging
 import sys
@@ -23,10 +25,7 @@ np.random.seed(1234)
 
 xss, yss, test_xss, test_yss, cols = weather()
 
-# TODO - more runs
-runs = 1
-
-num_interp = 4000
+runs = 10
 
 import os
 
@@ -35,40 +34,26 @@ with Pool(cpu_count()) as pool:
     workers = set(workers)
     print(len(workers), 'distinct workers launched')
 
-    for _ in range(5):
-        ks = []
-        ranks = []
+    for num_interp in [1000, 2000, 3000, 4000, 5000]:
+        kgen = lambda: []
+        rgen = lambda: []
+        slfmgen = lambda: [RBF(name='slfm0'), RBF(name='slfm1')]
+        indepgen = lambda: [Scaled(RBF()) for _ in xss]
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
-            runs, num_interp, xss, yss, test_xss, test_yss,
-            ks, ranks, {'verbosity': 100}, extrapool=pool,
-            slfm_kerns=[RBF(), RBF()], indep_gp=[Scaled(RBF()) for _ in xss])
-        print('llgp slfm m', num_interp, 'time', llgp_time, 'smse', llgp_smse, 'nlpd', llgp_nlpd)
-        print('!!!!!!!!!!!!!!!!!!!!!')
+            runs, num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
+            slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
+        print('---> llgp slfm m', num_interp, 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
-    ks = [RBF(name='rbf0')]
-    ranks = [2]
-    llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
-        runs, num_interp, xss, yss, test_xss, test_yss,
-        ks, ranks, {'verbosity': 1}, extrapool=pool)
+        for rank in [2, 3, 4]:
+            kgen = lambda: [RBF(name='rbf0')]
+            rgen = lambda: [rank]
+            slfmgen = lambda: []
+            indepgen = lambda: []
+            llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
+                runs, num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
+                slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
+            print('---> llgp Q1R{} m'.format(rank), num_interp, 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
-    print('llgp Q1R2 m', num_interp, 'time', llgp_time, 'smse', llgp_smse, 'nlpd', llgp_nlpd)
-
-    ks = [RBF(name='rbf0')]
-    ranks = [3]
-    llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
-        runs, num_interp, xss, yss, test_xss, test_yss,
-        ks, ranks, {'verbosity': 1}, extrapool=pool)
-
-    print('llgp Q1R3 m', num_interp, 'time', llgp_time, 'smse', llgp_smse, 'nlpd', llgp_nlpd)
-
-    ks = [RBF(name='rbf0')]
-    ranks = [4]
-    llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
-        runs, num_interp, xss, yss, test_xss, test_yss,
-        ks, ranks, {'verbosity': 1}, extrapool=pool)
-
-    print('llgp Q1R4 m', num_interp, 'time', llgp_time, 'smse', llgp_smse, 'nlpd', llgp_nlpd)
-
-num_induc = 100
-cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_weather(runs, num_induc)
-print('cogp m', num_induc, 'time', cogp_time, 'smse', cogp_smse, 'nlpd', cogp_nlpd)
+for num_induc in [100, 200, 300, 400, 500]:
+    cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_weather(runs, num_induc)
+    print('---> cogp m', num_induc, 'time', cogp_time, 'smse', cogp_smse, 'nlpd', cogp_nlpd)

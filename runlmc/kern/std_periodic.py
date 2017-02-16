@@ -21,7 +21,7 @@ class StdPeriodic(StationaryKern):
 
     .. math::
 
-       k(r) = \\exp \\left(\\frac{\gamma}{2}\\sin^2 \\frac{\\pi r}{T}\\right)
+       k(r) = \\exp \\left(\\frac{-\gamma}{2}\\sin^2 \\frac{\\pi r}{T}\\right)
 
     :param inv_lengthscale: :math:`\\gamma`, above.
     :param period: :math:`T`, above.

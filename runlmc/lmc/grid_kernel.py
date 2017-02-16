@@ -75,7 +75,7 @@ def _gen_coreg_Ks(params, tops):
     I_m = Identity(tops.shape[1])
     left = Kronecker(NumpyMatrix(A_star), I_m)
     right = Kronecker(NumpyMatrix(A_star.T), I_m)
-    deduped_toeps = [Toeplitz(top) for top in tops[:len(all_coreg)]]
+    deduped_toeps = np.array([Toeplitz(top) for top in tops[:len(all_coreg)]])
     toeps = BlockDiag(np.repeat(deduped_toeps, ranks))
     coreg_Ks = Composition([left, toeps, right])
     return coreg_Ks
