@@ -22,7 +22,6 @@ from runlmc.util.numpy_convenience import begin_end_indices
 import tempfile
 
 TMP = tempfile.gettempdir()
-MATLAB_OMP_CNT = 4
 
 def _foreign_exchange_shared():
     # Adapts the foreign currency exchange problem
@@ -193,14 +192,14 @@ def env_no_omp():
         del env['OMP_NUM_THREADS']
     return env
 
-def cogp_fx2007(num_runs):
+def cogp_fx2007(num_runs, inducing_pts):
     _download_cogp()
     datafile = '../data/fx/fx2007_matlab.csv'
     assert os.path.isfile(datafile)
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """infile='{}';runs={};cogp_fx2007;exit"""
-           .format(datafile, num_runs)]
+           """infile='{}';M={};runs={};cogp_fx2007;exit"""
+           .format(datafile, inducing_pts, num_runs)]
     with open(TMP + '/out-{}'.format(num_runs), 'w') as f:
         f.write(' '.join(cmd))
     benchmark_dir = os.getcwd() + '/../benchmarks'

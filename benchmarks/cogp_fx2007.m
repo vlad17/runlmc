@@ -7,7 +7,7 @@
 % Make sure the csv is in /tmp/
 % this is all done for you in benchmarks/financial_exchange.ipynb
 
-% assume infile,runs are already defined
+% assume M,infile,runs are already defined
 
 addpath(genpath([tempdir 'cogp']));
 format long;
@@ -48,7 +48,6 @@ cf.initz = 'random';
 cf.w = ones(size(y,2),2);
 cf.monitor_elbo = 50;
 cf.fix_first = false;
-M = 100;
 Q = 2;
 xtest = cell(3,1);
 xtest{1} = (50:100)';
