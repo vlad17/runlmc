@@ -44,16 +44,6 @@ with Pool(cpu_count()) as pool:
             slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
         print('---> llgp slfm m', num_interp, 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
-        for rank in [2, 3, 4]:
-            kgen = lambda: [RBF(name='rbf0')]
-            rgen = lambda: [rank]
-            slfmgen = lambda: []
-            indepgen = lambda: []
-            llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
-                runs, num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
-                slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
-            print('---> llgp Q1R{} m'.format(rank), num_interp, 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
-
 for num_induc in [100, 200, 300, 400, 500]:
     cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_weather(runs, num_induc)
     print('---> cogp m', num_induc, 'time', cogp_time, 'smse', cogp_smse, 'nlpd', cogp_nlpd)

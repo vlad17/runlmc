@@ -3125,3 +3125,2907 @@ finished adadelta optimization
     4.2192e+03 max MA(1) grad norm
     norm used inf
 Using user-set num processors for 374 on-the-fly variance predictions
+time 344.03330992907286 smse 0.309898377122 nlpd 3.34399751917
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4477e+02
+iteration        2 grad norm 8.4755e+02
+iteration        3 grad norm 8.4454e+02
+iteration        4 grad norm 8.3678e+02
+iteration        5 grad norm 8.2800e+02
+iteration        6 grad norm 8.0977e+02
+iteration        7 grad norm 7.8315e+02
+iteration        8 grad norm 7.5644e+02
+iteration        9 grad norm 1.2401e+03
+iteration       10 grad norm 3.9691e+03
+iteration       11 grad norm 1.4580e+03
+iteration       12 grad norm 1.4620e+03
+iteration       13 grad norm 1.3776e+03
+iteration       14 grad norm 1.1290e+03
+iteration       15 grad norm 8.7793e+02
+finished adadelta optimization
+            15 iterations
+    8.7793e+02 final grad norm
+    8.7793e+02 final MA(1) grad norm
+    3.9691e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 364.87366612255573 smse 0.270968562695 nlpd 3.1009286454
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4832e+02
+iteration        2 grad norm 8.4705e+02
+iteration        3 grad norm 8.4436e+02
+iteration        4 grad norm 8.3785e+02
+iteration        5 grad norm 8.2918e+02
+iteration        6 grad norm 8.0910e+02
+iteration        7 grad norm 7.8567e+02
+iteration        8 grad norm 7.6763e+02
+iteration        9 grad norm 2.2780e+03
+iteration       10 grad norm 2.8313e+03
+iteration       11 grad norm 1.4582e+03
+iteration       12 grad norm 1.4616e+03
+iteration       13 grad norm 1.3619e+03
+iteration       14 grad norm 1.1053e+03
+iteration       15 grad norm 8.9841e+02
+iteration       16 grad norm 1.0542e+03
+iteration       17 grad norm 1.3303e+03
+finished adadelta optimization
+            17 iterations
+    1.3303e+03 final grad norm
+    1.3303e+03 final MA(1) grad norm
+    2.8313e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 528.9362504705787 smse 0.28703769801 nlpd 3.54929457267
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4054e+02
+iteration        2 grad norm 8.4110e+02
+iteration        3 grad norm 8.3988e+02
+iteration        4 grad norm 8.3687e+02
+iteration        5 grad norm 8.2336e+02
+iteration        6 grad norm 8.0684e+02
+iteration        7 grad norm 7.7897e+02
+iteration        8 grad norm 7.3605e+02
+iteration        9 grad norm 7.7543e+02
+iteration       10 grad norm 3.4681e+03
+iteration       11 grad norm 2.0970e+03
+iteration       12 grad norm 1.4695e+03
+iteration       13 grad norm 1.4122e+03
+iteration       14 grad norm 1.2136e+03
+iteration       15 grad norm 7.8974e+02
+iteration       16 grad norm 1.1052e+03
+finished adadelta optimization
+            16 iterations
+    1.1052e+03 final grad norm
+    1.1052e+03 final MA(1) grad norm
+    3.4681e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 478.40260408073664 smse 0.31042852509 nlpd 3.72357251592
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3896e+02
+iteration        2 grad norm 8.4162e+02
+iteration        3 grad norm 8.4001e+02
+iteration        4 grad norm 8.3513e+02
+iteration        5 grad norm 8.2869e+02
+iteration        6 grad norm 8.1066e+02
+iteration        7 grad norm 7.9544e+02
+iteration        8 grad norm 1.9920e+03
+iteration        9 grad norm 3.4012e+03
+iteration       10 grad norm 1.4573e+03
+iteration       11 grad norm 1.4719e+03
+iteration       12 grad norm 1.4342e+03
+iteration       13 grad norm 1.2614e+03
+iteration       14 grad norm 8.9061e+02
+finished adadelta optimization
+            14 iterations
+    8.9061e+02 final grad norm
+    8.9061e+02 final MA(1) grad norm
+    3.4012e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 482.5419021695852 smse 0.242078993259 nlpd 2.55485924143
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4582e+02
+iteration        2 grad norm 8.4795e+02
+iteration        3 grad norm 8.4292e+02
+iteration        4 grad norm 8.4000e+02
+iteration        5 grad norm 8.2825e+02
+iteration        6 grad norm 8.1090e+02
+iteration        7 grad norm 7.8714e+02
+iteration        8 grad norm 7.5988e+02
+iteration        9 grad norm 1.5366e+03
+iteration       10 grad norm 3.6732e+03
+iteration       11 grad norm 1.4626e+03
+iteration       12 grad norm 1.4640e+03
+iteration       13 grad norm 1.3727e+03
+iteration       14 grad norm 1.1293e+03
+iteration       15 grad norm 8.7807e+02
+finished adadelta optimization
+            15 iterations
+    8.7807e+02 final grad norm
+    8.7807e+02 final MA(1) grad norm
+    3.6732e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 400.4972292408347 smse 0.319843002431 nlpd 3.46353458853
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4493e+02
+iteration        2 grad norm 8.4409e+02
+iteration        3 grad norm 8.4299e+02
+iteration        4 grad norm 8.3749e+02
+iteration        5 grad norm 8.2599e+02
+iteration        6 grad norm 8.0926e+02
+iteration        7 grad norm 7.8133e+02
+iteration        8 grad norm 7.4985e+02
+iteration        9 grad norm 1.6728e+03
+iteration       10 grad norm 4.0579e+03
+iteration       11 grad norm 1.4463e+03
+iteration       12 grad norm 1.4681e+03
+iteration       13 grad norm 1.3791e+03
+iteration       14 grad norm 1.1215e+03
+iteration       15 grad norm 8.9376e+02
+finished adadelta optimization
+            15 iterations
+    8.9376e+02 final grad norm
+    8.9376e+02 final MA(1) grad norm
+    4.0579e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 441.3993391394615 smse 0.239466323512 nlpd 2.81018832169
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.2956e+02
+iteration        2 grad norm 8.2888e+02
+iteration        3 grad norm 8.2798e+02
+iteration        4 grad norm 8.2788e+02
+iteration        5 grad norm 8.1760e+02
+iteration        6 grad norm 8.0527e+02
+iteration        7 grad norm 7.7661e+02
+iteration        8 grad norm 7.4480e+02
+iteration        9 grad norm 3.0180e+03
+iteration       10 grad norm 2.3801e+03
+iteration       11 grad norm 1.4742e+03
+iteration       12 grad norm 1.4545e+03
+iteration       13 grad norm 1.3282e+03
+iteration       14 grad norm 1.0170e+03
+iteration       15 grad norm 1.0188e+03
+finished adadelta optimization
+            15 iterations
+    1.0188e+03 final grad norm
+    1.0188e+03 final MA(1) grad norm
+    3.0180e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 467.15137825906277 smse 0.431685095813 nlpd 4.3425705707
+---> llgp Q1R3 m 3000 time   422.5276 (   63.4674) smse     0.2998 (    0.0547) nlpd     3.3093 (    0.5367)
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4205e+02
+iteration        2 grad norm 8.4187e+02
+iteration        3 grad norm 8.3880e+02
+iteration        4 grad norm 8.3584e+02
+iteration        5 grad norm 8.2721e+02
+iteration        6 grad norm 8.0700e+02
+iteration        7 grad norm 7.8151e+02
+iteration        8 grad norm 7.5605e+02
+iteration        9 grad norm 1.8167e+03
+iteration       10 grad norm 3.6104e+03
+iteration       11 grad norm 1.4719e+03
+iteration       12 grad norm 1.4563e+03
+iteration       13 grad norm 1.3558e+03
+iteration       14 grad norm 1.0740e+03
+iteration       15 grad norm 9.2353e+02
+finished adadelta optimization
+            15 iterations
+    9.2353e+02 final grad norm
+    9.2353e+02 final MA(1) grad norm
+    3.6104e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 408.67700865864754 smse 0.270382075349 nlpd 3.13638811212
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4215e+02
+iteration        2 grad norm 8.4274e+02
+iteration        3 grad norm 8.3926e+02
+iteration        4 grad norm 8.3152e+02
+iteration        5 grad norm 8.2493e+02
+iteration        6 grad norm 8.0961e+02
+iteration        7 grad norm 7.8453e+02
+iteration        8 grad norm 1.4336e+03
+iteration        9 grad norm 4.0699e+03
+iteration       10 grad norm 1.4430e+03
+iteration       11 grad norm 1.4751e+03
+iteration       12 grad norm 1.4403e+03
+iteration       13 grad norm 1.2895e+03
+iteration       14 grad norm 9.3530e+02
+finished adadelta optimization
+            14 iterations
+    9.3530e+02 final grad norm
+    9.3530e+02 final MA(1) grad norm
+    4.0699e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 394.7556605413556 smse 0.218741110383 nlpd 2.36367518856
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3640e+02
+iteration        2 grad norm 8.3851e+02
+iteration        3 grad norm 8.3645e+02
+iteration        4 grad norm 8.3032e+02
+iteration        5 grad norm 8.1916e+02
+iteration        6 grad norm 8.0599e+02
+iteration        7 grad norm 7.7836e+02
+iteration        8 grad norm 7.5849e+02
+iteration        9 grad norm 3.0337e+03
+iteration       10 grad norm 2.2039e+03
+iteration       11 grad norm 1.4745e+03
+iteration       12 grad norm 1.4479e+03
+iteration       13 grad norm 1.3172e+03
+iteration       14 grad norm 1.0020e+03
+iteration       15 grad norm 9.6406e+02
+finished adadelta optimization
+            15 iterations
+    9.6406e+02 final grad norm
+    9.6406e+02 final MA(1) grad norm
+    3.0337e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 447.5142947509885 smse 0.270063856307 nlpd 3.14002808726
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4785e+02
+iteration        2 grad norm 8.4793e+02
+iteration        3 grad norm 8.4482e+02
+iteration        4 grad norm 8.4153e+02
+iteration        5 grad norm 8.3046e+02
+iteration        6 grad norm 8.1144e+02
+iteration        7 grad norm 7.8692e+02
+iteration        8 grad norm 7.6721e+02
+iteration        9 grad norm 1.6261e+03
+iteration       10 grad norm 3.7949e+03
+iteration       11 grad norm 1.4666e+03
+iteration       12 grad norm 1.4630e+03
+iteration       13 grad norm 1.3682e+03
+iteration       14 grad norm 1.1178e+03
+iteration       15 grad norm 9.6896e+02
+finished adadelta optimization
+            15 iterations
+    9.6896e+02 final grad norm
+    9.6896e+02 final MA(1) grad norm
+    3.7949e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 538.2935790345073 smse 0.505749862734 nlpd 4.83744788321
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4660e+02
+iteration        2 grad norm 8.4175e+02
+iteration        3 grad norm 8.4317e+02
+iteration        4 grad norm 8.3507e+02
+iteration        5 grad norm 8.2834e+02
+iteration        6 grad norm 8.0946e+02
+iteration        7 grad norm 7.8137e+02
+iteration        8 grad norm 7.4460e+02
+iteration        9 grad norm 1.0042e+03
+iteration       10 grad norm 3.9841e+03
+iteration       11 grad norm 1.4417e+03
+iteration       12 grad norm 1.4681e+03
+iteration       13 grad norm 1.3961e+03
+iteration       14 grad norm 1.1615e+03
+iteration       15 grad norm 7.9932e+02
+finished adadelta optimization
+            15 iterations
+    7.9932e+02 final grad norm
+    7.9932e+02 final MA(1) grad norm
+    3.9841e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 505.8245250284672 smse 0.280367234334 nlpd 3.079865035
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4716e+02
+iteration        2 grad norm 8.4597e+02
+iteration        3 grad norm 8.4317e+02
+iteration        4 grad norm 8.3822e+02
+iteration        5 grad norm 8.2555e+02
+iteration        6 grad norm 8.0823e+02
+iteration        7 grad norm 7.8805e+02
+iteration        8 grad norm 1.7508e+03
+iteration        9 grad norm 3.6722e+03
+iteration       10 grad norm 1.4525e+03
+iteration       11 grad norm 1.4753e+03
+iteration       12 grad norm 1.4370e+03
+iteration       13 grad norm 1.2739e+03
+iteration       14 grad norm 9.1293e+02
+finished adadelta optimization
+            14 iterations
+    9.1293e+02 final grad norm
+    9.1293e+02 final MA(1) grad norm
+    3.6722e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 536.6151186227798 smse 0.250823000309 nlpd 2.58098169874
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3299e+02
+iteration        2 grad norm 8.3423e+02
+iteration        3 grad norm 8.3444e+02
+iteration        4 grad norm 8.3228e+02
+iteration        5 grad norm 8.2371e+02
+iteration        6 grad norm 8.0769e+02
+iteration        7 grad norm 7.7860e+02
+iteration        8 grad norm 7.4363e+02
+iteration        9 grad norm 1.2968e+03
+iteration       10 grad norm 4.0520e+03
+iteration       11 grad norm 1.4636e+03
+iteration       12 grad norm 1.4613e+03
+iteration       13 grad norm 1.3689e+03
+iteration       14 grad norm 1.1013e+03
+iteration       15 grad norm 9.0867e+02
+finished adadelta optimization
+            15 iterations
+    9.0867e+02 final grad norm
+    9.0867e+02 final MA(1) grad norm
+    4.0520e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 496.2018569856882 smse 0.277212580407 nlpd 3.10384292416
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4822e+02
+iteration        2 grad norm 8.5084e+02
+iteration        3 grad norm 8.4492e+02
+iteration        4 grad norm 8.3926e+02
+iteration        5 grad norm 8.2893e+02
+iteration        6 grad norm 8.1104e+02
+iteration        7 grad norm 7.8729e+02
+iteration        8 grad norm 8.6136e+02
+iteration        9 grad norm 3.4290e+03
+iteration       10 grad norm 1.8608e+03
+iteration       11 grad norm 1.4708e+03
+iteration       12 grad norm 1.4503e+03
+iteration       13 grad norm 1.3256e+03
+iteration       14 grad norm 1.0238e+03
+iteration       15 grad norm 9.9883e+02
+finished adadelta optimization
+            15 iterations
+    9.9883e+02 final grad norm
+    9.9883e+02 final MA(1) grad norm
+    3.4290e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 530.0014084503055 smse 0.410005821562 nlpd 4.24852867641
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4365e+02
+iteration        2 grad norm 8.4259e+02
+iteration        3 grad norm 8.3959e+02
+iteration        4 grad norm 8.3618e+02
+iteration        5 grad norm 8.2635e+02
+iteration        6 grad norm 8.1073e+02
+iteration        7 grad norm 7.8516e+02
+iteration        8 grad norm 7.7076e+02
+iteration        9 grad norm 3.3082e+03
+iteration       10 grad norm 1.8451e+03
+iteration       11 grad norm 1.4686e+03
+iteration       12 grad norm 1.4411e+03
+iteration       13 grad norm 1.3075e+03
+iteration       14 grad norm 9.7704e+02
+iteration       15 grad norm 9.6618e+02
+finished adadelta optimization
+            15 iterations
+    9.6618e+02 final grad norm
+    9.6618e+02 final MA(1) grad norm
+    3.3082e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 484.82893535494804 smse 0.333297766384 nlpd 3.58041310403
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 3004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4668e+02
+iteration        2 grad norm 8.4568e+02
+iteration        3 grad norm 8.4227e+02
+iteration        4 grad norm 8.3791e+02
+iteration        5 grad norm 8.2703e+02
+iteration        6 grad norm 8.0851e+02
+iteration        7 grad norm 7.8343e+02
+iteration        8 grad norm 7.6243e+02
+iteration        9 grad norm 2.2640e+03
+iteration       10 grad norm 3.1946e+03
+iteration       11 grad norm 1.4650e+03
+iteration       12 grad norm 1.4624e+03
+iteration       13 grad norm 1.3650e+03
+iteration       14 grad norm 1.1024e+03
+iteration       15 grad norm 9.3892e+02
+finished adadelta optimization
+            15 iterations
+    9.3892e+02 final grad norm
+    9.3892e+02 final MA(1) grad norm
+    3.1946e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 546.6287625655532 smse 0.378088512925 nlpd 3.90825647316
+---> llgp Q1R4 m 3000 time   488.9341 (   52.0638) smse     0.3195 (    0.0834) nlpd     3.3979 (    0.7176)
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3116e+02
+iteration        2 grad norm 8.3546e+02
+iteration        3 grad norm 8.3509e+02
+iteration        4 grad norm 8.3022e+02
+iteration        5 grad norm 8.2142e+02
+iteration        6 grad norm 8.0618e+02
+iteration        7 grad norm 7.8369e+02
+iteration        8 grad norm 8.0955e+02
+iteration        9 grad norm 1.3877e+03
+iteration       10 grad norm 1.4495e+03
+iteration       11 grad norm 1.4676e+03
+iteration       12 grad norm 1.4330e+03
+iteration       13 grad norm 1.2745e+03
+iteration       14 grad norm 1.1173e+03
+iteration       15 grad norm 4.0470e+02
+iteration       16 grad norm 3.1424e+02
+iteration       17 grad norm 8.9821e+02
+iteration       18 grad norm 1.0068e+03
+iteration       19 grad norm 1.4547e+03
+iteration       20 grad norm 5.3382e+02
+iteration       21 grad norm 3.0203e+02
+iteration       22 grad norm 5.0858e+02
+finished adadelta optimization
+            22 iterations
+    5.0858e+02 final grad norm
+    5.0858e+02 final MA(1) grad norm
+    1.4676e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 168.05050697922707 smse 0.119705297162 nlpd 2.68839952123
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3236e+02
+iteration        2 grad norm 8.3344e+02
+iteration        3 grad norm 8.3411e+02
+iteration        4 grad norm 8.3009e+02
+iteration        5 grad norm 8.2120e+02
+iteration        6 grad norm 8.0612e+02
+iteration        7 grad norm 7.8246e+02
+iteration        8 grad norm 8.0618e+02
+iteration        9 grad norm 1.4052e+03
+iteration       10 grad norm 1.4441e+03
+iteration       11 grad norm 1.4682e+03
+iteration       12 grad norm 1.3844e+03
+iteration       13 grad norm 1.2901e+03
+iteration       14 grad norm 8.6896e+02
+iteration       15 grad norm 7.7677e+02
+iteration       16 grad norm 1.1630e+03
+iteration       17 grad norm 2.3775e+03
+iteration       18 grad norm 9.9614e+02
+iteration       19 grad norm 8.0459e+02
+iteration       20 grad norm 8.2070e+02
+iteration       21 grad norm 9.9327e+02
+iteration       22 grad norm 1.9032e+02
+finished adadelta optimization
+            22 iterations
+    1.9032e+02 final grad norm
+    1.9032e+02 final MA(1) grad norm
+    2.3775e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 138.05348513275385 smse 0.112236844763 nlpd 2.53013004359
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3223e+02
+iteration        2 grad norm 8.3343e+02
+iteration        3 grad norm 8.3407e+02
+iteration        4 grad norm 8.2900e+02
+iteration        5 grad norm 8.2297e+02
+iteration        6 grad norm 8.0480e+02
+iteration        7 grad norm 7.8095e+02
+iteration        8 grad norm 7.9920e+02
+iteration        9 grad norm 1.4809e+03
+iteration       10 grad norm 1.4440e+03
+iteration       11 grad norm 1.4490e+03
+iteration       12 grad norm 1.4325e+03
+iteration       13 grad norm 1.2536e+03
+iteration       14 grad norm 1.0284e+03
+iteration       15 grad norm 1.0547e+03
+iteration       16 grad norm 7.6634e+02
+iteration       17 grad norm 8.9394e+02
+iteration       18 grad norm 3.7682e+03
+iteration       19 grad norm 1.4517e+03
+iteration       20 grad norm 1.2969e+03
+iteration       21 grad norm 9.4858e+02
+iteration       22 grad norm 4.3294e+02
+iteration       23 grad norm 7.7717e+02
+finished adadelta optimization
+            23 iterations
+    7.7717e+02 final grad norm
+    7.7717e+02 final MA(1) grad norm
+    3.7682e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 181.01094187796116 smse 0.152783033227 nlpd 2.89254803235
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3142e+02
+iteration        2 grad norm 8.3113e+02
+iteration        3 grad norm 8.3342e+02
+iteration        4 grad norm 8.2857e+02
+iteration        5 grad norm 8.2016e+02
+iteration        6 grad norm 8.0524e+02
+iteration        7 grad norm 7.8204e+02
+iteration        8 grad norm 7.9607e+02
+iteration        9 grad norm 1.4601e+03
+iteration       10 grad norm 1.4390e+03
+iteration       11 grad norm 1.4670e+03
+iteration       12 grad norm 1.4354e+03
+iteration       13 grad norm 1.1501e+03
+iteration       14 grad norm 7.3792e+02
+iteration       15 grad norm 1.1824e+03
+iteration       16 grad norm 4.6285e+02
+iteration       17 grad norm 3.5244e+02
+iteration       18 grad norm 6.8920e+02
+iteration       19 grad norm 5.2579e+02
+iteration       20 grad norm 3.9101e+02
+finished adadelta optimization
+            20 iterations
+    3.9101e+02 final grad norm
+    3.9101e+02 final MA(1) grad norm
+    1.4670e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 136.86324042081833 smse 0.169630055841 nlpd 3.4729558341
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3357e+02
+iteration        2 grad norm 8.3284e+02
+iteration        3 grad norm 8.3354e+02
+iteration        4 grad norm 8.3148e+02
+iteration        5 grad norm 8.2277e+02
+iteration        6 grad norm 8.0577e+02
+iteration        7 grad norm 7.8593e+02
+iteration        8 grad norm 8.1736e+02
+iteration        9 grad norm 1.3318e+03
+iteration       10 grad norm 1.4444e+03
+iteration       11 grad norm 1.4676e+03
+iteration       12 grad norm 1.3900e+03
+iteration       13 grad norm 1.2739e+03
+iteration       14 grad norm 8.1999e+02
+iteration       15 grad norm 5.2920e+02
+iteration       16 grad norm 1.4336e+03
+iteration       17 grad norm 1.3644e+03
+iteration       18 grad norm 7.8903e+02
+iteration       19 grad norm 5.3507e+02
+iteration       20 grad norm 1.3356e+03
+iteration       21 grad norm 1.1341e+03
+iteration       22 grad norm 8.5622e+02
+iteration       23 grad norm 3.9089e+02
+iteration       24 grad norm 3.4345e+02
+iteration       25 grad norm 1.4217e+02
+finished adadelta optimization
+            25 iterations
+    1.4217e+02 final grad norm
+    1.4217e+02 final MA(1) grad norm
+    1.4676e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 169.97770857065916 smse 0.0702718868995 nlpd 1.70930742343
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3251e+02
+iteration        2 grad norm 8.3414e+02
+iteration        3 grad norm 8.3399e+02
+iteration        4 grad norm 8.3211e+02
+iteration        5 grad norm 8.2151e+02
+iteration        6 grad norm 8.0655e+02
+iteration        7 grad norm 7.8256e+02
+iteration        8 grad norm 7.9834e+02
+iteration        9 grad norm 1.4246e+03
+iteration       10 grad norm 1.4399e+03
+iteration       11 grad norm 1.4557e+03
+iteration       12 grad norm 1.4357e+03
+iteration       13 grad norm 1.2928e+03
+iteration       14 grad norm 9.5162e+02
+iteration       15 grad norm 9.3368e+02
+iteration       16 grad norm 1.0356e+03
+iteration       17 grad norm 1.0029e+03
+iteration       18 grad norm 1.2610e+03
+iteration       19 grad norm 5.7546e+02
+iteration       20 grad norm 4.8158e+02
+iteration       21 grad norm 5.6342e+02
+iteration       22 grad norm 2.1393e+02
+iteration       23 grad norm 2.5113e+02
+finished adadelta optimization
+            23 iterations
+    2.5113e+02 final grad norm
+    2.5113e+02 final MA(1) grad norm
+    1.4557e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 164.8527150079608 smse 0.197295138203 nlpd 4.11692238969
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3319e+02
+iteration        2 grad norm 8.3393e+02
+iteration        3 grad norm 8.3340e+02
+iteration        4 grad norm 8.2984e+02
+iteration        5 grad norm 8.2139e+02
+iteration        6 grad norm 8.0466e+02
+iteration        7 grad norm 7.8302e+02
+iteration        8 grad norm 8.0929e+02
+iteration        9 grad norm 1.4891e+03
+iteration       10 grad norm 1.4471e+03
+iteration       11 grad norm 1.4679e+03
+iteration       12 grad norm 1.4170e+03
+iteration       13 grad norm 1.2691e+03
+iteration       14 grad norm 8.7685e+02
+iteration       15 grad norm 5.9164e+02
+iteration       16 grad norm 7.9255e+02
+iteration       17 grad norm 2.0421e+03
+iteration       18 grad norm 1.0663e+03
+iteration       19 grad norm 8.0706e+02
+iteration       20 grad norm 5.0963e+02
+iteration       21 grad norm 4.1364e+02
+iteration       22 grad norm 3.2354e+02
+finished adadelta optimization
+            22 iterations
+    3.2354e+02 final grad norm
+    3.2354e+02 final MA(1) grad norm
+    2.0421e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 148.20708511024714 smse 0.191255699519 nlpd 3.55208582454
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3476e+02
+iteration        2 grad norm 8.3410e+02
+iteration        3 grad norm 8.3538e+02
+iteration        4 grad norm 8.2901e+02
+iteration        5 grad norm 8.2287e+02
+iteration        6 grad norm 8.0464e+02
+iteration        7 grad norm 7.8454e+02
+iteration        8 grad norm 8.0311e+02
+iteration        9 grad norm 1.3971e+03
+iteration       10 grad norm 1.4459e+03
+iteration       11 grad norm 1.4351e+03
+iteration       12 grad norm 1.4014e+03
+iteration       13 grad norm 1.2744e+03
+iteration       14 grad norm 9.6173e+02
+iteration       15 grad norm 1.3951e+03
+iteration       16 grad norm 1.0768e+03
+iteration       17 grad norm 8.4842e+02
+iteration       18 grad norm 5.6771e+02
+iteration       19 grad norm 5.1668e+02
+iteration       20 grad norm 9.6624e+02
+iteration       21 grad norm 5.4614e+02
+iteration       22 grad norm 6.0444e+02
+iteration       23 grad norm 3.0252e+02
+finished adadelta optimization
+            23 iterations
+    3.0252e+02 final grad norm
+    3.0252e+02 final MA(1) grad norm
+    1.4459e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 192.21402791887522 smse 0.340339714128 nlpd 6.15499842584
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3233e+02
+iteration        2 grad norm 8.3288e+02
+iteration        3 grad norm 8.3195e+02
+iteration        4 grad norm 8.2867e+02
+iteration        5 grad norm 8.1948e+02
+iteration        6 grad norm 8.0710e+02
+iteration        7 grad norm 7.8532e+02
+iteration        8 grad norm 8.1044e+02
+iteration        9 grad norm 1.3795e+03
+iteration       10 grad norm 1.4483e+03
+iteration       11 grad norm 1.4510e+03
+iteration       12 grad norm 1.3850e+03
+iteration       13 grad norm 1.2852e+03
+iteration       14 grad norm 9.6767e+02
+iteration       15 grad norm 6.2887e+02
+iteration       16 grad norm 1.9126e+03
+iteration       17 grad norm 1.2524e+03
+iteration       18 grad norm 7.7731e+02
+iteration       19 grad norm 4.5191e+02
+iteration       20 grad norm 3.6799e+02
+iteration       21 grad norm 1.0316e+03
+iteration       22 grad norm 1.2668e+03
+iteration       23 grad norm 1.1086e+03
+iteration       24 grad norm 4.4346e+02
+finished adadelta optimization
+            24 iterations
+    4.4346e+02 final grad norm
+    4.4346e+02 final MA(1) grad norm
+    1.9126e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 202.8773618414998 smse 0.0877792081811 nlpd 1.84711758922
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3427e+02
+iteration        2 grad norm 8.3351e+02
+iteration        3 grad norm 8.3450e+02
+iteration        4 grad norm 8.3191e+02
+iteration        5 grad norm 8.2112e+02
+iteration        6 grad norm 8.0531e+02
+iteration        7 grad norm 7.8429e+02
+iteration        8 grad norm 7.9577e+02
+iteration        9 grad norm 1.4100e+03
+iteration       10 grad norm 1.4339e+03
+iteration       11 grad norm 1.4618e+03
+iteration       12 grad norm 1.4252e+03
+iteration       13 grad norm 1.0387e+03
+iteration       14 grad norm 1.0075e+03
+iteration       15 grad norm 6.3295e+02
+iteration       16 grad norm 1.3881e+03
+iteration       17 grad norm 1.4717e+03
+iteration       18 grad norm 7.6700e+02
+iteration       19 grad norm 4.7666e+02
+iteration       20 grad norm 7.1253e+02
+iteration       21 grad norm 4.3312e+02
+iteration       22 grad norm 3.8342e+02
+finished adadelta optimization
+            22 iterations
+    3.8342e+02 final grad norm
+    3.8342e+02 final MA(1) grad norm
+    1.4717e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 127.6994953751564 smse 0.161781583803 nlpd 3.50473255482
+---> llgp slfm m 4000 time   162.9807 (   23.6983) smse     0.1603 (    0.0723) nlpd     3.2469 (    1.2124)
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3177e+02
+iteration        2 grad norm 8.3365e+02
+iteration        3 grad norm 8.3234e+02
+iteration        4 grad norm 8.2845e+02
+iteration        5 grad norm 8.2112e+02
+iteration        6 grad norm 8.0344e+02
+iteration        7 grad norm 7.7469e+02
+iteration        8 grad norm 7.3539e+02
+iteration        9 grad norm 8.8940e+02
+iteration       10 grad norm 3.6198e+03
+iteration       11 grad norm 1.5109e+03
+iteration       12 grad norm 1.4644e+03
+iteration       13 grad norm 1.3797e+03
+iteration       14 grad norm 1.1421e+03
+iteration       15 grad norm 7.9085e+02
+finished adadelta optimization
+            15 iterations
+    7.9085e+02 final grad norm
+    7.9085e+02 final MA(1) grad norm
+    3.6198e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 48.11163517832756 smse 0.265338286221 nlpd 2.9681185156
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4962e+02
+iteration        2 grad norm 8.4902e+02
+iteration        3 grad norm 8.4507e+02
+iteration        4 grad norm 8.3973e+02
+iteration        5 grad norm 8.2740e+02
+iteration        6 grad norm 8.0775e+02
+iteration        7 grad norm 7.8572e+02
+iteration        8 grad norm 7.6529e+02
+iteration        9 grad norm 2.3289e+03
+iteration       10 grad norm 3.0697e+03
+iteration       11 grad norm 1.4699e+03
+iteration       12 grad norm 1.4570e+03
+iteration       13 grad norm 1.3584e+03
+iteration       14 grad norm 1.0836e+03
+iteration       15 grad norm 8.9652e+02
+finished adadelta optimization
+            15 iterations
+    8.9652e+02 final grad norm
+    8.9652e+02 final MA(1) grad norm
+    3.0697e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 37.550205774605274 smse 0.272524959529 nlpd 3.12926143418
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3377e+02
+iteration        2 grad norm 8.3440e+02
+iteration        3 grad norm 8.3379e+02
+iteration        4 grad norm 8.2768e+02
+iteration        5 grad norm 8.1877e+02
+iteration        6 grad norm 8.0237e+02
+iteration        7 grad norm 7.7333e+02
+iteration        8 grad norm 7.3793e+02
+iteration        9 grad norm 2.5807e+03
+iteration       10 grad norm 2.1222e+03
+iteration       11 grad norm 1.4651e+03
+iteration       12 grad norm 1.4492e+03
+iteration       13 grad norm 1.3042e+03
+iteration       14 grad norm 9.8534e+02
+iteration       15 grad norm 8.9035e+02
+iteration       16 grad norm 1.0514e+03
+iteration       17 grad norm 1.4239e+03
+iteration       18 grad norm 1.0800e+03
+iteration       19 grad norm 6.1756e+02
+finished adadelta optimization
+            19 iterations
+    6.1756e+02 final grad norm
+    6.1756e+02 final MA(1) grad norm
+    2.5807e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 88.44260981678963 smse 0.380260540188 nlpd 4.50002553073
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3750e+02
+iteration        2 grad norm 8.3736e+02
+iteration        3 grad norm 8.3795e+02
+iteration        4 grad norm 8.3418e+02
+iteration        5 grad norm 8.2511e+02
+iteration        6 grad norm 8.0533e+02
+iteration        7 grad norm 7.7656e+02
+iteration        8 grad norm 7.3617e+02
+iteration        9 grad norm 7.0918e+02
+iteration       10 grad norm 2.8795e+03
+iteration       11 grad norm 2.3262e+03
+iteration       12 grad norm 1.4678e+03
+iteration       13 grad norm 1.4078e+03
+iteration       14 grad norm 1.2010e+03
+iteration       15 grad norm 8.6083e+02
+iteration       16 grad norm 9.4685e+02
+iteration       17 grad norm 1.1295e+03
+finished adadelta optimization
+            17 iterations
+    1.1295e+03 final grad norm
+    1.1295e+03 final MA(1) grad norm
+    2.8795e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 51.80103077739477 smse 0.525163731217 nlpd 5.66241898166
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4700e+02
+iteration        2 grad norm 8.4492e+02
+iteration        3 grad norm 8.4324e+02
+iteration        4 grad norm 8.3757e+02
+iteration        5 grad norm 8.2798e+02
+iteration        6 grad norm 8.1425e+02
+iteration        7 grad norm 7.9078e+02
+iteration        8 grad norm 7.8846e+02
+iteration        9 grad norm 3.0867e+03
+iteration       10 grad norm 1.9365e+03
+iteration       11 grad norm 1.4661e+03
+iteration       12 grad norm 1.4503e+03
+iteration       13 grad norm 1.3368e+03
+iteration       14 grad norm 1.0443e+03
+iteration       15 grad norm 9.2418e+02
+finished adadelta optimization
+            15 iterations
+    9.2418e+02 final grad norm
+    9.2418e+02 final MA(1) grad norm
+    3.0867e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 38.47374825179577 smse 0.362881199776 nlpd 3.90068584652
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4357e+02
+iteration        2 grad norm 8.4454e+02
+iteration        3 grad norm 8.4051e+02
+iteration        4 grad norm 8.3372e+02
+iteration        5 grad norm 8.2449e+02
+iteration        6 grad norm 8.0487e+02
+iteration        7 grad norm 7.7805e+02
+iteration        8 grad norm 7.4236e+02
+iteration        9 grad norm 9.1929e+02
+iteration       10 grad norm 3.7361e+03
+iteration       11 grad norm 1.5240e+03
+iteration       12 grad norm 1.4659e+03
+iteration       13 grad norm 1.3907e+03
+iteration       14 grad norm 1.1540e+03
+iteration       15 grad norm 7.7462e+02
+finished adadelta optimization
+            15 iterations
+    7.7462e+02 final grad norm
+    7.7462e+02 final MA(1) grad norm
+    3.7361e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 40.82222069054842 smse 0.264532502919 nlpd 2.97348002574
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4633e+02
+iteration        2 grad norm 8.4540e+02
+iteration        3 grad norm 8.4333e+02
+iteration        4 grad norm 8.3698e+02
+iteration        5 grad norm 8.2501e+02
+iteration        6 grad norm 8.0658e+02
+iteration        7 grad norm 7.8249e+02
+iteration        8 grad norm 7.4701e+02
+iteration        9 grad norm 1.1849e+03
+iteration       10 grad norm 3.8596e+03
+iteration       11 grad norm 1.4511e+03
+iteration       12 grad norm 1.4665e+03
+iteration       13 grad norm 1.3811e+03
+iteration       14 grad norm 1.1458e+03
+iteration       15 grad norm 8.5146e+02
+finished adadelta optimization
+            15 iterations
+    8.5146e+02 final grad norm
+    8.5146e+02 final MA(1) grad norm
+    3.8596e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 40.91424974054098 smse 0.341066503697 nlpd 3.542044628
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3196e+02
+iteration        2 grad norm 8.3339e+02
+iteration        3 grad norm 8.3309e+02
+iteration        4 grad norm 8.2912e+02
+iteration        5 grad norm 8.2124e+02
+iteration        6 grad norm 8.0508e+02
+iteration        7 grad norm 7.7658e+02
+iteration        8 grad norm 7.3922e+02
+iteration        9 grad norm 9.8779e+02
+iteration       10 grad norm 3.8274e+03
+iteration       11 grad norm 1.4627e+03
+iteration       12 grad norm 1.4653e+03
+iteration       13 grad norm 1.3789e+03
+iteration       14 grad norm 1.1249e+03
+iteration       15 grad norm 8.3328e+02
+finished adadelta optimization
+            15 iterations
+    8.3328e+02 final grad norm
+    8.3328e+02 final MA(1) grad norm
+    3.8274e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 34.48666471242905 smse 0.273048006468 nlpd 3.05199530812
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.2943e+02
+iteration        2 grad norm 8.3063e+02
+iteration        3 grad norm 8.2841e+02
+iteration        4 grad norm 8.2735e+02
+iteration        5 grad norm 8.1925e+02
+iteration        6 grad norm 8.0505e+02
+iteration        7 grad norm 7.7386e+02
+iteration        8 grad norm 7.3476e+02
+iteration        9 grad norm 9.7501e+02
+iteration       10 grad norm 3.6723e+03
+iteration       11 grad norm 1.4646e+03
+iteration       12 grad norm 1.4647e+03
+iteration       13 grad norm 1.3795e+03
+iteration       14 grad norm 1.1308e+03
+iteration       15 grad norm 8.3177e+02
+finished adadelta optimization
+            15 iterations
+    8.3177e+02 final grad norm
+    8.3177e+02 final MA(1) grad norm
+    3.6723e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 38.13346194475889 smse 0.284534367715 nlpd 3.14322676664
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.2583e+02
+iteration        2 grad norm 8.2684e+02
+iteration        3 grad norm 8.2699e+02
+iteration        4 grad norm 8.2259e+02
+iteration        5 grad norm 8.1534e+02
+iteration        6 grad norm 7.9629e+02
+iteration        7 grad norm 7.6761e+02
+iteration        8 grad norm 7.2962e+02
+iteration        9 grad norm 2.1022e+03
+iteration       10 grad norm 3.0277e+03
+iteration       11 grad norm 1.4673e+03
+iteration       12 grad norm 1.4542e+03
+iteration       13 grad norm 1.3335e+03
+iteration       14 grad norm 1.0452e+03
+iteration       15 grad norm 8.8794e+02
+finished adadelta optimization
+            15 iterations
+    8.8794e+02 final grad norm
+    8.8794e+02 final MA(1) grad norm
+    3.0277e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 72.70335244387388 smse 0.371947468743 nlpd 3.871759937
+---> llgp Q1R2 m 4000 time    49.1439 (   16.8192) smse     0.3341 (    0.0778) nlpd     3.6743 (    0.8184)
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3446e+02
+iteration        2 grad norm 8.3684e+02
+iteration        3 grad norm 8.3645e+02
+iteration        4 grad norm 8.3354e+02
+iteration        5 grad norm 8.2426e+02
+iteration        6 grad norm 8.0498e+02
+iteration        7 grad norm 7.7958e+02
+iteration        8 grad norm 7.5238e+02
+iteration        9 grad norm 2.4075e+03
+iteration       10 grad norm 3.1321e+03
+iteration       11 grad norm 1.4692e+03
+iteration       12 grad norm 1.4629e+03
+iteration       13 grad norm 1.3574e+03
+iteration       14 grad norm 1.0821e+03
+iteration       15 grad norm 9.5094e+02
+finished adadelta optimization
+            15 iterations
+    9.5094e+02 final grad norm
+    9.5094e+02 final MA(1) grad norm
+    3.1321e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 51.15667712688446 smse 0.482007544873 nlpd 4.65951558575
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4904e+02
+iteration        2 grad norm 8.4839e+02
+iteration        3 grad norm 8.4638e+02
+iteration        4 grad norm 8.3996e+02
+iteration        5 grad norm 8.2674e+02
+iteration        6 grad norm 8.1037e+02
+iteration        7 grad norm 7.8476e+02
+iteration        8 grad norm 7.6282e+02
+iteration        9 grad norm 2.1431e+03
+iteration       10 grad norm 3.3563e+03
+iteration       11 grad norm 1.4662e+03
+iteration       12 grad norm 1.4637e+03
+iteration       13 grad norm 1.3700e+03
+iteration       14 grad norm 1.1095e+03
+iteration       15 grad norm 9.1707e+02
+finished adadelta optimization
+            15 iterations
+    9.1707e+02 final grad norm
+    9.1707e+02 final MA(1) grad norm
+    3.3563e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 44.514048524200916 smse 0.311972163722 nlpd 3.38964624337
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4853e+02
+iteration        2 grad norm 8.4598e+02
+iteration        3 grad norm 8.4379e+02
+iteration        4 grad norm 8.3815e+02
+iteration        5 grad norm 8.2689e+02
+iteration        6 grad norm 8.1063e+02
+iteration        7 grad norm 7.8168e+02
+iteration        8 grad norm 7.5677e+02
+iteration        9 grad norm 1.4452e+03
+iteration       10 grad norm 3.7623e+03
+iteration       11 grad norm 1.4687e+03
+iteration       12 grad norm 1.4623e+03
+iteration       13 grad norm 1.3694e+03
+iteration       14 grad norm 1.1117e+03
+iteration       15 grad norm 8.7521e+02
+finished adadelta optimization
+            15 iterations
+    8.7521e+02 final grad norm
+    8.7521e+02 final MA(1) grad norm
+    3.7623e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 40.22448817640543 smse 0.270298220348 nlpd 3.1069528962
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.5446e+02
+iteration        2 grad norm 8.5135e+02
+iteration        3 grad norm 8.4667e+02
+iteration        4 grad norm 8.4082e+02
+iteration        5 grad norm 8.2999e+02
+iteration        6 grad norm 8.1418e+02
+iteration        7 grad norm 7.9564e+02
+iteration        8 grad norm 9.1951e+02
+iteration        9 grad norm 3.2820e+03
+iteration       10 grad norm 1.4445e+03
+iteration       11 grad norm 1.4662e+03
+iteration       12 grad norm 1.4376e+03
+iteration       13 grad norm 1.3033e+03
+iteration       14 grad norm 9.7545e+02
+finished adadelta optimization
+            14 iterations
+    9.7545e+02 final grad norm
+    9.7545e+02 final MA(1) grad norm
+    3.2820e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 36.85368789732456 smse 0.250625424936 nlpd 2.5545584811
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4167e+02
+iteration        2 grad norm 8.4205e+02
+iteration        3 grad norm 8.4094e+02
+iteration        4 grad norm 8.3455e+02
+iteration        5 grad norm 8.2481e+02
+iteration        6 grad norm 8.0630e+02
+iteration        7 grad norm 7.7928e+02
+iteration        8 grad norm 8.6816e+02
+iteration        9 grad norm 3.5103e+03
+iteration       10 grad norm 1.5898e+03
+iteration       11 grad norm 1.4713e+03
+iteration       12 grad norm 1.4482e+03
+iteration       13 grad norm 1.3170e+03
+iteration       14 grad norm 9.9211e+02
+finished adadelta optimization
+            14 iterations
+    9.9211e+02 final grad norm
+    9.9211e+02 final MA(1) grad norm
+    3.5103e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 61.800456039607525 smse 0.26260975304 nlpd 2.57610190145
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4845e+02
+iteration        2 grad norm 8.4773e+02
+iteration        3 grad norm 8.4529e+02
+iteration        4 grad norm 8.3876e+02
+iteration        5 grad norm 8.2967e+02
+iteration        6 grad norm 8.1251e+02
+iteration        7 grad norm 7.8871e+02
+iteration        8 grad norm 8.2644e+02
+iteration        9 grad norm 3.3474e+03
+iteration       10 grad norm 1.6765e+03
+iteration       11 grad norm 1.4746e+03
+iteration       12 grad norm 1.4531e+03
+iteration       13 grad norm 1.3201e+03
+iteration       14 grad norm 1.0111e+03
+iteration       15 grad norm 9.5211e+02
+finished adadelta optimization
+            15 iterations
+    9.5211e+02 final grad norm
+    9.5211e+02 final MA(1) grad norm
+    3.3474e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 66.79707550257444 smse 0.258222091593 nlpd 3.13108402293
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4003e+02
+iteration        2 grad norm 8.4017e+02
+iteration        3 grad norm 8.4000e+02
+iteration        4 grad norm 8.3576e+02
+iteration        5 grad norm 8.2454e+02
+iteration        6 grad norm 8.0974e+02
+iteration        7 grad norm 7.8994e+02
+iteration        8 grad norm 1.2388e+03
+iteration        9 grad norm 3.5102e+03
+iteration       10 grad norm 1.4283e+03
+iteration       11 grad norm 1.4707e+03
+iteration       12 grad norm 1.4332e+03
+iteration       13 grad norm 1.2796e+03
+iteration       14 grad norm 9.3114e+02
+finished adadelta optimization
+            14 iterations
+    9.3114e+02 final grad norm
+    9.3114e+02 final MA(1) grad norm
+    3.5102e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 44.550271674990654 smse 0.259540401046 nlpd 2.64433055667
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4859e+02
+iteration        2 grad norm 8.4824e+02
+iteration        3 grad norm 8.4151e+02
+iteration        4 grad norm 8.3733e+02
+iteration        5 grad norm 8.2685e+02
+iteration        6 grad norm 8.0972e+02
+iteration        7 grad norm 7.8575e+02
+iteration        8 grad norm 7.6857e+02
+iteration        9 grad norm 2.3321e+03
+iteration       10 grad norm 2.7542e+03
+iteration       11 grad norm 1.4739e+03
+iteration       12 grad norm 1.4546e+03
+iteration       13 grad norm 1.3457e+03
+iteration       14 grad norm 1.0683e+03
+iteration       15 grad norm 8.6214e+02
+iteration       16 grad norm 1.0342e+03
+iteration       17 grad norm 1.3672e+03
+finished adadelta optimization
+            17 iterations
+    1.3672e+03 final grad norm
+    1.3672e+03 final MA(1) grad norm
+    2.7542e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 78.52726171910763 smse 0.208829229192 nlpd 2.84582912059
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.5147e+02
+iteration        2 grad norm 8.4872e+02
+iteration        3 grad norm 8.4824e+02
+iteration        4 grad norm 8.3928e+02
+iteration        5 grad norm 8.3226e+02
+iteration        6 grad norm 8.1639e+02
+iteration        7 grad norm 8.0327e+02
+iteration        8 grad norm 1.4264e+03
+iteration        9 grad norm 3.5718e+03
+iteration       10 grad norm 1.4526e+03
+iteration       11 grad norm 1.4693e+03
+iteration       12 grad norm 1.4342e+03
+iteration       13 grad norm 1.2965e+03
+iteration       14 grad norm 9.6034e+02
+finished adadelta optimization
+            14 iterations
+    9.6034e+02 final grad norm
+    9.6034e+02 final MA(1) grad norm
+    3.5718e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 60.38089161366224 smse 0.229992626856 nlpd 2.47081548961
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4023e+02
+iteration        2 grad norm 8.4068e+02
+iteration        3 grad norm 8.3916e+02
+iteration        4 grad norm 8.3419e+02
+iteration        5 grad norm 8.2331e+02
+iteration        6 grad norm 8.0591e+02
+iteration        7 grad norm 7.7860e+02
+iteration        8 grad norm 7.4968e+02
+iteration        9 grad norm 2.7959e+03
+iteration       10 grad norm 2.3135e+03
+iteration       11 grad norm 1.4643e+03
+iteration       12 grad norm 1.4462e+03
+iteration       13 grad norm 1.3118e+03
+iteration       14 grad norm 9.9355e+02
+iteration       15 grad norm 9.5686e+02
+iteration       16 grad norm 1.0698e+03
+iteration       17 grad norm 1.3204e+03
+finished adadelta optimization
+            17 iterations
+    1.3204e+03 final grad norm
+    1.3204e+03 final MA(1) grad norm
+    2.7959e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 82.59848135709763 smse 0.344241357485 nlpd 4.1389702874
+---> llgp Q1R3 m 4000 time    56.7403 (   15.1024) smse     0.2878 (    0.0742) nlpd     3.1518 (    0.6935)
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4562e+02
+iteration        2 grad norm 8.4751e+02
+iteration        3 grad norm 8.4472e+02
+iteration        4 grad norm 8.4038e+02
+iteration        5 grad norm 8.2949e+02
+iteration        6 grad norm 8.1515e+02
+iteration        7 grad norm 8.0101e+02
+iteration        8 grad norm 1.4461e+03
+iteration        9 grad norm 3.5966e+03
+iteration       10 grad norm 1.4475e+03
+iteration       11 grad norm 1.4699e+03
+iteration       12 grad norm 1.4384e+03
+iteration       13 grad norm 1.2870e+03
+iteration       14 grad norm 9.3743e+02
+finished adadelta optimization
+            14 iterations
+    9.3743e+02 final grad norm
+    9.3743e+02 final MA(1) grad norm
+    3.5966e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 69.6622910797596 smse 0.199176626367 nlpd 2.25936418126
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4510e+02
+iteration        2 grad norm 8.4286e+02
+iteration        3 grad norm 8.4031e+02
+iteration        4 grad norm 8.3586e+02
+iteration        5 grad norm 8.2544e+02
+iteration        6 grad norm 8.0993e+02
+iteration        7 grad norm 7.8532e+02
+iteration        8 grad norm 1.3365e+03
+iteration        9 grad norm 4.0153e+03
+iteration       10 grad norm 1.4383e+03
+iteration       11 grad norm 1.4718e+03
+iteration       12 grad norm 1.4421e+03
+iteration       13 grad norm 1.2973e+03
+iteration       14 grad norm 9.4839e+02
+finished adadelta optimization
+            14 iterations
+    9.4839e+02 final grad norm
+    9.4839e+02 final MA(1) grad norm
+    4.0153e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 63.285256430506706 smse 0.318356754893 nlpd 2.97593175768
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3301e+02
+iteration        2 grad norm 8.3401e+02
+iteration        3 grad norm 8.3404e+02
+iteration        4 grad norm 8.3017e+02
+iteration        5 grad norm 8.2145e+02
+iteration        6 grad norm 8.0272e+02
+iteration        7 grad norm 7.7748e+02
+iteration        8 grad norm 7.4387e+02
+iteration        9 grad norm 2.3455e+03
+iteration       10 grad norm 3.2265e+03
+iteration       11 grad norm 1.4708e+03
+iteration       12 grad norm 1.4565e+03
+iteration       13 grad norm 1.3409e+03
+iteration       14 grad norm 1.0538e+03
+iteration       15 grad norm 9.4635e+02
+finished adadelta optimization
+            15 iterations
+    9.4635e+02 final grad norm
+    9.4635e+02 final MA(1) grad norm
+    3.2265e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 45.276707373559475 smse 0.300266373105 nlpd 3.37078993922
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3535e+02
+iteration        2 grad norm 8.3633e+02
+iteration        3 grad norm 8.3483e+02
+iteration        4 grad norm 8.3210e+02
+iteration        5 grad norm 8.2306e+02
+iteration        6 grad norm 8.0662e+02
+iteration        7 grad norm 7.7824e+02
+iteration        8 grad norm 1.3616e+03
+iteration        9 grad norm 3.9939e+03
+iteration       10 grad norm 1.4453e+03
+iteration       11 grad norm 1.4727e+03
+iteration       12 grad norm 1.4432e+03
+iteration       13 grad norm 1.2981e+03
+iteration       14 grad norm 9.4436e+02
+finished adadelta optimization
+            14 iterations
+    9.4436e+02 final grad norm
+    9.4436e+02 final MA(1) grad norm
+    3.9939e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 90.74337595701218 smse 0.279738605261 nlpd 2.72670739142
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4580e+02
+iteration        2 grad norm 8.4446e+02
+iteration        3 grad norm 8.4370e+02
+iteration        4 grad norm 8.3657e+02
+iteration        5 grad norm 8.2762e+02
+iteration        6 grad norm 8.0885e+02
+iteration        7 grad norm 7.8469e+02
+iteration        8 grad norm 7.6828e+02
+iteration        9 grad norm 2.4757e+03
+iteration       10 grad norm 2.5278e+03
+iteration       11 grad norm 1.4731e+03
+iteration       12 grad norm 1.4515e+03
+iteration       13 grad norm 1.3482e+03
+iteration       14 grad norm 1.0625e+03
+iteration       15 grad norm 9.0940e+02
+iteration       16 grad norm 1.0654e+03
+iteration       17 grad norm 1.3529e+03
+iteration       18 grad norm 1.1677e+03
+iteration       19 grad norm 6.8505e+02
+finished adadelta optimization
+            19 iterations
+    6.8505e+02 final grad norm
+    6.8505e+02 final MA(1) grad norm
+    2.5278e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 114.60843610018492 smse 0.611917954521 nlpd 6.2896594965
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4517e+02
+iteration        2 grad norm 8.4548e+02
+iteration        3 grad norm 8.4266e+02
+iteration        4 grad norm 8.3725e+02
+iteration        5 grad norm 8.2972e+02
+iteration        6 grad norm 8.1491e+02
+iteration        7 grad norm 8.0996e+02
+iteration        8 grad norm 2.6013e+03
+iteration        9 grad norm 2.7230e+03
+iteration       10 grad norm 1.4579e+03
+iteration       11 grad norm 1.4749e+03
+iteration       12 grad norm 1.4289e+03
+iteration       13 grad norm 1.2703e+03
+iteration       14 grad norm 9.2003e+02
+iteration       15 grad norm 9.7931e+02
+iteration       16 grad norm 1.1520e+03
+iteration       17 grad norm 1.5085e+03
+iteration       18 grad norm 1.0036e+03
+finished adadelta optimization
+            18 iterations
+    1.0036e+03 final grad norm
+    1.0036e+03 final MA(1) grad norm
+    2.7230e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 112.50503632426262 smse 0.196723818822 nlpd 3.27185767699
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4776e+02
+iteration        2 grad norm 8.4514e+02
+iteration        3 grad norm 8.4384e+02
+iteration        4 grad norm 8.3718e+02
+iteration        5 grad norm 8.2706e+02
+iteration        6 grad norm 8.0924e+02
+iteration        7 grad norm 7.8351e+02
+iteration        8 grad norm 7.4626e+02
+iteration        9 grad norm 1.1929e+03
+iteration       10 grad norm 4.2185e+03
+iteration       11 grad norm 1.4457e+03
+iteration       12 grad norm 1.4662e+03
+iteration       13 grad norm 1.3896e+03
+iteration       14 grad norm 1.1536e+03
+iteration       15 grad norm 7.7222e+02
+finished adadelta optimization
+            15 iterations
+    7.7222e+02 final grad norm
+    7.7222e+02 final MA(1) grad norm
+    4.2185e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 70.61077878624201 smse 0.31410421869 nlpd 3.31834985212
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3746e+02
+iteration        2 grad norm 8.3898e+02
+iteration        3 grad norm 8.3636e+02
+iteration        4 grad norm 8.3156e+02
+iteration        5 grad norm 8.2115e+02
+iteration        6 grad norm 8.0791e+02
+iteration        7 grad norm 7.7525e+02
+iteration        8 grad norm 7.3887e+02
+iteration        9 grad norm 8.0314e+02
+iteration       10 grad norm 3.6031e+03
+iteration       11 grad norm 1.6195e+03
+iteration       12 grad norm 1.4680e+03
+iteration       13 grad norm 1.3962e+03
+iteration       14 grad norm 1.1663e+03
+iteration       15 grad norm 7.8321e+02
+finished adadelta optimization
+            15 iterations
+    7.8321e+02 final grad norm
+    7.8321e+02 final MA(1) grad norm
+    3.6031e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 63.46002598106861 smse 0.272347517545 nlpd 3.00549180885
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4297e+02
+iteration        2 grad norm 8.4384e+02
+iteration        3 grad norm 8.4016e+02
+iteration        4 grad norm 8.3512e+02
+iteration        5 grad norm 8.2635e+02
+iteration        6 grad norm 8.0809e+02
+iteration        7 grad norm 7.8343e+02
+iteration        8 grad norm 8.2251e+02
+iteration        9 grad norm 3.3990e+03
+iteration       10 grad norm 1.8345e+03
+iteration       11 grad norm 1.4727e+03
+iteration       12 grad norm 1.4588e+03
+iteration       13 grad norm 1.3360e+03
+iteration       14 grad norm 1.0300e+03
+iteration       15 grad norm 1.0050e+03
+finished adadelta optimization
+            15 iterations
+    1.0050e+03 final grad norm
+    1.0050e+03 final MA(1) grad norm
+    3.3990e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 70.86126820743084 smse 0.280710013125 nlpd 3.24431410761
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 4004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4779e+02
+iteration        2 grad norm 8.4558e+02
+iteration        3 grad norm 8.4486e+02
+iteration        4 grad norm 8.3921e+02
+iteration        5 grad norm 8.2883e+02
+iteration        6 grad norm 8.1320e+02
+iteration        7 grad norm 7.9016e+02
+iteration        8 grad norm 7.8285e+02
+iteration        9 grad norm 3.2472e+03
+iteration       10 grad norm 1.8977e+03
+iteration       11 grad norm 1.4738e+03
+iteration       12 grad norm 1.4516e+03
+iteration       13 grad norm 1.3280e+03
+iteration       14 grad norm 1.0184e+03
+iteration       15 grad norm 1.0108e+03
+finished adadelta optimization
+            15 iterations
+    1.0108e+03 final grad norm
+    1.0108e+03 final MA(1) grad norm
+    3.2472e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 49.66418581455946 smse 0.414106872531 nlpd 4.22943647576
+---> llgp Q1R4 m 4000 time    75.0677 (   22.5476) smse     0.3187 (    0.1139) nlpd     3.4692 (    1.0549)
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3422e+02
+iteration        2 grad norm 8.3321e+02
+iteration        3 grad norm 8.3335e+02
+iteration        4 grad norm 8.2948e+02
+iteration        5 grad norm 8.2025e+02
+iteration        6 grad norm 8.0649e+02
+iteration        7 grad norm 7.8535e+02
+iteration        8 grad norm 8.0760e+02
+iteration        9 grad norm 1.4064e+03
+iteration       10 grad norm 1.4400e+03
+iteration       11 grad norm 1.4614e+03
+iteration       12 grad norm 1.3674e+03
+iteration       13 grad norm 1.1875e+03
+iteration       14 grad norm 1.0326e+03
+iteration       15 grad norm 7.8119e+02
+iteration       16 grad norm 1.2559e+03
+iteration       17 grad norm 1.0019e+03
+iteration       18 grad norm 1.1178e+03
+iteration       19 grad norm 5.9477e+02
+iteration       20 grad norm 8.7909e+02
+iteration       21 grad norm 4.8857e+02
+iteration       22 grad norm 3.9157e+02
+iteration       23 grad norm 2.9274e+02
+iteration       24 grad norm 4.1772e+02
+finished adadelta optimization
+            24 iterations
+    4.1772e+02 final grad norm
+    4.1772e+02 final MA(1) grad norm
+    1.4614e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 657.5219068005681 smse 0.279811064327 nlpd 5.06001711518
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3236e+02
+iteration        2 grad norm 8.3568e+02
+iteration        3 grad norm 8.3414e+02
+iteration        4 grad norm 8.3048e+02
+iteration        5 grad norm 8.2247e+02
+iteration        6 grad norm 8.0349e+02
+iteration        7 grad norm 7.8364e+02
+iteration        8 grad norm 8.0402e+02
+iteration        9 grad norm 1.5024e+03
+iteration       10 grad norm 1.4317e+03
+iteration       11 grad norm 1.4647e+03
+iteration       12 grad norm 1.3725e+03
+iteration       13 grad norm 1.2710e+03
+iteration       14 grad norm 9.4201e+02
+iteration       15 grad norm 1.6799e+03
+iteration       16 grad norm 6.2662e+02
+iteration       17 grad norm 4.5256e+02
+iteration       18 grad norm 1.0783e+03
+iteration       19 grad norm 1.0281e+03
+iteration       20 grad norm 3.4553e+02
+iteration       21 grad norm 3.0059e+02
+iteration       22 grad norm 2.5542e+02
+finished adadelta optimization
+            22 iterations
+    2.5542e+02 final grad norm
+    2.5542e+02 final MA(1) grad norm
+    1.6799e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 552.2426857277751 smse 0.124989695826 nlpd 2.61232404621
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3410e+02
+iteration        2 grad norm 8.3444e+02
+iteration        3 grad norm 8.3149e+02
+iteration        4 grad norm 8.2964e+02
+iteration        5 grad norm 8.2150e+02
+iteration        6 grad norm 8.0405e+02
+iteration        7 grad norm 7.8235e+02
+iteration        8 grad norm 7.9980e+02
+iteration        9 grad norm 1.4457e+03
+iteration       10 grad norm 1.4457e+03
+iteration       11 grad norm 1.4650e+03
+iteration       12 grad norm 1.4110e+03
+iteration       13 grad norm 1.2534e+03
+iteration       14 grad norm 7.1913e+02
+iteration       15 grad norm 1.0928e+03
+iteration       16 grad norm 1.7986e+03
+iteration       17 grad norm 1.3021e+03
+iteration       18 grad norm 1.2541e+03
+iteration       19 grad norm 8.5047e+02
+iteration       20 grad norm 4.2283e+02
+iteration       21 grad norm 3.9120e+02
+iteration       22 grad norm 2.4963e+02
+finished adadelta optimization
+            22 iterations
+    2.4963e+02 final grad norm
+    2.4963e+02 final MA(1) grad norm
+    1.7986e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 488.1885725110769 smse 0.296440445151 nlpd 6.05906792105
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3240e+02
+iteration        2 grad norm 8.3195e+02
+iteration        3 grad norm 8.3336e+02
+iteration        4 grad norm 8.2915e+02
+iteration        5 grad norm 8.2163e+02
+iteration        6 grad norm 8.0348e+02
+iteration        7 grad norm 7.8422e+02
+iteration        8 grad norm 8.1296e+02
+iteration        9 grad norm 1.4382e+03
+iteration       10 grad norm 1.4484e+03
+iteration       11 grad norm 1.4709e+03
+iteration       12 grad norm 1.3201e+03
+iteration       13 grad norm 1.1464e+03
+iteration       14 grad norm 8.0935e+02
+iteration       15 grad norm 9.3163e+02
+iteration       16 grad norm 7.1608e+02
+iteration       17 grad norm 9.9112e+02
+iteration       18 grad norm 5.8759e+02
+iteration       19 grad norm 1.2438e+03
+iteration       20 grad norm 4.2254e+02
+iteration       21 grad norm 2.2864e+02
+iteration       22 grad norm 4.6723e+02
+finished adadelta optimization
+            22 iterations
+    4.6723e+02 final grad norm
+    4.6723e+02 final MA(1) grad norm
+    1.4709e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 516.685626655817 smse 0.193134073048 nlpd 4.10045286555
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3230e+02
+iteration        2 grad norm 8.3264e+02
+iteration        3 grad norm 8.3131e+02
+iteration        4 grad norm 8.3022e+02
+iteration        5 grad norm 8.2409e+02
+iteration        6 grad norm 8.0510e+02
+iteration        7 grad norm 7.8509e+02
+iteration        8 grad norm 8.0336e+02
+iteration        9 grad norm 1.3865e+03
+iteration       10 grad norm 1.4447e+03
+iteration       11 grad norm 1.4684e+03
+iteration       12 grad norm 1.4335e+03
+iteration       13 grad norm 1.1952e+03
+iteration       14 grad norm 8.5079e+02
+iteration       15 grad norm 5.9192e+02
+iteration       16 grad norm 2.4099e+03
+iteration       17 grad norm 5.8113e+02
+iteration       18 grad norm 1.0358e+03
+iteration       19 grad norm 5.2906e+02
+iteration       20 grad norm 2.6822e+02
+finished adadelta optimization
+            20 iterations
+    2.6822e+02 final grad norm
+    2.6822e+02 final MA(1) grad norm
+    2.4099e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 401.14317252486944 smse 0.143634448677 nlpd 2.8872765002
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3138e+02
+iteration        2 grad norm 8.3540e+02
+iteration        3 grad norm 8.3429e+02
+iteration        4 grad norm 8.3028e+02
+iteration        5 grad norm 8.2373e+02
+iteration        6 grad norm 8.0767e+02
+iteration        7 grad norm 7.8734e+02
+iteration        8 grad norm 8.2336e+02
+iteration        9 grad norm 1.4354e+03
+iteration       10 grad norm 1.4398e+03
+iteration       11 grad norm 1.4468e+03
+iteration       12 grad norm 1.4326e+03
+iteration       13 grad norm 1.1232e+03
+iteration       14 grad norm 8.9668e+02
+iteration       15 grad norm 7.6021e+02
+iteration       16 grad norm 1.0715e+03
+iteration       17 grad norm 1.6606e+03
+iteration       18 grad norm 6.9474e+02
+iteration       19 grad norm 7.4943e+02
+iteration       20 grad norm 4.1128e+02
+iteration       21 grad norm 5.7993e+02
+iteration       22 grad norm 2.9729e+02
+finished adadelta optimization
+            22 iterations
+    2.9729e+02 final grad norm
+    2.9729e+02 final MA(1) grad norm
+    1.6606e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 541.3392642736435 smse 0.0666149023773 nlpd 1.65133799672
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3035e+02
+iteration        2 grad norm 8.3258e+02
+iteration        3 grad norm 8.3336e+02
+iteration        4 grad norm 8.3197e+02
+iteration        5 grad norm 8.2286e+02
+iteration        6 grad norm 8.0591e+02
+iteration        7 grad norm 7.8424e+02
+iteration        8 grad norm 8.1221e+02
+iteration        9 grad norm 1.4158e+03
+iteration       10 grad norm 1.4464e+03
+iteration       11 grad norm 1.4491e+03
+iteration       12 grad norm 1.4113e+03
+iteration       13 grad norm 1.2134e+03
+iteration       14 grad norm 9.7392e+02
+iteration       15 grad norm 1.8109e+03
+iteration       16 grad norm 7.6547e+02
+iteration       17 grad norm 2.7142e+03
+iteration       18 grad norm 7.1813e+02
+iteration       19 grad norm 1.0075e+03
+iteration       20 grad norm 3.8433e+02
+iteration       21 grad norm 4.0923e+02
+finished adadelta optimization
+            21 iterations
+    4.0923e+02 final grad norm
+    4.0923e+02 final MA(1) grad norm
+    2.7142e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 426.1261858791113 smse 0.222625735241 nlpd 4.5781379625
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3297e+02
+iteration        2 grad norm 8.3347e+02
+iteration        3 grad norm 8.3358e+02
+iteration        4 grad norm 8.3051e+02
+iteration        5 grad norm 8.2289e+02
+iteration        6 grad norm 8.0429e+02
+iteration        7 grad norm 7.8369e+02
+iteration        8 grad norm 7.9865e+02
+iteration        9 grad norm 1.4548e+03
+iteration       10 grad norm 1.4458e+03
+iteration       11 grad norm 1.4443e+03
+iteration       12 grad norm 1.4149e+03
+iteration       13 grad norm 1.0640e+03
+iteration       14 grad norm 1.0041e+03
+iteration       15 grad norm 1.1730e+03
+iteration       16 grad norm 5.1716e+02
+iteration       17 grad norm 4.1565e+02
+iteration       18 grad norm 1.2315e+03
+iteration       19 grad norm 6.2016e+02
+iteration       20 grad norm 2.7814e+02
+iteration       21 grad norm 5.6148e+02
+finished adadelta optimization
+            21 iterations
+    5.6148e+02 final grad norm
+    5.6148e+02 final MA(1) grad norm
+    1.4548e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 505.0069591253996 smse 0.126410958807 nlpd 2.76857071674
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.2951e+02
+iteration        2 grad norm 8.3275e+02
+iteration        3 grad norm 8.3298e+02
+iteration        4 grad norm 8.2980e+02
+iteration        5 grad norm 8.2273e+02
+iteration        6 grad norm 8.0660e+02
+iteration        7 grad norm 7.8520e+02
+iteration        8 grad norm 8.1306e+02
+iteration        9 grad norm 1.3932e+03
+iteration       10 grad norm 1.4467e+03
+iteration       11 grad norm 1.4659e+03
+iteration       12 grad norm 1.4337e+03
+iteration       13 grad norm 1.2891e+03
+iteration       14 grad norm 9.4859e+02
+iteration       15 grad norm 8.2061e+02
+iteration       16 grad norm 1.7648e+03
+iteration       17 grad norm 8.8266e+02
+iteration       18 grad norm 5.8931e+02
+iteration       19 grad norm 7.6720e+02
+iteration       20 grad norm 2.3250e+02
+iteration       21 grad norm 5.4270e+02
+iteration       22 grad norm 6.4472e+02
+finished adadelta optimization
+            22 iterations
+    6.4472e+02 final grad norm
+    6.4472e+02 final MA(1) grad norm
+    1.7648e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 563.2198631465435 smse 0.069772961271 nlpd 1.70088080483
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3377e+02
+iteration        2 grad norm 8.3237e+02
+iteration        3 grad norm 8.3252e+02
+iteration        4 grad norm 8.2779e+02
+iteration        5 grad norm 8.2100e+02
+iteration        6 grad norm 8.0753e+02
+iteration        7 grad norm 7.8317e+02
+iteration        8 grad norm 7.9976e+02
+iteration        9 grad norm 1.3769e+03
+iteration       10 grad norm 1.4266e+03
+iteration       11 grad norm 1.4583e+03
+iteration       12 grad norm 1.4036e+03
+iteration       13 grad norm 1.2595e+03
+iteration       14 grad norm 9.1458e+02
+iteration       15 grad norm 8.9178e+02
+iteration       16 grad norm 6.9285e+02
+iteration       17 grad norm 2.0470e+03
+iteration       18 grad norm 1.1650e+03
+iteration       19 grad norm 7.7483e+02
+iteration       20 grad norm 6.6959e+02
+iteration       21 grad norm 8.4585e+02
+iteration       22 grad norm 5.6348e+02
+finished adadelta optimization
+            22 iterations
+    5.6348e+02 final grad norm
+    5.6348e+02 final MA(1) grad norm
+    2.0470e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 517.6543495506048 smse 0.059745510547 nlpd 1.48140585615
+---> llgp slfm m 5000 time   516.9129 (   68.0973) smse     0.1583 (    0.0822) nlpd     3.2899 (    1.4997)
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.2999e+02
+iteration        2 grad norm 8.3262e+02
+iteration        3 grad norm 8.3183e+02
+iteration        4 grad norm 8.2831e+02
+iteration        5 grad norm 8.2112e+02
+iteration        6 grad norm 8.0382e+02
+iteration        7 grad norm 7.7460e+02
+iteration        8 grad norm 7.3699e+02
+iteration        9 grad norm 8.8760e+02
+iteration       10 grad norm 3.7466e+03
+iteration       11 grad norm 1.4456e+03
+iteration       12 grad norm 1.4684e+03
+iteration       13 grad norm 1.3973e+03
+iteration       14 grad norm 1.1732e+03
+iteration       15 grad norm 8.0397e+02
+finished adadelta optimization
+            15 iterations
+    8.0397e+02 final grad norm
+    8.0397e+02 final MA(1) grad norm
+    3.7466e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 169.55623381584883 smse 0.29621409144 nlpd 3.23460572941
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.5223e+02
+iteration        2 grad norm 8.5119e+02
+iteration        3 grad norm 8.5006e+02
+iteration        4 grad norm 8.4140e+02
+iteration        5 grad norm 8.3133e+02
+iteration        6 grad norm 8.1424e+02
+iteration        7 grad norm 7.9533e+02
+iteration        8 grad norm 8.0802e+02
+iteration        9 grad norm 2.8012e+03
+iteration       10 grad norm 1.8939e+03
+iteration       11 grad norm 1.4660e+03
+iteration       12 grad norm 1.4581e+03
+iteration       13 grad norm 1.3596e+03
+iteration       14 grad norm 1.0882e+03
+iteration       15 grad norm 8.8889e+02
+iteration       16 grad norm 1.0552e+03
+iteration       17 grad norm 1.3844e+03
+finished adadelta optimization
+            17 iterations
+    1.3844e+03 final grad norm
+    1.3844e+03 final MA(1) grad norm
+    2.8012e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 237.64654798060656 smse 0.367421750674 nlpd 4.17894394361
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3488e+02
+iteration        2 grad norm 8.3894e+02
+iteration        3 grad norm 8.3694e+02
+iteration        4 grad norm 8.3395e+02
+iteration        5 grad norm 8.2157e+02
+iteration        6 grad norm 8.0550e+02
+iteration        7 grad norm 7.7974e+02
+iteration        8 grad norm 7.4477e+02
+iteration        9 grad norm 1.4018e+03
+iteration       10 grad norm 4.1470e+03
+iteration       11 grad norm 1.4579e+03
+iteration       12 grad norm 1.4632e+03
+iteration       13 grad norm 1.3806e+03
+iteration       14 grad norm 1.1310e+03
+iteration       15 grad norm 8.7028e+02
+finished adadelta optimization
+            15 iterations
+    8.7028e+02 final grad norm
+    8.7028e+02 final MA(1) grad norm
+    4.1470e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 138.0644554719329 smse 0.284932417829 nlpd 3.15191633156
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3684e+02
+iteration        2 grad norm 8.4011e+02
+iteration        3 grad norm 8.3927e+02
+iteration        4 grad norm 8.3223e+02
+iteration        5 grad norm 8.2382e+02
+iteration        6 grad norm 8.0942e+02
+iteration        7 grad norm 7.8479e+02
+iteration        8 grad norm 7.5803e+02
+iteration        9 grad norm 2.0585e+03
+iteration       10 grad norm 3.2152e+03
+iteration       11 grad norm 1.4690e+03
+iteration       12 grad norm 1.4623e+03
+iteration       13 grad norm 1.3585e+03
+iteration       14 grad norm 1.0898e+03
+iteration       15 grad norm 8.8293e+02
+finished adadelta optimization
+            15 iterations
+    8.8293e+02 final grad norm
+    8.8293e+02 final MA(1) grad norm
+    3.2152e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 196.870485432446 smse 0.321347797203 nlpd 3.54191021264
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3325e+02
+iteration        2 grad norm 8.3584e+02
+iteration        3 grad norm 8.3051e+02
+iteration        4 grad norm 8.3025e+02
+iteration        5 grad norm 8.1936e+02
+iteration        6 grad norm 8.0391e+02
+iteration        7 grad norm 7.7582e+02
+iteration        8 grad norm 7.3421e+02
+iteration        9 grad norm 6.9875e+02
+iteration       10 grad norm 2.9709e+03
+iteration       11 grad norm 2.4050e+03
+iteration       12 grad norm 1.4738e+03
+iteration       13 grad norm 1.4166e+03
+iteration       14 grad norm 1.2347e+03
+iteration       15 grad norm 8.3587e+02
+iteration       16 grad norm 9.8651e+02
+finished adadelta optimization
+            16 iterations
+    9.8651e+02 final grad norm
+    9.8651e+02 final MA(1) grad norm
+    2.9709e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 196.42079839110374 smse 0.344629484649 nlpd 4.00991329594
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.5074e+02
+iteration        2 grad norm 8.5026e+02
+iteration        3 grad norm 8.4720e+02
+iteration        4 grad norm 8.3904e+02
+iteration        5 grad norm 8.3167e+02
+iteration        6 grad norm 8.1407e+02
+iteration        7 grad norm 7.9233e+02
+iteration        8 grad norm 7.7912e+02
+iteration        9 grad norm 2.2396e+03
+iteration       10 grad norm 2.6665e+03
+iteration       11 grad norm 1.4670e+03
+iteration       12 grad norm 1.4582e+03
+iteration       13 grad norm 1.3574e+03
+iteration       14 grad norm 1.0907e+03
+iteration       15 grad norm 8.4002e+02
+iteration       16 grad norm 1.0433e+03
+iteration       17 grad norm 1.3947e+03
+iteration       18 grad norm 1.1748e+03
+iteration       19 grad norm 6.6275e+02
+finished adadelta optimization
+            19 iterations
+    6.6275e+02 final grad norm
+    6.6275e+02 final MA(1) grad norm
+    2.6665e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 357.37217516452074 smse 0.598530687773 nlpd 5.59317492606
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3286e+02
+iteration        2 grad norm 8.3158e+02
+iteration        3 grad norm 8.3240e+02
+iteration        4 grad norm 8.3049e+02
+iteration        5 grad norm 8.1999e+02
+iteration        6 grad norm 8.0686e+02
+iteration        7 grad norm 7.7809e+02
+iteration        8 grad norm 7.4190e+02
+iteration        9 grad norm 1.0661e+03
+iteration       10 grad norm 4.2582e+03
+iteration       11 grad norm 1.4530e+03
+iteration       12 grad norm 1.4648e+03
+iteration       13 grad norm 1.3853e+03
+iteration       14 grad norm 1.1361e+03
+iteration       15 grad norm 8.2658e+02
+finished adadelta optimization
+            15 iterations
+    8.2658e+02 final grad norm
+    8.2658e+02 final MA(1) grad norm
+    4.2582e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 154.9893056154251 smse 0.244602670857 nlpd 2.82903851494
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.2868e+02
+iteration        2 grad norm 8.2779e+02
+iteration        3 grad norm 8.2851e+02
+iteration        4 grad norm 8.2572e+02
+iteration        5 grad norm 8.1632e+02
+iteration        6 grad norm 8.0326e+02
+iteration        7 grad norm 7.7393e+02
+iteration        8 grad norm 7.3302e+02
+iteration        9 grad norm 1.2572e+03
+iteration       10 grad norm 4.0989e+03
+iteration       11 grad norm 1.4632e+03
+iteration       12 grad norm 1.4628e+03
+iteration       13 grad norm 1.3761e+03
+iteration       14 grad norm 1.1153e+03
+iteration       15 grad norm 8.9081e+02
+finished adadelta optimization
+            15 iterations
+    8.9081e+02 final grad norm
+    8.9081e+02 final MA(1) grad norm
+    4.0989e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 172.49085519462824 smse 0.281275705483 nlpd 3.12649123577
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3413e+02
+iteration        2 grad norm 8.3196e+02
+iteration        3 grad norm 8.3383e+02
+iteration        4 grad norm 8.2824e+02
+iteration        5 grad norm 8.2180e+02
+iteration        6 grad norm 8.0394e+02
+iteration        7 grad norm 7.8016e+02
+iteration        8 grad norm 7.4442e+02
+iteration        9 grad norm 1.0941e+03
+iteration       10 grad norm 3.7819e+03
+iteration       11 grad norm 1.4592e+03
+iteration       12 grad norm 1.4633e+03
+iteration       13 grad norm 1.3775e+03
+iteration       14 grad norm 1.1292e+03
+iteration       15 grad norm 8.4088e+02
+finished adadelta optimization
+            15 iterations
+    8.4088e+02 final grad norm
+    8.4088e+02 final MA(1) grad norm
+    3.7819e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 144.13685955107212 smse 0.300954441408 nlpd 3.28601374248
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (17 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4925e+02
+iteration        2 grad norm 8.4781e+02
+iteration        3 grad norm 8.4429e+02
+iteration        4 grad norm 8.3866e+02
+iteration        5 grad norm 8.2809e+02
+iteration        6 grad norm 8.1047e+02
+iteration        7 grad norm 7.8118e+02
+iteration        8 grad norm 7.5340e+02
+iteration        9 grad norm 8.3815e+02
+iteration       10 grad norm 3.2704e+03
+iteration       11 grad norm 1.6821e+03
+iteration       12 grad norm 1.4719e+03
+iteration       13 grad norm 1.4103e+03
+iteration       14 grad norm 1.2119e+03
+iteration       15 grad norm 7.9681e+02
+iteration       16 grad norm 9.8344e+02
+finished adadelta optimization
+            16 iterations
+    9.8344e+02 final grad norm
+    9.8344e+02 final MA(1) grad norm
+    3.2704e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 144.90724467486143 smse 0.50077584771 nlpd 5.38670657908
+---> llgp Q1R2 m 5000 time   191.2455 (   62.5627) smse     0.3541 (    0.1053) nlpd     3.8339 (    0.9152)
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.5175e+02
+iteration        2 grad norm 8.4890e+02
+iteration        3 grad norm 8.4524e+02
+iteration        4 grad norm 8.3988e+02
+iteration        5 grad norm 8.2892e+02
+iteration        6 grad norm 8.1151e+02
+iteration        7 grad norm 7.8429e+02
+iteration        8 grad norm 7.6796e+02
+iteration        9 grad norm 2.3283e+03
+iteration       10 grad norm 3.0144e+03
+iteration       11 grad norm 1.4686e+03
+iteration       12 grad norm 1.4609e+03
+iteration       13 grad norm 1.3590e+03
+iteration       14 grad norm 1.0845e+03
+iteration       15 grad norm 9.0214e+02
+finished adadelta optimization
+            15 iterations
+    9.0214e+02 final grad norm
+    9.0214e+02 final MA(1) grad norm
+    3.0144e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 133.45682413876057 smse 0.26431917347 nlpd 3.08383379513
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3900e+02
+iteration        2 grad norm 8.3905e+02
+iteration        3 grad norm 8.3846e+02
+iteration        4 grad norm 8.3367e+02
+iteration        5 grad norm 8.2408e+02
+iteration        6 grad norm 8.0981e+02
+iteration        7 grad norm 7.8560e+02
+iteration        8 grad norm 1.0159e+03
+iteration        9 grad norm 3.7325e+03
+iteration       10 grad norm 1.4240e+03
+iteration       11 grad norm 1.4723e+03
+iteration       12 grad norm 1.4474e+03
+iteration       13 grad norm 1.3134e+03
+iteration       14 grad norm 9.8406e+02
+finished adadelta optimization
+            14 iterations
+    9.8406e+02 final grad norm
+    9.8406e+02 final MA(1) grad norm
+    3.7325e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 111.53316277265549 smse 0.228438302562 nlpd 2.42763665794
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4324e+02
+iteration        2 grad norm 8.4306e+02
+iteration        3 grad norm 8.4104e+02
+iteration        4 grad norm 8.3633e+02
+iteration        5 grad norm 8.2669e+02
+iteration        6 grad norm 8.0749e+02
+iteration        7 grad norm 7.7995e+02
+iteration        8 grad norm 7.4711e+02
+iteration        9 grad norm 1.1631e+03
+iteration       10 grad norm 4.0800e+03
+iteration       11 grad norm 1.4616e+03
+iteration       12 grad norm 1.4638e+03
+iteration       13 grad norm 1.3801e+03
+iteration       14 grad norm 1.1344e+03
+iteration       15 grad norm 8.4730e+02
+finished adadelta optimization
+            15 iterations
+    8.4730e+02 final grad norm
+    8.4730e+02 final MA(1) grad norm
+    4.0800e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 117.28254330903292 smse 0.268333813083 nlpd 3.00980075799
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4713e+02
+iteration        2 grad norm 8.4628e+02
+iteration        3 grad norm 8.4509e+02
+iteration        4 grad norm 8.3674e+02
+iteration        5 grad norm 8.2657e+02
+iteration        6 grad norm 8.0792e+02
+iteration        7 grad norm 7.8257e+02
+iteration        8 grad norm 9.1574e+02
+iteration        9 grad norm 3.3326e+03
+iteration       10 grad norm 1.6887e+03
+iteration       11 grad norm 1.4730e+03
+iteration       12 grad norm 1.4488e+03
+iteration       13 grad norm 1.3081e+03
+iteration       14 grad norm 9.7716e+02
+iteration       15 grad norm 9.4999e+02
+finished adadelta optimization
+            15 iterations
+    9.4999e+02 final grad norm
+    9.4999e+02 final MA(1) grad norm
+    3.3326e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 131.22577226161957 smse 0.29565996202 nlpd 3.35330115527
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4533e+02
+iteration        2 grad norm 8.4385e+02
+iteration        3 grad norm 8.4339e+02
+iteration        4 grad norm 8.3670e+02
+iteration        5 grad norm 8.2558e+02
+iteration        6 grad norm 8.0630e+02
+iteration        7 grad norm 7.8340e+02
+iteration        8 grad norm 7.5972e+02
+iteration        9 grad norm 2.2981e+03
+iteration       10 grad norm 2.7737e+03
+iteration       11 grad norm 1.4724e+03
+iteration       12 grad norm 1.4506e+03
+iteration       13 grad norm 1.3413e+03
+iteration       14 grad norm 1.0487e+03
+iteration       15 grad norm 8.4703e+02
+iteration       16 grad norm 1.0555e+03
+iteration       17 grad norm 1.4342e+03
+iteration       18 grad norm 1.1622e+03
+finished adadelta optimization
+            18 iterations
+    1.1622e+03 final grad norm
+    1.1622e+03 final MA(1) grad norm
+    2.7737e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 484.4462668299675 smse 0.322717568481 nlpd 4.15615329494
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4524e+02
+iteration        2 grad norm 8.4445e+02
+iteration        3 grad norm 8.4382e+02
+iteration        4 grad norm 8.3823e+02
+iteration        5 grad norm 8.2530e+02
+iteration        6 grad norm 8.1017e+02
+iteration        7 grad norm 7.8656e+02
+iteration        8 grad norm 7.7388e+02
+iteration        9 grad norm 2.7968e+03
+iteration       10 grad norm 2.3185e+03
+iteration       11 grad norm 1.4715e+03
+iteration       12 grad norm 1.4522e+03
+iteration       13 grad norm 1.3211e+03
+iteration       14 grad norm 1.0105e+03
+iteration       15 grad norm 9.1595e+02
+iteration       16 grad norm 1.0651e+03
+iteration       17 grad norm 1.3436e+03
+finished adadelta optimization
+            17 iterations
+    1.3436e+03 final grad norm
+    1.3436e+03 final MA(1) grad norm
+    2.7968e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 194.6200166940689 smse 0.237264414732 nlpd 3.19432993859
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4775e+02
+iteration        2 grad norm 8.4677e+02
+iteration        3 grad norm 8.4310e+02
+iteration        4 grad norm 8.3558e+02
+iteration        5 grad norm 8.2483e+02
+iteration        6 grad norm 8.0974e+02
+iteration        7 grad norm 7.8756e+02
+iteration        8 grad norm 1.1877e+03
+iteration        9 grad norm 3.5329e+03
+iteration       10 grad norm 1.4204e+03
+iteration       11 grad norm 1.4697e+03
+iteration       12 grad norm 1.4308e+03
+iteration       13 grad norm 1.2753e+03
+iteration       14 grad norm 9.2720e+02
+finished adadelta optimization
+            14 iterations
+    9.2720e+02 final grad norm
+    9.2720e+02 final MA(1) grad norm
+    3.5329e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 112.1059082672 smse 0.254912363359 nlpd 2.58624097348
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4453e+02
+iteration        2 grad norm 8.4298e+02
+iteration        3 grad norm 8.4305e+02
+iteration        4 grad norm 8.3962e+02
+iteration        5 grad norm 8.2863e+02
+iteration        6 grad norm 8.1077e+02
+iteration        7 grad norm 7.8435e+02
+iteration        8 grad norm 7.5903e+02
+iteration        9 grad norm 2.3070e+03
+iteration       10 grad norm 3.3699e+03
+iteration       11 grad norm 1.4694e+03
+iteration       12 grad norm 1.4600e+03
+iteration       13 grad norm 1.3602e+03
+iteration       14 grad norm 1.0910e+03
+iteration       15 grad norm 9.5714e+02
+finished adadelta optimization
+            15 iterations
+    9.5714e+02 final grad norm
+    9.5714e+02 final MA(1) grad norm
+    3.3699e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 140.31394250690937 smse 0.346920205294 nlpd 3.74349696573
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4172e+02
+iteration        2 grad norm 8.4221e+02
+iteration        3 grad norm 8.4171e+02
+iteration        4 grad norm 8.3585e+02
+iteration        5 grad norm 8.2579e+02
+iteration        6 grad norm 8.0839e+02
+iteration        7 grad norm 7.8235e+02
+iteration        8 grad norm 7.5435e+02
+iteration        9 grad norm 1.4930e+03
+iteration       10 grad norm 3.6189e+03
+iteration       11 grad norm 1.4714e+03
+iteration       12 grad norm 1.4596e+03
+iteration       13 grad norm 1.3603e+03
+iteration       14 grad norm 1.0981e+03
+iteration       15 grad norm 8.7545e+02
+finished adadelta optimization
+            15 iterations
+    8.7545e+02 final grad norm
+    8.7545e+02 final MA(1) grad norm
+    3.6189e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 129.87394496053457 smse 0.310442667753 nlpd 3.39763087587
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (21 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4987e+02
+iteration        2 grad norm 8.5005e+02
+iteration        3 grad norm 8.4639e+02
+iteration        4 grad norm 8.3850e+02
+iteration        5 grad norm 8.3093e+02
+iteration        6 grad norm 8.1057e+02
+iteration        7 grad norm 7.8491e+02
+iteration        8 grad norm 7.6275e+02
+iteration        9 grad norm 1.4930e+03
+iteration       10 grad norm 3.3098e+03
+iteration       11 grad norm 1.4552e+03
+iteration       12 grad norm 1.4660e+03
+iteration       13 grad norm 1.3913e+03
+iteration       14 grad norm 1.1573e+03
+iteration       15 grad norm 8.1059e+02
+finished adadelta optimization
+            15 iterations
+    8.1059e+02 final grad norm
+    8.1059e+02 final MA(1) grad norm
+    3.3098e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 123.62049830704927 smse 0.338763200789 nlpd 3.6006604121
+---> llgp Q1R3 m 5000 time   167.8479 (  107.9198) smse     0.2868 (    0.0400) nlpd     3.2553 (    0.4924)
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3988e+02
+iteration        2 grad norm 8.3920e+02
+iteration        3 grad norm 8.4102e+02
+iteration        4 grad norm 8.3475e+02
+iteration        5 grad norm 8.2564e+02
+iteration        6 grad norm 8.0759e+02
+iteration        7 grad norm 7.8228e+02
+iteration        8 grad norm 1.1410e+03
+iteration        9 grad norm 3.9230e+03
+iteration       10 grad norm 1.4367e+03
+iteration       11 grad norm 1.4716e+03
+iteration       12 grad norm 1.4449e+03
+iteration       13 grad norm 1.2990e+03
+iteration       14 grad norm 9.5322e+02
+finished adadelta optimization
+            14 iterations
+    9.5322e+02 final grad norm
+    9.5322e+02 final MA(1) grad norm
+    3.9230e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 134.51727639883757 smse 0.363090599795 nlpd 3.20803701169
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4565e+02
+iteration        2 grad norm 8.4644e+02
+iteration        3 grad norm 8.4354e+02
+iteration        4 grad norm 8.3833e+02
+iteration        5 grad norm 8.2960e+02
+iteration        6 grad norm 8.0821e+02
+iteration        7 grad norm 7.8503e+02
+iteration        8 grad norm 7.6495e+02
+iteration        9 grad norm 2.8366e+03
+iteration       10 grad norm 2.4581e+03
+iteration       11 grad norm 1.4736e+03
+iteration       12 grad norm 1.4545e+03
+iteration       13 grad norm 1.3376e+03
+iteration       14 grad norm 1.0384e+03
+iteration       15 grad norm 9.8208e+02
+iteration       16 grad norm 1.0892e+03
+iteration       17 grad norm 1.3581e+03
+finished adadelta optimization
+            17 iterations
+    1.3581e+03 final grad norm
+    1.3581e+03 final MA(1) grad norm
+    2.8366e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 452.995376765728 smse 0.260513753211 nlpd 3.43630329736
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4661e+02
+iteration        2 grad norm 8.4540e+02
+iteration        3 grad norm 8.4432e+02
+iteration        4 grad norm 8.3610e+02
+iteration        5 grad norm 8.2622e+02
+iteration        6 grad norm 8.0911e+02
+iteration        7 grad norm 7.8552e+02
+iteration        8 grad norm 7.6447e+02
+iteration        9 grad norm 2.1079e+03
+iteration       10 grad norm 3.2285e+03
+iteration       11 grad norm 1.4601e+03
+iteration       12 grad norm 1.4549e+03
+iteration       13 grad norm 1.3615e+03
+iteration       14 grad norm 1.0961e+03
+iteration       15 grad norm 8.9883e+02
+finished adadelta optimization
+            15 iterations
+    8.9883e+02 final grad norm
+    8.9883e+02 final MA(1) grad norm
+    3.2285e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 137.8294769898057 smse 0.385382669888 nlpd 3.980223639
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.3819e+02
+iteration        2 grad norm 8.3597e+02
+iteration        3 grad norm 8.3795e+02
+iteration        4 grad norm 8.3403e+02
+iteration        5 grad norm 8.2556e+02
+iteration        6 grad norm 8.0606e+02
+iteration        7 grad norm 7.8201e+02
+iteration        8 grad norm 7.6357e+02
+iteration        9 grad norm 2.8552e+03
+iteration       10 grad norm 2.1942e+03
+iteration       11 grad norm 1.4706e+03
+iteration       12 grad norm 1.4541e+03
+iteration       13 grad norm 1.3359e+03
+iteration       14 grad norm 1.0415e+03
+iteration       15 grad norm 9.5655e+02
+iteration       16 grad norm 1.0630e+03
+iteration       17 grad norm 1.3315e+03
+finished adadelta optimization
+            17 iterations
+    1.3315e+03 final grad norm
+    1.3315e+03 final MA(1) grad norm
+    2.8552e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 215.23012572526932 smse 0.186346514548 nlpd 2.66271817349
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4755e+02
+iteration        2 grad norm 8.4692e+02
+iteration        3 grad norm 8.4389e+02
+iteration        4 grad norm 8.3751e+02
+iteration        5 grad norm 8.2814e+02
+iteration        6 grad norm 8.1157e+02
+iteration        7 grad norm 7.8685e+02
+iteration        8 grad norm 7.7671e+02
+iteration        9 grad norm 2.8636e+03
+iteration       10 grad norm 2.2616e+03
+iteration       11 grad norm 1.4682e+03
+iteration       12 grad norm 1.4590e+03
+iteration       13 grad norm 1.3515e+03
+iteration       14 grad norm 1.0676e+03
+iteration       15 grad norm 9.4169e+02
+iteration       16 grad norm 1.0782e+03
+iteration       17 grad norm 1.3553e+03
+finished adadelta optimization
+            17 iterations
+    1.3553e+03 final grad norm
+    1.3553e+03 final MA(1) grad norm
+    2.8636e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 215.79458436369896 smse 0.213184432354 nlpd 3.00316830027
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4848e+02
+iteration        2 grad norm 8.4851e+02
+iteration        3 grad norm 8.4364e+02
+iteration        4 grad norm 8.3905e+02
+iteration        5 grad norm 8.2730e+02
+iteration        6 grad norm 8.1013e+02
+iteration        7 grad norm 7.8525e+02
+iteration        8 grad norm 7.7893e+02
+iteration        9 grad norm 2.8837e+03
+iteration       10 grad norm 2.1851e+03
+iteration       11 grad norm 1.4722e+03
+iteration       12 grad norm 1.4474e+03
+iteration       13 grad norm 1.3205e+03
+iteration       14 grad norm 1.0154e+03
+iteration       15 grad norm 9.1608e+02
+iteration       16 grad norm 1.0563e+03
+iteration       17 grad norm 1.3147e+03
+finished adadelta optimization
+            17 iterations
+    1.3147e+03 final grad norm
+    1.3147e+03 final MA(1) grad norm
+    2.8837e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 205.34964306652546 smse 0.324741916703 nlpd 3.97967893401
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4669e+02
+iteration        2 grad norm 8.4736e+02
+iteration        3 grad norm 8.4431e+02
+iteration        4 grad norm 8.3803e+02
+iteration        5 grad norm 8.2867e+02
+iteration        6 grad norm 8.1045e+02
+iteration        7 grad norm 7.8732e+02
+iteration        8 grad norm 9.5339e+02
+iteration        9 grad norm 3.7986e+03
+iteration       10 grad norm 1.4412e+03
+iteration       11 grad norm 1.4725e+03
+iteration       12 grad norm 1.4455e+03
+iteration       13 grad norm 1.3016e+03
+iteration       14 grad norm 9.6078e+02
+finished adadelta optimization
+            14 iterations
+    9.6078e+02 final grad norm
+    9.6078e+02 final MA(1) grad norm
+    3.7986e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 247.90941902250051 smse 0.234500813671 nlpd 2.44572613468
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4665e+02
+iteration        2 grad norm 8.4530e+02
+iteration        3 grad norm 8.4257e+02
+iteration        4 grad norm 8.3739e+02
+iteration        5 grad norm 8.2965e+02
+iteration        6 grad norm 8.1146e+02
+iteration        7 grad norm 7.8512e+02
+iteration        8 grad norm 7.7775e+02
+iteration        9 grad norm 3.1482e+03
+iteration       10 grad norm 2.1780e+03
+iteration       11 grad norm 1.4708e+03
+iteration       12 grad norm 1.4568e+03
+iteration       13 grad norm 1.3314e+03
+iteration       14 grad norm 1.0310e+03
+iteration       15 grad norm 9.8364e+02
+finished adadelta optimization
+            15 iterations
+    9.8364e+02 final grad norm
+    9.8364e+02 final MA(1) grad norm
+    3.1482e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 145.41170813143253 smse 0.320730365381 nlpd 3.54476954675
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.4890e+02
+iteration        2 grad norm 8.4898e+02
+iteration        3 grad norm 8.4346e+02
+iteration        4 grad norm 8.3821e+02
+iteration        5 grad norm 8.2822e+02
+iteration        6 grad norm 8.1056e+02
+iteration        7 grad norm 7.8700e+02
+iteration        8 grad norm 7.7722e+02
+iteration        9 grad norm 2.9672e+03
+iteration       10 grad norm 2.3169e+03
+iteration       11 grad norm 1.4651e+03
+iteration       12 grad norm 1.4542e+03
+iteration       13 grad norm 1.3445e+03
+iteration       14 grad norm 1.0542e+03
+iteration       15 grad norm 9.6958e+02
+finished adadelta optimization
+            15 iterations
+    9.6958e+02 final grad norm
+    9.6958e+02 final MA(1) grad norm
+    2.9672e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 141.23079735785723 smse 0.273035378791 nlpd 3.16224092061
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 5004) complete, 
+LMC lmc fully initialized
+Optimization (25 hyperparams) starting with user-set num workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.5, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f9890305510>}
+iteration        1 grad norm 8.5168e+02
+iteration        2 grad norm 8.5147e+02
+iteration        3 grad norm 8.4604e+02
+iteration        4 grad norm 8.4037e+02
+iteration        5 grad norm 8.3175e+02
+iteration        6 grad norm 8.1470e+02
+iteration        7 grad norm 7.8942e+02
+iteration        8 grad norm 7.8986e+02
+iteration        9 grad norm 2.5161e+03
+iteration       10 grad norm 2.1767e+03
+iteration       11 grad norm 1.4657e+03
+iteration       12 grad norm 1.4572e+03
+iteration       13 grad norm 1.3409e+03
+iteration       14 grad norm 1.0601e+03
+iteration       15 grad norm 8.1574e+02
+iteration       16 grad norm 1.0637e+03
+iteration       17 grad norm 1.4967e+03
+iteration       18 grad norm 8.6857e+02
+iteration       19 grad norm 6.3013e+02
+finished adadelta optimization
+            19 iterations
+    6.3013e+02 final grad norm
+    6.3013e+02 final MA(1) grad norm
+    2.5161e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 374 on-the-fly variance predictions
+time 273.8484965413809 smse 0.350118445713 nlpd 4.19068527117
+---> llgp Q1R4 m 5000 time   217.0117 (   91.6289) smse     0.2912 (    0.0641) nlpd     3.3614 (    0.5487)
+---> cogp m 100 time 861.2652659000001 smse 0.075747955331738 nlpd 90.68532315928843
+---> cogp m 200 time 2071.2621438 smse 0.080579066465997 nlpd 98.47933723829452
