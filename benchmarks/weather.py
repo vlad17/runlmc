@@ -44,6 +44,6 @@ with Pool(cpu_count()) as pool:
             slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
         print('---> llgp slfm m', num_interp, 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
-for num_induc in [100, 200, 300, 400, 500]:
+for num_induc in [100, 200, 300]:
     cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_weather(runs, num_induc)
     print('---> cogp m', num_induc, 'time', cogp_time, 'smse', cogp_smse, 'nlpd', cogp_nlpd)
