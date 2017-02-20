@@ -160,7 +160,7 @@ def nlpd(test_yss, pred_yss, pred_vss):
 def runlmc(num_runs, m, xss, yss, test_xss, test_yss,
            kgen, rgen, slfmgen, indepgen, optimizer_opts, **kwargs):
     times, smses, nlpds = [], [], []
-    for _ in range(num_runs):
+    for i in range(num_runs):
         ks = kgen()
         rs = rgen()
         slfm = slfmgen()
@@ -172,6 +172,8 @@ def runlmc(num_runs, m, xss, yss, test_xss, test_yss,
         with contexttimer.Timer() as t:
             lmc.optimize(optimizer=opt)
         times.append(t.elapsed)
+        np.save(TMP + 'lmc-m{}-{}of{}-{}.npy'.format(m, i, num_runs, sum(map(len, xss))),
+                lmc.param_array)
         pred_yss, pred_vss = lmc.predict(test_xss)
         smses.append(smse(test_yss, pred_yss, yss))
         nlpds.append(nlpd(test_yss, pred_yss, pred_vss))

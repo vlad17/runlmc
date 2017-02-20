@@ -8,7 +8,7 @@ import runlmc.lmc.stochastic_deriv
 runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
 runs = 3
 interpolating_points = [1000, 2000, 3000, 4000, 5000]
-max_workers = 40 # caps prediction parallelism (training uses N_IT parallel)
+max_workers = 80 # caps prediction parallelism (training uses N_IT parallel)
 inducing_points = [100, 200, 300] # COGP
 
 import os
@@ -42,16 +42,6 @@ with Pool(min(max_workers, cpu_count())) as pool:
     print(len(workers), 'distinct workers launched')
 
     for num_interp in interpolating_points:
-        kgen = lambda: [RBF()]
-        rgen = lambda: [2]
-        slfmgen = lambda: []
-        indepgen = lambda: [Scaled(RBF()) for _ in xss]
-        np.random.seed(1234)
-        llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
-            runs, num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
-        print('---> llgp Q1R2+indep m', num_interp, 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
-
         kgen = lambda: []
         rgen = lambda: []
         slfmgen = lambda: [RBF(name='slfm0'), RBF(name='slfm1')]
@@ -60,7 +50,7 @@ with Pool(min(max_workers, cpu_count())) as pool:
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
             runs, num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
             slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
-        print('---> llgp slfm m', num_interp, 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
+        print('---> llgp slfm m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
 for num_induc in inducing_points:
     cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_weather(runs, num_induc)
