@@ -205,7 +205,7 @@ class LMC(MultiGP):
         self.coreg_vecs = []
         initial_vecs = []
         initial_vecs += [np.random.randn(rank, self.output_dim) for rank in ranks]
-        initial_vecs += [np.ones((1, self.output_dim)) / self.output_dim
+        initial_vecs += [np.ones((1, self.output_dim)) / np.sqrt(self.output_dim)
                          for _ in slfm_kerns]
         initial_vecs += [np.zeros((1, self.output_dim)) for _ in indep_gp]
         for i, coreg_vec in enumerate(initial_vecs):
