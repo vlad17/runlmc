@@ -59,8 +59,8 @@ with Pool(min(max_workers, cpu_count())) as pool:
             slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
         print('---> llgp Q1R2 m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
-        ks = lambda: []
-        ranks = lambda: []
+        kgen = lambda: []
+        rgen = lambda: []
         slfmgen = lambda: [RBF(name='slfm0'), RBF(name='slfm1')]
         indepgen = lambda: [Scaled(RBF()) for _ in xss]
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
