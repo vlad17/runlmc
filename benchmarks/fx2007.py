@@ -8,9 +8,9 @@ import runlmc.lmc.stochastic_deriv
 
 runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
 runs = 10
-interpolation_points = [100, 200, 300, 400, 500, 600]
-max_workers = 80 # caps prediction parallelism (training uses N_IT parallel)
-inducing_points = [50, 100, 100, 200]
+interpolation_points = [None]
+max_workers = 40 # caps prediction parallelism (training uses N_IT parallel)
+inducing_points = [100]
 
 import os
 import logging
@@ -33,8 +33,6 @@ logging.getLogger().addHandler(logging.StreamHandler())
 _LOG.setLevel(logging.INFO)
 _LOG2.setLevel(logging.INFO)
 
-np.random.seed(1234)
-
 # the columns with nonzero test holdout are in test_fx
 xss, yss, test_xss, test_yss, test_fx, cols = foreign_exchange_2007()
 
@@ -54,6 +52,7 @@ with Pool(min(max_workers, cpu_count())) as pool:
         rgen = lambda: [2]
         slfmgen = lambda: []
         indepgen = lambda: []
+        np.random.seed(1234)
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
             runs, m, xss, yss, test_xss, test_yss, kgen, rgen,
             slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
@@ -63,6 +62,7 @@ with Pool(min(max_workers, cpu_count())) as pool:
         rgen = lambda: []
         slfmgen = lambda: [RBF(name='slfm0'), RBF(name='slfm1')]
         indepgen = lambda: [Scaled(RBF()) for _ in xss]
+        np.random.seed(1234)
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
             runs, m, xss, yss, test_xss, test_yss, kgen, rgen,
             slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
