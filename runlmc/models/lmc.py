@@ -168,6 +168,9 @@ class LMC(MultiGP):
         if not kernels and not slfm_kerns and not indep_gp:
             raise ValueError('Number of kernels should be >0')
 
+        if metrics and (slfm_kerns or indep_gp):
+            raise ValueError('Metrics incompatible with slfm/indep gp')
+
         if len(indep_gp) not in [0, len(Xs)]:
             raise ValueError('Independent GP kernels should be one-per-output'
                              ' or not specified at all')
@@ -204,8 +207,9 @@ class LMC(MultiGP):
             ranks = [1 for _ in kernels]
         self.coreg_vecs = []
         initial_vecs = []
+        # TODO(fix): truncated normal?
         initial_vecs += [np.random.randn(rank, self.output_dim) for rank in ranks]
-        initial_vecs += [np.ones((1, self.output_dim)) / np.sqrt(self.output_dim)
+        initial_vecs += [np.random.randn(1, self.output_dim)
                          for _ in slfm_kerns]
         initial_vecs += [np.zeros((1, self.output_dim)) for _ in indep_gp]
         for i, coreg_vec in enumerate(initial_vecs):
@@ -232,7 +236,7 @@ class LMC(MultiGP):
             self.coreg_diags[-1].constrain_fixed()
 
         # Corresponds to epsilon
-        self.noise = Param('noise', np.ones(self.output_dim), Logexp())
+        self.noise = Param('noise', 0.1 * np.ones(self.output_dim), Logexp())
         self.link_parameter(self.noise)
 
         self.y = np.hstack(self.Ys)
