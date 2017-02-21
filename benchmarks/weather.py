@@ -6,10 +6,10 @@
 import runlmc.lmc.stochastic_deriv
 
 runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
-runs = 3
-interpolating_points = [1000, 2000, 3000, 4000, 5000]
+runs = 5
+interpolating_points = [300, 400, 500, 600, 700, 800, 900, 1000, None]
 max_workers = 80 # caps prediction parallelism (training uses N_IT parallel)
-inducing_points = [100, 200, 300] # COGP
+inducing_points = [200] # COGP
 
 import os
 import logging
@@ -49,7 +49,7 @@ with Pool(min(max_workers, cpu_count())) as pool:
         np.random.seed(1234)
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
             runs, num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
+            slfmgen, indepgen, {'verbosity': 100, 'min_grad_ratio': 0.1}, extrapool=pool)
         print('---> llgp slfm m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
 for num_induc in inducing_points:
