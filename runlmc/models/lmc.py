@@ -219,6 +219,7 @@ class LMC(MultiGP):
 
         self.coreg_diags = []
         for _ in range(self.nkernels['lmc']):
+            i = len(self.coreg_diags)
             coreg_diag = np.ones(self.output_dim)
             self.coreg_diags.append(
                 Param('kappa{}'.format(i), coreg_diag, Logexp()))
