@@ -6,8 +6,8 @@
 import runlmc.lmc.stochastic_deriv
 
 runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
-runs = 3
-interpolating_points = [400, 500, 600, 700, 800, 900, 1000, None]
+runs = 10
+interpolating_points = [400, 500, 600, 700, 800, 900, 1000]
 max_workers = 80 # caps prediction parallelism (training uses N_IT parallel)
 inducing_points = [200] # COGP
 

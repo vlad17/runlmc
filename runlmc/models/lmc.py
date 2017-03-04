@@ -8,6 +8,7 @@ from multiprocessing import Pool, cpu_count
 import numpy as np
 import scipy.linalg as la
 import scipy.spatial.distance as dist
+import scipy.stats
 from paramz.transformations import Logexp
 
 from .multigp import MultiGP
@@ -205,11 +206,14 @@ class LMC(MultiGP):
 
         if ranks is None:
             ranks = [1 for _ in kernels]
+
+        distrib = scipy.stats.truncnorm(-1, 1)
+        randinit = lambda sx, sy: distrib.rvs(size=(sx, sy))
+
         self.coreg_vecs = []
         initial_vecs = []
-        # TODO(fix): truncated normal?
-        initial_vecs += [np.random.randn(rank, self.output_dim) for rank in ranks]
-        initial_vecs += [np.random.randn(1, self.output_dim)
+        initial_vecs += [randinit(rank, self.output_dim) for rank in ranks]
+        initial_vecs += [randinit(1, self.output_dim)
                          for _ in slfm_kerns]
         initial_vecs += [np.zeros((1, self.output_dim)) for _ in indep_gp]
         for i, coreg_vec in enumerate(initial_vecs):
