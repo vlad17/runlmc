@@ -1,0 +1,89 @@
+n_o 500 d 10 r_q 3 q 5 eps 0.01 kern rbf seed 1234 test-type opt
+
+preparation time (once per optimization)
+      0.6424 sec exact - pairwise distances (for dense approaches)
+      0.0301 sec apprx - linear interpolation (for approximations)
+
+rbf only - inv lengthscales in logspace(0, 1, q)
+    covariance matrix info
+        largest  eig        4.6045e+04
+        smallest eig        8.9561e-03
+        l2 condition number 5.1412e+06
+    matrix materialization/inversion time
+           25.0103 sec exact - cholesky
+           34.5716 sec apprx - solve K*alpha=y, solve 3 trace terms
+        7.1564e-09 |K_exact - K_apprx|_1 / n^2
+        1.5691e-06 rel alpha l1 error
+        1.6959e-06 rel alpha l2 error
+    kernel gradients # 5
+            3.3593 sec exact per gradient
+            0.0130 sec apprx per gradient
+        1.5572e+01 avg grad error
+    coregionalization Aq gradients # 15
+           12.2417 sec exact per gradient
+            0.3346 sec apprx per gradient
+        2.5981e+00 avg grad error
+    coregionalization kappa gradients # 50
+            1.0717 sec exact per gradient
+            0.0069 sec apprx per gradient
+        6.4035e-01 avg grad error
+    noise gradients # 10
+            0.6179 sec exact per gradient
+            0.0004 sec apprx per gradient
+        8.0215e+01 avg grad error
+    total gradient runtime summary (215 partial derivatives)
+          260.1879 sec exact all gradients
+            5.4346 sec apprx all gradients
+        6.0546e+00 avg grad error
+        8.0921e+03 avg grad magnitude
+        7.4821e-04 err:grad l1 ratio
+        7.3831e-04 err:grad l2 ratio
+    total optimization iteration time
+          285.1982 sec cholesky
+           40.0062 sec runlmc
+n_o 500 d 10 r_q 3 q 5 eps 0.01 kern rbf seed 1234 test-type opt
+
+preparation time (once per optimization)
+      0.7252 sec exact - pairwise distances (for dense approaches)
+      0.0270 sec apprx - linear interpolation (for approximations)
+
+rbf only - inv lengthscales in logspace(0, 1, q)
+    covariance matrix info
+        largest  eig        4.6045e+04
+        smallest eig        8.9561e-03
+        l2 condition number 5.1412e+06
+    matrix materialization/inversion time
+           24.3662 sec exact - cholesky
+           30.5955 sec apprx - solve K*alpha=y, solve 3 trace terms
+        7.1564e-09 |K_exact - K_apprx|_1 / n^2
+        1.5691e-06 rel alpha l1 error
+        1.6959e-06 rel alpha l2 error
+    kernel gradients # 5
+            3.1352 sec exact per gradient
+            0.0074 sec apprx per gradient
+        1.5572e+01 avg grad error
+    coregionalization Aq gradients # 15
+           11.1396 sec exact per gradient
+            0.0701 sec apprx per gradient
+        2.5981e+00 avg grad error
+    coregionalization kappa gradients # 50
+            1.2164 sec exact per gradient
+            0.0499 sec apprx per gradient
+        6.4035e-01 avg grad error
+    noise gradients # 10
+            0.8639 sec exact per gradient
+            0.0005 sec apprx per gradient
+        8.0215e+01 avg grad error
+    total gradient runtime summary (215 partial derivatives)
+          252.2294 sec exact all gradients
+            3.5867 sec apprx all gradients
+        6.0546e+00 avg grad error
+        8.0921e+03 avg grad magnitude
+        7.4821e-04 err:grad l1 ratio
+        7.3831e-04 err:grad l2 ratio
+    total optimization iteration time
+          276.5955 sec cholesky
+           34.1823 sec runlmc
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 3.696055e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.090089e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.834569e-04

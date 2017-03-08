@@ -1,0 +1,112 @@
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 4.692824e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 6.327353e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.401126e-03
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 4.958078e-04
+n_o 500 d 10 r_q 3 q 1 eps 0.0001 kern rbf seed 1234 test-type opt
+
+preparation time (once per optimization)
+      0.6383 sec exact - pairwise distances (for dense approaches)
+      0.0250 sec apprx - linear interpolation (for approximations)
+
+rbf only - inv lengthscales in logspace(0, 1, q)
+    covariance matrix info
+        largest  eig        1.0877e+04
+        smallest eig        9.9157e-05
+        l2 condition number 1.0970e+08
+    matrix materialization/inversion time
+           15.8283 sec exact - cholesky
+           22.0486 sec apprx - solve K*alpha=y, solve 3 trace terms
+        1.6368e-10 |K_exact - K_apprx|_1 / n^2
+        1.0994e-08 rel alpha l1 error
+        1.2831e-08 rel alpha l2 error
+    kernel gradients # 1
+            3.0502 sec exact per gradient
+            0.3293 sec apprx per gradient
+        9.2216e+00 avg grad error
+    coregionalization Aq gradients # 3
+           10.0764 sec exact per gradient
+            0.4345 sec apprx per gradient
+        1.7288e+00 avg grad error
+    coregionalization kappa gradients # 10
+            0.9853 sec exact per gradient
+            0.2335 sec apprx per gradient
+        3.3130e-01 avg grad error
+    noise gradients # 10
+            0.5737 sec exact per gradient
+            0.0027 sec apprx per gradient
+        5.3006e+03 avg grad error
+    total gradient runtime summary (51 partial derivatives)
+           48.8686 sec exact all gradients
+            3.9950 sec apprx all gradients
+        1.0406e+03 avg grad error
+        4.0333e+08 avg grad magnitude
+        2.5800e-06 err:grad l1 ratio
+        3.1218e-06 err:grad l2 ratio
+    total optimization iteration time
+           64.6969 sec cholesky
+           26.0436 sec runlmc
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 4.692824e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 6.327353e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.401126e-03
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 4.958078e-04
+n_o 500 d 10 r_q 3 q 1 eps 0.0001 kern rbf seed 1234 test-type opt
+
+preparation time (once per optimization)
+      0.6433 sec exact - pairwise distances (for dense approaches)
+      0.0263 sec apprx - linear interpolation (for approximations)
+
+rbf only - inv lengthscales in logspace(0, 1, q)
+    covariance matrix info
+        largest  eig        1.0877e+04
+        smallest eig        9.9157e-05
+        l2 condition number 1.0970e+08
+    matrix materialization/inversion time
+           12.5137 sec exact - cholesky
+           17.4763 sec apprx - solve K*alpha=y, solve 3 trace terms
+        1.6368e-10 |K_exact - K_apprx|_1 / n^2
+        1.0994e-08 rel alpha l1 error
+        1.2831e-08 rel alpha l2 error
+    kernel gradients # 1
+            3.1029 sec exact per gradient
+            0.0071 sec apprx per gradient
+        9.2216e+00 avg grad error
+    coregionalization Aq gradients # 3
+           10.5745 sec exact per gradient
+            0.5832 sec apprx per gradient
+        1.7288e+00 avg grad error
+    coregionalization kappa gradients # 10
+            1.1737 sec exact per gradient
+            0.0743 sec apprx per gradient
+        3.3130e-01 avg grad error
+    noise gradients # 10
+            0.7729 sec exact per gradient
+            0.0020 sec apprx per gradient
+        5.3006e+03 avg grad error
+    total gradient runtime summary (51 partial derivatives)
+           54.2917 sec exact all gradients
+            2.5197 sec apprx all gradients
+        1.0406e+03 avg grad error
+        4.0333e+08 avg grad magnitude
+        2.5800e-06 err:grad l1 ratio
+        3.1218e-06 err:grad l2 ratio
+    total optimization iteration time
+           66.8054 sec cholesky
+           19.9961 sec runlmc
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.635398e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 5.485861e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.926646e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 6.746519e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.207847e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 4.232416e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 8.306638e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 4.208322e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.126482e-03
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.319122e-03
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 7.245760e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.061175e-03
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 3.504129e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 5.655313e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.455622e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.570652e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 3.288901e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 9.824998e-04

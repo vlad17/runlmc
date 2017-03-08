@@ -1,0 +1,43 @@
+n_o 500 d 10 r_q 3 q 10 eps 0.1 kern matern seed 12342 test-type opt
+
+preparation time (once per optimization)
+      0.7447 sec exact - pairwise distances (for dense approaches)
+      0.0301 sec apprx - linear interpolation (for approximations)
+
+matern32 only - inv lengthscales in logspace(0, 1, q)
+    covariance matrix info
+        largest  eig        4.9837e+04
+        smallest eig        6.5649e-02
+        l2 condition number 7.5915e+05
+    matrix materialization/inversion time
+           38.4818 sec exact - cholesky
+           60.4780 sec apprx - solve K*alpha=y, solve 3 trace terms
+        3.3465e-07 |K_exact - K_apprx|_1 / n^2
+        6.4026e-04 rel alpha l1 error
+        1.0223e-03 rel alpha l2 error
+    kernel gradients # 10
+            5.0018 sec exact per gradient
+            0.0070 sec apprx per gradient
+        1.0047e+00 avg grad error
+    coregionalization Aq gradients # 30
+           11.0092 sec exact per gradient
+            0.0636 sec apprx per gradient
+        3.9164e-01 avg grad error
+    coregionalization kappa gradients # 100
+            1.0932 sec exact per gradient
+            0.0067 sec apprx per gradient
+        8.0071e-02 avg grad error
+    noise gradients # 10
+            0.6021 sec exact per gradient
+            0.0003 sec apprx per gradient
+        1.3616e+01 avg grad error
+    total gradient runtime summary (420 partial derivatives)
+          495.6367 sec exact all gradients
+            2.6535 sec apprx all gradients
+        6.4691e-01 avg grad error
+        1.3803e+01 avg grad magnitude
+        4.6866e-02 err:grad l1 ratio
+        2.8940e-02 err:grad l2 ratio
+    total optimization iteration time
+          534.1185 sec cholesky
+           63.1315 sec runlmc

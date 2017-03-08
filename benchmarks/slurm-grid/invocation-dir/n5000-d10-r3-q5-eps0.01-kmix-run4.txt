@@ -1,0 +1,43 @@
+n_o 500 d 10 r_q 3 q 5 eps 0.01 kern mix seed 12344 test-type opt
+
+preparation time (once per optimization)
+      0.6888 sec exact - pairwise distances (for dense approaches)
+      0.0265 sec apprx - linear interpolation (for approximations)
+
+mixed - rbf, periodic, matern varying params added together
+    covariance matrix info
+        largest  eig        2.7139e+04
+        smallest eig        7.6779e-03
+        l2 condition number 3.5347e+06
+    matrix materialization/inversion time
+           26.9146 sec exact - cholesky
+           26.5895 sec apprx - solve K*alpha=y, solve 3 trace terms
+        7.3217e-09 |K_exact - K_apprx|_1 / n^2
+        4.2575e-06 rel alpha l1 error
+        5.1309e-06 rel alpha l2 error
+    kernel gradients # 6
+            3.5764 sec exact per gradient
+            0.4174 sec apprx per gradient
+        8.5341e+01 avg grad error
+    coregionalization Aq gradients # 15
+           11.7573 sec exact per gradient
+            0.0704 sec apprx per gradient
+        2.1606e+00 avg grad error
+    coregionalization kappa gradients # 50
+            1.1691 sec exact per gradient
+            0.1051 sec apprx per gradient
+        9.1028e-01 avg grad error
+    noise gradients # 10
+            0.5543 sec exact per gradient
+            0.0011 sec apprx per gradient
+        1.0110e+02 avg grad error
+    total gradient runtime summary (216 partial derivatives)
+          261.8178 sec exact all gradients
+            8.8275 sec apprx all gradients
+        8.7623e+00 avg grad error
+        8.6892e+03 avg grad magnitude
+        1.0084e-03 err:grad l1 ratio
+        9.4261e-04 err:grad l2 ratio
+    total optimization iteration time
+          288.7325 sec cholesky
+           35.4170 sec runlmc
