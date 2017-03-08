@@ -6,8 +6,9 @@
 import runlmc.lmc.stochastic_deriv
 
 runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
-runs = 10
-interpolating_points = [400, 500, 600, 700, 800, 900, 1000]
+runs = 50
+cogp_runs = 3
+interpolating_points = [500, 600, 700, 800, 900, 1000]
 max_workers = 80 # caps prediction parallelism (training uses N_IT parallel)
 inducing_points = [200] # COGP
 
@@ -53,5 +54,5 @@ with Pool(min(max_workers, cpu_count())) as pool:
         print('---> llgp slfm m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
 for num_induc in inducing_points:
-    cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_weather(runs, num_induc)
+    cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_weather(cogp_runs, num_induc)
     print('---> cogp m', num_induc, 'time', cogp_time, 'smse', cogp_smse, 'nlpd', cogp_nlpd)
