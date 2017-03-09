@@ -17,7 +17,7 @@ MATRIX_SIZE="$3"
 cd $REPOROOT
 
 # Warmup
-benchmarks/inv-run.sh $MATRIX_SIZE
+benchmarks/benchlib/inv-run.sh $MATRIX_SIZE
 sleep 2
-benchmarks/inv-run.sh $MATRIX_SIZE > $OUTFOLDER/inv-run-$SLURM_ARRAY_TASK_ID.txt
+benchmarks/benchlib/inv-run.sh $MATRIX_SIZE > $OUTFOLDER/inv-run-$SLURM_ARRAY_TASK_ID.txt
 

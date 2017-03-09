@@ -30,19 +30,19 @@ fi
 
 echo "N=$N D=2 R=2 Q=10 SMALL DIM -> BT is best"
 n=$((N / 2))
-PYTHONPATH=. python3 benchmarks/bench.py $n 2 2 10 $eps $kern 1234 inv >$out 2>>$err
+PYTHONPATH=. python3 benchmarks/benchlib/bench.py $n 2 2 10 $eps $kern 1234 inv >$out 2>>$err
 head -n1 $out
 tail -n5 $out
 
 echo "N=$N D=10 R=1 Q=10 SMALL RANK -> SLFM is best"
 n=$((N / 10))
-PYTHONPATH=. python3 benchmarks/bench.py $n 10 1 10 $eps $kern 1234 inv >$out 2>>$err
+PYTHONPATH=. python3 benchmarks/benchlib/bench.py $n 10 1 10 $eps $kern 1234 inv >$out 2>>$err
 head -n1 $out
 tail -n5 $out
 
 echo "N=$N D=10 R=10 Q=1 SMALL SUM -> SUM"
 n=$((N / 10))
-PYTHONPATH=. python3 benchmarks/bench.py $n 10 10 1 $eps $kern 1234 inv >$out 2>>$err
+PYTHONPATH=. python3 benchmarks/benchlib/bench.py $n 10 10 1 $eps $kern 1234 inv >$out 2>>$err
 head -n1 $out
 tail -n5 $out
 
