@@ -16,6 +16,8 @@ function print_help() {
     echo
     echo "Runs a comparison between different representations of the grid"
     echo "kernel on setups that are amenable to a variety of kernel shapes."
+    echo "The comparison is made between the MINRES matrix inversion times,"
+    echo "which is dependent on the matrix-vector multiplicatoin runtime."
     echo "This will produce output files in ./out directory."
     echo "This will overwrite any existing output files in that directory."
     echo "out/$RESULTS_FILE will contain a human-readable and LaTeX printout."
