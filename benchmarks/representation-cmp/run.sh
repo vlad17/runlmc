@@ -56,15 +56,15 @@ else
     MATRIX_SIZE="5000"
 fi
 
-echo
-echo 'Gathering results'
-echo
-
 cd out/
 
 OUTFOLDER=$PWD
 REPOROOT=$(readlink -f "$PWD/../../../")
-../../lib/slurm-wrapper.sh ../slurm-job.sh $REPOROOT $OUTFOLDER $MATRIX_SIZE
+../../benchlib/slurm-wrapper.sh ../slurm-job.sh $REPOROOT $OUTFOLDER $MATRIX_SIZE
+
+echo
+echo 'Gathering results'
+echo
 
 latex='
 \\begin{tabular}{|ccc|cccc|}

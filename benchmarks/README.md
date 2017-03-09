@@ -13,7 +13,7 @@ General info:
 * `run.sh --validate` should run a small version of the benchmark and validate the configuration.
 * Benchmarks some use SLURM if it is installed.
 
-## lib
+## benchlib
 
 **Internal** benchmarking API invoked from more specific benchmarking scripts.
 
