@@ -69,8 +69,13 @@ def _gen_slfm_grid(params, tops):
     return SumMatrix([coreg_Ks, diag_Ks])
 
 def _gen_coreg_Ks(params, tops):
-    all_coreg = params.coreg_vecs[:-params.nkernels['indep']]
+    non_indep = params.nkernels['lmc'] + params.nkernels['slfm']
+    all_coreg = params.coreg_vecs[:non_indep]
     ranks = np.array([len(coreg) for coreg in all_coreg])
+    print('len', len(params.coreg_vecs), 'lc', len(all_coreg))
+    print(params.nkernels)
+    print(ranks)
+    print([coreg.shape for coreg in all_coreg])
     A_star = np.vstack(all_coreg).T
     I_m = Identity(tops.shape[1])
     left = Kronecker(NumpyMatrix(A_star), I_m)
