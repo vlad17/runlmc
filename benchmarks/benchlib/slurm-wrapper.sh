@@ -2,7 +2,7 @@
 # Internal slurm wrapper when it's missing.
 # TODO needs documentation.
 
-if which sbatch; then
+if which sbatch >/dev/null 2>/dev/null; then
     sbatch "$@"
 else
     echo 'sbatch not found; running slurm wrapper on local machine'
