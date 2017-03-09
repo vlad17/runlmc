@@ -14,8 +14,8 @@ else
     array=$(echo $array | cut -c17- | tr '-' ' ')
     for i in $(seq $array); do
         echo "Running array job $i"
-        outfile="slurm-wrapper-out-$i.txt"
-        errfile="slurm-wrapper-err-$i.txt"
+        outfile="slurm-out-$i.txt"
+        errfile="slurm-err-$i.txt"
         SLURM_ARRAY_TASK_ID=$i $script "$@" >$outfile 2>$errfile
     done
 fi

@@ -6,6 +6,9 @@
 #SBATCH --job-name=llgp-rep-cmp
 #SBATCH --mem=5G
 #SBATCH --array=1-5
+#SBATCH --output=slurm-out-%a.txt
+#SBATCH --output=slurm-out-%a.txt
+#SBATCH --error=slurm-err-%a.txt
 
 REPOROOT="$1"
 OUTFOLDER="$2"
