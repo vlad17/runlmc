@@ -1,18 +1,21 @@
 #!/bin/bash
 # Runs representation comparison benchmarking script
 
-function usage_bail() {
-    echo "Usage: ./run.sh [--help|--validate]" >/dev/stderr
-    exit 1
-}
-
+USAGE="Usage: ./run.sh [--help|--validate]"
 EXPECTED_DIR="runlmc/benchmarks/representation-cmp"
 RESULTS_FILE="results.txt"
 
+function usage_bail() {
+    echo $USAGE >/dev/stderr
+    exit 1
+}
+
 function print_help() {
-    echo "./run.sh"
+    echo $USAGE
     echo
     echo "Must be run from $EXPECTED_DIR"
+    echo
+    echo "Uses SLURM if it is available."
     echo
     echo "Runs a comparison between different representations of the grid"
     echo "kernel on setups that are amenable to a variety of kernel shapes."
