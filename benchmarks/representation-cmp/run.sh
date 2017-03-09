@@ -1,35 +1,18 @@
 #!/bin/bash
 # Runs representation comparison benchmarking script
 
-USAGE="Usage: ./run.sh [--help|--validate]"
 EXPECTED_DIR="runlmc/benchmarks/representation-cmp"
-RESULTS_FILE="results.txt"
+HELP_STR='
+Uses SLURM if it is available.
 
-function usage_bail() {
-    echo $USAGE >/dev/stderr
-    exit 1
-}
-
-function print_help() {
-    echo $USAGE
-    echo
-    echo "Must be run from $EXPECTED_DIR"
-    echo
-    echo "Uses SLURM if it is available."
-    echo
-    echo "Runs a comparison between different representations of the grid"
-    echo "kernel on setups that are amenable to a variety of kernel shapes."
-    echo "The comparison is made between the MINRES matrix inversion times,"
-    echo "which is dependent on the matrix-vector multiplicatoin runtime."
-    echo "This will produce output files in ./out directory."
-    echo "This will overwrite any existing output files in that directory."
-    echo "out/$RESULTS_FILE will contain a human-readable and LaTeX printout."
-    echo
-    echo "Flags"
-    echo "    --validate Run a small case to verify configuration."
-    echo "    --help Print this help message."
-    exit 0
-}
+Runs a comparison between different representations of the grid
+kernel on setups that are amenable to a variety of kernel shapes.
+The comparison is made between the MINRES matrix inversion times,
+which is dependent on the matrix-vector multiplicatoin runtime.
+This will produce output files in ./out directory.
+This will overwrite any existing output files in that directory.
+out/results.txt will contain a human-readable and LaTeX printout.
+'
 
 base1=$(basename $PWD)
 base2=$(cd .. && basename $PWD)
@@ -40,26 +23,22 @@ if [[ "$base3/$base2/$base1" != "$EXPECTED_DIR" ]]; then
     exit 1
 fi
 
-if [[ $# -gt 1 ]]; then
-    usage_bail
-fi
-
-if [[ $# -eq 1 ]]; then
-    case $1 in
-        "--help")
-            print_help
-            exit 0
-            ;;
-        "--validate")
-            MATRIX_SIZE="100"
-            ;;
-        *)
-            usage_bail
-            ;;
-    esac
-else
-    MATRIX_SIZE="5000"
-fi
+../benchlib/run-skeleton.sh "$HELP_STR" "$@"
+case $? in
+    0)
+        MATRIX_SIZE="5000"
+        ;;
+    1)
+        MATRIX_SIZE="100"
+        ;;
+    2)
+        echo "here"
+        exit 0
+        ;;
+    3)
+        exit 1
+        ;;
+esac
 
 cd out/
 
@@ -89,7 +68,7 @@ for i in 3 10 17; do
     tail -n +$i inv-run-1.txt | head -n 4 | tr -s " " | cut -d" " -f8 > "/tmp/cols"
     kerntype=$(sed "2q;d" inv-run-1.txt | cut -d" " -f12)
 
-    echo $name | tee $RESULTS_FILE
+    echo $name | tee "results.txt"
 
     t=$(mktemp)
 
@@ -99,7 +78,7 @@ for i in 3 10 17; do
 
     paste $t-column-* > $t
     awk '{s=0; for (i=1;i<=NF;i++)s+=$i; print s/NF;}' $t > "/tmp/avgs"
-    paste /tmp/avgs /tmp/cols | tee $RESULTS_FILE
+    paste /tmp/avgs /tmp/cols | tee "results.txt"
 
     minnum=$(sort -n /tmp/avgs | head -n 1)
 
