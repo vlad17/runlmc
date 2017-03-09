@@ -224,19 +224,26 @@ def cogp_fx2007(num_runs, inducing_pts):
     mout = process.communicate()[0]
     with open(TMP + '/out-{}'.format(num_runs), 'a') as f:
         f.write(mout)
-    ending = mout[mout.find('mean times'):]
-    time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
-    ending = ending[ending.find('mean smses'):]
-    smse = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
-    ending = ending[ending.find('mean nlpds'):]
-    nlpd = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
+
+
+    ending = mout[mout.find('mean/stderr times'):]
+    match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
+    m_time, se_time = float(match.groups()[0], match.groups()[1])
+    ending = ending[ending.find('mean/stderr smses'):]
+    match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
+    m_smse, se_smse = float(match.groups()[0], match.groups()[1])
+    ending = ending[ending.find('mean/stderr nlpds'):]
+    match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
+    m_nlpd, se_nlpd = float(match.groups()[0], match.groups()[1])
 
     # the matlab script writes to this file
     test_fx = ['CAD', 'JPY', 'AUD']
     cogp_mu = pd.read_csv(TMP + '/cogp-fx2007-mu', header=None, names=test_fx)
-    cogp_var = pd.read_csv(TMP + '/cogp-fx2007-var', header=None, names=test_fx)
+    cogp_var = pd.read_csv(TMP + '/cogp-fx2007-var', header=None,
+                           names=test_fx)
 
-    return time, smse, nlpd, cogp_mu, cogp_var
+    stats = [m_time, se_time, m_smse, se_smse, m_nlpd, se_nlpd]
+    return stats, cogp_mu, cogp_var
 
 def cogp_weather(num_runs, M):
     _download_cogp()
@@ -258,19 +265,30 @@ def cogp_weather(num_runs, M):
     mout = process.communicate()[0]
     with open(TMP + '/outw-{}-{}'.format(num_runs, M), 'a') as f:
         f.write(mout)
-    ending = mout[mout.find('mean times'):]
-    time = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
-    ending = ending[ending.find('mean smses'):]
-    smse = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
-    ending = ending[ending.find('mean nlpds'):]
-    nlpd = float(re.match('\D*([-+e\.\d]*)', ending).groups()[0])
+
+    ending = mout[mout.find('mean/stderr times'):]
+    match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
+    m_time, se_time = float(match.groups()[0], match.groups()[1])
+    ending = ending[ending.find('mean/stderr smses'):]
+    match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
+    m_smse, se_smse = float(match.groups()[0], match.groups()[1])
+    ending = ending[ending.find('mean/stderr nlpds'):]
+    match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
+    m_nlpd, se_nlpd = float(match.groups()[0], match.groups()[1])
 
     # the matlab script writes to this file
     test_fx = ['cam', 'chi']
-    cogp_mu = pd.read_csv(TMP + '/cogp-weather-mu{}{}'.format(num_runs, M), header=None, names=test_fx)
+    cogp_mu = pd.read_csv(TMP + '/cogp-weather-mu{}{}'.format(num_runs, M),
+                          header=None, names=test_fx)
     cogp_var = pd.read_csv(TMP + '/cogp-weather-var{}{}'.format(num_runs, M))
 
-    return time, smse, nlpd, cogp_mu, cogp_var
+    stats = [m_time, se_time, m_smse, se_smse, m_nlpd, se_nlpd]
+    return stats, cogp_mu, cogp_var
 
 def statprint(x):
-    return '{:10.4f} ({:10.4f})'.format(np.mean(x), np.std(x))
+    return '{:10.4f} ({:10.4f})'.format(
+        np.mean(x), np.std(x) / np.sqrt(len(x)))
+
+def statprintlist(ls):
+    pairs = zip(ls[::2], ls[1::2])
+    return ['{:10.4f} ({:10.4f})' for mean, std in pairs]

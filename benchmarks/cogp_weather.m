@@ -80,9 +80,14 @@ for r=1:runs
   smses(r) = mean(per_out_smses);
   nlpds(r) = mean(per_out_nlpds);
 end
-disp('mean times')
+disp('mean/stderr times')
 disp(mean(times))
-disp('mean smses')
+disp(std(times) / sqrt(length(times)))
+disp('mean/stderr smses')
 disp(mean(smses))
-disp('mean nlpds')
+disp(std(smses) / sqrt(length(smses)))
+disp('mean/stderr nlpds')
 disp(mean(nlpds))
+disp(std(nlpds) / sqrt(length(nlpds)))
+
+

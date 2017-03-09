@@ -54,5 +54,7 @@ with Pool(min(max_workers, cpu_count())) as pool:
         print('---> llgp slfm m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
 for num_induc in inducing_points:
-    cogp_time, cogp_smse, cogp_nlpd, _, _ = cogp_weather(cogp_runs, num_induc)
-    print('---> cogp m', num_induc, 'time', cogp_time, 'smse', cogp_smse, 'nlpd', cogp_nlpd)
+    stats, _, _ = cogp_weather(cogp_runs, num_induc)
+    cogp_time, cogp_smse, cogp_nlpd = statprintlist(stats)
+    print('---> cogp m', num_induc,
+          'time', cogp_time, 'smse', cogp_smse, 'nlpd', cogp_nlpd)
