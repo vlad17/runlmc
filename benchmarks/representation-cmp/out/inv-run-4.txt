@@ -1,22 +1,21 @@
-N=100 D=2 R=2 Q=10 SMALL DIM -> BT is best
-n_o 50 d 2 r_q 2 q 10 eps 0.1 kern mix seed 1234 test-type inv
-        5.3970e-12 reconstruction     0.0109 sec        0 iterations chol
-        4.9892e-05 reconstruction     0.1727 sec      100 iterations sum   (minres)
-        4.8397e-05 reconstruction     0.0478 sec      100 iterations bt    (minres)
-        2.9924e-05 reconstruction     0.1668 sec      100 iterations slfm  (minres)
-        1.0900e-04 reconstruction     0.1584 sec      100 iterations slfm  (lcg)
-N=100 D=10 R=1 Q=10 SMALL RANK -> SLFM is best
-n_o 10 d 10 r_q 1 q 10 eps 0.1 kern mix seed 1234 test-type inv
-        3.6980e-13 reconstruction     0.0189 sec        0 iterations chol
-        1.7996e-02 reconstruction     0.6390 sec      100 iterations sum   (minres)
-        1.8275e-02 reconstruction     0.6424 sec      100 iterations bt    (minres)
-        1.8142e-02 reconstruction     0.1490 sec      100 iterations slfm  (minres)
-        9.9888e-02 reconstruction     0.1406 sec      100 iterations slfm  (lcg)
-N=100 D=10 R=10 Q=1 SMALL SUM -> SUM
-n_o 10 d 10 r_q 10 q 1 eps 0.1 kern mix seed 1234 test-type inv
-        3.2704e-13 reconstruction     0.0057 sec        0 iterations chol
-        7.5043e-09 reconstruction     0.0992 sec       89 iterations sum   (minres)
-        7.0550e-09 reconstruction     0.5674 sec       89 iterations bt    (minres)
-        7.5183e-09 reconstruction     0.1311 sec       89 iterations slfm  (minres)
-        9.6374e-09 reconstruction     0.1429 sec      100 iterations slfm  (lcg)
-WARNINGS/ERRORS possible check /data/vyf/tmp/tmp.ykdgS23719
+N=5000 D=2 R=2 Q=10 SMALL DIM -> BT is best
+n_o 2500 d 2 r_q 2 q 10 eps 0.1 kern mix seed 1234 test-type inv
+        1.5038e-09 reconstruction    34.5203 sec        0 iterations chol
+        4.4945e-05 reconstruction    38.0235 sec      600 iterations sum   (minres)
+        5.1813e-05 reconstruction     7.8439 sec      600 iterations bt    (minres)
+        4.3237e-05 reconstruction    51.0077 sec      600 iterations slfm  (minres)
+        1.5310e-05 reconstruction    72.9327 sec      700 iterations slfm  (lcg)
+N=5000 D=10 R=1 Q=10 SMALL RANK -> SLFM is best
+n_o 500 d 10 r_q 1 q 10 eps 0.1 kern mix seed 1234 test-type inv
+        2.6121e-10 reconstruction    34.1542 sec        0 iterations chol
+        3.3994e-05 reconstruction    39.6645 sec     1400 iterations sum   (minres)
+        3.8266e-05 reconstruction    27.4932 sec     1400 iterations bt    (minres)
+        3.5259e-05 reconstruction     9.5811 sec     1400 iterations slfm  (minres)
+        6.1735e-05 reconstruction     4.4630 sec     1500 iterations slfm  (lcg)
+N=5000 D=10 R=10 Q=1 SMALL SUM -> SUM
+n_o 500 d 10 r_q 10 q 1 eps 0.1 kern mix seed 1234 test-type inv
+        7.5828e-11 reconstruction     7.5346 sec        0 iterations chol
+        1.2241e-05 reconstruction     0.3472 sec      200 iterations sum   (minres)
+        1.4415e-05 reconstruction     2.3475 sec      200 iterations bt    (minres)
+        1.2529e-05 reconstruction     0.6031 sec      200 iterations slfm  (minres)
+        6.6366e-05 reconstruction     0.6045 sec      200 iterations slfm  (lcg)

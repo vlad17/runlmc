@@ -1,7 +1,0 @@
-benchmarks/inv-run.sh: line 33: 31797 Quit                    (core dumped) PYTHONPATH=. python3 benchmarks/bench.py $n 2 2 10 $eps $kern 1234 inv > $out 2>> $err
-benchmarks/inv-run.sh: line 39: 31801 Quit                    (core dumped) PYTHONPATH=. python3 benchmarks/bench.py $n 10 1 10 $eps $kern 1234 inv > $out 2>> $err
-benchmarks/inv-run.sh: line 45: 31805 Quit                    (core dumped) PYTHONPATH=. python3 benchmarks/bench.py $n 10 10 1 $eps $kern 1234 inv > $out 2>> $err
-../slurm-job.sh: line 18: 31809 Quit                    (core dumped) sleep 2
-benchmarks/inv-run.sh: line 33: 31815 Quit                    (core dumped) PYTHONPATH=. python3 benchmarks/bench.py $n 2 2 10 $eps $kern 1234 inv > $out 2>> $err
-benchmarks/inv-run.sh: line 39: 31819 Quit                    (core dumped) PYTHONPATH=. python3 benchmarks/bench.py $n 10 1 10 $eps $kern 1234 inv > $out 2>> $err
-benchmarks/inv-run.sh: line 45: 31823 Quit                    (core dumped) PYTHONPATH=. python3 benchmarks/bench.py $n 10 10 1 $eps $kern 1234 inv > $out 2>> $err

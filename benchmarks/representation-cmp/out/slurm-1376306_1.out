@@ -1,8 +1,0 @@
-N=5000 D=2 R=2 Q=10 SMALL DIM -> BT is best
-n_o 2500 d 2 r_q 2 q 10 eps 0.1 kern mix seed 1234 test-type inv
-        1.5038e-09 reconstruction    36.6424 sec        0 iterations chol
-        4.4945e-05 reconstruction    38.8780 sec      600 iterations sum   (minres)
-        5.1813e-05 reconstruction     7.8455 sec      600 iterations bt    (minres)
-        4.3237e-05 reconstruction    60.4641 sec      600 iterations slfm  (minres)
-        1.5310e-05 reconstruction    73.9512 sec      700 iterations slfm  (lcg)
-N=5000 D=10 R=1 Q=10 SMALL RANK -> SLFM is best
