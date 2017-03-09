@@ -1,18 +1,28 @@
 #!/bin/bash
 # Runs representation comparison benchmarking script
 
+USAGE="Usage: ./run.sh [--help|--validate]"
 EXPECTED_DIR="runlmc/benchmarks/representation-cmp"
-HELP_STR='
+HELP_STR="$USAGE
+
+Must be run from $EXPECTED_DIR.
+
 Uses SLURM if it is available.
 
 Runs a comparison between different representations of the grid
 kernel on setups that are amenable to a variety of kernel shapes.
 The comparison is made between the MINRES matrix inversion times,
-which is dependent on the matrix-vector multiplicatoin runtime.
+which is dependent on the matrix-vector multiplication runtime.
+
 This will produce output files in ./out directory.
 This will overwrite any existing output files in that directory.
-out/results.txt will contain a human-readable and LaTeX printout.
-'
+    results.txt - human-readable
+    results.tex - LaTeX printout version
+
+Flags
+    --validate Run a small case to verify configuration.
+    --help Print this help message.
+"
 
 base1=$(basename $PWD)
 base2=$(cd .. && basename $PWD)
@@ -23,28 +33,39 @@ if [[ "$base3/$base2/$base1" != "$EXPECTED_DIR" ]]; then
     exit 1
 fi
 
-../benchlib/run-skeleton.sh "$HELP_STR" "$@"
-case $? in
-    0)
-        MATRIX_SIZE="5000"
-        ;;
-    1)
-        MATRIX_SIZE="100"
-        ;;
-    2)
-        echo "here"
-        exit 0
-        ;;
-    3)
-        exit 1
-        ;;
-esac
+if [[ "$base3/$base2/$base1" != "$EXPECTED_DIR" ]]; then
+    echo "Must be run from $EXPECTED_DIR" >/dev/stderr
+    exit 1
+fi
+
+if [[ $# -gt 1 ]]; then
+    echo $USAGE >/dev/stderr
+    exit 1
+fi
+
+if [[ $# -eq 1 ]]; then
+    case $1 in
+        "--help")
+            printf "$HELP_STR"
+            exit 0
+            ;;
+        "--validate")
+            IS_VALIDATION="true"
+            ;;
+        *)
+            echo $USAGE >/dev/stderr
+            exit 3
+            ;;
+    esac
+else
+    IS_VALIDATION="false"
+fi
 
 cd out/
 
 OUTFOLDER=$PWD
 REPOROOT=$(readlink -f "$PWD/../../../")
-../../benchlib/slurm-wrapper.sh ../slurm-job.sh $REPOROOT $OUTFOLDER $MATRIX_SIZE
+../../benchlib/slurm-wrapper.sh ../slurm-job.sh $REPOROOT $OUTFOLDER $IS_VALIDATION
 
 echo
 echo 'Gathering results'

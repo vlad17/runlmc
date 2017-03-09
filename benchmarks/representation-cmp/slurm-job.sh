@@ -7,13 +7,18 @@
 #SBATCH --mem=5G
 #SBATCH --array=1-5
 #SBATCH --output=slurm-out-%a.txt
-#SBATCH --output=slurm-out-%a.txt
 #SBATCH --error=slurm-err-%a.txt
 
 REPOROOT="$1"
 OUTFOLDER="$2"
-MATRIX_SIZE="$3"
+IS_VALIDATION="$3"
 
+if $IS_VALIDATION ; then
+    MATRIX_SIZE="100"
+else
+    MATRIX_SIZE="5000"
+fi
+    
 cd $REPOROOT
 
 # Warmup
