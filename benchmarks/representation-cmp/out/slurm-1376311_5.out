@@ -1,0 +1,2 @@
+/var/spool/slurm/slurmd/job1376311/slurm_script: line 17: benchmarks/inv-run.sh: No such file or directory
+/var/spool/slurm/slurmd/job1376311/slurm_script: line 19: /inv-run-5.txt: Permission denied

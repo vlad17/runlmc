@@ -3,7 +3,9 @@
 # TODO needs documentation.
 
 if which sbatch >/dev/null 2>/dev/null; then
-    sbatch "$@"
+    jobid=$(sbatch --parsable "$@")
+    echo $jobid
+    srun --dependency=afterany:$jobid true
 else
     echo 'sbatch not found; running slurm wrapper on local machine'
     script="$1"
