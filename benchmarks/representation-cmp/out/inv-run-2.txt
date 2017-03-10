@@ -1,21 +1,21 @@
 N=5000 D=2 R=2 Q=10 SMALL DIM -> BT is best
 n_o 2500 d 2 r_q 2 q 10 eps 0.1 kern mix seed 1234 test-type inv
-        1.5038e-09 reconstruction    45.4605 sec        0 iterations chol
-        4.4945e-05 reconstruction    42.4133 sec      600 iterations sum   (minres)
-        5.1813e-05 reconstruction     7.9394 sec      600 iterations bt    (minres)
-        4.3237e-05 reconstruction    44.3954 sec      600 iterations slfm  (minres)
-        1.5310e-05 reconstruction    57.8890 sec      700 iterations slfm  (lcg)
+        1.5038e-09 reconstruction    45.9254 sec        0 iterations chol
+        4.4945e-05 reconstruction    38.3501 sec      600 iterations sum   (minres)
+        5.1813e-05 reconstruction     7.7573 sec      600 iterations bt    (minres)
+        4.3237e-05 reconstruction    56.9100 sec      600 iterations slfm  (minres)
+        1.5310e-05 reconstruction    73.6498 sec      700 iterations slfm  (lcg)
 N=5000 D=10 R=1 Q=10 SMALL RANK -> SLFM is best
 n_o 500 d 10 r_q 1 q 10 eps 0.1 kern mix seed 1234 test-type inv
-        2.6121e-10 reconstruction    35.7856 sec        0 iterations chol
-        3.3994e-05 reconstruction    19.0913 sec     1400 iterations sum   (minres)
-        3.8266e-05 reconstruction    16.2630 sec     1400 iterations bt    (minres)
-        3.5259e-05 reconstruction     4.6670 sec     1400 iterations slfm  (minres)
-        6.1735e-05 reconstruction     5.0107 sec     1500 iterations slfm  (lcg)
+        2.6121e-10 reconstruction    35.9552 sec        0 iterations chol
+        3.3994e-05 reconstruction    79.0781 sec     1400 iterations sum   (minres)
+        3.8266e-05 reconstruction    16.4478 sec     1400 iterations bt    (minres)
+        3.5259e-05 reconstruction    17.6612 sec     1400 iterations slfm  (minres)
+        6.1735e-05 reconstruction    31.7789 sec     1500 iterations slfm  (lcg)
 N=5000 D=10 R=10 Q=1 SMALL SUM -> SUM
 n_o 500 d 10 r_q 10 q 1 eps 0.1 kern mix seed 1234 test-type inv
-        7.5828e-11 reconstruction    11.3910 sec        0 iterations chol
-        1.2241e-05 reconstruction     0.3864 sec      200 iterations sum   (minres)
-        1.4415e-05 reconstruction     2.3870 sec      200 iterations bt    (minres)
-        1.2529e-05 reconstruction     1.0897 sec      200 iterations slfm  (minres)
-        6.6366e-05 reconstruction     0.7685 sec      200 iterations slfm  (lcg)
+        7.5828e-11 reconstruction     7.4969 sec        0 iterations chol
+        1.2241e-05 reconstruction     0.3491 sec      200 iterations sum   (minres)
+        1.4415e-05 reconstruction     2.3726 sec      200 iterations bt    (minres)
+        1.2529e-05 reconstruction     0.6046 sec      200 iterations slfm  (minres)
+        6.6366e-05 reconstruction     0.6053 sec      200 iterations slfm  (lcg)
