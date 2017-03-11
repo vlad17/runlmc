@@ -293,4 +293,4 @@ def statprint(x):
 
 def statprintlist(ls):
     pairs = zip(ls[::2], ls[1::2])
-    return ['{:10.4f} ({:10.4f})' for mean, std in pairs]
+    return ['{:10.4f} ({:10.4f})'.format(mean, se) for mean, se in pairs]
