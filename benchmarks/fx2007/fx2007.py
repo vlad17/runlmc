@@ -4,13 +4,21 @@
 # compares on fx2007 dataset LLGP SLFM for varying interpolation points
 # vs COGP SLFM approx with fixed inducing points = 100
 
+import sys
+is_validation = sys.argv[1] == 'true'
+
 import runlmc.lmc.stochastic_deriv
 
-runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
-runs = 10
-interpolation_points = [None]
-max_workers = 80 # caps prediction parallelism (training uses N_IT parallel)
-inducing_points = [100]
+if is_validation:
+    runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 1
+    runs = 1
+    interpolation_points = [10]
+    inducing_points = [10]
+else:
+    runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
+    runs = 10
+    interpolation_points = [None]
+    inducing_points = [100]
 
 import os
 import logging
@@ -38,7 +46,7 @@ xss, yss, test_xss, test_yss, test_fx, cols = foreign_exchange_2007()
 
 import os
 
-with Pool(min(max_workers, cpu_count())) as pool:
+with Pool(cpu_count()) as pool:
     workers = pool.starmap(os.getpid, [[] for _ in range(4 * cpu_count())])
     workers = set(workers)
     print(len(workers), 'distinct workers launched')

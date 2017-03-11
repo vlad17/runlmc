@@ -1,0 +1,173 @@
+4 distinct workers launched
+LMC lmc generating inducing grid n = 3054
+LMC lmc grid (n = 3054, m = 14) complete, 
+LMC lmc fully initialized
+LMC kernel 0 A matrix
+[[-0.55512796  0.21050282 -0.10676582  0.50953484  0.49907448 -0.39953
+  -0.39236439  0.54198321  0.88813869  0.69555193 -0.24576172  0.00170291
+   0.31929402]
+ [ 0.37241871 -0.22388973  0.10491405  0.00527609 -0.96188045  0.48526516
+   0.71024897 -0.23331326  0.19877279 -0.80601453 -0.22639392  0.82636053
+   0.26201294]]
+LMC kernel 0 kappa diag
+[ 1.  1.  1.  1.  1.  1.  1.  1.  1.  1.  1.  1.  1.]
+Optimization (53 hyperparams) starting with user-set num workers
+starting adadelta {'roll': 1, 'momentum': 0.5, 'step_rate': 1, 'offset': 0.0001, 'verbosity': 100, 'min_grad_ratio': 0.1, 'decay': 0.9, 'max_it': 100, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fdc38d02268>}
+iteration        1 grad norm 1.9337e+02
+iteration        2 grad norm 1.8045e+02
+iteration        3 grad norm 1.6986e+02
+iteration        4 grad norm 1.4752e+02
+iteration        5 grad norm 1.2841e+02
+iteration        6 grad norm 1.1296e+02
+iteration        7 grad norm 9.4028e+01
+iteration        8 grad norm 8.4025e+01
+iteration        9 grad norm 6.6536e+01
+iteration       10 grad norm 5.3946e+01
+iteration       11 grad norm 4.5896e+01
+iteration       12 grad norm 3.5668e+01
+iteration       13 grad norm 2.9572e+01
+iteration       14 grad norm 2.0613e+01
+iteration       15 grad norm 1.8342e+01
+iteration       16 grad norm 5.0510e+01
+iteration       17 grad norm 1.5066e+01
+iteration       18 grad norm 1.5110e+01
+iteration       19 grad norm 1.6157e+01
+iteration       20 grad norm 1.2737e+02
+iteration       21 grad norm 2.5552e+01
+iteration       22 grad norm 3.7608e+01
+iteration       23 grad norm 5.3415e+01
+iteration       24 grad norm 2.9905e+01
+iteration       25 grad norm 3.9548e+01
+iteration       26 grad norm 7.5879e+01
+iteration       27 grad norm 1.9663e+01
+iteration       28 grad norm 2.2836e+01
+iteration       29 grad norm 6.2601e+01
+iteration       30 grad norm 7.2666e+01
+iteration       31 grad norm 3.8368e+01
+iteration       32 grad norm 5.7929e+01
+iteration       33 grad norm 6.4719e+01
+iteration       34 grad norm 4.8551e+01
+iteration       35 grad norm 4.0020e+01
+iteration       36 grad norm 8.3772e+01
+iteration       37 grad norm 7.0909e+01
+iteration       38 grad norm 7.4369e+01
+iteration       39 grad norm 1.0986e+02
+iteration       40 grad norm 5.7629e+01
+iteration       41 grad norm 1.1666e+02
+iteration       42 grad norm 1.0118e+02
+iteration       43 grad norm 5.9459e+01
+iteration       44 grad norm 7.6475e+01
+iteration       45 grad norm 1.0204e+02
+iteration       46 grad norm 3.5367e+01
+iteration       47 grad norm 1.8562e+02
+iteration       48 grad norm 1.1570e+02
+iteration       49 grad norm 4.9040e+01
+iteration       50 grad norm 7.7823e+01
+iteration       51 grad norm 8.7182e+01
+iteration       52 grad norm 1.1731e+02
+iteration       53 grad norm 1.4592e+02
+iteration       54 grad norm 6.3855e+01
+iteration       55 grad norm 1.5287e+02
+iteration       56 grad norm 1.0667e+02
+iteration       57 grad norm 5.9580e+01
+iteration       58 grad norm 8.7999e+01
+iteration       59 grad norm 1.1903e+02
+iteration       60 grad norm 9.6386e+01
+iteration       61 grad norm 1.5559e+02
+iteration       62 grad norm 5.8881e+01
+iteration       63 grad norm 7.8706e+01
+iteration       64 grad norm 7.1620e+01
+iteration       65 grad norm 7.8902e+01
+iteration       66 grad norm 1.5006e+02
+iteration       67 grad norm 1.5895e+02
+iteration       68 grad norm 1.4059e+02
+iteration       69 grad norm 6.3551e+01
+iteration       70 grad norm 6.7775e+01
+iteration       71 grad norm 1.4889e+02
+iteration       72 grad norm 8.5538e+01
+iteration       73 grad norm 5.9390e+01
+iteration       74 grad norm 3.1400e+01
+iteration       75 grad norm 1.3024e+02
+iteration       76 grad norm 1.4879e+02
+iteration       77 grad norm 5.3100e+01
+iteration       78 grad norm 8.8372e+01
+iteration       79 grad norm 2.0931e+02
+iteration       80 grad norm 8.0577e+01
+iteration       81 grad norm 9.8439e+01
+iteration       82 grad norm 1.4581e+02
+iteration       83 grad norm 1.9690e+02
+iteration       84 grad norm 1.1667e+02
+iteration       85 grad norm 2.5395e+02
+iteration       86 grad norm 1.9585e+02
+iteration       87 grad norm 1.3046e+02
+iteration       88 grad norm 1.3825e+02
+iteration       89 grad norm 2.6034e+02
+iteration       90 grad norm 2.9269e+02
+iteration       91 grad norm 8.9751e+01
+iteration       92 grad norm 2.0595e+02
+iteration       93 grad norm 1.5806e+02
+iteration       94 grad norm 4.2694e+02
+iteration       95 grad norm 2.5788e+02
+iteration       96 grad norm 1.0741e+02
+iteration       97 grad norm 7.9570e+01
+iteration       98 grad norm 1.6055e+02
+iteration       99 grad norm 3.4087e+02
+iteration      100 grad norm 3.6908e+02
+finished adadelta optimization
+           100 iterations
+    3.6908e+02 final grad norm
+    3.6908e+02 final MA(1) grad norm
+    4.2694e+02 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 150 on-the-fly variance predictions
+warning: found 150 of 150 predictive variances set to 0
+ /usr/local/lib/python3.5/dist-packages/numpy/core/_methods.py:59: RuntimeWarning:Mean of empty slice.
+ /usr/local/lib/python3.5/dist-packages/numpy/core/_methods.py:70: RuntimeWarning:invalid value encountered in double_scalars
+time 24.069951287005097 smse 0.105000893263 nlpd nan
+---> llgp Q1R2 m 14 time    24.0700 (    0.0000) smse     0.1050 (    0.0000) nlpd        nan (       nan)
+LMC lmc generating inducing grid n = 3054
+LMC lmc grid (n = 3054, m = 14) complete, 
+LMC lmc fully initialized
+SLFM kernel 0 A matrix
+[[-0.55512796  0.21050282 -0.10676582  0.50953484  0.49907448 -0.39953
+  -0.39236439  0.54198321  0.88813869  0.69555193 -0.24576172  0.00170291
+   0.31929402]]
+SLFM kernel 1 A matrix
+[[ 0.37241871 -0.22388973  0.10491405  0.00527609 -0.96188045  0.48526516
+   0.71024897 -0.23331326  0.19877279 -0.80601453 -0.22639392  0.82636053
+   0.26201294]]
+Optimization (54 hyperparams) starting with user-set num workers
+starting adadelta {'roll': 1, 'momentum': 0.5, 'step_rate': 1, 'offset': 0.0001, 'verbosity': 100, 'min_grad_ratio': 0.1, 'decay': 0.9, 'max_it': 100, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fdc38d02268>}
+iteration        1 grad norm 1.9337e+02
+iteration        2 grad norm 1.8052e+02
+iteration        3 grad norm 1.6986e+02
+iteration        4 grad norm 1.4744e+02
+iteration        5 grad norm 1.2831e+02
+iteration        6 grad norm 1.1290e+02
+iteration        7 grad norm 9.3947e+01
+iteration        8 grad norm 8.3979e+01
+iteration        9 grad norm 6.6542e+01
+iteration       10 grad norm 5.3947e+01
+iteration       11 grad norm 4.5894e+01
+iteration       12 grad norm 3.5744e+01
+iteration       13 grad norm 2.9528e+01
+iteration       14 grad norm 2.0502e+01
+iteration       15 grad norm 1.8271e+01
+iteration       16 grad norm 2.2192e+01
+iteration       17 grad norm 1.3676e+01
+iteration       18 grad norm 1.3863e+01
+iteration       19 grad norm 1.1159e+01
+iteration       20 grad norm 3.2089e+01
+iteration       21 grad norm 1.2608e+01
+finished adadelta optimization
+            21 iterations
+    1.2608e+01 final grad norm
+    1.2608e+01 final MA(1) grad norm
+    1.9337e+02 max MA(1) grad norm
+    norm used inf
+Using user-set num processors for 150 on-the-fly variance predictions
+warning: found 150 of 150 predictive variances set to 0
+time 7.4502030050207395 smse 0.118404544005 nlpd nan
+---> llgp slfm m 14 time     7.4502 (    0.0000) smse     0.1184 (    0.0000) nlpd        nan (       nan)
+
+---> cogp m 10 time    32.1846 (    0.0000) smse     0.2369 (    0.0000) nlpd    47.0117 (    0.0000)
