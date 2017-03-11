@@ -10,7 +10,7 @@ Must be run from $EXPECTED_DIR.
 Runs only on local machine, but leverages all processessors avaiable in the 
 model evaluation phase.
 
-This runs the weather dataset for the SLFM model several times on several
+This runs the fx2007 dataset for the SLFM model several times on several
 different interpolation point counts. Each setting has its timing, SMSE,
 and NLPD statistics outputted (mean and standard error).
 
