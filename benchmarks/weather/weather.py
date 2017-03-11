@@ -1,20 +1,25 @@
-# Run this as follows, in benchmarks/
-# OMP_NUM_THREADS=1 PYTHONPATH=.:.. python -u weather.py 2>&1 | tee example-stdout-weather.txt | egrep -e '--->|launched'
-
 # compares on 15K weather dataset LLGP SLFM reduction vs COGP SLFM approx
+
+import sys
+is_validation = sys.argv[1] == 'true'
 
 import runlmc.lmc.stochastic_deriv
 
-runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
-runs = 50
-cogp_runs = 3
-interpolating_points = [500, 600, 700, 800, 900, 1000]
-max_workers = 80 # caps prediction parallelism (training uses N_IT parallel)
-inducing_points = [200] # COGP
+if is_validation:
+    runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 1
+    runs = 1
+    cogp_runs = 1
+    interpolating_points = [10]
+    inducing_points = [10]
+else:
+    runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
+    runs = 50
+    cogp_runs = 3
+    interpolating_points = [500, 600, 700, 800, 900, 1000]
+    inducing_points = [200] # COGP
 
 import os
 import logging
-import sys
 
 import numpy as np
 from standard_tester import *
@@ -37,7 +42,7 @@ xss, yss, test_xss, test_yss, cols = weather()
 
 import os
 
-with Pool(min(max_workers, cpu_count())) as pool:
+with Pool(cpu_count()) as pool:
     workers = pool.starmap(os.getpid, [[] for _ in range(4 * cpu_count())])
     workers = set(workers)
     print(len(workers), 'distinct workers launched')

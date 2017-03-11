@@ -21,7 +21,7 @@ from runlmc.util.numpy_convenience import begin_end_indices
 
 import tempfile
 
-TMP = tempfile.gettempdir()
+TMP = tempfile.gettempdir() + '/'
 
 def _foreign_exchange_shared():
     # Adapts the foreign currency exchange problem
@@ -29,7 +29,7 @@ def _foreign_exchange_shared():
     # Nguyen and Bonilla et al. 2014
 
     fx_files = ['2007-2009.csv', '2010-2013.csv', '2014-2017.csv']
-    fx = pd.concat([pd.read_csv('../data/fx/{}'.format(f), index_col=1) for f in fx_files])
+    fx = pd.concat([pd.read_csv('data/fx/{}'.format(f), index_col=1) for f in fx_files])
     fx.drop(['Wdy', 'Jul.Day'], axis=1, inplace=True)
     fx.rename(columns={old: old[:3] for old in fx.columns}, inplace=True)
     return fx
@@ -75,10 +75,10 @@ def weather():
     xss, yss = [], []
     test_xss, test_yss = [], []
     for sensor, expected_na, hold in zip(sensors, expected_nas, holdout):
-        y = pd.read_csv('../data/weather/{}y.csv'.format(sensor),
+        y = pd.read_csv('data/weather/{}y.csv'.format(sensor),
                         header=None, names=['WSPD','WD','GST','ATMP'],
                         usecols=['ATMP'])
-        x = pd.read_csv('../data/weather/{}x.csv'.format(sensor),
+        x = pd.read_csv('data/weather/{}x.csv'.format(sensor),
                         header=None, names=['time'])
         assert (x['time'] == -1).sum() == 0
         assert (y['ATMP'] == -1).sum() == expected_na
@@ -205,7 +205,7 @@ def env_no_omp():
 
 def cogp_fx2007(num_runs, inducing_pts):
     _download_cogp()
-    datafile = '../data/fx/fx2007_matlab.csv'
+    datafile = 'data/fx/fx2007_matlab.csv'
     assert os.path.isfile(datafile)
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
@@ -213,7 +213,7 @@ def cogp_fx2007(num_runs, inducing_pts):
            .format(datafile, inducing_pts, num_runs)]
     with open(TMP + '/out-{}'.format(num_runs), 'w') as f:
         f.write(' '.join(cmd))
-    benchmark_dir = os.getcwd() + '/../benchmarks'
+    benchmark_dir = 'benchmarks/benchlib'
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -247,14 +247,15 @@ def cogp_fx2007(num_runs, inducing_pts):
 
 def cogp_weather(num_runs, M):
     _download_cogp()
-    datafile = '../data/weather/'
+    # relative to benchmark dir
+    datafile = '../../data/weather/'
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
            """datadir='{}';M={};runs={};cogp_weather;exit"""
            .format(datafile, M, num_runs)]
     with open(TMP + '/outw-{}-{}'.format(num_runs, M), 'w') as f:
         f.write(' '.join(cmd))
-    benchmark_dir = os.getcwd() + '/../benchmarks'
+    benchmark_dir = 'benchmarks/benchlib'
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -262,19 +263,20 @@ def cogp_weather(num_runs, M):
         universal_newlines=True,
         cwd=benchmark_dir,
         env=env_no_omp())
-    mout = process.communicate()[0]
+    mout, err = process.communicate()
+    print(err)
     with open(TMP + '/outw-{}-{}'.format(num_runs, M), 'a') as f:
         f.write(mout)
 
     ending = mout[mout.find('mean/stderr times'):]
     match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
-    m_time, se_time = float(match.groups()[0], match.groups()[1])
+    m_time, se_time = float(match.groups()[0]), float(match.groups()[1])
     ending = ending[ending.find('mean/stderr smses'):]
     match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
-    m_smse, se_smse = float(match.groups()[0], match.groups()[1])
+    m_smse, se_smse = float(match.groups()[0]), float(match.groups()[1])
     ending = ending[ending.find('mean/stderr nlpds'):]
     match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
-    m_nlpd, se_nlpd = float(match.groups()[0], match.groups()[1])
+    m_nlpd, se_nlpd = float(match.groups()[0]), float(match.groups()[1])
 
     # the matlab script writes to this file
     test_fx = ['cam', 'chi']

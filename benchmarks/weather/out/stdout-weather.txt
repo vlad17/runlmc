@@ -1,0 +1,66 @@
+4 distinct workers launched
+LMC lmc generating inducing grid n = 15789
+LMC lmc grid (n = 15789, m = 14) complete, 
+LMC lmc fully initialized
+SLFM kernel 0 A matrix
+[[-0.55512796  0.21050282 -0.10676582  0.50953484]]
+SLFM kernel 1 A matrix
+[[ 0.49907448 -0.39953    -0.39236439  0.54198321]]
+Optimization (18 hyperparams) starting with user-set num workers
+starting adadelta {'max_it': 100, 'verbosity': 100, 'offset': 0.0001, 'permitted_drops': 5, 'roll': 1, 'min_grad_ratio': 0.1, 'decay': 0.9, 'callback': <function AdaDelta.noop at 0x7f479228d268>, 'step_rate': 1, 'momentum': 0.5}
+iteration        1 grad norm 8.5263e+03
+iteration        2 grad norm 8.0670e+03
+iteration        3 grad norm 7.5520e+03
+iteration        4 grad norm 6.9645e+03
+iteration        5 grad norm 6.3310e+03
+iteration        6 grad norm 5.6801e+03
+iteration        7 grad norm 5.0424e+03
+iteration        8 grad norm 4.4333e+03
+iteration        9 grad norm 3.8704e+03
+iteration       10 grad norm 3.3730e+03
+iteration       11 grad norm 2.9306e+03
+iteration       12 grad norm 2.5534e+03
+iteration       13 grad norm 2.2277e+03
+iteration       14 grad norm 1.9448e+03
+iteration       15 grad norm 1.7069e+03
+iteration       16 grad norm 1.5047e+03
+iteration       17 grad norm 1.3329e+03
+iteration       18 grad norm 1.1880e+03
+iteration       19 grad norm 1.0610e+03
+iteration       20 grad norm 9.4990e+02
+iteration       21 grad norm 8.5507e+02
+iteration       22 grad norm 7.7118e+02
+iteration       23 grad norm 6.9817e+02
+iteration       24 grad norm 6.3302e+02
+iteration       25 grad norm 5.7718e+02
+iteration       26 grad norm 5.2488e+02
+finished adadelta optimization
+            26 iterations
+    5.2488e+02 final grad norm
+    5.2488e+02 final MA(1) grad norm
+    8.5263e+03 max MA(1) grad norm
+    norm used inf
+Using user-set num processors to precompute 56 variance terms exactly
+time 2.8674030599941034 smse 0.478966129639 nlpd 2.24728551451
+---> llgp slfm m 14 time     2.8674 (    0.0000) smse     0.4790 (    0.0000) nlpd     2.2473 (    0.0000)
+License checkout failed.
+License Manager Error -96
+MATLAB is unable to connect to the license server. 
+Make sure that the MATLAB client machine can communicate with the hostname listed in the SERVER line
+of the license file, and that the port listed in the SERVER line is not blocked by a firewall.
+
+Troubleshoot this issue by visiting: 
+http://www.mathworks.com/support/lme/R2016b/96
+
+Diagnostic Information:
+Feature: MATLAB 
+License path: /home/vlad/.matlab/R2016b_licenses:/usr/local/MATLAB/R2016b/licenses/license.dat:/usr/local/MATLAB/R
+2016b/licenses/network.lic 
+Licensing error: -96,7. System Error: 2
+
+Traceback (most recent call last):
+  File "/home/vlad/dev/runlmc/benchmarks/weather/weather.py", line 62, in <module>
+    stats, _, _ = cogp_weather(cogp_runs, num_induc)
+  File "/home/vlad/dev/runlmc/benchmarks/benchlib/standard_tester.py", line 273, in cogp_weather
+    m_time, se_time = float(match.groups()[0]), float(match.groups()[1])
+ValueError: could not convert string to float: 
