@@ -7,7 +7,7 @@ SLFM kernel 0 A matrix
 SLFM kernel 1 A matrix
 [[ 0.49907448 -0.39953    -0.39236439  0.54198321]]
 Optimization (18 hyperparams) starting with user-set num workers
-starting adadelta {'max_it': 100, 'verbosity': 100, 'offset': 0.0001, 'permitted_drops': 5, 'roll': 1, 'min_grad_ratio': 0.1, 'decay': 0.9, 'callback': <function AdaDelta.noop at 0x7f479228d268>, 'step_rate': 1, 'momentum': 0.5}
+starting adadelta {'step_rate': 1, 'momentum': 0.5, 'callback': <function AdaDelta.noop at 0x7fee366f7268>, 'decay': 0.9, 'permitted_drops': 5, 'offset': 0.0001, 'verbosity': 100, 'min_grad_ratio': 0.1, 'max_it': 100, 'roll': 1}
 iteration        1 grad norm 8.5263e+03
 iteration        2 grad norm 8.0670e+03
 iteration        3 grad norm 7.5520e+03
@@ -41,26 +41,7 @@ finished adadelta optimization
     8.5263e+03 max MA(1) grad norm
     norm used inf
 Using user-set num processors to precompute 56 variance terms exactly
-time 2.8674030599941034 smse 0.478966129639 nlpd 2.24728551451
----> llgp slfm m 14 time     2.8674 (    0.0000) smse     0.4790 (    0.0000) nlpd     2.2473 (    0.0000)
-License checkout failed.
-License Manager Error -96
-MATLAB is unable to connect to the license server. 
-Make sure that the MATLAB client machine can communicate with the hostname listed in the SERVER line
-of the license file, and that the port listed in the SERVER line is not blocked by a firewall.
+time 2.9308608080027625 smse 0.478966129639 nlpd 2.24728551451
+---> llgp slfm m 14 time     2.9309 (    0.0000) smse     0.4790 (    0.0000) nlpd     2.2473 (    0.0000)
 
-Troubleshoot this issue by visiting: 
-http://www.mathworks.com/support/lme/R2016b/96
-
-Diagnostic Information:
-Feature: MATLAB 
-License path: /home/vlad/.matlab/R2016b_licenses:/usr/local/MATLAB/R2016b/licenses/license.dat:/usr/local/MATLAB/R
-2016b/licenses/network.lic 
-Licensing error: -96,7. System Error: 2
-
-Traceback (most recent call last):
-  File "/home/vlad/dev/runlmc/benchmarks/weather/weather.py", line 62, in <module>
-    stats, _, _ = cogp_weather(cogp_runs, num_induc)
-  File "/home/vlad/dev/runlmc/benchmarks/benchlib/standard_tester.py", line 273, in cogp_weather
-    m_time, se_time = float(match.groups()[0]), float(match.groups()[1])
-ValueError: could not convert string to float: 
+---> cogp m 10 time    31.9391 (    0.0000) smse     0.2369 (    0.0000) nlpd    47.0117 (    0.0000)

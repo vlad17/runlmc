@@ -68,3 +68,5 @@ REPOROOT=$(readlink -f "$PWD/../../../")
 cd $REPOROOT
 
 OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/weather/weather.py $IS_VALIDATION 2>&1 | tee $OUTFOLDER/stdout-weather.txt | egrep -e '--->|launched'
+
+python3 $REPOROOT/benchmarks/weather/makepics.py
