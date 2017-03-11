@@ -12,7 +12,7 @@ LMC kernel 0 A matrix
 LMC kernel 0 kappa diag
 [ 1.  1.  1.  1.  1.  1.  1.  1.  1.  1.  1.  1.  1.]
 Optimization (53 hyperparams) starting with user-set num workers
-starting adadelta {'roll': 1, 'momentum': 0.5, 'step_rate': 1, 'offset': 0.0001, 'verbosity': 100, 'min_grad_ratio': 0.1, 'decay': 0.9, 'max_it': 100, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fdc38d02268>}
+starting adadelta {'max_it': 100, 'min_grad_ratio': 0.1, 'decay': 0.9, 'callback': <function AdaDelta.noop at 0x7f897e91e268>, 'momentum': 0.5, 'offset': 0.0001, 'verbosity': 100, 'roll': 1, 'step_rate': 1, 'permitted_drops': 5}
 iteration        1 grad norm 1.9337e+02
 iteration        2 grad norm 1.8045e+02
 iteration        3 grad norm 1.6986e+02
@@ -123,8 +123,8 @@ Using user-set num processors for 150 on-the-fly variance predictions
 warning: found 150 of 150 predictive variances set to 0
  /usr/local/lib/python3.5/dist-packages/numpy/core/_methods.py:59: RuntimeWarning:Mean of empty slice.
  /usr/local/lib/python3.5/dist-packages/numpy/core/_methods.py:70: RuntimeWarning:invalid value encountered in double_scalars
-time 24.069951287005097 smse 0.105000893263 nlpd nan
----> llgp Q1R2 m 14 time    24.0700 (    0.0000) smse     0.1050 (    0.0000) nlpd        nan (       nan)
+time 24.871032958006253 smse 0.105000893263 nlpd nan
+---> llgp Q1R2 m 14 time    24.8710 (    0.0000) smse     0.1050 (    0.0000) nlpd        nan (       nan)
 LMC lmc generating inducing grid n = 3054
 LMC lmc grid (n = 3054, m = 14) complete, 
 LMC lmc fully initialized
@@ -137,7 +137,7 @@ SLFM kernel 1 A matrix
    0.71024897 -0.23331326  0.19877279 -0.80601453 -0.22639392  0.82636053
    0.26201294]]
 Optimization (54 hyperparams) starting with user-set num workers
-starting adadelta {'roll': 1, 'momentum': 0.5, 'step_rate': 1, 'offset': 0.0001, 'verbosity': 100, 'min_grad_ratio': 0.1, 'decay': 0.9, 'max_it': 100, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fdc38d02268>}
+starting adadelta {'max_it': 100, 'min_grad_ratio': 0.1, 'decay': 0.9, 'callback': <function AdaDelta.noop at 0x7f897e91e268>, 'momentum': 0.5, 'offset': 0.0001, 'verbosity': 100, 'roll': 1, 'step_rate': 1, 'permitted_drops': 5}
 iteration        1 grad norm 1.9337e+02
 iteration        2 grad norm 1.8052e+02
 iteration        3 grad norm 1.6986e+02
@@ -167,7 +167,7 @@ finished adadelta optimization
     norm used inf
 Using user-set num processors for 150 on-the-fly variance predictions
 warning: found 150 of 150 predictive variances set to 0
-time 7.4502030050207395 smse 0.118404544005 nlpd nan
----> llgp slfm m 14 time     7.4502 (    0.0000) smse     0.1184 (    0.0000) nlpd        nan (       nan)
+time 7.537204499996733 smse 0.118404544005 nlpd nan
+---> llgp slfm m 14 time     7.5372 (    0.0000) smse     0.1184 (    0.0000) nlpd        nan (       nan)
 
----> cogp m 10 time    32.1846 (    0.0000) smse     0.2369 (    0.0000) nlpd    47.0117 (    0.0000)
+---> cogp m 10 time    31.6178 (    0.0000) smse     0.2369 (    0.0000) nlpd    47.0117 (    0.0000)

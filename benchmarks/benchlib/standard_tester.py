@@ -221,7 +221,8 @@ def cogp_fx2007(num_runs, inducing_pts):
         universal_newlines=True,
         cwd=benchmark_dir,
         env=env_no_omp())
-    mout = process.communicate()[0]
+    mout, err = process.communicate()
+    print(err)
     with open(TMP + '/out-{}'.format(num_runs), 'a') as f:
         f.write(mout)
 
