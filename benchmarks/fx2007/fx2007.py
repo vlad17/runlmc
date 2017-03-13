@@ -15,8 +15,7 @@ if is_validation:
     interpolation_points = [10]
     inducing_points = [10]
 else:
-    runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
-    runs = 10
+    runs = 50
     interpolation_points = [None]
     inducing_points = [100]
 
@@ -63,7 +62,7 @@ with Pool(cpu_count()) as pool:
         np.random.seed(1234)
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
             runs, m, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100, 'min_grad_ratio': 0.1}, extrapool=pool)
+            slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
         print('---> llgp Q1R2 m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
         kgen = lambda: []
@@ -73,7 +72,7 @@ with Pool(cpu_count()) as pool:
         np.random.seed(1234)
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
             runs, m, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100, 'min_grad_ratio': 0.1}, extrapool=pool)
+            slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
         print('---> llgp slfm m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
 for num_induc in inducing_points:

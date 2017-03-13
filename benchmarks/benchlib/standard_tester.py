@@ -23,6 +23,8 @@ import tempfile
 
 TMP = tempfile.gettempdir() + '/'
 
+# this entire file assumes CWD is the repo root
+
 def _foreign_exchange_shared():
     # Adapts the foreign currency exchange problem
     # Collaborative Multi-output Gaussian Processes

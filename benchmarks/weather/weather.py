@@ -3,16 +3,15 @@
 import sys
 is_validation = sys.argv[1] == 'true'
 
-import runlmc.lmc.stochastic_deriv
 
 if is_validation:
+    import runlmc.lmc.stochastic_deriv
     runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 1
     runs = 1
     cogp_runs = 1
     interpolating_points = [10]
     inducing_points = [10]
 else:
-    runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 10
     runs = 50
     cogp_runs = 3
     interpolating_points = [500, 600, 700, 800, 900, 1000]
@@ -55,7 +54,7 @@ with Pool(cpu_count()) as pool:
         np.random.seed(1234)
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
             runs, num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100, 'min_grad_ratio': 0.1}, extrapool=pool)
+            slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
         print('---> llgp slfm m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
 for num_induc in inducing_points:

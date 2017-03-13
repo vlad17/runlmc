@@ -69,8 +69,8 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Benchmark cleanup: selections for benchmarks should just be defaults.
-0. `examples/`: re-run all; make sure that the pictures get saved. (fx2007.ipynb should save eps not svg).
+0. `examples/`: re-run all; make sure that the pictures get saved. (fx2007.ipynb should save eps not svg). fx2007 min_grad to stay 0.5?
+0. Benchmark cleanup: activating logs should be programatic.
 0. Benchmark cleanup: better docs for running stuff
 0. Benchmark cleanup: dedup code / clean up `benchmarks/benchlib/standard_tester.py`
 0. Benchmark cleanup: OMP_NUM_THREADS should be standardized somehow.

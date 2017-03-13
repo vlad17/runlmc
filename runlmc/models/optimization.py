@@ -37,11 +37,9 @@ class AdaDelta(Optimizer):
         super().__init__()
         default = {
             'step_rate':1, 'decay':0.9, 'momentum':0.5, 'offset':1e-4,
-            'max_it':100, 'verbosity':0, 'min_grad_ratio':0.5, 'roll':1,
-            'permitted_drops':None, 'callback':AdaDelta.noop}
+            'max_it':100, 'verbosity':0, 'min_grad_ratio':0.2, 'roll':1,
+            'permitted_drops':2, 'callback':AdaDelta.noop}
         default.update(**kwargs)
-        if default['permitted_drops'] is None:
-            default['permitted_drops'] = max(default['max_it'] // 20, 1)
         self.kwargs = default
 
     def opt(self, x, f_fp=None, f=None, fp=None):

@@ -15,7 +15,7 @@ class StochasticDeriv(Derivative):
     # This code accepts arbitrary linear operators for the derivatives
     # K, however, should have a "solve" function
 
-    N_IT = 3
+    N_IT = 10
 
     def __init__(self, K, y, metrics, pool=None):
         self.n = K.shape[0]
