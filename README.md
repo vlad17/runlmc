@@ -27,10 +27,6 @@ If there is some quantifiable success with this approach then integration with G
 
 ### Snippet
 
-Note: currently derivatives are not implemented, nor is the package optimized for speed yet.
-
-Full example 
-
     n_per_output = [65, 100]
     xss = list(map(np.random.rand, n_per_output))
     yss = [f(2 * np.pi * xs) + np.random.randn(len(xs)) * 0.05
@@ -41,22 +37,23 @@ Full example
         
 ![unopt](https://raw.githubusercontent.com/vlad17/runlmc/master/examples/unopt.png)
 
-    lmc.optimize(optimizer=AdaDelta()) # batteries included!
+    lmc.optimize()
     # ... more plotting code
     
 ![opt](https://raw.githubusercontent.com/vlad17/runlmc/master/examples/opt.png)
+
+For runnable code, check `examples/`.
         
 ### Running the Examples and Benchmarks
 
 Make sure that the directory root is in the `PYTHONPATH` when running the benchmarks. E.g., from the directory root:
 
     PYTHONPATH=.. jupyter notebook examples/example.ipynb
-    PYTHONPATH=. python benchmarks/bench.py
-    cd benchmarks && OMP_NUM_THREADS=1 PYTHONPATH=.:.. fx2007.py
+    cd benchmarks/fx2007 && ./run.sh # will take a while!
     
 ## Dev Stuff
 
-Required packages for running (Python 3 versions): `numpy scipy climin GPy paramz contexttimer pandas`. For dev `nose sphinx`.
+Required packages for running (Python 3 versions): `numpy scipy climin GPy paramz contexttimer pandas`. For dev `nose sphinx` as well.
 
 All below invocations should be done from the repo root.
  
