@@ -207,15 +207,14 @@ def env_no_omp():
 
 def cogp_fx2007(num_runs, inducing_pts):
     _download_cogp()
-    datafile = 'data/fx/fx2007_matlab.csv'
-    assert os.path.isfile(datafile)
+    benchmark_dir = 'benchmarks/benchlib'
+    datafile = '../../data/fx/fx2007_matlab.csv'
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
            """infile='{}';M={};runs={};cogp_fx2007;exit"""
            .format(datafile, inducing_pts, num_runs)]
     with open(TMP + '/out-{}'.format(num_runs), 'w') as f:
         f.write(' '.join(cmd))
-    benchmark_dir = 'benchmarks/benchlib'
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -225,19 +224,18 @@ def cogp_fx2007(num_runs, inducing_pts):
         env=env_no_omp())
     mout, err = process.communicate()
     print(err)
-    with open(TMP + '/out-{}'.format(num_runs), 'a') as f:
+    with open(TMP + '/out-{}'.format(num_runs), 'w') as f:
         f.write(mout)
-
 
     ending = mout[mout.find('mean/stderr times'):]
     match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
-    m_time, se_time = float(match.groups()[0], match.groups()[1])
+    m_time, se_time = float(match.groups()[0]), float(match.groups()[1])
     ending = ending[ending.find('mean/stderr smses'):]
     match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
-    m_smse, se_smse = float(match.groups()[0], match.groups()[1])
+    m_smse, se_smse = float(match.groups()[0]), float(match.groups()[1])
     ending = ending[ending.find('mean/stderr nlpds'):]
     match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
-    m_nlpd, se_nlpd = float(match.groups()[0], match.groups()[1])
+    m_nlpd, se_nlpd = float(match.groups()[0]), float(match.groups()[1])
 
     # the matlab script writes to this file
     test_fx = ['CAD', 'JPY', 'AUD']
@@ -256,7 +254,7 @@ def cogp_weather(num_runs, M):
     cmd = ['matlab', '-nojvm', '-r',
            """datadir='{}';M={};runs={};cogp_weather;exit"""
            .format(datafile, M, num_runs)]
-    with open(TMP + '/outw-{}-{}'.format(num_runs, M), 'w') as f:
+    with open(TMP + '/outw-{}-{}'.format(num_runs, M), 'a') as f:
         f.write(' '.join(cmd))
     benchmark_dir = 'benchmarks/benchlib'
     process = subprocess.Popen(

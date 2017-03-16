@@ -12,10 +12,12 @@ import runlmc.lmc.stochastic_deriv
 if is_validation:
     runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 1
     runs = 1
+    cogp_runs = 1
     interpolation_points = [10]
     inducing_points = [10]
 else:
     runs = 50
+    cogp_runs = 3
     interpolation_points = [None]
     inducing_points = [100]
 
@@ -62,21 +64,11 @@ with Pool(cpu_count()) as pool:
         np.random.seed(1234)
         llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
             runs, m, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
+            slfmgen, indepgen, {'verbosity': 100, 'min_grad_ratio': 0.2}, extrapool=pool)
         print('---> llgp Q1R2 m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
-        kgen = lambda: []
-        rgen = lambda: []
-        slfmgen = lambda: [RBF(name='slfm0'), RBF(name='slfm1')]
-        indepgen = lambda: [Scaled(RBF()) for _ in xss]
-        np.random.seed(1234)
-        llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
-            runs, m, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
-        print('---> llgp slfm m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
-
 for num_induc in inducing_points:
-    stats, _, _ = cogp_weather(runs, num_induc)
+    stats, _, _ = cogp_fx2007(cogp_runs, num_induc)
     cogp_time, cogp_smse, cogp_nlpd = statprintlist(stats)
     print('---> cogp m', num_induc,
           'time', cogp_time, 'smse', cogp_smse, 'nlpd', cogp_nlpd)
