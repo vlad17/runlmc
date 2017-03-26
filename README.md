@@ -72,6 +72,10 @@ All below invocations should be done from the repo root.
 0. Benchmark cleanup: dedup code / clean up `benchmarks/benchlib/standard_tester.py`
 0. Benchmark cleanup: OMP_NUM_THREADS should be standardized somehow.
 0. Benchmark speedup: slurm-broadcasted prediction?
+0. Automatically find `min_grad_ratio` parameter. 
+    * validate on small subset to get min grad ratio?
+    * use quadratic form as a proxy?
+    * other log det methods
 0. Preconditioning
     * Cache Krylov solutions over iterations?
     * Cutajar 2016 iterative inversion approach?
