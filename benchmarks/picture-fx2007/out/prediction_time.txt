@@ -1,0 +1,8 @@
+method on-the-fly   smse 0.2124 nlpd   -3.6298e+00 time 2.8751952052116394
+method exact        smse 0.2124 nlpd   -3.6369e+00 time 0.8310558348894119
+method precompute   smse 0.2124 nlpd   -3.6367e+00 time 32.59947421401739
+on the fly  0.00497565923632
+precomputed 0.000615614746989
+method sample   100 smse 0.2124 nlpd    9.1513e-01 time 5.315740562975407
+method sample   500 smse 0.2124 nlpd   -3.4886e+00 time 21.21233244240284
+method sample  1000 smse 0.2124 nlpd   -2.2879e+00 time 42.06133723258972
