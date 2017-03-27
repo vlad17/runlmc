@@ -67,8 +67,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Benchmark cleanup: activating logs should be programatic.
-0. Benchmark cleanup: dedup `fx2007.py` vs `weather.py` code / clean up `benchmarks/benchlib/standard_tester.py`
+0. Benchmark cleanup: dedup `fx2007.py` vs `weather.py` code / clean up `benchmarks/benchlib/standard_tester.py` - move that one to the main repo?
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?
