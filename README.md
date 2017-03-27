@@ -66,7 +66,6 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Rm extrapool - do we even need pool caching? just make sure `OMP_NUM_THREADS=1` or some reasonable amount if parallelism is reduced). - should this env variable be checked, warning (through logging or python) be printed?
 0. Benchmark cleanup: activating logs should be programatic.
 0. Benchmark cleanup: better docs for running stuff
 0. Benchmark cleanup: dedup code / clean up `benchmarks/benchlib/standard_tester.py`

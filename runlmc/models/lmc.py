@@ -4,6 +4,7 @@
 from contextlib import closing
 import logging
 from multiprocessing import Pool, cpu_count
+import os
 
 import numpy as np
 import scipy.linalg as la
@@ -246,10 +247,23 @@ class LMC(MultiGP):
         self.max_procs = cpu_count() if max_procs is None else max_procs
         self._pool = None
 
+        self._check_omp(max_procs)
+
         self.update_model(True)
         _LOG.info('LMC %s fully initialized', self.name)
 
     EVAL_NORM = np.inf
+
+    def _check_omp(self, procs_requested):
+        omp = os.environ.get('OMP_NUM_THREADS', None)
+        procs_info = 'LMC(max_procs={})'.format(procs_requested)
+        if procs_requested is None:
+            procs_info += ' [defaults to {}]'.format(self.max_procs)
+        if omp is None and self.max_procs > 1:
+            _LOG.warning('Parallelizing at the process level with %s is'
+                         ' incompatible with OMP-level parallelism '
+                         '(OMP_NUM_THREADS env var is unset, using all '
+                         'available cores)', procs_info)
 
     # TODO(cleanup): move to interpolation as its own method; test it.
     @staticmethod
