@@ -67,4 +67,4 @@ REPOROOT=$(readlink -f "$PWD/../../../")
 
 cd $REPOROOT
 
-OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/fx2007/fx2007.py $IS_VALIDATION 2>&1 | tee $OUTFOLDER/stdout-fx2007.txt | egrep -e '--->|launched'
+OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/fx2007/fx2007.py $IS_VALIDATION 2>&1 | tee $OUTFOLDER/stdout-fx2007.txt | egrep -e '--->'

@@ -45,27 +45,20 @@ _LOG2.setLevel(logging.INFO)
 # the columns with nonzero test holdout are in test_fx
 xss, yss, test_xss, test_yss, test_fx, cols = foreign_exchange_2007()
 
-import os
-
-with Pool(cpu_count()) as pool:
-    workers = pool.starmap(os.getpid, [[] for _ in range(4 * cpu_count())])
-    workers = set(workers)
-    print(len(workers), 'distinct workers launched')
-
-    for m in interpolation_points:
-        # Nguyen 2014 COGP uses Q=2 R=1, but that is not LMC
-        # Álvarez and Lawrence 2010 Convolved GP has R=4, sort of.
-        # Álvarez and Lawrence 2010 find that vanilla LMC works best with Q=1 R=2
-        # that is what we use here
-        kgen = lambda: [RBF(name='rbf0')]
-        rgen = lambda: [2]
-        slfmgen = lambda: []
-        indepgen = lambda: []
-        np.random.seed(1234)
-        llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
-            runs, m, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100, 'min_grad_ratio': 0.2}, extrapool=pool)
-        print('---> llgp Q1R2 m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
+for m in interpolation_points:
+    # Nguyen 2014 COGP uses Q=2 R=1, but that is not LMC
+    # Álvarez and Lawrence 2010 Convolved GP has R=4, sort of.
+    # Álvarez and Lawrence 2010 find that vanilla LMC works best with Q=1 R=2
+    # that is what we use here
+    kgen = lambda: [RBF(name='rbf0')]
+    rgen = lambda: [2]
+    slfmgen = lambda: []
+    indepgen = lambda: []
+    np.random.seed(1234)
+    llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
+        runs, m, xss, yss, test_xss, test_yss, kgen, rgen,
+        slfmgen, indepgen, {'verbosity': 100, 'min_grad_ratio': 0.2})
+    print('---> llgp Q1R2 m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
 for num_induc in inducing_points:
     stats, _, _ = cogp_fx2007(cogp_runs, num_induc)

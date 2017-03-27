@@ -41,21 +41,16 @@ xss, yss, test_xss, test_yss, cols = weather()
 
 import os
 
-with Pool(cpu_count()) as pool:
-    workers = pool.starmap(os.getpid, [[] for _ in range(4 * cpu_count())])
-    workers = set(workers)
-    print(len(workers), 'distinct workers launched')
-
-    for num_interp in interpolating_points:
-        kgen = lambda: []
-        rgen = lambda: []
-        slfmgen = lambda: [RBF(name='slfm0'), RBF(name='slfm1')]
-        indepgen = lambda: [Scaled(RBF()) for _ in xss]
-        np.random.seed(1234)
-        llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
-            runs, num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100}, extrapool=pool)
-        print('---> llgp slfm m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
+for num_interp in interpolating_points:
+    kgen = lambda: []
+    rgen = lambda: []
+    slfmgen = lambda: [RBF(name='slfm0'), RBF(name='slfm1')]
+    indepgen = lambda: [Scaled(RBF()) for _ in xss]
+    np.random.seed(1234)
+    llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
+        runs, num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
+        slfmgen, indepgen, {'verbosity': 100})
+    print('---> llgp slfm m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
 
 for num_induc in inducing_points:
     stats, _, _ = cogp_weather(cogp_runs, num_induc)

@@ -16,9 +16,12 @@ print(err)
 lines = out.split('\n')
 
 llgp = [line.split() for line in lines]
-llgp, last, cogp = llgp[:-2], llgp[-2], llgp[-1]
+llgp = [line for line in llgp if line]
+llgp, cogp = llgp[:-1], llgp[-1]
+
+print(llgp, cogp)
+
 ms = [int(line[4]) for line in llgp]
-ms = ms
 times = [float(line[6]) for line in llgp]
 se_times = [float(line[8][:-1]) for line in llgp]
 smses = [float(line[10]) for line in llgp]

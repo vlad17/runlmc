@@ -1,7 +1,7 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-from contextlib import closing, contextmanager
+from contextlib import closing
 import logging
 from multiprocessing import Pool, cpu_count
 
@@ -28,10 +28,6 @@ from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 
 _LOG = logging.getLogger(__name__)
-
-@contextmanager
-def _ignored(thing):
-    yield thing
 
 @inherit_doc
 class LMC(MultiGP):
@@ -141,8 +137,6 @@ class LMC(MultiGP):
                              variance.
     :param max_procs: maximum number of processes to use for parallelism,
                       defaults to cpu count.
-    :param extrapool: temporary pool for re-use in benchmarks - this is an ugly
-                      interface option that will be soon removed.
     :param slfm_kerns: add kernel terms with kernel :math:`k_q` given by this list
                        using the SLFM model, which means the corresponding rank
                        is 1 and terms :math:`\\boldsymbol\\kappa_q=\\textbf{0}`
@@ -161,7 +155,7 @@ class LMC(MultiGP):
     def __init__(self, Xs, Ys, normalize=True, kernels=[],
                  ranks=None, lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='matrix-free',
-                 variance_samples=20, max_procs=None, extrapool=None,
+                 variance_samples=20, max_procs=None,
                  slfm_kerns=[], indep_gp=[]):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
         self.update_model(False)
@@ -250,8 +244,7 @@ class LMC(MultiGP):
         self._cache = {}
         self.metrics = Metrics() if metrics else None
         self.max_procs = cpu_count() if max_procs is None else max_procs
-        self.pool = None
-        self.extrapool = extrapool
+        self._pool = None
 
         self.update_model(True)
         _LOG.info('LMC %s fully initialized', self.name)
@@ -283,28 +276,16 @@ class LMC(MultiGP):
         if self.max_procs == 1 or len(self.y) < 1000:
             _LOG.info('Optimization (%d hyperparams) starting in serial mode',
                       len(self.param_array))
-            self.pool = None
+            self._pool = None
             super().optimize(**kwargs)
         else:
             par = min(StochasticDeriv.N_IT + 1, self.max_procs)
-            _LOG.info('Optimization (%d hyperparams) starting with %s workers',
-                      len(self.param_array), self._parstr(par))
-            with self._make_pool(par) as pool:
-                self.pool = pool
+            _LOG.info('Optimization (%d hyperparams) starting with %d workers',
+                      len(self.param_array), par)
+            with closing(Pool(processes=par)) as pool:
+                self._pool = pool
                 super().optimize(**kwargs)
-            self.pool = None
-
-    def _parstr(self, par):
-        if self.extrapool is None:
-            return str(par)
-        else:
-            return 'user-set num'
-
-    def _make_pool(self, par):
-        if self.extrapool is None:
-            return closing(Pool(processes=par))
-        else:
-            return _ignored(self.extrapool)
+            self._pool = None
 
     def parameters_changed(self):
         self._cache = {}
@@ -313,7 +294,7 @@ class LMC(MultiGP):
         grid_kernel = gen_grid_kernel(
             params, self.dists, self.interpolant, self.interpolantT)
         self.kernel = ApproxLMCKernel(
-            params, grid_kernel, self.dists, self.metrics, self.pool)
+            params, grid_kernel, self.dists, self.metrics, self._pool)
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
@@ -528,10 +509,10 @@ class LMC(MultiGP):
               for i, (coreg_mat, toep) in
               enumerate(zip(self.kernel.params.coreg_mats,
                             self.kernel.materialized_kernels))]
-        _LOG.info('Using %s processors to '
+        _LOG.info('Using %d processors to '
                   'precompute %d kernel factors',
-                  self._parstr(par), Q)
-        with self._make_pool(par) as pool:
+                  par, Q)
+        with closing(Pool(processes=par)) as pool:
             samples = pool.starmap(LMC._chol_sample, ls)
             samples.append(
                 Diag(np.sqrt(self.kernel.K.noise.v)).matmat(
@@ -539,8 +520,8 @@ class LMC(MultiGP):
             samples = np.array(samples).sum(axis=0).T
 
             # Re-use same pool
-            _LOG.info('Using %s processors to precompute %d '
-                      'variance samples', self._parstr(par), Ns)
+            _LOG.info('Using %d processors to precompute %d '
+                      'variance samples', par, Ns)
             ls = [(self.kernel.K, sample) for sample in samples]
             samples = np.array(pool.starmap(Iterative.solve, ls)).T
 
@@ -583,9 +564,9 @@ class LMC(MultiGP):
         par = min(max(self.max_procs, 1), Dm)
         chunks = max(K_XU.shape[1] // par // 4, 1)
         ls = [(i, self.kernel.K, K_XU, K_UX) for i in range(Dm)]
-        _LOG.info('Using %s processors to precompute %d '
-                  'variance terms exactly', self._parstr(par), Dm)
-        with self._make_pool(par) as pool:
+        _LOG.info('Using %d processors to precompute %d '
+                  'variance terms exactly', par, Dm)
+        with closing(Pool(processes=par)) as pool:
             nu = pool.starmap(LMC._var_solve, ls, chunks)
 
         self._cache['precomputed_nu'] = nu
@@ -608,10 +589,10 @@ class LMC(MultiGP):
                                   invert=False, noise=False).K
         n_test = test_Xs.shape[0]
         par = min(max(self.max_procs, 1), n_test)
-        _LOG.info('Using %s processors for %d on-the-fly variance'
-                  ' predictions', self._parstr(par), n_test)
+        _LOG.info('Using %d processors for %d on-the-fly variance'
+                  ' predictions', par, n_test)
         ls = [(self.kernel.K, k_star) for k_star in K_test_X]
-        with self._make_pool(par) as pool:
+        with closing(Pool(processes=par)) as pool:
             inverted = np.array(pool.starmap(Iterative.solve, ls)).T
 
         return np.diag(K_test_X.dot(inverted))
