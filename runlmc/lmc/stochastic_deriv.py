@@ -1,9 +1,6 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-from multiprocessing import Pool
-from contextlib import closing
-
 import numpy as np
 
 from .derivative import Derivative

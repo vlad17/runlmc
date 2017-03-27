@@ -14,7 +14,6 @@ from ..linalg.identity import Identity
 from ..linalg.kronecker import Kronecker
 from ..linalg.numpy_matrix import NumpyMatrix
 from ..linalg.sum_matrix import SumMatrix
-from ..util.docs import inherit_doc
 from ..util.numpy_convenience import symm_2d_list_map
 
 # TODO(test)

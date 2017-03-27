@@ -138,7 +138,8 @@ class LMC(MultiGP):
                              variance.
     :param max_procs: maximum number of processes to use for parallelism,
                       defaults to cpu count.
-    :param slfm_kerns: add kernel terms with kernel :math:`k_q` given by this list
+    :param slfm_kerns: add kernel terms with kernel :math:`k_q` given by this
+                       list
                        using the SLFM model, which means the corresponding rank
                        is 1 and terms :math:`\\boldsymbol\\kappa_q=\\textbf{0}`
     :param indep_gp: add in a term for independent GPs for each output,
@@ -153,13 +154,15 @@ class LMC(MultiGP):
                                  values.
     :raises: :class:`ValueError` if no kernels
     """
-    def __init__(self, Xs, Ys, normalize=True, kernels=[],
+    def __init__(self, Xs, Ys, normalize=True, kernels=[], # pylint: disable=too-many-arguments
                  ranks=None, lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='matrix-free',
                  variance_samples=20, max_procs=None,
                  slfm_kerns=[], indep_gp=[]):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
         self.update_model(False)
+        # TODO(cleanup) - this entire constructor needs reorg, refactor
+        # into smaller methods, etc. Large number of arguments is OK, though.
 
         if not kernels and not slfm_kerns and not indep_gp:
             raise ValueError('Number of kernels should be >0')
@@ -179,7 +182,9 @@ class LMC(MultiGP):
 
         self.kernels = kernels + slfm_kerns + indep_gp
         self.nkernels = {
-            'lmc': len(kernels), 'slfm': len(slfm_kerns), 'indep': len(indep_gp)}
+            'lmc': len(kernels),
+            'slfm': len(slfm_kerns),
+            'indep': len(indep_gp)}
         for k in self.kernels:
             self.link_parameter(k)
 

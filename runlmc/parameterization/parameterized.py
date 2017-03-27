@@ -17,7 +17,6 @@ class should be used.
 
 import paramz
 
-from .param import Param
 from .priorizable import _PriorizableNode
 
 class Parameterized(paramz.Parameterized, _PriorizableNode):

@@ -4,7 +4,6 @@
 from paramz.transformations import Logexp
 
 from .stationary_kern import StationaryKern
-from ..parameterization.parameterized import Parameterized
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 
