@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Doclink](https://img.shields.io/badge/docs-latest-lightgrey.svg)](https://github.com/vlad17/runlmc)
+[![Doclink](https://img.shields.io/badge/docs-5a07fd-lightgrey.svg)](https://vlad17.github.io/runlmc/)
 
 # runlmc
 
