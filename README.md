@@ -68,14 +68,11 @@ All below invocations should be done from the repo root.
 ### Roadmap
 
 0. Benchmark cleanup: activating logs should be programatic.
-0. Benchmark cleanup: better docs for running stuff
-0. Benchmark cleanup: dedup code / clean up `benchmarks/benchlib/standard_tester.py`
-0. Benchmark cleanup: OMP_NUM_THREADS should be standardized somehow.
-0. Benchmark speedup: slurm-broadcasted prediction?
+0. Benchmark cleanup: dedup `fx2007.py` vs `weather.py` code / clean up `benchmarks/benchlib/standard_tester.py`
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?
-    * other log det methods
+    * Logdet approximations: (1) [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet) (2) [Integral Probing](https://arxiv.org/abs/1504.02661) (3) [Lanczos](http://www-users.cs.umn.edu/~saad/PDF/ys-2016-04.pdf).
 0. Preconditioning
     * Cache Krylov solutions over iterations?
     * Cutajar 2016 iterative inversion approach?
@@ -85,15 +82,14 @@ All below invocations should be done from the repo root.
     * square matrix optimizations
     * TODO(sparse-derivatives)
 0. travis-ci, auto doc builds, auto benchmarks
+0. Benchmark speedup: slurm-broadcasted prediction...?
 0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups?
 0. multidimensional inputs and ARD.
 0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 
 ### Considerations 
 
-* Real datasets: [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php) 
-* Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
-0. Logdet Approximations? (1) [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet) (2) [Integral Probing](https://arxiv.org/abs/1504.02661).
+* Real datasets: [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php)* Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
 
 ### Low-priority Tasks
 
