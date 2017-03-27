@@ -35,11 +35,13 @@ class MatrixTestBase:
             np_mat = my_mat.as_numpy()
             x = np.arange(np_mat.shape[1]) + 1
             np.testing.assert_allclose(my_mat.matvec(x), np_mat.dot(x),
-                                       err_msg='\n{!s}\n'.format(my_mat))
+                                       err_msg='\n{!s}\n'.format(my_mat),
+                                       rtol=1e-6, atol=1e-6)
 
     def test_matmat(self):
         for my_mat in self.examples:
             np_mat = my_mat.as_numpy()
             x = np.arange(np_mat.shape[1] * 2).reshape(-1, 2)
             np.testing.assert_allclose(my_mat.matmat(x), np_mat.dot(x),
-                                       err_msg='\n{!s}\n'.format(my_mat))
+                                       err_msg='\n{!s}\n'.format(my_mat),
+                                       rtol=1e-6, atol=1e-6)
