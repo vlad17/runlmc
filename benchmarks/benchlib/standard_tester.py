@@ -6,6 +6,8 @@
 import subprocess
 import re
 import os
+import sys
+import logging
 
 import scipy.io as sio
 import contexttimer
@@ -15,6 +17,7 @@ import numpy as np
 
 from runlmc.models.lmc import LMC
 from runlmc.kern.rbf import RBF
+from runlmc.kern.scaled import Scaled
 from runlmc.models.optimization import AdaDelta
 from runlmc.models.gpy_lmc import GPyLMC
 from runlmc.util.numpy_convenience import begin_end_indices
@@ -23,7 +26,39 @@ import tempfile
 
 TMP = tempfile.gettempdir() + '/'
 
-# this entire file assumes CWD is the repo root
+assert os.path.basename(os.getcwd()) == 'runlmc', \
+    'CWD {} expected to be repo runlmc root'.format(os.getcwd())
+
+def is_validation():
+    assert sys.argv[1] in ['true', 'false'], sys.argv[1]
+    return sys.argv[1] == 'true'
+
+def slfm_gp(num_outputs, slfm_rank):
+    kgen = lambda: []
+    rgen = lambda: []
+    slfmgen = lambda: [RBF(name='slfm{}'.format(i)) for i in range(slfm_rank)]
+    indepgen = lambda: [Scaled(RBF(name='rbf{}'.format(i)))
+                        for i in range(num_outputs)]
+    return kgen, rgen, slfmgen, indepgen
+
+def alvarez_and_lawrence_gp():
+    # Nguyen 2014 COGP uses Q=2 R=1, but that is not LMC
+    # Álvarez and Lawrence 2010 Convolved GP has R=4, sort of.
+    # Álvarez and Lawrence 2010 find that vanilla LMC works best with Q=1 R=2
+    # that is what we use here
+    return lambda: [RBF(name='rbf0')], lambda: [2], lambda: [], lambda: []
+
+def activate_logs():
+    logger = logging.getLogger()
+
+    if logger.handlers:
+        return
+
+    from runlmc.models.lmc import _LOG
+    from runlmc.approx.iterative import _LOG as _LOG2
+    logging.getLogger().addHandler(logging.StreamHandler())
+    _LOG.setLevel(logging.INFO)
+    _LOG2.setLevel(logging.INFO)
 
 def _foreign_exchange_shared():
     # Adapts the foreign currency exchange problem
@@ -159,7 +194,7 @@ def nlpd(test_yss, pred_yss, pred_vss):
             for test_ys, pred_ys, pred_vs in
             zip(test_yss, pred_yss, pred_vss)])
 
-def runlmc(num_runs, m, xss, yss, test_xss, test_yss,
+def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
            kgen, rgen, slfmgen, indepgen, optimizer_opts, **kwargs):
     times, smses, nlpds = [], [], []
     for i in range(num_runs):

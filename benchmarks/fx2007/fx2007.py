@@ -1,15 +1,13 @@
-# Run this as follows, in benchmarks/
-# OMP_NUM_THREADS=1 PYTHONPATH=.:.. python -u fx2007.py 2>&1 | tee example-stdout-fx2007.txt | egrep -e '--->|launched'
-
-# compares on fx2007 dataset LLGP SLFM for varying interpolation points
+# Compares on fx2007 dataset LLGP SLFM for varying interpolation points
 # vs COGP SLFM approx with fixed inducing points = 100
 
-import sys
-is_validation = sys.argv[1] == 'true'
+import numpy as np
+from standard_tester import *
 
-import runlmc.lmc.stochastic_deriv
+activate_logs()
 
-if is_validation:
+if is_validation():
+    import runlmc.lmc.stochastic_deriv
     runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 1
     runs = 1
     cogp_runs = 1
@@ -21,41 +19,12 @@ else:
     interpolation_points = [None]
     inducing_points = [100]
 
-import os
-import logging
-import sys
-
-import numpy as np
-from standard_tester import *
-
-from multiprocessing import Pool, cpu_count
-
-from runlmc.models.lmc import LMC
-from runlmc.kern.rbf import RBF
-from runlmc.kern.scaled import Scaled
-from runlmc.models.optimization import AdaDelta
-from runlmc.models.gpy_lmc import GPyLMC
-
-from runlmc.models.lmc import _LOG
-from runlmc.approx.iterative import _LOG as _LOG2
-logging.getLogger().addHandler(logging.StreamHandler())
-_LOG.setLevel(logging.INFO)
-_LOG2.setLevel(logging.INFO)
-
-# the columns with nonzero test holdout are in test_fx
-xss, yss, test_xss, test_yss, test_fx, cols = foreign_exchange_2007()
+xss, yss, test_xss, test_yss, _, _ = foreign_exchange_2007()
 
 for m in interpolation_points:
-    # Nguyen 2014 COGP uses Q=2 R=1, but that is not LMC
-    # Álvarez and Lawrence 2010 Convolved GP has R=4, sort of.
-    # Álvarez and Lawrence 2010 find that vanilla LMC works best with Q=1 R=2
-    # that is what we use here
-    kgen = lambda: [RBF(name='rbf0')]
-    rgen = lambda: [2]
-    slfmgen = lambda: []
-    indepgen = lambda: []
     np.random.seed(1234)
-    llgp_time, llgp_smse, llgp_nlpd, lmc = runlmc(
+    kgen, rgen, slfmgen, indepgen = alvarez_and_lawrence_gp()
+    llgp_time, llgp_smse, llgp_nlpd, lmc = bench_runlmc(
         runs, m, xss, yss, test_xss, test_yss, kgen, rgen,
         slfmgen, indepgen, {'verbosity': 100, 'min_grad_ratio': 0.2})
     print('---> llgp Q1R2 m', len(lmc.inducing_grid), 'time', statprint(llgp_time), 'smse', statprint(llgp_smse), 'nlpd', statprint(llgp_nlpd))
