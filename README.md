@@ -68,8 +68,6 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. travis badge, non-dev requirements.txt (to run example.ipynb)
-0. Benchmark cleanup: dedup `fx2007.py` vs `weather.py` code / clean up `benchmarks/benchlib/standard_tester.py` - move that one to the main repo?
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?
@@ -77,22 +75,26 @@ All below invocations should be done from the repo root.
 0. Preconditioning
     * Cache Krylov solutions over iterations?
     * Cutajar 2016 iterative inversion approach?
+    * T.Chan preconditioning for specialized on-grid case (needs development of partial grid)
 0. Minor perf improvements: what helps?
     * CPython; numba.
     * In-place multiplication where possible
     * square matrix optimizations
     * TODO(sparse-derivatives)
 0. Benchmark speedup: slurm-broadcasted prediction...?
+0. move to read the docs
 0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups?
 0. multidimensional inputs and ARD.
 0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 
 ### Considerations 
 
-* Real datasets: [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php)* Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
+* Real datasets: [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php)
+* Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
 
 ### Low-priority Tasks
 
+0. migrate (and, in turn, clean up both stylistically and in terms of hackiness of code) `stadard_tester.py` in `benchmarks/benchlib`
 0. TODO(cleanup) - apprx to approx everywhere, kerns to kernels
 0. Allow extrapolation in util.interpolation.py
 0. TODO(test) - document everything that's missing documentation along the way.
