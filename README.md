@@ -1,5 +1,6 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Doclink](https://img.shields.io/badge/docs-5a07fd-lightgrey.svg)](https://vlad17.github.io/runlmc/)
+[![CI](https://api.travis-ci.org/vlad17/runlmc.svg?branch=master)](https://travis-ci.org/vlad17/runlmc)
 
 # runlmc
 
@@ -67,6 +68,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
+0. travis badge, non-dev requirements.txt (to run example.ipynb)
 0. Benchmark cleanup: dedup `fx2007.py` vs `weather.py` code / clean up `benchmarks/benchlib/standard_tester.py` - move that one to the main repo?
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
@@ -80,7 +82,6 @@ All below invocations should be done from the repo root.
     * In-place multiplication where possible
     * square matrix optimizations
     * TODO(sparse-derivatives)
-0. travis-ci, auto doc builds, auto benchmarks
 0. Benchmark speedup: slurm-broadcasted prediction...?
 0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups?
 0. multidimensional inputs and ARD.
