@@ -55,7 +55,7 @@ Make sure that the directory root is in the `PYTHONPATH` when running the benchm
     
 ## Dev Stuff
 
-Required packages for running (Python 3 versions): `numpy scipy climin GPy paramz contexttimer pandas`. For dev `nose sphinx` as well.
+Required packages for running (Python 3): `pip install -r requirements.txt`.
 
 All below invocations should be done from the repo root.
  
