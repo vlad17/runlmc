@@ -17,6 +17,7 @@ and NLPD statistics outputted (mean and standard error).
 Then, we run COGP on the same dataset.
 
 Results are printed to a trace file, ./out/stdout-weather.txt
+The filtered output is in ./out/filtered-weather.txt
 
 Flags
     --validate Run a small case to verify configuration.
@@ -67,6 +68,6 @@ REPOROOT=$(readlink -f "$PWD/../../../")
 
 cd $REPOROOT
 
-OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/weather/weather.py $IS_VALIDATION 2>&1 | tee $OUTFOLDER/stdout-weather.txt | egrep -e '--->'
+OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/weather/weather.py $IS_VALIDATION 2>&1 | tee $OUTFOLDER/stdout-weather.txt | egrep -e '--->' | tee $OUTFOLDER/filtered-weather.txt
 
 python3 $REPOROOT/benchmarks/weather/makepics.py
