@@ -116,6 +116,7 @@ for i in 3 10 17; do
             left=""
             right=""
         fi
+        number=$(printf "%0.2f" $number)
         row="${row} & \$ ${left}${number}${right} \$"
     done
     row=$(echo $row | cut -c3-)
