@@ -19,16 +19,12 @@ llgp = [line.split() for line in lines]
 llgp = [line for line in llgp if line]
 llgp, cogp = llgp[:-1], llgp[-1]
 
-print(llgp, cogp)
-
 ms = [int(line[4]) for line in llgp]
 times = [float(line[6]) for line in llgp]
 se_times = [float(line[8][:-1]) for line in llgp]
 smses = [float(line[10]) for line in llgp]
 nlpds = [float(line[14]) for line in llgp]
 se_nlpds = [float(line[16][:-1]) for line in llgp]
-
-print('smses', smses)
 
 fig, ax1 = plt.subplots()
 ax1.errorbar(ms, nlpds, yerr=se_nlpds, c='r', marker='s', ecolor='pink')

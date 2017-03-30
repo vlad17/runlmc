@@ -17,7 +17,7 @@ and NLPD statistics outputted (mean and standard error).
 Then, we run COGP on the same dataset.
 
 Results are printed to a trace file, ./out/stdout-fx2007.txt
-The filtered output is in ./out/filtered-fx2007.txt
+Extracted results, printed as latex, ./out/results_fx2007.tex
 
 Flags
     --validate Run a small case to verify configuration.
@@ -68,4 +68,4 @@ REPOROOT=$(readlink -f "$PWD/../../../")
 
 cd $REPOROOT
 
-OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/fx2007/fx2007.py $IS_VALIDATION 2>&1 | tee $OUTFOLDER/stdout-fx2007.txt | egrep -e '--->' | tee $OUTFOLDER/filtered-fx2007.txt
+OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/fx2007/fx2007.py $IS_VALIDATION $OUTFOLDER 2>&1 | tee $OUTFOLDER/stdout-fx2007.txt | egrep -e '--->'

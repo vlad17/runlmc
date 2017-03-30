@@ -224,8 +224,10 @@ def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
         smses.append(smse(test_yss, pred_yss, yss))
         nlpds.append(nlpd(test_yss, pred_yss, pred_vss))
         print('time', times[-1], 'smse', smses[-1], 'nlpd', nlpds[-1])
-        last = lmc
-    return times, smses, nlpds, last
+
+    points = [times, smses, nlpds]
+    stats = [(np.mean(x), np.std(x) / np.sqrt(len(x))) for x in points]
+    return stats
 
 def _download_cogp():
     # Download paper code if it is not there
@@ -278,7 +280,7 @@ def cogp_fx2007(num_runs, inducing_pts):
     cogp_var = pd.read_csv(TMP + '/cogp-fx2007-var', header=None,
                            names=test_fx)
 
-    stats = [m_time, se_time, m_smse, se_smse, m_nlpd, se_nlpd]
+    stats = [(m_time, se_time), (m_smse, se_smse), (m_nlpd, se_nlpd)]
     return stats, cogp_mu, cogp_var
 
 def cogp_weather(num_runs, M):
@@ -320,13 +322,51 @@ def cogp_weather(num_runs, M):
                           header=None, names=test_fx)
     cogp_var = pd.read_csv(TMP + '/cogp-weather-var{}{}'.format(num_runs, M))
 
-    stats = [m_time, se_time, m_smse, se_smse, m_nlpd, se_nlpd]
+    stats = [(m_time, se_time), (m_smse, se_smse), (m_nlpd, se_nlpd)]
     return stats, cogp_mu, cogp_var
 
-def statprint(x):
-    return '{:10.4f} ({:10.4f})'.format(
-        np.mean(x), np.std(x) / np.sqrt(len(x)))
+def statprint(x, fmt='10.4f', flank=''):
+    formatter = flank + '{:' + fmt + '}' + flank
+    formatter += ' (' + flank + '{:' + fmt + '}' + flank + ')'
+    return formatter.format(*x)
 
-def statprintlist(ls):
-    pairs = zip(ls[::2], ls[1::2])
-    return ['{:10.4f} ({:10.4f})'.format(mean, se) for mean, se in pairs]
+def statsline(ls):
+    names = ['time', 'smse', 'nlpd']
+    results = map(statprint, ls)
+    combined = [name + ' ' + res for name, res in zip(names, results)]
+    return ' '.join(combined)
+
+TABLE_EPILOG = r"""
+\belowspace \\
+\hline
+\end{tabular}
+"""
+
+def latex_table(filename, cols, col_results):
+    metrics = ['seconds', 'SMSE', 'NLPD']
+    formatting = ['d', '.2f', '.2f']
+    transposed = zip(*col_results)
+    latex = ''
+    ncols = len(cols)
+
+    for metric, fmt, results in zip(metrics, formatting, transposed):
+        best = np.argmin(results)
+        if fmt == 'd':
+            results = [tuple(map(int, r)) for r in results]
+        left = [r'\textbf{' if i == best else '' for i in range(ncols)]
+        right = ['}' if i == best else '' for i in range(ncols)]
+        center = [statprint(x, fmt, '$') for x in results]
+        row = [''.join(s) for s in zip(left, center, right)]
+        row = ' & '.join([metric] + row) + r'\\' + '\n'
+        latex += row
+
+    colfmt = '|l|' + 'c' * ncols + '|'
+    begin = (r'\begin{tabular}{' + colfmt + r'}'
+             r'\hline\abovespace\belowspace' + '\n'
+             r'Metric & ' + ' & '.join(cols) + r'\\' + '\n'
+             r'\hline\abovespace' + '\n')
+    end = TABLE_EPILOG
+
+    outdir = sys.argv[2]
+    with open(outdir + '/' + filename, 'w') as f:
+        f.write(begin + latex + end)
