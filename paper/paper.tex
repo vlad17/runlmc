@@ -401,23 +401,8 @@ For inverting systems, all computations were carried out until the residual $\el
 \label{complement}
 \vskip 0.15in
 \begin{center}
-\begin{small}
-  \begin{sc}
-\begin{tabular}{|ccc|cccc|}
-  \hline
-  \abovespace\belowspace
-  $D$ & $R$ & $Q$ & {chol} & {sum} & {bt} & {slfm}\\
-\hline
-  \abovespace
- $ 2 $ & $ 2 $ & $ 10 $ & $ 40.71 $ & $ 38.13 $ & $ \textbf{7.83} $ & $ 59.53 $ \\ 
- $ 10 $ & $ 1 $ & $ 10 $ & $ 37.69 $ & $ 33.15 $ & $ 16.39 $ & $ \textbf{11.59} $ \\ 
- $ 10 $ & $ 10 $ & $ 1 $ & $ 11.19 $ & $ \textbf{0.784} $ & $ 2.458 $ & $ 1.138 $
-
-  \belowspace \\
-
-  \hline
-\end{tabular}
-\end{sc}
+  \begin{small}
+    \input{representation.tex}
 \end{small}
 \end{center}
 \vskip -0.1in
@@ -468,20 +453,9 @@ For this application, LLGP uses $m=n/D=238$ interpolating points. We use the COG
 \label{fx2007-tbl}
 \vskip 0.15in
 \begin{center}
-\begin{small}
-\begin{sc}
-\begin{tabular}{|l|cc|}
-\hline
-  \abovespace\belowspace
-  Metric & LLGP Q1R2 & COGP\\
-\hline
-\abovespace
-  SMSE & $0.2107$ & $0.2444$ \\
-  NLPD & $-3.6074$ & $10.9142$ \\
-  Seconds & $65$ ($3$) & $291$ ($3$)
-\belowspace\\
-\hline
-\end{tabular}
+  \begin{small}
+    \begin{sc}
+      \input{results_fx2007.tex}
 \end{sc}
 \end{small}
 \end{center}
@@ -502,15 +476,29 @@ For this application, LLGP uses $m=n/D=238$ interpolating points. We use the COG
 
 Next, we replicate results from a weather dataset, a large time series used to validate COGP. In this dataset, $D=4$ weather sensors Bramblemet, Sotonmet, Cambermet, and Chimet record air temperature over five days in five minute intervals, with some dropped records due to equipment failure. Parts of Cambernet and Chimet are dropped for imputation, yielding $n=15,789$ training measurements and $374$ test measurements. 
 
-We use the COGP parameters that were set by default in the code provided by the authors.\footnote{\url{https://github.com/trungngv/cogp}, commit \texttt{3b07f621ff11838e89700cfb58d26ca39b119a35}. The weather dataset was run on 1500 iterations, mini-batch size 1000.} LLGP was run with the same parameters as in FX2007, simulating the SLFM model. We tested LLGP models on different numbers of interpolating points $m$. Both LLGP and COGP were run $10$ times, and average results are reported.
+We use the COGP parameters that were set by default in the code provided by the authors.\footnote{\url{https://github.com/trungngv/cogp}, commit \texttt{3b07f621ff11838e89700cfb58d26ca39b119a35}. The weather dataset was run on 1500 iterations, mini-batch size 1000.} LLGP was run with the same parameters as in FX2007, simulating the SLFM model. We tested LLGP models on different numbers of interpolating points $m$.
 
-LLGP performed slightly worse than COGP in SMSE: its SMSE is $0.0907$ with compared to COGP's $0.0812$. However, both NLPD and runtime indicate significant improvements. The COGP result on $200$ inducing points had an NLPD of $99.7$ and runtime of $1342$ seconds. Varying the number of interpolating points $m$ from $400$ to $1000$ constructs a tradeoff frontier between increases in $m$ and NLPD decrease at the cost of additional runtime (Fig.~\ref{fig:llgpweather}). While NLPD improvement diminishes as $m$ increases, LLGP is still an improvement compared to COGP for a range of $m$ by an order of magnitude in runtime and almost two orders of magnitude for NLPD.
+\begin{table}[!ht]
+  \caption{Average predictive performance and training time over $10$ runs for LLGP and COGP on the weather dataset. Parenthesized values are standard error. Both LLGP and COGP trained the SLFM model. We show LLGP with $500$ and $1000$ interpolating points and COGP with $200$ inducing points.}
+\label{weather-tbl}
+\vskip 0.15in
+\begin{center}
+  \begin{small}
+    \begin{sc}
+      \input{results_weather.tex}
+\end{sc}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+LLGP performed slightly worse than COGP in SMSE, but both NLPD and runtime indicate significant improvements (Tbl.~\ref{weather-tbl}). Varying the number of interpolating points $m$ from $500$ to $1000$ constructs a tradeoff frontier between increases in $m$ and NLPD decrease at the cost of additional runtime (Fig.~\ref{fig:llgpweather}). While NLPD improvement diminishes as $m$ increases, LLGP is still an improvement compared to COGP for a range of $m$ by an order of magnitude in runtime and almost two orders of magnitude for NLPD.
 
 \begin{figure}[!ht]
 \vskip 0.2in
 \begin{center}
 \centerline{\includegraphics[width=\columnwidth]{m_time_nlpd.eps}}
-\caption{Average and standard error of NLPD and runtime of the SLFM model on LLGP across over varying interpolating points. Every setting was run 50 times.}
+\caption{Average and standard error of NLPD and runtime of the SLFM model on LLGP across over varying interpolating points. Every setting was run 10 times.}
 \label{fig:llgpweather}
 \end{center}
 \vskip -0.2in
