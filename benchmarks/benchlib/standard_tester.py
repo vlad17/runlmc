@@ -360,6 +360,9 @@ def latex_table(filename, cols, col_results):
         row = ' & '.join([metric] + row) + r'\\' + '\n'
         latex += row
 
+    # drop the last \\\n
+    latex = latex[:-3]
+
     colfmt = '|l|' + 'c' * ncols + '|'
     begin = (r'\begin{tabular}{' + colfmt + r'}'
              r'\hline\abovespace\belowspace' + '\n'
