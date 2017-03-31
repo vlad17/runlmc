@@ -214,7 +214,7 @@ An LMC kernel $K$ is of the form
 \begin{align}
 K([i,\Tx_i],[j,\Tx_j])=\sum_{q=1}^Qb_{ij}^{(q)}k_q(\norm{\Tx_i-\Tx_j})+\epsilon_i\delta_{ij},\label{lmcpointwise}
 \end{align} 
-where $k_q:\R\rightarrow\R$ is a stationary kernel on $\mcX$. Typically, the positive semi-definite (PSD) matrices $B_q\in\R^{D\times D}$ formed by $b_{ij}^{(q)}$ are parameterized as $A_qA_q^\top+\bsk_q I_D$, with $A_q\in\R^{D\times R_q},\bsk_q\in\R_+^D$ and $R_q$ a pre-set rank. Importantly, even though each $k_q$ is stationary, $K$ is only stationary on $\mcX'$ if $B_q$ is Toeplitz. Settings of $B_q$ that arise in practice, where we wish to capture covariance across outputs as an arbitrary $D^2$-dimensional latent process,  prevent stationarity in $K$ and therefore prohibit direct application of SKI.
+where $k_q:\R\rightarrow\R$ is a stationary kernel on $\mcX$. Typically, the positive semi-definite (PSD) matrices $B_q\in\R^{D\times D}$ formed by $b_{ij}^{(q)}$ are parameterized as $A_qA_q^\top+\bsk_q I_D$, with $A_q\in\R^{D\times R_q},\bsk_q\in\R_+^D$ and $R_q$ a preset rank. Importantly, even though each $k_q$ is stationary, $K$ is only stationary on $\mcX'$ if $B_q$ is Toeplitz. Settings of $B_q$ that arise in practice, where we wish to capture covariance across outputs as an arbitrary $D^2$-dimensional latent process,  prevent stationarity in $K$ and therefore prohibit direct application of SKI.
 
 \subsection{Structured covariance matrices}
 
@@ -342,7 +342,7 @@ On a grid of inputs with $\TX=\TU$, the SKI interpolation vanishes with $W=I$. I
 
 \subsection{Stopping conditions}\label{stopping}
 
-For a gradient-only stopping heuristic, we maintain the running maximum gradient $\infty$-norm. If gradient norms drop below a pre-set proportion of the running maximum norm more than a pre-set tolerance number of times, we terminate. For example, when applied to the foreign exchange rate prediction (FX2007) dataset in Section~\ref{fx2007-results}, the heuristic eventually notices that we have slowed down increases in $\mcL$ because the gradients occasionally drop below the threshold at that point, while not displacing the solution $\bsth$ significantly since we must be near a local minimum (Fig.~\ref{fx2007-stop}). 
+For a gradient-only stopping heuristic, we maintain the running maximum gradient $\infty$-norm. If gradient norms drop below a preset proportion of the running maximum norm more than a pre-set tolerance number of times, we terminate. For example, when applied to the foreign exchange rate prediction (FX2007) dataset in Section~\ref{fx2007-results}, the heuristic eventually notices that we have slowed down increases in $\mcL$ because the gradients occasionally drop below the threshold at that point, while not displacing the solution $\bsth$ significantly since we must be near a local minimum (Fig.~\ref{fx2007-stop}). 
 
 \begin{figure}[!ht]
 \vskip 0.1in
@@ -501,3 +501,7 @@ Future work would extend the inputs to accept multiple dimensions. This can be d
 
 \end{document} 
 
+
+%  LocalWords:  Feinberg pu Cheng Engelhardt Kai LLGP Bonilla COGP qA
+%  LocalWords:  hyperparameter's nguyen Semiparametric SLFM Scalable
+%  LocalWords:  MSGP vectorization matricization parameterization PSD
