@@ -270,21 +270,21 @@ As in other work \cite{cutajar2016preconditioning}, we let $\tbr\sim\Unif\{\pm 1
 We depart from Gibbs and MacKay in selecting MINRES instead of LCG as the Krylov-subspace inversion method used to compute inverses from MVMs. MINRES handles numerically semidefinite matrices with more grace \cite{fong2012cg}. This is essential in GP optimization, where the diagonal noise matrix $\bse$, iid for each output, shrinks over the course of learning, making inversion-based methods require additional iterations (Fig.~\ref{fx2007-iterations}).
 
 \begin{figure}[!ht]
-\vskip 0.2in
+\vskip 0.1in
 \begin{center}
 \centerline{\includegraphics[width=\columnwidth]{iterations.eps}}
 \caption{Number of MVMs that MINRES must perform at each optimization iteration for a GP applied to the dataset in Section~\ref{fx2007-results}. The iteration cutoff is the number of training points $n$ in the dataset.
-} % TODO no time right now but later could compare to LCG MVMs.
+}
 \label{fx2007-iterations}
 \end{center}
-\vskip -0.2in
+\vskip -0.1in
 \end{figure}
 
 If we sample $N_t$ instances of $\tbr$, every iteration needs to perform $N_t+1$ inversions including $\Ty$, if we reuse the same samples $K_{|\bsth}^{-1}\tbr$ between derivatives $\partial_{\theta_j}$. These inversions are done in parallel. Then, since $\partial_{\theta_j}K_{|\bsth}$ is both structured and smaller than $K_{|\bsth}$, each of the terms in the approximation Eq.~\ref{eq:trace} require $\tilde{O}(n)$ time to compute.
 
 Critically, we cannot access $\mcL$ itself, only $\nabla\mcL$, so we choose AdaDelta as the high-level optimization routine \cite{zeiler2012adadelta}. We considered several stochastic approximations for finding $\log\abs{K_{|\bsth}}$~\cite{dorn2015stochastic, han2015large}, but found these too slow and inaccurate for use in optimization.
 
-In other words, all the work is done in the inversions $K_{|\bsth}^{-1}\tbr,K_{|\bsth}^{-1}\Ty$, which in turn rely on the MVM operation, discussed in Section~\ref{fast-mvm}. Since $K_{|\bsth}$ only enters computation as an MVM operator, the amount of memory consumed is dictated by its representation, which need not be dense. % this is a good transition paragraph, and motivates what follows well, but perhaps reworking the structure of the prior sections will make this (for lack of a better word) pipeline bottleneck mroe obvious? TODO any suggestions?
+In other words, all the work is done in the inversions $K_{|\bsth}^{-1}\tbr,K_{|\bsth}^{-1}\Ty$, which in turn rely on the MVM operation, discussed in Section~\ref{fast-mvm}. Since $K_{|\bsth}$ only enters computation as an MVM operator, the amount of memory consumed is dictated by its representation, which need not be dense.
 
 \subsection{Fast MVMs and parsimonious kernels}\label{fast-mvm}
 
@@ -301,8 +301,6 @@ Importantly, the Kronecker structure of Eq.~\ref{lmcgrid} lets us re-use the sam
 We cannot fold $\bse$ into the interpolated term $K_{\TU,\TU}$ since it does not correspond to a differentiable kernel, so the SKI approximation fails. But this fact does not prevent efficient representation or multiplication since the matrix is diagonal. In particular, the MVM operation $K_{\TX,\TX}\Tx$ can be approximated by $WK_{\TU,\TU}W^\top\Tx+\bse\Tx$, where matrix multiplication by the sparse matrices $\bse, W,W^\top$ require $O(n)$ space and time.
 
 We consider different representations of $K_{\TU,\TU}$ from (Eq.~\ref{lmcski}) to reduce the memory and runtime overhead for performing the multiplication $K_{\TU,\TU}\Tz$ (where we have computed $\Tz=W^\top\Tx$).
-
-% TODO get rid of all the linear terms below; delay big-O discussion until "asymptotics"?
 
 \subsubsection{\textsc{sum}: sum representation}
 
@@ -340,20 +338,20 @@ Because the runtimes of \textsc{bt} and \textsc{slfm} are complimentary in the s
 
 Using the switching condition, MVMs with the original matrix $K_{\TX,\TX}$ altogether have a space and time upper bound of $\tilde{O}(\min(QR,D^2)m+n)$, where the $\min$ is earned thanks to the choice between different representations. Every AdaDelta iteration then takes $\tilde{O}(\sqrt{\kappa_2})$ such matrix-vector products for machine-precision answers, with $\kappa_2$ the spectral condition number \cite{raykar2007fast}.
 
-On a grid of inputs with $\TX=\TU$, the SKI interpolation vanishes with $W=I$. In this case, using \textsc{bt} alone leads to a faster algorithm --- applying the Chan block-Toeplitz preconditioner in a Krylov-subspace based routine has experimentally shown convergence using fewer MVMs \cite{chan1994circulant}.
+On a grid of inputs with $\TX=\TU$, the SKI interpolation vanishes with $W=I$. In this case, using \textsc{bt} alone leads to a faster algorithm---applying the Chan block-Toeplitz preconditioner in a Krylov-subspace based routine has experimentally shown convergence using fewer MVMs \cite{chan1994circulant}.
 
 \subsection{Stopping conditions}\label{stopping}
 
 For a gradient-only stopping heuristic, we maintain the running maximum gradient $\infty$-norm. If gradient norms drop below a pre-set proportion of the running maximum norm more than a pre-set tolerance number of times, we terminate. For example, when applied to the foreign exchange rate prediction (FX2007) dataset in Section~\ref{fx2007-results}, the heuristic eventually notices that we have slowed down increases in $\mcL$ because the gradients occasionally drop below the threshold at that point, while not displacing the solution $\bsth$ significantly since we must be near a local minimum (Fig.~\ref{fx2007-stop}). 
 
 \begin{figure}[!ht]
-\vskip 0.2in
+\vskip 0.1in
 \begin{center}
 \centerline{\includegraphics[width=\columnwidth]{running_cutoff.eps}}
 \caption{In green, we have 20\% of the rolling maximum norm. In red and blue are $\mcL$ (computed exactly and therefore unavailable during benchmarks) and $ \norm{\nabla\mcL}_\infty $, respectively. }
 \label{fx2007-stop}
 \end{center}
-\vskip -0.2in
+\vskip -0.1in
 \end{figure}
 
 \subsection{Prediction}
@@ -376,27 +374,14 @@ We evaluate the methods on held out data by using standardized mean square error
 
 \subsection{Representation evaluation}\label{empirical-rep}
 
-Here, experiments were carried out on ``random'' parameters with the same seed. % im not sure exactly what that means ("random parameters")? same seed? what is an experiment? might call it an application to simulated data? if we are desperate for space, make this a single sentence... instead of an itemized list?
-In particular, we have the following parameters:
-\begin{itemize}
-\item $n$ total sample size across all outputs
-\item $D$ number of outputs
-\item $Q$ number of kernels $k_q$
-\item $R$ average added rank
-\item $\epsilon$ mean noise
-\item \texttt{ktype} kernel type, one of \texttt{mat, periodic, rbf, mix} corresponding to Mat\'{e}rn-3/2, standard periodic\footnote{We define the periodic kernel as $k(r) = \exp \left(\frac{-\gamma}{2}\sin^2\frac{\pi r}{T}\right)$.}, and radial basis functions. \texttt{mix} refers to a mix of all three kernels.
-Inverse length scales and periods for the kernels varied uniformly in log space from 1 to 10 with $Q$ samples.
-\end{itemize}
+We evaluated the performance of the different kernel representations over various rank and parameterization settings. In particular, we have the following parameters: $n$ total sample size across all outputs, $D$ number of outputs, $Q$ number of kernels $k_q$, $R$ average added rank, $\epsilon$ mean noise, and \texttt{ktype} kernel type. Kernel type is one of \texttt{mat, periodic, rbf, mix} corresponding to Mat\'{e}rn-3/2, standard periodic\footnote{We define the periodic kernel as $k(r) = \exp \left(\frac{-\gamma}{2}\sin^2\frac{\pi r}{T}\right)$.}, and radial basis functions. \texttt{mix} refers to a mix of all three kernels.
 
-Given this parameterization, we construct a random LMC kernel by sampling entries of each $A_q$ from a standard normal distribution, $\bsk_q$ from an inverse gamma with unit shape and scale, and independent noise $\bse$ for every output from an inverse gamma with unit scale and mean $\epsilon$. Inputs and outputs were independently generated from $\Unif[0,1]$ for benchmarking.
+Each kernel's inverse length scales and periods were selected by sampling uniformly in log space from 1 to 10 with $Q$ samples. Next, we construct a random LMC kernel by sampling entries of each $A_q$ from a standard normal distribution, $\bsk_q$ from an inverse gamma with unit shape and scale, and independent noise $\bse$ for every output from an inverse gamma with unit scale and mean $\epsilon$. Inputs and outputs were independently generated from $\Unif[0,1]$ for benchmarking.
 
-As expected from their asymptotic runtime, \textsc{sum}, \textsc{bt}, and \textsc{slfm} representations are complimentary in MVM speed for different configurations of $D,R,Q$ --- this results in sparse inversion computation that consistently outperforms Cholesky decomposition in runtime (Tab.~\ref{complement}).
+As expected from their asymptotic runtime, \textsc{sum}, \textsc{bt}, and \textsc{slfm} representations are complimentary in MVM speed for different configurations of $D,R,Q$---this results in sparse inversion computation that consistently outperforms Cholesky decomposition in runtime (Tab.~\ref{complement}).
 For inverting systems, all computations were carried out until the residual $\ell_2$ norm was at most $10^{-4}$.
-
-
-
 \begin{table}[!ht]
-  \caption{The runtime in seconds for solving $K\Tx=\Ty$ for a random kernel $K$ constructed as in Section~\ref{empirical-rep} using MINRES for each of the kernel representations. For comparison, the \textsc{chol} representation is wallclock time to compute the Cholesky decomposition of the matrix, which must be constructed, and use this decomposition to invert the system. We averaged over five runs. In every run, we use $n=5,000$ simulated data points, $\texttt{mix}$ kernels, and $\epsilon=0.1$.
+  \caption{The runtime in seconds for solving $K\Tx=\Ty$ for a random kernel $K$ constructed as in Section~\ref{empirical-rep} using MINRES for each of the kernel representations. For comparison, the \textsc{chol} representation is wallclock time to compute the Cholesky decomposition of the matrix, which must be constructed, and use this decomposition to invert the system. We averaged over five runs. In every run, we use $n=5000$ simulated data points, $\texttt{mix}$ kernels, and $\epsilon=0.1$.
 }
 \label{complement}
 \vskip 0.15in
@@ -411,45 +396,45 @@ For inverting systems, all computations were carried out until the residual $\el
 We next evaluated the accuracy of the gradients for $N_t=10$ trace samples. Fixing $R=3,n=5000,D=10$, we quantified the accuracy and speed of computing $\nabla\mcL$. Since, for each partial derivative, LLGP requires only $N_t$ $n$-sized vector dot products (Eq.~\ref{eq:trace}), it generally runs faster than the exact approach (Fig.~\ref{fig:gradtime}), which must compute a matrix-matrix dot product (Eq.~\ref{llgradient}). The gradients between the two, however, are virtually indistinguishable for smooth kernels that induce diagonally dominant covariance matrices (Fig.~\ref{fig:relgrad}). Kernels such as the single Mat\'{e}rn or periodic kernel with noise on the order of $10^{-4}$ lead to less accurate gradients, owing to poor MINRES convergence in the inversions (Fig.~\ref{fig:inverr}). We will show that the stochastic gradients suffice for optimization in practical examples.
 
 \begin{figure}[!ht]
-\vskip 0.2in
+\vskip 0.1in
 \begin{center}
 \centerline{\includegraphics[width=\columnwidth]{relgrad_l2.eps}}
 \caption{Negative logarithm of the relative error in $\ell_2$ norm between exact and LLGP gradients. Higher is better, and extremal values are noted.  For each data point, the average was taken over five runs.}
 \label{fig:relgrad}
 \end{center}
-\vskip -0.2in
+\vskip -0.1in
 \end{figure}
 
 \begin{figure}[!ht]
-\vskip 0.2in
+\vskip 0.1in
 \begin{center}
 \centerline{\includegraphics[width=\columnwidth]{time_ratio.eps}}
 \caption{Logarithm of the ratio of time required by the exact approach to that of LLGP for computing the gradient over all parameters from Eq.~\ref{llgradient}. Higher is better, and extremal values are noted. For each data point, the average was taken over five runs.}
 \label{fig:gradtime}
 \end{center}
-\vskip -0.2in
+\vskip -0.1in
 \end{figure}
 
 \begin{figure}[!ht]
-\vskip 0.2in
+\vskip 0.1in
 \begin{center}
 \centerline{\includegraphics[width=\columnwidth]{relalpha_l2.eps}}
 \caption{Negative logarithm of the relative error in $\ell_2$ norm between exact and MINRES solutions to $K\Tx=\Ty$ for $\Tx$. For each data point, the average was taken over five runs.}
 \label{fig:inverr}
 \end{center}
-\vskip -0.2in
+\vskip -0.1in
 \end{figure}
 
 \subsection{Foreign exchange rate prediction (FX2007)}\label{fx2007-results}
 
-We replicate the medium-sized dataset from COGP as an application to evaluate LLGP performance. The dataset consists of ten foreign currency exchange rates---CAD, EUR, JPY, GBP, CHF, AUD, HKD, NZD, KRW, and MXN---and three precious metals---XAU, XAG, and XPT---implying that $D=13$.\footnote{Data are from \texttt{http://fx.sauder.ubc.ca/data.html}} As in COGP, we retrieved the asset to USD rate, then used its reciprocal in all the results discussed below. The LLGP setting has $Q=1,R=2$, as recommended in \cite{alvarez2010efficient} for LMC models on this dataset; let this be the LMC model on LLGP. COGP roughly corresponds to the the SLFM model, which has a total of 94 hyperparameters, compared to 53 for LLGP. All kernels are RBF.
+We replicate the medium-sized dataset from COGP as an application to evaluate LLGP performance. The dataset consists of ten foreign currency exchange rates---CAD, EUR, JPY, GBP, CHF, AUD, HKD, NZD, KRW, and MXN---and three precious metals---XAU, XAG, and XPT---implying that $D=13$.\footnote{Data are from \url{http://fx.sauder.ubc.ca/data.html}} As in COGP, we retrieved the asset to USD rate, then used its reciprocal in all the results discussed below. The LLGP setting has $Q=1,R=2$, as recommended in \cite{alvarez2010efficient} for LMC models on this dataset; let this be the LMC model on LLGP. COGP roughly corresponds to the the SLFM model, which has a total of 94 hyperparameters, compared to 53 for LLGP. All kernels are RBF.
 
 The data used in this example are from 2007, and include $n=3,054$ training points and $150$ test points. The test points include 50 contiguous points extracted from each of the CAD, JPY, and AUD exchanges.
 
 For this application, LLGP uses $m=n/D=238$ interpolating points. We use the COGP settings from the paper.\footnote{COGP hyperparameters for FX2007 were 100 inducing points, 500 iterations, 200 mini-batch size.} LLGP, for both LMC, outperforms COGP in terms of predictive mean and variance estimation as well as runtime (Tab.~\ref{fx2007-tbl}).
 
 \begin{table}[!ht]
-  \caption{Average predictive performance and training time over $10$ runs for LLGP and COGP on the FX2007 dataset. Parenthesized values are standard error. LLGP was run with LMC set to $Q=1$, $R=2$, and $238$ interpolating points. COGP used a $Q=2$ kernel with $100$ inducing points}
+  \caption{Average predictive performance and training time over $10$ runs for LLGP and COGP on the FX2007 dataset. Parenthesized values are standard error. LLGP was run with LMC set to $Q=1$, $R=2$, and $238$ interpolating points. COGP used a $Q=2$ kernel with $100$ inducing points.}
 \label{fx2007-tbl}
 \vskip 0.15in
 \begin{center}
@@ -463,18 +448,18 @@ For this application, LLGP uses $m=n/D=238$ interpolating points. We use the COG
 \end{table}
 
 \begin{figure*}[!ht]
-\vskip 0.2in
+\vskip 0.1in
 \begin{center}
 \centerline{\includegraphics[width=\textwidth]{fx2007graph.pdf}}
-\caption{Test outputs for the FX2007 dataset. COGP mean is black, with 95\% confidence intervals shaded in grey. LLGP mean is a solid red curve, with light green 95\% confidence intervals. Magenta points are in the training set, while blue ones are in the test set.} % TODO much better -- might also have 10 words on high level point: Predictions from LLGP on the test set are uniformly better across these three tasks. or something.
+\caption{Test outputs for the FX2007 dataset. COGP mean is black, with 95\% confidence intervals shaded in grey. LLGP mean is a solid red curve, with light green 95\% confidence intervals. Magenta points are in the training set, while blue ones are in the test set. Notice LLGP variance corresponds to an appropriate level of uncertainty on the test set and certainty on the training set, as opposed to the uniform variance from COGP.}
 \label{fx2007-graph}
 \end{center}
-\vskip -0.2in
+\vskip -0.1in
 \end{figure*}
 
 \subsection{Weather dataset}\label{large-bench}
 
-Next, we replicate results from a weather dataset, a large time series used to validate COGP. In this dataset, $D=4$ weather sensors Bramblemet, Sotonmet, Cambermet, and Chimet record air temperature over five days in five minute intervals, with some dropped records due to equipment failure. Parts of Cambernet and Chimet are dropped for imputation, yielding $n=15,789$ training measurements and $374$ test measurements. 
+Next, we replicate results from a weather dataset, a large time series used to validate COGP. In this dataset, $D=4$ weather sensors Bramblemet, Sotonmet, Cambermet, and Chimet record air temperature over five days in five minute intervals, with some dropped records due to equipment failure. Parts of Cambernet and Chimet are dropped for imputation, yielding $n=15789$ training measurements and $374$ test measurements. 
 
 We use the COGP parameters that were set by default in the code provided by the authors.\footnote{\url{https://github.com/trungngv/cogp}, commit \texttt{3b07f621ff11838e89700cfb58d26ca39b119a35}. The weather dataset was run on 1500 iterations, mini-batch size 1000.} LLGP was run with the same parameters as in FX2007, simulating the SLFM model. We tested LLGP models on different numbers of interpolating points $m$.
 
@@ -495,13 +480,13 @@ We use the COGP parameters that were set by default in the code provided by the 
 LLGP performed slightly worse than COGP in SMSE, but both NLPD and runtime indicate significant improvements (Tbl.~\ref{weather-tbl}). Varying the number of interpolating points $m$ from $500$ to $1000$ constructs a tradeoff frontier between increases in $m$ and NLPD decrease at the cost of additional runtime (Fig.~\ref{fig:llgpweather}). While NLPD improvement diminishes as $m$ increases, LLGP is still an improvement compared to COGP for a range of $m$ by an order of magnitude in runtime and almost two orders of magnitude for NLPD.
 
 \begin{figure}[!ht]
-\vskip 0.2in
+\vskip 0.1in
 \begin{center}
 \centerline{\includegraphics[width=\columnwidth]{m_time_nlpd.eps}}
 \caption{Average and standard error of NLPD and runtime of the SLFM model on LLGP across over varying interpolating points. Every setting was run 10 times.}
 \label{fig:llgpweather}
 \end{center}
-\vskip -0.2in
+\vskip -0.1in
 \end{figure}
 \section{Conclusion}\label{conclusion}
 
