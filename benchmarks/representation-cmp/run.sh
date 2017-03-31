@@ -132,4 +132,4 @@ epilog='  \\belowspace \\\\
   \\hline
 \\end{tabular}
 '
-printf "${latex}\n${epilog}" > results.tex
+printf "${latex::${#latex}-6}\n${epilog}" > results.tex
