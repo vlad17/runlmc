@@ -1,5 +1,6 @@
 *.pdf
 !paper.pdf
+!supplement.pdf
 *.aux
 *.out
 *.log
