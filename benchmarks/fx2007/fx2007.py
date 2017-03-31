@@ -14,8 +14,8 @@ if is_validation():
     interpolation_points = 10
     inducing_points = 10
 else:
-    runs = 50
-    cogp_runs = 3
+    runs = 10
+    cogp_runs = 10
     interpolation_points = None
     inducing_points = 100
 
