@@ -107,8 +107,14 @@ for i in 3 10 17; do
     # we only want d, r, q
     numbersonly=$(echo $numbersonly | cut -d' ' -f2-)    
     
+    avgs=""
+    for i in $(cat /tmp/avgs); do
+        i=$(printf "%0.2f" $i)
+        avgs="${avgs} $i"
+    done
+    
     row=""
-    for number in $numbersonly $(cat /tmp/avgs); do
+    for number in $numbersonly $avgs ; do
         if [ "$number" = "$minnum" ]; then
             left="\\\\textbf{"
             right="}"
@@ -116,7 +122,6 @@ for i in 3 10 17; do
             left=""
             right=""
         fi
-        number=$(printf "%0.2f" $number)
         row="${row} & \$ ${left}${number}${right} \$"
     done
     row=$(echo $row | cut -c3-)
