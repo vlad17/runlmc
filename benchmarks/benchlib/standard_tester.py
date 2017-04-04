@@ -350,18 +350,16 @@ def latex_table(filename, cols, col_results):
     ncols = len(cols)
 
     for metric, fmt, results in zip(metrics, formatting, transposed):
-        best = min(results, key=lambda r:r[0])
+        best = min(range(len(results)), key=lambda r:results[r][0])
+        print('min idx', best, results[best])
         if fmt == 'd':
             results = [tuple(map(int, r)) for r in results]
         stringified = [statprint(x, fmt, '$') for x in results]
-        for i, res in enumerate(results):
-            if res == best:
-                mean, space, var, end = stringified[i].split('$')
-                stringified[i] = r'$\textbf{' + mean + r'}$'
-                stringified[i] += space
-                stringified[i] += r'$\textbf{' + var + r'}$'
-                stringified[i] += end
-                break
+        mean, space, var, end = (x for x in stringified[best].split('$') if x)
+        stringified[best] = r'$\textbf{' + mean + r'}$'
+        stringified[best] += space
+        stringified[best] += r'$\textbf{' + var + r'}$'
+        stringified[best] += end
         row = ' & '.join([metric] + stringified) + r'\\' + '\n'
         latex += row
 
