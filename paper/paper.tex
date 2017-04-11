@@ -250,13 +250,12 @@ Massively Scalable Gaussian Processes (MSGP) observes that the kernel $K_{U,U}$ 
 
 While evaluating $\log\abs{K_{|\bsth}}$ is not feasible in the LMC setting (because the LMC sum breaks Kronecker and Toeplitz structure), the general notion of creating structure with SKI carries over to LLGP.
 
-\section{Matrix-free LMC Learning}
-\label{sec:matrix-free}
+\section{Matrix-free LMC Learning} \label{sec:matrix-free}
 
 We propose a linear model of coregionalization (LMC) method based on recent structure-based optimizations for GP estimation instead of variational approaches. Critically, the accuracy of the method need not be reduced by keeping $m$ low because its reliance on structure allows better asymptotic performance.
 For simplicity, our work focuses on multi-dimensional outputs, one-dimensional inputs, and Gaussian likelihoods.
 
-Although this is a method of optimizing the marginal log likelihood, it can easily be augmented with a hyperprior $\log p(\bsth)$ term to Eq.~\ref{datall}.% what does "augmented with a hyperprior $\log p(\bsth)$ term to Eq.~\ref{datall}" mean? make this explicit here. a log probabliity is not a hyper prior (generally)
+Although Eq.~\ref{datall} does not have a hyperprior $\log p(\bsth)$ term, it can easily be augmented with one.
 
 \subsection{Matrix-free GP Learning}
 
@@ -368,7 +367,7 @@ AdaDelta parameters were set to the following on all tests: rate $=1$, decay $=0
 
 For learning, we initialize entries $A_q$ according to a unit normal and all $\bsk_q$ to $1$. Note that COGP initializes the coregionalization matrix to $1$ uniformly. Like COGP, we initialize noise to $0.1$ for all outputs.
 
-\section{Results} % TODO read these over
+\section{Results}
 \label{sec:results}
 We evaluate the methods on held out data by using standardized mean square error (SMSE) of the test points with the predicted mean, and the negative log predictive density (NLPD) of the Gaussian likelihood of the inferred model. Notably, NLPD takes confidence into account, while SMSE only evaluates the mean prediction. In both cases, lower values represent better performance. 
 
@@ -497,7 +496,7 @@ LLGP provides a means to approximate the log-likelihood function gradients throu
 Future work would extend the inputs to accept multiple dimensions. This can be done without losing internal structure in the kernel \cite{msgp}: Toeplitz covariance matrices become block-Toeplitz with Toeplitz-blocks (BTTB). The cubic interpolation requires and exponential number of terms, so projection into lower dimensions learned in a supervised manner would be essential. Another useful line for investigation would be more informed stopping heuristics. Finally, an extension to non-Gaussian noise is also feasible in a matrix-free manner by following prior work \cite{cutajar2016preconditioning}.
 
 \bibliography{paper}
-\bibliographystyle{icml2017} % TODO - follow blei notes for this
+\bibliographystyle{icml2017}
 
 \end{document} 
 
