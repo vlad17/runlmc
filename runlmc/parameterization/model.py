@@ -92,7 +92,7 @@ class Model(paramz.Model, _PriorizableNode):
 
         log_jacobian_prior = 0.
         indices_with_prior = {
-            idx for idx in indices for _, indices in self.priors.items()}
+            idx for _, indices in self.priors.items() for idx in indices}
         for constraint, indices_with_constraint in self.constraints.items():
             if not isinstance(constraint, Transformation):
                 continue

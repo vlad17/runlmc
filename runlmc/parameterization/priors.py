@@ -14,7 +14,7 @@ This modules contains :class:`Prior`, the base type for all priors available.
 from paramz.domains import _REAL
 
 def _assert_no_constraints(x):
-    assert all(c is _REAL for c in x._all_constraints)
+    assert all(c is _REAL for c in x._all_constraints())
 
 class Prior:
     """

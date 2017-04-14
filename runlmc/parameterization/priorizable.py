@@ -54,11 +54,11 @@ class _PriorizableLeaf(_PriorizableNode):
                              parameter
         """
         repriorized = self._unset_priors()
-        assert len(repriorized) == 1, 'More than one prior per leaf'
+        #assert len(repriorized) == 1, 'More than one prior per leaf: {}'.format(reprioritized)
         self._add_to_index_operations(
             self.priors, repriorized, prior, warning=True)
 
-        constrain = Prior.CONSTRAIN_DOMAIN[prior.domain]
+        constrain = Prior._CONSTRAIN_DOMAIN[prior.domain]
         constrain(self)
 
         assert all(c is not __fixed__ for c in self._all_constraints()), \
