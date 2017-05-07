@@ -1,0 +1,163 @@
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+%\usepackage{enumerate}
+%\usepackage{bbm}
+%\usepackage{caption}
+
+\newcommand{\pa}[1]{ \left({#1}\right) }
+
+\def \N {\mathbb{N}}
+\def \Nbr {\mathcal{N}}
+\def \Q {\mathbb{Q}}
+\def \F {\mathbb{F}}
+\def \then {\implies &}
+\def \oif {\Longleftrightarrow &\,}
+\def \given {\text{Given }&}
+\def \assume {\text{Assume }&}
+\def \thfr {\therefore &\enskip}
+\def \bij {\leftrightarrow}
+\def \inj {\rightarrowtail}
+\def \sur {\twoheadedrightarrow}
+\def \Z {\mathbb{Z}}
+\def \R {\mathbb{R}}
+\def \C {\mathbb{C}}
+\def \T {\mathbb{T}}
+\def \iff {\Longleftrightarrow}
+\def \kron {\boldsymbol\delta}
+%\def \indicator {\mathbbm{1}}
+
+\def\tbr{{\textbf{r}}}
+\def\Ts{\textbf{s}}
+\def\Ta{\textbf{a}}
+\def\Tm{\textbf{m}}
+\def\Tb{\textbf{b}}
+\def\Tc{\textbf{c}}
+\def\Td{\textbf{d}}
+\def\Te{\textbf{e}}
+\def\Tv{\textbf{v}}
+\def\Tx{\textbf{x}}
+\def\TX{\textbf{X}}
+\def\TU{\textbf{U}}
+\def\Tu{\textbf{u}}
+\def\Ty{\textbf{y}}
+\def\Tk{\textbf{k}}
+\def\Tt{\textbf{t}}
+\def\Tz{\textbf{z}}
+\def\quotient{\mathclose{}/\mathopen{}}
+\def\Tf{\textbf{f}}
+\def\Th{\textbf{h}}
+\def\Tg{\textbf{g}}
+\def\sumn{\sum_{n=0}^\infty}
+\def\limn{\lim_{n\rightarrow\infty}}
+\def\prodn{\prod_{n=0}^\infty}
+
+\def\bsz{\textbf{0}}
+\def\bs1{\textbf{1}}
+\def\bsa{{\boldsymbol\alpha}}
+\def\bse{{\boldsymbol\eta}}
+\def \bss{ {\boldsymbol\sigma}}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator\cat{cat}
+\DeclareMathOperator\adj{adj}
+\DeclareMathOperator\Pois{Pois}
+\DeclareMathOperator\Id{Id}
+\DeclareMathOperator\mathProb{\mathbb{P}}
+\def\P{\mathProb} % need to overwrite stupid paragraph symbol
+\DeclareMathOperator\mathExp{\mathbb{E}}
+\def \E {\mathExp}
+
+
+\newcommand{\stc}[1]{\widetilde{#1}}   
+\newcommand{\set}[2]{ \left\{ #1 \,\middle|\, #2 \right\} }
+\newcommand{\idx}[3]{ \left\{ #1 \right\}_{ #2 }^{ #3 } }
+\newcommand{\shift}[1]{&\quad & \text{#1}\\}
+\newcommand{\lem}[1]{\text{\textbf{L.\ref{#1}}}}
+\newcommand{\card}[1]{\left\vert{#1}\right\vert}
+\newcommand{\colv}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+\newcommand{\mat}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+\newcommand{\detmat}[1]{\begin{vmatrix} #1 \end{vmatrix}}
+\newcommand{\spanb}[1]{\text{span}\{ #1 \}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\opcat}[1]{#1^{\text{op}}}
+\newcommand{\Inner}[1]{\left\langle #1 \right\rangle}
+\newcommand{\Innercpy}[1]{\Inner{ #1, #1 }}
+\newcommand{\norm}[1]{\left\| #1 \right\|}% use instead of $\|x\|$
+
+\def\eqd{\mathrel{\overset{\Delta}{=}}}
+
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\vcdim}{VC-dim}
+\DeclareMathOperator*{\Err}{\text{err}}
+\DeclareMathOperator*{\ErrE}{\mathbb{E}}
+\DeclareMathOperator{\Tr}{tr}
+\DeclareMathOperator{\Dim}{dim}
+\DeclareMathOperator{\Rank}{rank}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\proj}{proj}
+\DeclareMathOperator{\Ker}{ker}
+\DeclareMathOperator{\Diam}{diam}
+\DeclareMathOperator{\Int}{int}
+\DeclareMathOperator{\Clo}{clo}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\MyRe}{Re}
+\DeclareMathOperator{\MyIm}{Im}
+\DeclareMathOperator{\image}{image}
+\DeclareMathOperator{\colim}{colim}
+\DeclareMathOperator{\Supp}{supp}
+\DeclareMathOperator{\Var}{var}
+\DeclareMathOperator{\Hom}{hom}
+\DeclareMathOperator{\Ob}{ob}
+\DeclareMathOperator{\El}{el}
+\DeclareMathOperator\power{{\mathcal{P}}}
+\DeclareMathOperator{\Nat}{Nat}
+\DeclareMathOperator{\cone}{cone}
+\DeclareMathOperator{\vectorize}{vec}
+\DeclareMathOperator{\matricize}{mat}
+\DeclareMathOperator{\cov}{cov}
+\DeclareMathOperator{\Unif}{Unif}
+\DeclareMathOperator{\blockdiag}{blockdiag}
+\DeclareMathOperator{\mvm}{MVM}
+
+% probability stuff
+\def \sa {{$\sigma$-algebra}}
+\def\OR{{\overline{\R}}}
+\def\OX{{\overline{X}}}
+
+\def\mcU{{\mathcal{U}}}
+\def \mcX {\mathcal{X}}
+\def \mcS {\mathcal{S}}
+\def \mcY {\mathcal{Y}}
+\def \mcL {\mathcal{L}}
+\def \mcD {\mathcal{D}}
+\def \mcC {\mathcal{C}}
+\def \mcA {\mathcal{A}}
+\def \mcK {\mathcal{K}}
+\def \mcM {\mathcal{M}}
+\def\mcG{{\mathcal{G}}}
+\def\mcH{{\mathcal{H}}}
+\def\mcF{{\mathcal{F}}}
+\def\mcB{{\mathcal{B}}}
+\def\mcE{{\mathcal{E}}}
+\def\mcI{{\mathcal{I}}}
+\def\mcQ{{\mathcal{Q}}}
+\def\mcM{{\mathcal{M}}}
+\def\mcC{{\mathcal{C}}}
+\def\mcT{{\mathcal{T}}}
+\def\mcO{{\mathcal{O}}}
+\def\mcJ{{\mathcal{J}}}
+
+\def\bsa{{\boldsymbol\alpha}}
+\def\bsr{{\textbf{r}}}
+\def\bse{{\boldsymbol\epsilon}}
+\def\bsk{{\boldsymbol\kappa}}
+\def\bsm{{\boldsymbol\mu}}
+\def\bsl{{\boldsymbol\lambda}}
+\def\bsph{{\boldsymbol\phi}}
+\def\bsth{{\boldsymbol\theta}}
+
+\def\abovestrut#1{\rule[0in]{0in}{#1}\ignorespaces}
+\def\belowstrut#1{\rule[-#1]{0in}{#1}\ignorespaces}
+\def\abovespace{\abovestrut{0.20in}}
+\def\belowspace{\belowstrut{0.10in}}
