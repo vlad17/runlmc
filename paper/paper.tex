@@ -351,7 +351,7 @@ We use the COGP parameters that were set by default in the code provided by the 
 \end{center}
 \end{table}
 
-LLGP performed slightly worse than COGP in SMSE, but both NLPD and runtime indicate significant improvements (Tbl.~\ref{weather-tbl}). Varying the number of interpolating points $m$ from $500$ to $1000$ constructs a tradeoff frontier between increases in $m$ and NLPD decrease at the cost of additional runtime (Fig.~\ref{fig:llgpweather}). While NLPD improvement diminishes as $m$ increases, LLGP is still an improvement compared to COGP for a range of $m$ by an order of magnitude in runtime and almost two orders of magnitude for NLPD.
+LLGP performed slightly worse than COGP in SMSE, but both NLPD and runtime indicate significant improvements (Tab.~\ref{weather-tbl}). Varying the number of interpolating points $m$ from $500$ to $1000$ constructs a tradeoff frontier between increases in $m$ and NLPD decrease at the cost of additional runtime (Fig.~\ref{fig:llgpweather}). While NLPD improvement diminishes as $m$ increases, LLGP is still an improvement compared to COGP for a range of $m$ by an order of magnitude in runtime and almost two orders of magnitude for NLPD.
 
 \begin{figure}[!h]
 \centering
@@ -363,26 +363,9 @@ LLGP performed slightly worse than COGP in SMSE, but both NLPD and runtime indic
 
 LLGP recovers speedups from SKI \cite{kiss-gp} for the problem of multi-output GP regression by recognizing structure unique to LMC kernels, and otherwise not necessarily recoverable in general multi-output kernels. This structure further enables a parsimonious representation that allows even large GPs to be learned without explicit construction of the covariance matrix.
 
-LLGP provides a means to approximate the log-likelihood function gradients through interpolation. We have shown on several datasets that this can be done in a way that is faster and leads to more accurate results than variational approximations.
+LLGP provides a means to approximate the log-likelihood function gradients through interpolation. We have shown on several datasets that this can be done in a way that is faster and leads to more accurate results than variational approximations. Because LLGP's representation can be efficient without being sparse (i.e., $m$ may be large), it can can capture complex interactions in the covariance. As pictured in Fig.~\ref{fx2007-graph}, and demonstrated by NLPD performance on both the FX2007 and weather datasets (Tab.~\ref{fx2007-tbl},\ref{weather-tbl}), such an efficient, non-sparse representation is integral to making a model whose confidence at a test site reflects the amount of related training data for that site.
 
 Future work would extend the inputs to accept multiple dimensions. This can be done without losing internal structure in the kernel \cite{msgp}: Toeplitz covariance matrices become block-Toeplitz with Toeplitz-blocks (BTTB). The cubic interpolation requires and exponential number of terms, so projection into lower dimensions learned in a supervised manner would be essential. Another useful line for investigation would be more informed stopping heuristics. Finally, an extension to non-Gaussian noise is also feasible in a matrix-free manner by following prior work \cite{cutajar2016preconditioning}.
-
-% \begin{table}[t]
-%   \caption{Sample table title}
-%   \label{sample-table}
-%   \centering
-%   \begin{tabular}{lll}
-%     \toprule
-%     \multicolumn{2}{c}{Part}                   \\
-%     \cmidrule{1-2}
-%     Name     & Description     & Size ($\mu$m) \\
-%     \midrule
-%     Dendrite & Input terminal  & $\sim$100     \\
-%     Axon     & Output terminal & $\sim$10      \\
-%     Soma     & Cell body       & up to $106$  \\
-%     \bottomrule
-%   \end{tabular}
-% \end{table}
 
 \bibliographystyle{unsrtnat}
 \bibliography{paper}
