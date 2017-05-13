@@ -1,0 +1,3 @@
+benchmarks/benchlib/inv-run.sh: line 33:  2229 Quit                    (core dumped) PYTHONPATH=. python3 benchmarks/benchlib/bench.py $n 2 2 10 $eps $kern 1234 inv > $out 2>> $err
+benchmarks/benchlib/inv-run.sh: line 39:  2233 Quit                    (core dumped) PYTHONPATH=. python3 benchmarks/benchlib/bench.py $n 10 1 10 $eps $kern 1234 inv > $out 2>> $err
+benchmarks/benchlib/inv-run.sh: line 45:  2237 Quit                    (core dumped) PYTHONPATH=. python3 benchmarks/benchlib/bench.py $n 10 10 1 $eps $kern 1234 inv > $out 2>> $err

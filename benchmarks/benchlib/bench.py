@@ -10,6 +10,7 @@ import numpy as np
 import scipy.linalg as la
 import scipy.spatial.distance
 import scipy.sparse.linalg as sla
+import scipy.stats
 
 from runlmc.approx.interpolation import multi_interpolant
 from runlmc.approx.iterative import Iterative
@@ -102,7 +103,8 @@ def _main():
     print('n_o {} d {} r_q {} q {} eps {} kern {} seed {} test-type {}'.format(
         n_o, d, r_q, q, eps, kern, seed, testtype))
 
-    coreg_vecs = np.random.randn(q, r_q, d)
+    distrib = scipy.stats.truncnorm(-1, 1)
+    coreg_vecs = distrib.rvs(size=(q, r_q, d))
     coreg_diags = np.reciprocal(np.random.gamma(shape=1, scale=1, size=(q, d)))
     noise = np.reciprocal(np.random.gamma(
         shape=(1 + (1 / eps)), scale=1, size=d))

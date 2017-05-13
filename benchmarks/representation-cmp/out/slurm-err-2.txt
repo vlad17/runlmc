@@ -1,0 +1,3 @@
+benchmarks/benchlib/inv-run.sh: line 33: $err: ambiguous redirect
+benchmarks/benchlib/inv-run.sh: line 39: $err: ambiguous redirect
+benchmarks/benchlib/inv-run.sh: line 45: $err: ambiguous redirect

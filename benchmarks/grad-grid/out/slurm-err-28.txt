@@ -1,3 +1,0 @@
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 3.696055e-04
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.090089e-04
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.834569e-04
