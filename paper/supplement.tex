@@ -40,6 +40,45 @@ LLGP was implemented in Python 3 from the Anaconda, which offered an Intel MKL-l
 
 Application of our approach to all replication studies was carried out on a large server in a multiprogramming environment: CentOS 6.5 with 80 Intel(R) Xeon(R) CPU E7-4870 @ 2.40GHz. The representation evaluation benchmarks were done at once on a cluster of machines running CentOS 5.2-5.9 with Intel(R) Xeon(R) CPU E5430 @ 2.66GHz, where these jobs ran on a single thread per CPU.
 
+\subsection{Representation evaluation}\label{empirical-rep}
+
+We evaluated the performance of the different kernel representations over various rank and parameterization settings. In particular, we have the following parameters: $n$ total sample size across all outputs, $D$ number of outputs, $Q$ number of kernels $k_q$, $R$ average added rank, $\epsilon$ mean noise, and \texttt{ktype} kernel type. Kernel type is one of \texttt{mat, periodic, rbf, mix} corresponding to Mat\'{e}rn-3/2, standard periodic\footnote{We define the periodic kernel as $k(r) = \exp \left(\frac{-\gamma}{2}\sin^2\frac{\pi r}{T}\right)$.}, and radial basis functions. \texttt{mix} refers to a mix of all three kernels.
+
+For each setting, we randomly sample entries for each $A_q,\bsk_q$, and $\bse$ and the inverse length scale $\gamma$ for each kernel. Then, we investigate the average gradient construction accuracy and speed of LLGP for different settings of $Q,\epsilon$, and \texttt{ktype}.Each kernel's inverse length scales and periods were selected by sampling uniformly in log space from 1 to 10 with $Q$ samples. Next, we construct a random LMC kernel by sampling entries of each $A_q$ from a standard normal distribution, $\bsk_q$ from an inverse gamma with unit shape and scale, and independent noise $\bse$ for every output from an inverse gamma with unit scale and mean $\epsilon$. Inputs and outputs were independently generated from $\Unif[0,1]$ for benchmarking.
+
+As expected from their asymptotic runtime, \textsc{sum}, \textsc{bt}, and \textsc{slfm} representations are complimentary in MVM speed for different configurations of $D,R,Q$---this results in sparse inversion computation that consistently outperforms Cholesky decomposition in runtime (Tab.~\ref{complement}).
+For inverting systems, all computations were carried out until the residual $\ell_2$ norm was at most $10^{-4}$.
+\begin{table}[!h]
+  \caption{The runtime in seconds for solving $K\Tx=\Ty$ for a random kernel $K$ constructed as in Sec.~\ref{empirical-rep} using \textsc{minres} for each of the kernel representations. For comparison, the \textsc{chol} representation is wallclock time to compute the Cholesky decomposition of the matrix, which must be constructed, and use this decomposition to invert the system. We averaged over five runs. In every run, we use $n=5000$ simulated data points, $\texttt{mix}$ kernels, and $\epsilon=0.1$.
+}
+\label{complement}
+\begin{center}
+  \begin{small}
+    \input{representation.tex}
+\end{small}
+\end{center}
+\end{table}
+
+We next evaluated the accuracy of the gradients for $N=10$ trace samples. Fixing $R=3,n=5000,D=10$, we quantified the accuracy and speed of computing $\nabla\mcL$. Since, for each partial derivative, LLGP requires only $N$ $n$-sized vector dot products, it generally runs faster than the exact approach (Fig.~\ref{fig:rellog}), which must compute a matrix-matrix dot product. The gradients between the two, however, are virtually indistinguishable for smooth kernels that induce diagonally dominant covariance matrices (Fig.~\ref{fig:relgrad}). Kernels such as the single Mat\'{e}rn or periodic kernel with noise on the order of $10^{-4}$ lead to less accurate gradients, owing to poor \textsc{minres} convergence in the inversions (Fig.~\ref{fig:rellog}. We will show that the stochastic gradients suffice for optimization in practical examples.
+
+\begin{figure}[!h]
+  \centering
+
+ \subfigure[time]{
+    \resizebox{0.48\textwidth}{!}{\includegraphics{time_ratio.eps}}}
+  \subfigure[inversion accuracy]{
+    \resizebox{0.48\textwidth}{!}{\includegraphics{relalpha_l2.eps}}}
+ \caption{Negative logarithm of the ratio of the exact algorithm to LLGP's analogue for (a) time and (b) accuracy metrics for evaluating gradient computation performance. In each case, higher is better, and extremal values are noted.  For each data point, the average was taken over five runs. Reducing average noise, corresponding to increases in $-\log_{10}\varepsilon$, and increases in $Q$, generally make gradient reconstruction more difficult by making $K$ more ill-conditioned, reducing the accuracy of \textsc{minres}.}
+\label{fig:rellog}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+{\includegraphics[width=\textwidth]{relgrad_l2.eps}}
+\caption{Negative logarithm of the relative error in $\nabla\mcL$ between LLGP and the exact computation, over the same grid of kernels as Fig.~\ref{fig:rellog}}\label{fig:relgrad}
+\end{figure}
+
+
 \bibliographystyle{unsrtnat}
 \bibliography{paper}
 
