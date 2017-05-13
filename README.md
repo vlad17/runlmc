@@ -68,7 +68,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Remove vertical bars from latex table generators in scripts.
+0. Remove vertical bars from latex table generators in scripts; use booktabs formatting
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?

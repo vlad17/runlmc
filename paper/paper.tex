@@ -35,7 +35,7 @@
 \maketitle
 
 \begin{abstract}
-Gaussian process (GP) models, which put a distribution over arbitrary functions in a continuous domain, can be generalized to the multi-output case; a common way of doing this is to use a linear model of coregionalization \cite{alvarez2012kernels}. Such models can learn correlations across the multiple outputs, which can then be exploited to share knowledge across the multiple outputs. For instance, temperature data from disparate regions over time can contribute to a predictive weather model that is more accurate than the same model applied to a single region. While model learning can be performed efficiently for single-output GPs, the multi-output case still requires approximations for large numbers of observations across all outputs. In this work, we propose a new method, Large Linear GP (LLGP), which estimates covariance hyperparameters for multi-dimensional outputs and one-dimensional inputs. Our approach learns GP kernel hyperparameters at an asymptotically faster rate than the current state of the art. When applied to real time series data, we find this theoretical improvement is realized with LLGP being generally an order of magnitude faster while improving or maintaining predictive accuracy. Finally, we discuss extensions of our approach to multidimensional inputs.
+Gaussian process (GP) models, which put a distribution over arbitrary functions in a continuous domain, can be generalized to the multi-output case; a common way of doing this is to use a linear model of coregionalization (LMC) \cite{alvarez2012kernels}. Such models can learn and exploit correlations across the multiple outputs. For instance, temperature data from disparate regions over time can contribute to a predictive weather model that is more accurate than a single, localized model. While model learning can be performed efficiently for single-output GPs \cite{msgp}, such methods assume stationarity, a luxury unavailable in the multi-output case. We propose Large Linear GP (LLGP), which recovers stationarity thanks to LMC's structure, enabling optimization of GP hyperparameters for multi-dimensional outputs and one-dimensional inputs. Our approach learns hyperparameters at an asymptotically faster rate than the current state of the art. When applied to real time series data, we find this theoretical improvement is realized with LLGP being generally an order of magnitude faster while improving or maintaining predictive accuracy. Finally, we discuss extensions of our approach to multidimensional inputs.
 \end{abstract}
 
 % NOTES
@@ -55,7 +55,7 @@ Exact GP inference is infeasible in this scenario since it requires maintaining 
 
 \subsection{Contributions}
 
-Our approach makes the following contributions to approximate inference in multi-output GPs, scoped to time series input. First, we identify a block-Toeplitz structure induced by the linear model of coregionalization (LMC) kernel on a grid. Next, we adapt a previously identified kernel structure based on Semiparametric Latent Factor Models (SLFM) \cite{seeger2005semiparametric}. Both of these structures coordinate for fast matrix-vector multiplication $K\Ty$ with the covariance matrix $K$.
+Our approach makes the following contributions to approximate inference in multi-output GPs, scoped to time series input. First, we identify a block-Toeplitz structure induced by the linear model of coregionalization (LMC) kernel on a grid. Next, we adapt a previously identified kernel structure based on Semiparametric Latent Factor Models (SLFM) \cite{seeger2005semiparametric}. Both of these structures coordinate for fast matrix-vector multiplication $K\Tz$ with the covariance matrix $K$ for any vector $\Tz$.
 
 When inputs do not lie on a uniform grid (for time series, the length of time between observations differs), we demonstrate how to leverage structured kernel interpolation (SKI) in the multi-output setting, where SKI, which requires stationary kernels, does not naturally apply \cite{kiss-gp}. Because LMC kernels exhibit the previously-identified block-Toeplitz structure, they harmonize with SKI.
 
@@ -69,34 +69,26 @@ Our paper is organized as follows. In Sec.~\ref{sec:background} we give a backgr
 
 \subsection{General Gaussian processes}
 
-First, we give an overview of the theoretical foundation for GPs. A GP is a set of random variables (RVs) $\{f_\Tx\}_\Tx$ indexed by $\Tx\in\mcX$, with the property that for any finite collection $X\subset\mcX$, the RVs are jointly Gaussian with a prescribed mean function $\bsm:\mcX\rightarrow\R$ and covariance $K:\mcX^2\rightarrow\R$, i.e., $f_X\sim N\pa{\bsm_X, K_{X, X}}$ \cite{williams1996gaussian}. As usual, we drop the mean with $\Ty\triangleq f_X-\bsm_X$ and denote vectorization $f_X=\colv{f_{\Tx}}_{\Tx\in X}$ or matricization $K_{X,Z}=\mat{K(\Tx,\Tz)}_{\Tx\in X,\Tz\in Z}$ with subscripts.
-
-Given a set of $n$ observations at each $X$ of the $\R^n$-valued RV $\Ty$, inference at a single point $*\in\mcX$ of an $\R$-valued RV $y_*$ is performed by the marginalization $y_*|\Ty$ \cite{williams1996gaussian}.
-Predictive accuracy is sensitive to a particular parameterization of our kernel, so model estimation is performed by maximizing data log likelihood with respect to parameters $\bsth$ of $K$:
+First, we give an overview of the theoretical foundation for GPs. A GP is a set of random variables (RVs) $\{f_\Tx\}_\Tx$ indexed by $\Tx\in\mcX$, with the property that for any finite collection $X=\idx{\Tx_i}{i=1}{n}$ of $\mcX$, the RVs are jointly Gaussian \cite{williams1996gaussian}. With zero mean wlog and a prescribed covariance $K:\mcX^2\rightarrow\R$, $\Tf_X\sim N\pa{\bsz, K_{X, X}}$, where $(\Tf_X)_i=f_{\Tx_i}$ and $(K_{X,X})_{ij}=K(\Tx_i,\Tx_j)$. Given observations $\Ty\in\R^n$ of $\Tf_X$, inference at a single point $*\in\mcX$ of an $\R$-valued RV $y_*$ is performed by the marginalization $y_*|\Tf_X$ \cite{williams1996gaussian}.
+Predictive accuracy is sensitive to a particular parameterization of our kernel, so model estimation is performed by maximizing data log likelihood with respect to parameters $\bsth$ of $K$, $\mcL(\bsth)=\log p(\Tf_{X}|X,\bsth)$. As such, the heart of GP learning lies in optimization of $\mcL$. Gradient-based optimization methods then require the gradient with respect to every parameter $\theta_j$ of $\bsth$:
 \begin{align}
-  \mcL(\bsth)=\log p(\Tf_{X}|X,\bsth)=-\frac{1}{2}\Ty^\top K_{|\bsth}^{-1}\Ty-\frac{1}{2}\log \abs{K_{|\bsth}}-\frac{n}{2}\log 2\pi.\label{datall}
-\end{align}
-As such, the heart of GP learning lies in optimization of $\mcL$. Gradient-based optimization methods then require the gradient with respect to every parameter $\theta_j$ of $\bsth$ using $\bsa=K_{|\bsth}^{-1}\Ty$:
-\begin{align}
-\partial_{\theta_j}\mcL = \frac{1}{2}\bsa^\top\partial_{\theta_j}K_{|\bsth}\bsa -\frac{1}{2}\Tr\pa{K_{|\bsth}^{-1}\partial_{\theta_j}K_{|\bsth}}.\label{llgradient}
+\partial_{\theta_j}\mcL = \frac{1}{2}\bsa^\top\partial_{\theta_j}K_{|\bsth}\bsa -\frac{1}{2}\Tr\pa{K_{|\bsth}^{-1}\partial_{\theta_j}K_{|\bsth}};\;\; \bsa=K_{|\bsth}^{-1}\Ty.\label{llgradient}
 \end{align}
 
 \subsection{Multi-output linear GPs}
 
-We build multi-output GP models as instances of general GPs, where a multi-output GP model identifies correlations between outputs through a shared input space \cite{alvarez2012kernels}.
-
-Here, for $D$ outputs, we write our indexing set as $\mcX'=[D]\times \mcX$: an input is in a point from a shared domain coupled with an output tag. Then, if we make observations at $X_d\subset\mcX$ for output $d\in[D]$, we can set:
+We build multi-output GP models as instances of general GPs, where a multi-output GP model identifies correlations between outputs through a shared input space \cite{alvarez2012kernels}. Here, for $D$ outputs, we write our indexing set as $\mcX'=[D]\times \mcX$: an input is in a point from a shared domain coupled with an output tag. Then, if we make observations at $X_d\subset\mcX$ for output $d\in[D]$, we can set:
 \begin{align*}
 \TX=\set{(d, x)}{d\in[D],x\in X_d}\subset{\mcX'};\;\; n=\card{\TX}.
 \end{align*}
 
 An LMC kernel $K$ is of the form 
 \begin{align}
-K([i,\Tx_i],[j,\Tx_j])=\sum_{q=1}^Qb_{ij}^{(q)}k_q(\norm{\Tx_i-\Tx_j})+\epsilon_i\delta_{ij},\label{lmcpointwise}
+K([i,\Tx_i],[j,\Tx_j])=\sum_{q=1}^Qb_{ij}^{(q)}k_q(\norm{\Tx_i-\Tx_j})+\epsilon_i1_{i=j},\label{lmcpointwise}
 \end{align} 
 where $k_q:\R\rightarrow\R$ is a stationary kernel on $\mcX$. Typically, the positive semi-definite (PSD) matrices $B_q\in\R^{D\times D}$ formed by $b_{ij}^{(q)}$ are parameterized as $A_qA_q^\top+\bsk_q I_D$, with $A_q\in\R^{D\times R_q},\bsk_q\in\R_+^D$ and $R_q$ a preset rank. Importantly, even though each $k_q$ is stationary, $K$ is only stationary on $\mcX'$ if $B_q$ is Toeplitz. Settings of $B_q$ that arise in practice, where we wish to capture covariance across outputs as an arbitrary $D^2$-dimensional latent process, prevent stationarity in $K$ and therefore prohibit direct application of SKI.
 
-Thus, the LMC kernel provides a flexible way of specifying multiple additive contributions to the covariance between to inputs for two different outputs. The contribution of the $q$-th kernel $k_q$ to the covariance between the $i$-th and $j$-th outputs is then specified by the multiplicative factor $b_{ij}^{(q)}$. By choosing $B_q$ to have rank $R_q=D$, so the contribution between those two outputs is learned independently of all other contributions, the entries of $B_q$. By lowering the rank $R_q$, researchers applying the LMC model can specify that the contributions of the kernels for each output pair are determined by lower-rank latent processes, with rank 0 indicating no interaction.
+The LMC kernel provides a flexible way of specifying multiple additive contributions to the covariance between to inputs for two different outputs. The contribution of the $q$-th kernel $k_q$ to the covariance between the $i$-th and $j$-th outputs is then specified by the multiplicative factor $b_{ij}^{(q)}$. By choosing $B_q$ to have rank $R_q=D$, so the contribution between those two outputs is learned independently of all other contributions, the entries of $B_q$. By lowering the rank $R_q$, researchers applying the LMC model can specify that the contributions of the kernels for each output pair are determined by lower-rank latent processes, with rank 0 indicating no interaction (i.e., if $A=0$ then we have an independent GP for each output).
 
 \subsection{Structured covariance matrices}
 
@@ -122,22 +114,20 @@ To cope with the lack of tractable GP inference methods, inducing point approach
 
 \subsubsection{Structured Kernel Interpolation (SKI)}\label{ski-section}
 
-SKI abandons the inducing-point approach: instead of using an intrinsically sparse model, SKI approximates the original $K_{X,X}$ directly \cite{kiss-gp}. To do this efficiently, SKI relies on the differentiability of $K$. For $\Tx,\Tz$ within a grid $U$, $\card{U}=m$, and $W_{\Tx,U}\in\R^{1\times m}$ as the cubic interpolation weights~\cite{keys1981cubic}, $\abs{K_{\Tx,\Tz}-W_{\Tx,U}K_{U,\Tz}}=O(m^{-3})$. The simultaneous interpolation $W\triangleq W_{X,U}\in\R^{n\times m}$ then yields the SKI approximation: $K_{X,X}\approx WK_{U,U}W^\top$. Importantly, $W$ has only $4^dn$ nonzero entries, with $\mcX=\R^d$.
+SKI abandons the inducing-point approach: instead of using an intrinsically sparse model, SKI approximates the original $K_{X,X}$ directly \cite{kiss-gp}. To do this efficiently, SKI relies on the differentiability of $K$. For $\Tx,\Tz$ within a grid $U$, $\card{U}=m$, and $W_{\Tx,U}\in\R^{1\times m}$ as the cubic interpolation weights~\cite{keys1981cubic}, $\abs{K_{\Tx,\Tz}-W_{\Tx,U}K_{U,\Tz}}=O(m^{-3})$. The simultaneous interpolation $W\triangleq W_{X,U}\in\R^{n\times m}$ then yields the SKI approximation: $K_{X,X}\approx WK_{U,U}W^\top$. $W$ has only $4^dn$ nonzero entries, with $\mcX=\R^d$.
 
 In order to adapt SKI to our context of multiple outputs, we build grid $\TU\subset\mcX'$ out of a common subgrid $U\subset\mcX$ that extends to all outputs with $\TU = [D]\times U$. Since the LMC kernel evaluated between two sets of outputs $K_{X_i,X_j}$ is differentiable, as long as $U$ contains each $\{X_d\}_{d\in[D]}$, the corresponding SKI approximation $K_{\TX,\TX}\approx WK_{\TU,\TU}W^\top$ holds with the same asymptotic convergence cubic in $1/m$.
 
-Massively Scalable Gaussian Processes (MSGP) observes that the kernel $K_{U,U}$ on a grid exhibits Kronecker and Toeplitz matrix structure \cite{msgp}. Drawing on previous work on structured GPs \cite{cunningham2008fast, gilboa2015scaling}, MSGP uses linear conjugate gradient descent as a method for evaluating $K_{|\bsth}^{-1}\Ty$ efficiently for Eq.~\ref{datall}. In addition, \cite{wilson2014fast} mentions an efficient eigendecomposition that carries over to the SKI kernel for the remaining $\log\abs{K_{|\bsth}}$ term in Eq.~\ref{datall}.
+Massively Scalable Gaussian Processes (MSGP) observes that the kernel $K_{U,U}$ on a grid exhibits Kronecker and Toeplitz matrix structure \cite{msgp}. Drawing on previous work on structured GPs \cite{cunningham2008fast, gilboa2015scaling}, MSGP uses linear conjugate gradient descent as a method for evaluating $K_{|\bsth}^{-1}\Ty$ efficiently for Eq.~\ref{llgradient}. In addition, \cite{wilson2014fast} mentions an efficient eigendecomposition that carries over to the SKI kernel for the remaining $\log\abs{K_{|\bsth}}$ term in Eq.~\ref{llgradient}.
 
 While evaluating $\log\abs{K_{|\bsth}}$ is not feasible in the LMC setting (because the LMC sum breaks Kronecker and Toeplitz structure), the general notion of creating structure with SKI carries over to LLGP.
 
-\section{Matrix-free LMC learning} \label{sec:matrix-free}
+\section{Large Linear GP} \label{sec:matrix-free}
 
 We propose a linear model of coregionalization (LMC) method based on recent structure-based optimizations for GP estimation instead of variational approaches. Critically, the accuracy of the method need not be reduced by keeping the number of interpolation points $m$ low because its reliance on structure allows better asymptotic performance.
 For simplicity, our work focuses on multi-dimensional outputs, one-dimensional inputs, and Gaussian likelihoods.
 
-\subsection{Matrix-free GP learning}
-
-For a given $\bsth$, we construct an operator $\tilde{K}_{|\bsth}$ which approximates MVMs with the covariance matrix, $K_{|\bsth}\Tz\approx \tilde{K}_{|\bsth}\Tz$. Using only the action of MVM with the covariance operator, we derive $\nabla\mcL(\bsth)$. Critically, we cannot access $\mcL$ itself, only $\nabla\mcL$, so we choose AdaDelta as the high-level optimization routine for $\mcL$ \cite{zeiler2012adadelta}. We considered several stochastic approximations for finding the pathological term $\log\abs{K_{|\bsth}}$ in Eq.~\ref{datall} \cite{dorn2015stochastic, han2015large}, but found these too slow and inaccurate for use in optimization.
+For a given $\bsth$, we construct an operator $\tilde{K}_{|\bsth}$ which approximates MVMs with the covariance matrix, $K_{|\bsth}\Tz\approx \tilde{K}_{|\bsth}\Tz$. Using only the action of MVM with the covariance operator, we derive $\nabla\mcL(\bsth)$. Critically, we cannot access $\mcL$ itself, only $\nabla\mcL$, so we choose AdaDelta as the high-level optimization routine for $\mcL$ \cite{zeiler2012adadelta}.
 
 \subsection{Gradient construction}
 
@@ -148,12 +138,12 @@ For a given $\bsth$, we construct an operator $\tilde{K}_{|\bsth}$ which approxi
 For this approximation, the number of samples need not be large, and the estimate improves as the size of $K_{|\bsth}$ increases.
 As in other work \cite{cutajar2016preconditioning}, we let $\tbr\sim\Unif\{\pm 1\}$ and take a fixed number of $N$ samples from $\tbr$.
 
-We depart from Gibbs and MacKay in two ways, yielding Algorithm~\ref{alg:grad}. First, we do not construct $K_{|\bsth}$, but a low-memory representation $\tilde{K}_{|\bsth}$, described in Sec.~\ref{fast-mvm}. Second, we select MINRES instead of LCG as the Krylov-subspace inversion method used to compute inverses from MVMs. MINRES handles numerically semidefinite matrices with more grace \cite{fong2012cg}. This is essential in GP optimization, where the diagonal noise matrix $\bse$, iid for each output, shrinks over the course of learning, making inversion-based methods require additional iterations because of increases in $\kappa_2$, the spectral condition number of $K$ (Fig.~\ref{fx2007-iterations}).
+We depart from Gibbs and MacKay in two ways, yielding Algorithm~\ref{alg:grad}. First, we do not construct $K_{|\bsth}$, but a low-memory representation $\tilde{K}_{|\bsth}$, described in Sec.~\ref{fast-mvm}. Second, we select \textsc{minres} instead of LCG as the Krylov-subspace inversion method used to compute inverses from MVMs. \textsc{minres} handles numerically semidefinite matrices with more grace \cite{fong2012cg}. This is essential in GP optimization, where the diagonal noise matrix $\bse$, iid for each output, shrinks over the course of learning, making inversion-based methods require additional iterations because of increases in $\kappa_2$, the spectral condition number of $K$ (Fig.~\ref{fx2007-iterations}).
 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.5\columnwidth]{iterations.eps}
-\caption{Number of MVMs that MINRES must perform at each optimization iteration for a GP applied to the dataset in Sec.~\ref{fx2007-results}. The iteration cutoff is the number of training points $n$ in the dataset.
+\caption{Number of MVMs that \textsc{minres} must perform at each optimization iteration for a GP applied to the dataset in Sec.~\ref{fx2007-results}. The iteration cutoff is the number of training points $n$ in the dataset.
 }
 \label{fx2007-iterations}
 \end{figure}
@@ -193,7 +183,7 @@ Importantly, the Kronecker structure of Eq.~\ref{lmcgrid} lets us re-use the sam
 \end{align}
 We cannot fold $\bse$ into the interpolated term $K_{\TU,\TU}$ since it does not correspond to a differentiable kernel, so the SKI approximation fails. But this fact does not prevent efficient representation or multiplication since the matrix is diagonal. Then, the MVM operation $K_{\TX,\TX}\Tz$ can be approximated by $WK_{\TU,\TU}W^\top\Tz+\bse\Tz$, where matrix multiplication by the sparse matrices $\bse, W,W^\top$ require $O(n)$ space and time.
 
-We consider different representations of $K_{\TU,\TU}$ from (Eq.~\ref{lmcski}) to reduce the memory and runtime overhead for performing the multiplication $K_{\TU,\TU}\Tz$.
+We consider different representations of $K_{\TU,\TU}$ from (Eq.~\ref{lmcski}) to reduce the memory and runtime overhead for performing the multiplication $K_{\TU,\TU}\Tz$ in the following sections.
 
 \subsubsection{\textsc{sum}: sum representation}
 
@@ -225,7 +215,7 @@ Because the runtimes of \textsc{bt} and \textsc{slfm} are complimentary in the s
 
 \begin{table}[!h]
   \caption{
-   For both LLGP and COGP, $m$ is a configurable parameter which increases up to $n$ to improve accuracy. $Q,R,D,\kappa_2$ are coefficients dependent on the setting of the LMC kernel, which has about $QRD$ hyperparameters (Eq.~\ref{lmcpointwise}). The resulting asymptotic performance is given in the table. COGP is only independent of $R$ because it cannot represent models for $R\neq 1$.
+   For both LLGP and COGP, $m$ is a configurable parameter which increases up to $n$ to improve accuracy. $Q,R,D,\kappa_2$ are coefficients dependent on the setting of the LMC kernel, which has about $QRD$ hyperparameters (Eq.~\ref{lmcpointwise}). The resulting asymptotic performance is given in the table. COGP is only independent of $R$ because it cannot represent models for $R\neq 1$. We distinguish in the up-front cost and per-hyperparameter cost for computing $\nabla \mcL$ to capture the varying asymptotic behaviors of the gradient algorithms as the number of hyperparemters increases: the total cost would be the up-front cost plus $QRD$ multiplied by the per-hyperparameter cost.
   }
 \label{asymp}
 \begin{sc}
@@ -260,15 +250,9 @@ For a gradient-only stopping heuristic, we maintain the running maximum gradient
 
 The predictive mean can be computed in $O(1)$ time as observed in \cite{msgp} by $K_{*,X}\bsa\approx W_{*,\TU}K_{\TU,\TU}\bsa$.
 
-The full predictive covariance estimate requires finding a new term $K_{*,X}K_{X,X}^{-1}K_{X,*}$. This is done by solving the linear system in a matrix-free manner on-the-fly; in particular, $K_{X,X}^{-1}K_{X,*}$ is computed via MINRES for every new test point $K_{X,*}$. Over several test points, this is embarrassingly parallelizable.
+The full predictive covariance estimate requires finding a new term $K_{*,X}K_{X,X}^{-1}K_{X,*}$. This is done by solving the linear system in a matrix-free manner on-the-fly; in particular, $K_{X,X}^{-1}K_{X,*}$ is computed via \textsc{minres} for every new test point $K_{X,*}$. Over several test points, this is embarrassingly parallelizable.
 
 A more efficient predictive variance algorithm is outside the scope of this paper: for a research setting, we expect training time to be the bottleneck. Moreover, one can couple LLGP learning with other prediction mechanisms. One example is the sampling-based approach proposed in \cite{papandreou2011efficient}, which extends to linear combinations of kernels that allow fast eigendecompositions.
-
-\subsection{Hyperparameter settings}
-
-AdaDelta parameters were set to the following on all tests: rate $=1$, decay $=0.9$, momentum $=0.5$, offset $=0.0001$. The stopping criterion parameters permit the gradient $\infty$-norm to drop below a threshold of its maximum value so far a small, fixed number of times, 5. The maximum number of iterations was 100.
-
-For learning, we initialize entries $A_q$ according to a unit normal and all $\bsk_q$ to $1$. Note that COGP initializes the coregionalization matrix to $1$ uniformly. Like COGP, we initialize noise to $0.1$ for all outputs.
 
 \section{Results}
 \label{sec:results}
@@ -276,12 +260,16 @@ We evaluate the methods on held out data by using standardized mean square error
 
 \subsection{Representation evaluation}\label{empirical-rep}
 
-We evaluated the performance of the different kernel representations over various rank and parameterization settings. In particular, we have the following parameters: $n$ total sample size across all outputs, $D$ number of outputs, $Q$ number of kernels $k_q$, $R$ average added rank, $\epsilon$ mean noise, and \texttt{ktype} kernel type. Kernel type is one of \texttt{mat, periodic, rbf, mix} corresponding to Mat\'{e}rn-3/2, standard periodic\footnote{We define the periodic kernel as $k(r) = \exp \left(\frac{-\gamma}{2}\sin^2\frac{\pi r}{T}\right)$.}, and radial basis functions. \texttt{mix} refers to a mix of all three kernels. Each kernel's inverse length scales and periods were selected by sampling uniformly in log space from 1 to 10 with $Q$ samples. Next, we construct a random LMC kernel by sampling entries of each $A_q$ from a standard normal distribution, $\bsk_q$ from an inverse gamma with unit shape and scale, and independent noise $\bse$ for every output from an inverse gamma with unit scale and mean $\epsilon$. Inputs and outputs were independently generated from $\Unif[0,1]$ for benchmarking.
+We evaluated the performance of the different kernel representations over various rank and parameterization settings. In particular, we have the following parameters: $n$ total sample size across all outputs, $D$ number of outputs, $Q$ number of kernels $k_q$, $R$ average added rank, $\epsilon$ mean noise, and \texttt{ktype} kernel type. Kernel type is one of \texttt{mat, periodic, rbf, mix} corresponding to Mat\'{e}rn-3/2, standard periodic\footnote{We define the periodic kernel as $k(r) = \exp \left(\frac{-\gamma}{2}\sin^2\frac{\pi r}{T}\right)$.}, and radial basis functions. \texttt{mix} refers to a mix of all three kernels.
+
+For each setting, we randomly sample entries for each $A_q,\bsk_q$, and $\bse$ and the inverse length scale $\gamma$ for each kernel.\footnote{Hyperparameters for the sampling distributions, as well as all code and benchmarking scripts, are available in <anonymous repository>} Then, we investigate the average gradient construction accuracy and speed of LLGP for different settings of $Q,\epsilon$, and \texttt{ktype}.
+
+%Each kernel's inverse length scales and periods were selected by sampling uniformly in log space from 1 to 10 with $Q$ samples. Next, we construct a random LMC kernel by sampling entries of each $A_q$ from a standard normal distribution, $\bsk_q$ from an inverse gamma with unit shape and scale, and independent noise $\bse$ for every output from an inverse gamma with unit scale and mean $\epsilon$. Inputs and outputs were independently generated from $\Unif[0,1]$ for benchmarking.
 
 As expected from their asymptotic runtime, \textsc{sum}, \textsc{bt}, and \textsc{slfm} representations are complimentary in MVM speed for different configurations of $D,R,Q$---this results in sparse inversion computation that consistently outperforms Cholesky decomposition in runtime (Tab.~\ref{complement}).
 For inverting systems, all computations were carried out until the residual $\ell_2$ norm was at most $10^{-4}$.
 \begin{table}[!h]
-  \caption{The runtime in seconds for solving $K\Tx=\Ty$ for a random kernel $K$ constructed as in Sec.~\ref{empirical-rep} using MINRES for each of the kernel representations. For comparison, the \textsc{chol} representation is wallclock time to compute the Cholesky decomposition of the matrix, which must be constructed, and use this decomposition to invert the system. We averaged over five runs. In every run, we use $n=5000$ simulated data points, $\texttt{mix}$ kernels, and $\epsilon=0.1$.
+  \caption{The runtime in seconds for solving $K\Tx=\Ty$ for a random kernel $K$ constructed as in Sec.~\ref{empirical-rep} using \textsc{minres} for each of the kernel representations. For comparison, the \textsc{chol} representation is wallclock time to compute the Cholesky decomposition of the matrix, which must be constructed, and use this decomposition to invert the system. We averaged over five runs. In every run, we use $n=5000$ simulated data points, $\texttt{mix}$ kernels, and $\epsilon=0.1$.
 }
 \label{complement}
 \begin{center}
@@ -291,7 +279,7 @@ For inverting systems, all computations were carried out until the residual $\el
 \end{center}
 \end{table}
 
-We next evaluated the accuracy of the gradients for $N=10$ trace samples. Fixing $R=3,n=5000,D=10$, we quantified the accuracy and speed of computing $\nabla\mcL$. Since, for each partial derivative, LLGP requires only $N$ $n$-sized vector dot products (Eq.~\ref{eq:trace}), it generally runs faster than the exact approach (Fig.~\ref{fig:rellog}), which must compute a matrix-matrix dot product (Eq.~\ref{llgradient}). The gradients between the two, however, are virtually indistinguishable for smooth kernels that induce diagonally dominant covariance matrices (Fig.~\ref{fig:rellog}). Kernels such as the single Mat\'{e}rn or periodic kernel with noise on the order of $10^{-4}$ lead to less accurate gradients, owing to poor MINRES convergence in the inversions. We will show that the stochastic gradients suffice for optimization in practical examples.
+We next evaluated the accuracy of the gradients for $N=10$ trace samples. Fixing $R=3,n=5000,D=10$, we quantified the accuracy and speed of computing $\nabla\mcL$. Since, for each partial derivative, LLGP requires only $N$ $n$-sized vector dot products (Eq.~\ref{eq:trace}), it generally runs faster than the exact approach (Fig.~\ref{fig:rellog}), which must compute a matrix-matrix dot product (Eq.~\ref{llgradient}). The gradients between the two, however, are virtually indistinguishable for smooth kernels that induce diagonally dominant covariance matrices (Fig.~\ref{fig:rellog}). Kernels such as the single Mat\'{e}rn or periodic kernel with noise on the order of $10^{-4}$ lead to less accurate gradients, owing to poor \textsc{minres} convergence in the inversions. We will show that the stochastic gradients suffice for optimization in practical examples.
 
 \begin{figure}[!h]
   \centering
@@ -302,17 +290,13 @@ We next evaluated the accuracy of the gradients for $N=10$ trace samples. Fixing
     \resizebox{0.48\textwidth}{!}{\includegraphics{relgrad_l2.eps}}}
 %  \subfigure[inversion accuracy]{
 %    \resizebox{0.40\textwidth}{!}{\includegraphics{relalpha_l2.eps}}}
- \caption{Negative logarithm of the ratio of the exact algorithm to LLGP's analogue for (a) time and (b) accuracy metrics for evaluating gradient computation performance. In each case, higher is better, and extremal values are noted.  For each data point, the average was taken over five runs.}
+ \caption{Negative logarithm of the ratio of the exact algorithm to LLGP's analogue for (a) time and (b) accuracy metrics for evaluating gradient computation performance. In each case, higher is better, and extremal values are noted.  For each data point, the average was taken over five runs. Reducing average noise, corresponding to increases in $-\log_{10}\varepsilon$, and increases in $Q$, generally make gradient reconstruction more difficult by making $K$ more ill-conditioned, reducing the accuracy of \textsc{minres}.}
 \label{fig:rellog}
 \end{figure}
 
 \subsection{Foreign exchange rate prediction (FX2007)}\label{fx2007-results}
 
-We replicate the medium-sized dataset from COGP as an application to evaluate LLGP performance. The dataset consists of ten foreign currency exchange rates---CAD, EUR, JPY, GBP, CHF, AUD, HKD, NZD, KRW, and MXN---and three precious metals---XAU, XAG, and XPT---implying that $D=13$.\footnote{Data are from \url{http://fx.sauder.ubc.ca/data.html}} As in COGP, we retrieved the asset to USD rate, then used its reciprocal in all the results discussed below. The LLGP setting has $Q=1,R=2$, as recommended in \cite{alvarez2010efficient} for LMC models on this dataset; let this be the LMC model on LLGP. COGP roughly corresponds to the the SLFM model, which has a total of 94 hyperparameters, compared to 53 for LLGP. All kernels are RBF.
-
-The data used in this example are from 2007, and include $n=3054$ training points and $150$ test points. The test points include 50 contiguous points extracted from each of the CAD, JPY, and AUD exchanges.
-
-For this application, LLGP uses $m=n/D=238$ interpolating points. We use the COGP settings from the paper.\footnote{COGP hyperparameters for FX2007 were 100 inducing points, 500 iterations, 200 mini-batch size.} LLGP, for both LMC, outperforms COGP in terms of predictive mean and variance estimation as well as runtime (Tab.~\ref{fx2007-tbl}).
+We replicate the medium-sized dataset from COGP as an application to evaluate LLGP performance. The dataset consists of ten foreign currency exchange rates---CAD, EUR, JPY, GBP, CHF, AUD, HKD, NZD, KRW, and MXN---and three precious metals---XAU, XAG, and XPT---implying that $D=13$.\footnote{Data are from \url{http://fx.sauder.ubc.ca/data.html}} As in COGP, we retrieved the asset to USD rate, then used its reciprocal in all the results discussed below. The LLGP setting has $Q=1,R=2$, as recommended in \cite{alvarez2010efficient} for LMC models on this dataset; let this be the LMC model on LLGP. COGP roughly corresponds to the the SLFM model, which has a total of 94 hyperparameters, compared to 53 for LLGP. All kernels are RBF. The data used in this example are from 2007, and include $n=3054$ training points and $150$ test points. The test points include 50 contiguous points extracted from each of the CAD, JPY, and AUD exchanges. For this application, LLGP uses $m=n/D=238$ interpolating points. We use the COGP settings from the paper.\footnote{COGP hyperparameters for FX2007 were 100 inducing points, 500 iterations, 200 mini-batch size.} LLGP, for both LMC, outperforms COGP in terms of predictive mean and variance estimation as well as runtime (Tab.~\ref{fx2007-tbl}).
 
 \begin{table}[!h]
   \caption{Average predictive performance and training time over $10$ runs for LLGP and COGP on the FX2007 dataset. Parenthesized values are standard error. LLGP was run with LMC set to $Q=1$, $R=2$, and $238$ interpolating points. COGP used a $Q=2$ kernel with $100$ inducing points.}

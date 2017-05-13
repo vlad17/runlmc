@@ -1,159 +1,38 @@
 \documentclass{article}
-\usepackage{times}
+
+\PassOptionsToPackage{numbers, compress}{natbib}
+% Camera ready: \usepackage[final]{nips_2017}
+\usepackage{nips_2017}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
 \usepackage{graphicx}
-\usepackage{subfigure} 
-\usepackage{natbib}
-\usepackage{algorithm}
-\usepackage{algorithmic}
-\usepackage{hyperref}
-\newcommand{\theHalgorithm}{\arabic{algorithm}}
-\usepackage{icml2017} % \usepackage[accepted]{icml2017}
-%\usepackage{float}
+\usepackage{algorithm}% http://ctan.org/pkg/algorithms
+\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
+\usepackage{booktabs}
+\usepackage{subfigure}
 
-\def\bsa{{\boldsymbol\alpha}}
-\def\bse{{\boldsymbol\epsilon}}
-\def\bsk{{\boldsymbol\kappa}}
-\def\bsm{{\boldsymbol\mu}}
-\def\bsl{{\boldsymbol\lambda}}
-\def\bsph{{\boldsymbol\phi}}
-\def\bsth{{\boldsymbol\theta}}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsfonts}
-\usepackage{enumerate}
-\usepackage{fullpage}
-\usepackage{bbm}
-\usepackage{caption}
-\usepackage{mathrsfs}
+\input{defs}
 
-\newcommand{\pa}[1]{ \left({#1}\right) }
+\title{Supplementary Material for Large Linear Multi-output Gaussian Process Learning for Time Series}
 
-\def \N {\mathbb{N}}
-\def \Nbr {\mathcal{N}}
-\def \mcL {\mathcal{L}}
-\def \Q {\mathbb{Q}}
-\def \F {\mathbb{F}}
-\def \then {\implies &}
-\def \oif {\Longleftrightarrow &\,}
-\def \given {\text{Given }&}
-\def \assume {\text{Assume }&}
-\def \thfr {\therefore &\enskip}
-\def \bij {\leftrightarrow}
-\def \inj {\rightarrowtail}
-\def \sur {\twoheadedrightarrow}
-\def \Z {\mathbb{Z}}
-\def \R {\mathbb{R}}
-\def \C {\mathbb{C}}
-\def \T {\mathbb{T}}
-\def \iff {\Longleftrightarrow}
-\def \kron {\boldsymbol\delta}
-\def \indicator {\mathbbm{1}}
+\author{
+  Vladimir Feinberg, Li-Fang Cheng, {Barbara Engelhardt}, {Kai Li}\\
+  Department of Computer Science\\
+  Princeton University\\
+  Princeton, NJ 08544 \\
+  \texttt{\{vyf,lifangc,bee,li\}@princeton.edu} \\
+}
 
-\def\Tx{\textbf{x}}
-\def\TX{\textbf{X}}
-\def\TU{\textbf{U}}
-\def\Ty{\textbf{y}}
-\def\tbr{\textbf{r}}
-\def\Tz{\textbf{z}}
-\def\quotient{\mathclose{}/\mathopen{}}
-\def\Tf{\textbf{f}}
-\def\Th{\textbf{h}}
-\def\Tg{\textbf{g}}
-\def\sumn{\sum_{n=0}^\infty}
-\def\limn{\lim_{n\rightarrow\infty}}
-\def\prodn{\prod_{n=0}^\infty}
+\begin{document}
 
-\DeclareMathOperator\adj{adj}
-\DeclareMathOperator\cov{cov}
-\DeclareMathOperator\Unif{Unif}
-\DeclareMathOperator\blockdiag{blockdiag}
-\DeclareMathOperator\Pois{Pois}
-\DeclareMathOperator\mathProb{\mathbb{P}}
-\def\P{\mathProb} % need to overwrite stupid paragraph symbol
-\DeclareMathOperator\mathExp{\mathbb{E}}
-\def \E {\mathExp}
-
-
-\newcommand{\stc}[1]{\widetilde{#1}}   
-\newcommand{\set}[2]{ \left\{ #1 \,\middle|\, #2 \right\} }
-\newcommand{\shift}[1]{&\quad & \text{#1}\\}
-\newcommand{\lem}[1]{\text{\textbf{L.\ref{#1}}}}
-\newcommand{\card}[1]{\left\vert{#1}\right\vert}
-\newcommand{\Ps}[1]{\mathcal{P}\left({ #1 }\right)}
-\newcommand{\colv}[1]{\begin{pmatrix} #1 \end{pmatrix}}
-\newcommand{\mat}[1]{\begin{pmatrix} #1 \end{pmatrix}}
-\newcommand{\detmat}[1]{\begin{vmatrix} #1 \end{vmatrix}}
-\newcommand{\spanb}[1]{\text{span}\{ #1 \}}
-\newcommand{\abs}[1]{\left|#1\right|}
-\newcommand{\Inner}[1]{\langle #1 \rangle}
-\newcommand{\Innercpy}[1]{\langle #1, #1 \rangle}
-\newcommand{\norm}[1]{\mathopen\| #1 \mathclose\|}% use instead of $\|x\|$
-
-\def\eqd{\mathrel{\overset{\Delta}{=}}}
-
-\DeclareMathOperator{\diag}{diag}
-\DeclareMathOperator{\vcdim}{VC-dim}
-\DeclareMathOperator*{\Err}{\text{err}}
-\DeclareMathOperator*{\ErrE}{\mathbb{E}}
-\DeclareMathOperator{\Tr}{tr}
-\DeclareMathOperator{\Dim}{dim}
-\DeclareMathOperator{\Rank}{rank}
-\DeclareMathOperator*{\argmin}{argmin}
-\DeclareMathOperator*{\proj}{proj}
-\DeclareMathOperator{\Ker}{ker}
-\DeclareMathOperator{\Diam}{diam}
-\DeclareMathOperator{\Int}{int}
-\DeclareMathOperator{\Clo}{clo}
-\DeclareMathOperator{\sgn}{sgn}
-\DeclareMathOperator{\MyRe}{Re}
-\DeclareMathOperator{\MyIm}{Im}
-\DeclareMathOperator{\Supp}{supp}
-\DeclareMathOperator{\Var}{Var}
-
-% probability stuff
-\def \sa {{$\sigma$-algebra}}
-\def\OR{{\overline{\R}}}
-\def\OX{{\overline{X}}}
-
-
-\def \mcX {\mathcal{X}}
-\def \mcY {\mathcal{Y}}
-\def \mcH {\mathcal{H}}
-\def \mcD {\mathcal{D}}
-\def \mcA {\mathcal{A}}
-\def \mcK {\mathcal{K}}
-\def\mcG{{\mathcal{G}}}
-\def\mcH{{\mathcal{H}}}
-\def\mcF{{\mathcal{F}}}
-\def\mcB{{\mathcal{B}}}
-\def\mcE{{\mathcal{E}}}
-\def\mcP{{\mathcal{P}}}
-\def\mcM{{\mathcal{M}}}
-\def\mcC{{\mathcal{C}}}
-\def\mcT{{\mathcal{T}}}
-
-% \icmltitlerunning{Submission and Formatting Instructions for ICML 2017}
-
-\begin{document} 
-
-\twocolumn[
-\icmltitle{Supplementary Material for Large Linear Multi-task Gaussian Process Learning}
-%\icmlsetsymbol{equal}{*}
-\begin{icmlauthorlist}
-  \icmlauthor{Vladimir Feinberg}{pu}
-  \icmlauthor{Li-Fang Cheng}{pu}
-  \icmlauthor{Barbera Engelhardt}{pu}
-  \icmlauthor{Kai Li}{pu}
-\end{icmlauthorlist}
-\icmlaffiliation{pu}{Princeton University, Princeton, USA}
-\icmlcorrespondingauthor{Vladimir Feinberg}{vyf@princeton.edu}
-
-\icmlkeywords{multi-task learning, gaussian process, machine learning}
-
-\vskip 0.3in
-]
-\printAffiliationsAndNotice{}
-%\printAffiliationsAndNotice{\icmlEqualContribution}
+\maketitle
 
 \section{Implementation Details}
 
@@ -161,7 +40,8 @@ LLGP was implemented in Python 3 from the Anaconda, which offered an Intel MKL-l
 
 Application of our approach to all replication studies was carried out on a large server in a multiprogramming environment: CentOS 6.5 with 80 Intel(R) Xeon(R) CPU E7-4870 @ 2.40GHz. The representation evaluation benchmarks were done at once on a cluster of machines running CentOS 5.2-5.9 with Intel(R) Xeon(R) CPU E5430 @ 2.66GHz, where these jobs ran on a single thread per CPU.
 
+\bibliographystyle{unsrtnat}
 \bibliography{paper}
-\bibliographystyle{icml2017}
 
-\end{document} 
+\end{document}
+
