@@ -22,11 +22,11 @@
 \title{Large Linear Multi-output Gaussian Process Learning for Time Series}
 
 \author{
-  Vladimir Feinberg, Li-Fang Cheng, {Barbara Engelhardt}, {Kai Li}\\
+  Vladimir Feinberg, Li-Fang Cheng,  {Kai Li}, {Barbara E Engelhardt}\\
   Department of Computer Science\\
   Princeton University\\
-  Princeton, NJ 08544 \\
-  \texttt{\{vyf,lifangc,bee,li\}@princeton.edu} \\
+  Princeton, NJ 08540 \\
+  \texttt{\{vyf,lifangc,li,bee\}@princeton.edu} \\
 }
 
 \begin{document}
@@ -34,7 +34,9 @@
 \maketitle
 
 \begin{abstract}
-Gaussian process (GP) models, which put a distribution over arbitrary functions in a continuous domain, can be generalized to the multi-output case; a common way of doing this is to use a linear model of coregionalization (LMC) \cite{alvarez2012kernels}. Such models can learn and exploit correlations across the multiple outputs. For instance, temperature data from disparate regions over time can contribute to a predictive weather model that is more accurate than a single, localized model. While model learning can be performed efficiently for single-output GPs \cite{msgp}, such methods assume stationarity, a luxury unavailable in the multi-output case. We propose Large Linear GP (LLGP), which recovers stationarity thanks to LMC's structure, enabling optimization of GP hyperparameters for multi-dimensional outputs and one-dimensional inputs. Our approach learns hyperparameters at an asymptotically faster rate than the current state of the art. When applied to real time series data, we find this theoretical improvement is realized with LLGP being generally an order of magnitude faster while improving or maintaining predictive accuracy. Finally, we discuss extensions of our approach to multidimensional inputs.
+Gaussian processes, or distribution over arbitrary functions in a continuous domain, can be generalized to the multi-output case: a linear model of coregionalization (LMC) is one approach \cite{alvarez2012kernels}. LMCs estimate and exploit correlations across the multiple outputs.
+While model estimation can be performed efficiently for single-output GPs \cite{msgp}, these assume stationarity, but in the multi-output case the cross-covariance interaction is not stationary.
+We propose Large Linear GPs (LLGPs), which circumvent the need for stationarity by using LMC's structure, enabling optimization of GP hyperparameters for multi-dimensional outputs and one-dimensional inputs. When applied to real time series data, we find our theoretical improvement relative to the current state of the art is realized with LLGP being generally an order of magnitude faster while improving or maintaining predictive accuracy.
 \end{abstract}
 
 % NOTES
@@ -46,37 +48,30 @@ Gaussian process (GP) models, which put a distribution over arbitrary functions 
 
 \section{Introduction}\label{introduction}
 
-Gaussian processes (GPs) are a popular nonlinear regression method that innately capture function smoothness across inputs as defined by their covariance function \cite{williams1996gaussian}. GPs seamlessly extend to multi-output learning, picking up on latent cross-output processes, where in multi-output learning the objective is to build a probabilistic regression model over vector-valued observations.
+Gaussian processes (GPs) are a nonlinear regression method that capture function smoothness across inputs through a response covariance function \cite{williams1996gaussian}. GPs extend to multi-output regression, where the objective is to build a probabilistic regression model over vector-valued observations by identifying latent cross-output processes.
 
-Multiple-output GPs frequently appear in time-series contexts, such as the problem of imputing missing temperature readings for sensors in different locations and reconstructing missing foreign exchange rates and commodity prices given rates and prices for other goods over time \cite{osborne2008towards, alvarez2010efficient}. Efficient model learning would enable researchers to quickly explore large spaces of model configurations to find an appropriate one for their task.
+Multi-output GPs frequently appear in time-series contexts, such as the problem of imputing missing temperature readings for sensors in different locations or missing foreign exchange rates and commodity prices given rates and prices for other goods over time \cite{osborne2008towards, alvarez2010efficient}. Efficient model estimation would enable researchers to quickly explore large spaces of parameterizations to find an appropriate one for their task.
 
-Exact GP inference is infeasible in this scenario since it requires maintaining pairwise covariance between all inputs in a large matrix and performing inversions with that matrix \cite{williams1996gaussian}. As the number of hyperparameters grows, so do the number of matrix operations (Tab.~\ref{asymp}). For this reason, an accurate approximate approach has been an important goal of machine learning research.
+For $n$ input points, exact GP inference requires maintaining the $n^2$ pairwise covariances between inputs in a matrix explicitly and performing inversions with that matrix \cite{williams1996gaussian}. In the multi-output setting, the number of hyperparameters grows (since we must consider cross-output covariance), in turn requiring more matrix operations (Tab.~\ref{asymp}). For this reason, an accurate approximate approach has been an important goal of machine learning research. The approximations developed for multi-output methods effectively reduce the dimensionality of the GP estimation problem from $n$ to $m<n$, but still require $m$ to scale with $n$ to retain accuracy \cite{nguyen2014collaborative}. The polynomial dependence on $m$ is still cubic: the matrix inversion underlying the state-of-the-art multi-output GP estimation method ignores LMC's structure. We use this structure to avoid matrix inversion.
 
-\subsection{Contributions}
 
-Our approach makes the following contributions to approximate inference in multi-output GPs, scoped to time series input. First, we identify a block-Toeplitz structure induced by the linear model of coregionalization (LMC) kernel on a grid. Next, we adapt a previously identified kernel structure based on Semiparametric Latent Factor Models (SLFM) \cite{seeger2005semiparametric}. Both of these structures coordinate for fast matrix-vector multiplication $K\Tz$ with the covariance matrix $K$ for any vector $\Tz$.
-
-When inputs do not lie on a uniform grid (for time series, the length of time between observations differs), we demonstrate how to leverage structured kernel interpolation (SKI) in the multi-output setting, where SKI, which requires stationary kernels, does not naturally apply \cite{kiss-gp}. Because LMC kernels exhibit the previously-identified block-Toeplitz structure, they harmonize with SKI.
-
-For low-dimensional inputs, the above contributions offers an asymptotic and practical runtime improvement in hyperparameter learning while also expanding feasible kernel typs to arbitrary differntiable LMC kernels, with improvement taken to be relative to existing multi-GP methods (Tab.~\ref{asymp}) \cite{nguyen2014collaborative}.
-
-Our paper is organized as follows. In Sec.~\ref{sec:background} we give a background on single-output and multi-output GPs, as well as some history in structured linear algebra in GPs. Sec.~\ref{sec:related-work} details both related work that was built upon in LLGP and existing methods for multi-output GPs. Sec.~\ref{sec:matrix-free} describes our method, including a matrix-free heuristic stopping criterion. Then, in Sec.~\ref{sec:results} we compare the performance of LLGP to existing methods and offer concluding remarks in Sec.~\ref{conclusion}.
+Our paper is organized as follows. In Sec.~\ref{sec:background} we give a background on single-output and multi-output GPs, as well as some history in structured linear algebra in GPs. Sec.~\ref{sec:related-work} details both related work that was built upon in LLGP and existing methods for multi-output GPs, followed by Sec.~\ref{sec:contributions} describing our contributions. Sec.~\ref{sec:matrix-free} describes our method, including a matrix-free heuristic stopping criterion. Then, in Sec.~\ref{sec:results} we compare the performance of LLGP to existing methods and offer concluding remarks in Sec.~\ref{conclusion}.
 
 
 \section{Background}
 \label{sec:background}
 
-\subsection{General Gaussian processes}
+\subsection{Gaussian processes (GPs)}
 
-First, we give an overview of the theoretical foundation for GPs. A GP is a set of random variables (RVs) $\{f_\Tx\}_\Tx$ indexed by $\Tx\in\mcX$, with the property that for any finite collection $X=\idx{\Tx_i}{i=1}{n}$ of $\mcX$, the RVs are jointly Gaussian \cite{williams1996gaussian}. With zero mean wlog and a prescribed covariance $K:\mcX^2\rightarrow\R$, $\Tf_X\sim N\pa{\bsz, K_{X, X}}$, where $(\Tf_X)_i=f_{\Tx_i}$ and $(K_{X,X})_{ij}=K(\Tx_i,\Tx_j)$. Given observations $\Ty\in\R^n$ of $\Tf_X$, inference at a single point $*\in\mcX$ of an $\R$-valued RV $y_*$ is performed by the marginalization $y_*|\Tf_X$ \cite{williams1996gaussian}.
-Predictive accuracy is sensitive to a particular parameterization of our kernel, so model estimation is performed by maximizing data log likelihood with respect to parameters $\bsth$ of $K$, $\mcL(\bsth)=\log p(\Tf_{X}|X,\bsth)$. As such, the heart of GP learning lies in optimization of $\mcL$. Gradient-based optimization methods then require the gradient with respect to every parameter $\theta_j$ of $\bsth$:
+A GP is a set of random variables (RVs) $\{y_\Tx\}_\Tx$ indexed by $\Tx\in\mcX$, with the property that, for any finite collection $X=\idx{\Tx_i}{i=1}{n}$ of $\mcX$, the RVs are jointly Gaussian \cite{williams1996gaussian}. With zero mean wlog and a prescribed covariance $K:\mcX^2\rightarrow\R$, $\Ty_X\sim N\pa{\bsz, K_{X, X}}$, where $(\Ty_X)_i=y_{\Tx_i}$ and $(K_{X,X})_{ij}=K(\Tx_i,\Tx_j)$. Given observations of $\Ty_X$, inference at a single point $*\in\mcX$ of an $\R$-valued RV $y_*$ is performed by the marginalization $y_*|\Ty_X$ \cite{williams1996gaussian}.
+Predictive accuracy is sensitive to a particular parameterization of our kernel, so model estimation is performed by maximizing data log likelihood with respect to parameters $\bsth$ of $K$, $\mcL(\bsth)=\log p(\Ty_{X}|X,\bsth)$. Gradient-based optimization methods then require the gradient with respect to every parameter $\theta_j$ of $\bsth$:
 \begin{align}
 \partial_{\theta_j}\mcL = \frac{1}{2}\bsa^\top\partial_{\theta_j}K_{|\bsth}\bsa -\frac{1}{2}\Tr\pa{K_{|\bsth}^{-1}\partial_{\theta_j}K_{|\bsth}};\;\; \bsa=K_{|\bsth}^{-1}\Ty.\label{llgradient}
 \end{align}
 
 \subsection{Multi-output linear GPs}
 
-We build multi-output GP models as instances of general GPs, where a multi-output GP model identifies correlations between outputs through a shared input space \cite{alvarez2012kernels}. Here, for $D$ outputs, we write our indexing set as $\mcX'=[D]\times \mcX$: an input is in a point from a shared domain coupled with an output tag. Then, if we make observations at $X_d\subset\mcX$ for output $d\in[D]$, we can set:
+We build multi-output GP models as instances of general GPs, where a multi-output GP model identifies correlations between outputs through a shared input space \cite{alvarez2012kernels}. Here, for $D$ outputs, we write our indexing set as $\mcX'=[D]\times \mcX$; a point from a shared domain coupled with an output index. Then, if we make observations at $X_d\subset\mcX$ for output $d\in[D]$, we can set:
 \begin{align*}
 \TX=\set{(d, x)}{d\in[D],x\in X_d}\subset{\mcX'};\;\; n=\card{\TX}.
 \end{align*}
@@ -85,17 +80,17 @@ An LMC kernel $K$ is of the form
 \begin{align}
 K([i,\Tx_i],[j,\Tx_j])=\sum_{q=1}^Qb_{ij}^{(q)}k_q(\norm{\Tx_i-\Tx_j})+\epsilon_i1_{i=j},\label{lmcpointwise}
 \end{align} 
-where $k_q:\R\rightarrow\R$ is a stationary kernel on $\mcX$. Typically, the positive semi-definite (PSD) matrices $B_q\in\R^{D\times D}$ formed by $b_{ij}^{(q)}$ are parameterized as $A_qA_q^\top+\bsk_q I_D$, with $A_q\in\R^{D\times R_q},\bsk_q\in\R_+^D$ and $R_q$ a preset rank. Importantly, even though each $k_q$ is stationary, $K$ is only stationary on $\mcX'$ if $B_q$ is Toeplitz. Settings of $B_q$ that arise in practice, where we wish to capture covariance across outputs as an arbitrary $D^2$-dimensional latent process, prevent stationarity in $K$ and therefore prohibit direct application of SKI.
+where $k_q:\R\rightarrow\R$ is a stationary kernel on $\mcX$. Typically, the positive semi-definite (PSD) matrices $B_q\in\R^{D\times D}$ formed by $b_{ij}^{(q)}$ are parameterized as $A_qA_q^\top+\bsk_q I_D$, with $A_q\in\R^{D\times R_q},\bsk_q\in\R_+^D$ and $R_q$ a preset rank. Importantly, even though each $k_q$ is stationary, $K$ is only stationary on $\mcX'$ if $B_q$ is Toeplitz. In practice, where we wish to capture covariance across outputs as a $D^2$-dimensional latent process, $B_q$ is not Toeplitz, so $K([i,\Tx_i],[j,\Tx_j])\neq K([i+1,\Tx_i+1],[j+1,\Tx_j+1])$.
 
-The LMC kernel provides a flexible way of specifying multiple additive contributions to the covariance between to inputs for two different outputs. The contribution of the $q$-th kernel $k_q$ to the covariance between the $i$-th and $j$-th outputs is then specified by the multiplicative factor $b_{ij}^{(q)}$. By choosing $B_q$ to have rank $R_q=D$, so the contribution between those two outputs is learned independently of all other contributions, the entries of $B_q$. By lowering the rank $R_q$, researchers applying the LMC model can specify that the contributions of the kernels for each output pair are determined by lower-rank latent processes, with rank 0 indicating no interaction (i.e., if $A=0$ then we have an independent GP for each output).
+The LMC kernel provides a flexible way of specifying multiple additive contributions to the covariance between two inputs for two different outputs. The contribution of the $q$-th kernel $k_q$ to the covariance between the $i$-th and $j$-th outputs is then specified by the multiplicative factor $b_{ij}^{(q)}$. By choosing $B_q$ to have rank $R_q=D$, the contribution of the two outputs is estimated independently from all other contributions. By lowering the rank $R_q$, we specify that the interactions of the outputs have lower-rank latent processes, with rank 0 indicating no interaction (i.e., if $A=0$ then we have an independent GP for each output).
 
 \subsection{Structured covariance matrices}
 
-If we can identify structure in the covariance matrices $K$, then we can recover fast in-memory representations and efficient matrix-vector multiplications (MVMs) for $K$.
+If we can identify structure in the covariance $K$, then we can recover fast in-memory representations and efficient matrix-vector multiplications (MVMs) for $K$.
 
-The Kronecker product $A\otimes B$ of matrices of order $a,b$ is a block matrix of order $ab$ with $ij$-th block $A_{ij}B$. We can represent it by keeping representations of $A$ and $B$ separately, rather than the product. Then, the corresponding MVMs can be computed in time $O(a\mvm(B)+b\mvm(A))$, where $\text{MVM}(\cdot)$ is the runtime of a MVM. For GPs on uniform dimension-$P$ grids, this approximately reduces the runtime and representation costs by a $(1/P)$-th power \cite{gilboa2015scaling}.
+The Kronecker product $A\otimes B$ of matrices of order $a,b$ is a block matrix of order $ab$ with $ij$-th block $A_{ij}B$. We can represent it by keeping representations of $A$ and $B$ separately, rather than the product. Then, the corresponding MVMs can be computed in time $O(a\mvm(B)+b\mvm(A))$, where $\text{MVM}(\cdot)$ is the runtime of a MVM. For GPs on uniform dimension-$P$ grids, this approximately reduces the runtime and representation costs of the exact GP algorithm by a $(1/P)$-th power \cite{gilboa2015scaling}.
 
-Symmetric Toeplitz matrices $T$ are constant along their diagonal and fully determined by their top row $\{T_{1j}\}_j$, yielding an $O(n)$ representation. Such matrices arise naturally when we examine the covariance matrix induced by a stationary kernel $k$ applied to a one-dimensional grid of inputs. Since the difference in adjacent inputs $t_{i+1}-t_{i}$ is the same for all $i$, we have the Toeplitz property that:
+Symmetric Toeplitz matrices $T$ are constant along their diagonal and fully determined by their top row $\{T_{1j}\}_{j=1}^n$, yielding an $O(n)$ representation. Such matrices arise naturally when we examine the covariance matrix induced by a stationary kernel $k$ applied to a one-dimensional grid of inputs. Since the difference in adjacent inputs $t_{i+1}-t_{i}$ is the same for all $i$, we have the Toeplitz property that:
 \[
 T_{(i+1)(j+1)}=k(\abs{t_{i+1} -t_{j+1}})=k(\abs{t_i-t_j})=T_{ij}
 \]
@@ -105,8 +100,8 @@ Furthermore, we can embed $T$ in the upper-left corner of a circulant matrix $C$
 \label{sec:related-work}
 \subsection{Approximate inference methods}
 
-To cope with the lack of tractable GP inference methods, inducing point approaches create a tractable model to use instead of the classic GP. Such approaches fix or estimate inducing points $\TU$ and claim that the data $f_X$ is conditionally deterministic (deterministic training conditional, or DTC), independent (fully independent training conditional, or FITC), or partially independent (partially independent training conditional, or PITC) given RVs $f_{\TU}$  \cite{quinonero2005unifying}. These approaches are agnostic to kernel stationarity, and their quality can be improved by increasing the number of inducing points at the cost of a longer runtime. Setting the inducing points $\TU=\TX$ recovers the original exact GP. Computationally, these approaches resemble making rank-$m$ approximations to the $n\times n$ covariance matrix.
-
+Inducing point approaches create a tractable model to use instead of the exact GP. Such approaches fix or estimate inducing points $\TU$ and claim that the data $\Ty_X$ is Gaussian when conditioned on the RVs $\Ty_{\TU}$  \cite{quinonero2005unifying}. These approaches are agnostic to kernel stationarity, and their quality can be improved by increasing the number of inducing points at the cost of a longer runtime. Setting the inducing points $\TU=\TX$ recovers the exact GP. Computationally, these approaches resemble making rank-$m$ approximations to the $n\times n$ covariance matrix.
+% TODO expand; describe COGP more
 \citet{nguyen2014collaborative} observed in Collaborative Multi-output Gaussian Processes (COGP) that multi-output GP algorithms can further share an internal representation of the covariance structure among all outputs at once. COGP further uses a variational approximation, the evidence lower bound, to the log likelihood. COGP supports a subset of LMC kernels, namely those that match the SLFM model \cite{seeger2005semiparametric}. In an LMC representation (Eq.~\ref{lmcpointwise}), these models correspond to all $\bsk_q$ set to 0 and $A_q=\textbf{a}_q\in\R^{D\times 1}$. Moreover, SLFM and COGP models add in an independent GP to each output, represented in LMC as additional kernels $\idx{k_d}{d=1}{D}$, where $A_d=0$ and $\bsk_d=\Te_d\in\R^D$.
 
 \subsection{Approaches for stationary kernels}
@@ -121,6 +116,16 @@ Massively Scalable Gaussian Processes (MSGP) observes that the kernel $K_{U,U}$ 
 
 While evaluating $\log\abs{K_{|\bsth}}$ is not feasible in the LMC setting (because the LMC sum breaks Kronecker and Toeplitz structure), the general notion of creating structure with SKI carries over to LLGP.
 
+\section{Contributions}\label{sec:contributions}
+
+% TODO: contributions don't have edits yet
+
+First, we identify a block-Toeplitz structure induced by the linear model of coregionalization (LMC) kernel on a grid. Next, we adapt a previously identified kernel structure based on Semiparametric Latent Factor Models (SLFM) \cite{seeger2005semiparametric}. Both of these structures coordinate for fast matrix-vector multiplication $K\Tz$ with the covariance matrix $K$ for any vector $\Tz$.
+
+When inputs do not lie on a uniform grid (for time series, the length of time between observations differs), we demonstrate how to leverage structured kernel interpolation (SKI) in the multi-output setting, where SKI, which requires stationary kernels, does not naturally apply \cite{kiss-gp}. Because LMC kernels exhibit the previously-identified block-Toeplitz structure, they harmonize with SKI.
+
+For low-dimensional inputs, the above contributions offers an asymptotic and practical runtime improvement in hyperparameter learning while also expanding feasible kernel typs to arbitrary differntiable LMC kernels, with improvement taken to be relative to existing multi-GP methods (Tab.~\ref{asymp}) \cite{nguyen2014collaborative}.
+
 \section{Large Linear GP} \label{sec:matrix-free}
 
 We propose a linear model of coregionalization (LMC) method based on recent structure-based optimizations for GP estimation instead of variational approaches. Critically, the accuracy of the method need not be reduced by keeping the number of interpolation points $m$ low because its reliance on structure allows better asymptotic performance.
@@ -130,7 +135,7 @@ For a given $\bsth$, we construct an operator $\tilde{K}_{|\bsth}$ which approxi
 
 \subsection{Gradient construction}
 
-\citet{gibbs1996cient} describe the algorithm for GP model learning in terms of only MVMs with the covariance matrix. In particular, they note that we can solve for $\bsa$ satisfying $K_{|\bsth}\bsa=\Ty$ in Eq.~\ref{llgradient} using linear conjugate gradient descent (LCG). Moreover, they develop a stochastic approximation by introducing RV $\tbr$ with $\cov \tbr=I$:
+\citet{gibbs1996cient} describe the algorithm for GP model estimation in terms of only MVMs with the covariance matrix. In particular, they note that we can solve for $\bsa$ satisfying $K_{|\bsth}\bsa=\Ty$ in Eq.~\ref{llgradient} using linear conjugate gradient descent (LCG). Moreover, they develop a stochastic approximation by introducing RV $\tbr$ with $\cov \tbr=I$:
 \begin{align}
   \Tr\pa{K_{|\bsth}^{-1}\partial_{\theta_j}K_{|\bsth}} = \E\left[(K_{|\bsth}^{-1}\tbr)^\top\partial_{\theta_j}K_{|\bsth}\tbr\right]\label{eq:trace}
 \end{align}
