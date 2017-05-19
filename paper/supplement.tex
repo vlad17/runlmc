@@ -16,7 +16,8 @@
 \usepackage{algorithm}% http://ctan.org/pkg/algorithms
 \usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
 \usepackage{booktabs}
-\usepackage[section]{placeins}
+\usepackage{placeins}
+
 
 \input{defs}
 
@@ -48,7 +49,7 @@ For each setting, we randomly sample entries for each $A_q,\bsk_q$, and $\bse$ a
 
 As expected from their asymptotic runtime, \textsc{sum}, \textsc{bt}, and \textsc{slfm} representations are complimentary in MVM speed for different configurations of $D,R,Q$---this results in sparse inversion computation that consistently outperforms Cholesky decomposition in runtime (Tab.~\ref{complement}).
 For inverting systems, all computations were carried out until the residual $\ell_2$ norm was at most $10^{-4}$.
-\begin{table}[!h]
+\begin{table}[!ht]
   \caption{The runtime in seconds for solving $K\Tx=\Ty$ for a random kernel $K$ constructed as in Sec.~\ref{empirical-rep} using \textsc{minres} for each of the kernel representations. For comparison, the \textsc{chol} representation is wallclock time to compute the Cholesky decomposition of the matrix, which must be constructed, and use this decomposition to invert the system. We averaged over five runs. In every run, we use $n=5000$ simulated data points, $\texttt{mix}$ kernels, and $\epsilon=0.1$.
 }
 \label{complement}
@@ -61,21 +62,21 @@ For inverting systems, all computations were carried out until the residual $\el
 
 We next evaluated the accuracy of the gradients for $N=10$ trace samples. Fixing $R=3,n=5000,D=10$, we quantified the accuracy LLGP's $\nabla\mcL$ by comparing against the exact Cholesky approach. The relative error in the gradients is generally low for smooth kernels that induce diagonally dominant covariance matrices (Fig.~\ref{fig:relgrad}). Kernels such as the single Mat\'{e}rn or periodic kernel with noise on the order of $10^{-4}$ lead to less accurate gradients, owing to poor \textsc{minres} convergence in the inversions (Fig.~\ref{fig:rellog}. We showed in the main paper that the stochastic gradients suffice for optimization in practical examples.
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
   \centering
 {\includegraphics[width=\textwidth]{relgrad_l2.eps}}
 \caption{Negative logarithm of the relative error from the LLGP gradient construction to the exact log likelihood gradient. In each case, higher is better, and extremal values are noted.  For each data point, the average was taken over five runs. Reducing average noise, corresponding to increases in $-\log_{10}\varepsilon$, and increases in $Q$, generally make gradient reconstruction more difficult by making $K$ more ill-conditioned, reducing the accuracy of \textsc{minres}.}
 \label{fig:relgrad}
 \end{figure}
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
 \centering
 {\includegraphics[width=\textwidth]{relalpha_l2.eps}}
 \caption{Negative logarithm of the relative error in $K^{-1}\Ty$, using \textsc{minres} compared to the Cholesky solution. Higher is better, and extremal values are noted. An average was taken over five runs.}
 \label{fig:rellog}
 \end{figure}
 
-
+\FloatBarrier
 \bibliographystyle{unsrtnat}
 \bibliography{paper}
 
