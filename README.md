@@ -68,7 +68,6 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. Remove vertical bars from latex table generators in scripts; use booktabs formatting
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?
@@ -84,7 +83,7 @@ All below invocations should be done from the repo root.
     * TODO(sparse-derivatives)
 0. Benchmark speedup: slurm-broadcasted prediction...?
 0. move to read the docs
-0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups?
+0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups? -> No, don't waste time on this.
 0. multidimensional inputs and ARD.
 0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 

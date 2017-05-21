@@ -72,12 +72,10 @@ echo 'Gathering results'
 echo
 
 latex='
-\\begin{tabular}{|ccc|cccc|}
-  \\hline
-  \\abovespace\\belowspace
-  $D$ & $R$ & $Q$ & \\textsc{cholesky} & \\textsc{sum} & \\textsc{bt} & \\textsc{slfm}\\\\
-\\hline
-  \\abovespace
+\\begin{tabular}{ccccccc}
+  \\toprule
+
+  $D$ & $R$ & $Q$ & \\textsc{cholesky} & \\textsc{sum} & \\textsc{bt} & \\textsc{slfm}\\\\\\midrule
 '
 for i in 3 10 17; do
     
@@ -132,9 +130,6 @@ done
 echo
 echo 'latex table in out/results.tex'
 
-epilog='  \\belowspace \\\\
+latex="$latex \\\\bottomrule $newline \\end{tabular}"
 
-  \\hline
-\\end{tabular}
-'
-printf "${latex::${#latex}-6}\n${epilog}" > results.tex
+printf "${latex}" > results.tex

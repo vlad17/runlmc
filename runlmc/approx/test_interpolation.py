@@ -51,21 +51,31 @@ class TestInterpolation(unittest.TestCase):
         sample = np.array([1])
         self.assertRaises(ValueError, interp_cubic, grid, sample)
 
-    def test_interp_cubic_raises_lower_bound(self):
-        grid = np.arange(10)
-        sample = np.array([0])
-        self.assertRaises(ValueError, interp_cubic, grid, sample)
-        grid = np.arange(10)
-        sample = np.array([1])
-        self.assertRaises(ValueError, interp_cubic, grid, sample)
+    def test_interp_cubic_size(self):
+        for m, n in [(10, 5), (10, 20), (4, 4)]:
+            grid = np.linspace(10, 20, m)
+            sample = np.logspace(10, 20, n)
+            interp = interp_cubic(grid, sample)
+            self.assertEqual(interp.shape, (n, m))
 
-    def test_interp_cubic_raises_sample_upper_bound(self):
+    def test_interp_cubic_sample_lower_bound(self):
         grid = np.arange(10)
-        sample = np.array([9])
-        self.assertRaises(ValueError, interp_cubic, grid, sample)
+        expected_interp = np.zeros((1, 10))
+        expected_interp[0, 0] = 1
+        for i in [-2, -2.5]:
+            sample = np.array([i])
+            interp = interp_cubic(grid, sample)
+            np.testing.assert_allclose(interp.toarray(), expected_interp)
+
+    def test_interp_cubic_sample_upper_bound(self):
         grid = np.arange(10)
-        sample = np.array([8])
-        self.assertRaises(ValueError, interp_cubic, grid, sample)
+        expected_interp = np.zeros((1, 10))
+        expected_interp[0, -1] = 1
+        for i in [11, 11.5]:
+            sample = np.array([i])
+            interp = interp_cubic(grid, sample)
+            print(i, interp.toarray())
+            np.testing.assert_allclose(interp.toarray(), expected_interp)
 
     def test_interp_cubic(self):
         grid = np.arange(-0.1, 10.1, 0.1)

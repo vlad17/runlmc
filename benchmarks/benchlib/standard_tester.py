@@ -337,8 +337,7 @@ def statsline(ls):
     return ' '.join(combined)
 
 TABLE_EPILOG = r"""
-\belowspace \\
-\hline
+\bottomrule
 \end{tabular}
 """
 
@@ -363,14 +362,11 @@ def latex_table(filename, cols, col_results):
         row = ' & '.join([metric] + stringified) + r'\\' + '\n'
         latex += row
 
-    # drop the last \\\n
-    latex = latex[:-3]
-
-    colfmt = '|l|' + 'c' * ncols + '|'
+    colfmt = 'l' + 'c' * ncols
     begin = (r'\begin{tabular}{' + colfmt + r'}'
-             r'\hline\abovespace\belowspace' + '\n'
+             r'\toprule' + '\n'
              r'Metric & ' + ' & '.join(cols) + r'\\' + '\n'
-             r'\hline\abovespace' + '\n')
+             r'\midrule' + '\n')
     end = TABLE_EPILOG
 
     outdir = sys.argv[2]

@@ -7,11 +7,15 @@
 # copyrights and/or licences to both code source in this repository's
 # LICENSE file.
 
+import logging
+
 import numpy as np
 import scipy
 import scipy.sparse
 
 from ..util.numpy_convenience import begin_end_indices
+
+_LOG = logging.getLogger(__name__)
 
 def cubic_kernel(x):
     """
@@ -58,13 +62,16 @@ def interp_cubic(grid, samples):
     For a (vectorized) twice-differentiable function `f`, `M.dot(f(grid))`
     approaches `f(sample)` at a rate of :math:`O(m^{-3})`.
 
+    `samples` should be contained with the range of `grid`, but this method
+    will make do will work with what it has (it will clip things back into
+    range).
+
     :returns: the interpolation coefficient matrix
     :raises ValueError: if any of the following hold true:
 
         #. `grid` or `samples` are not 1-dimensional
         #. `grid` size less than 4
         #. `grid` is not equispaced
-        #. `samples` is not strictly contained in `grid[1:-1]`
     """
 
     grid_size = len(grid)
@@ -82,15 +89,9 @@ def interp_cubic(grid, samples):
     if grid_size < 4:
         raise ValueError('grid size {} must be >=4'.format(grid_size))
 
-    if samples.min() <= grid[1]:
-        raise ValueError(
-            'Second grid point {} must be < the min sample {}'
-            .format(grid[1], samples.min()))
-
-    if samples.max() >= grid[-2]:
-        raise ValueError(
-            'Penultimate grid point {} must be > the max sample {}'
-            .format(grid[-2], samples.max()))
+    if samples.min() <= grid[0] or samples.max() >= grid[-1]:
+        _LOG.warning('range of samples [%f, %f] outside grid range [%f, %f]',
+                     samples.min(), samples.max(), grid[0], grid[-1])
 
     delta = grid[1] - grid[0]
     factors = (samples - grid[0]) / delta
@@ -101,6 +102,9 @@ def interp_cubic(grid, samples):
     csr = scipy.sparse.csr_matrix((n_samples, grid_size), dtype=float)
     for conv_idx in range(-2, 2): # cubic conv window
         coeff_idx = idx_of_closest - conv_idx
+        coeff_idx[coeff_idx < 0] = 0 # threshold (no wraparound below)
+        coeff_idx[coeff_idx >= grid_size] = grid_size - 1 # none above
+
         relative_dist = dist_to_closest + conv_idx
         data = cubic_kernel(relative_dist)
         col_idx = coeff_idx
