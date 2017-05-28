@@ -13,7 +13,7 @@ This modules contains :class:`Prior`, the base type for all priors available.
 
 import numpy as np
 from paramz.domains import _REAL
-from scipy.special import gammaln, digamma
+from scipy.special import gammaln
 
 def _assert_no_constraints(x):
     assert all(c is _REAL for c in x._all_constraints())
@@ -61,6 +61,13 @@ class Prior:
         """
         raise NotImplementedError
 
+    @staticmethod
+    def _param_print(x):
+        from .param import Param
+        if isinstance(x, Param):
+            return x.name
+        return '{}'.format(x)
+
 # TODO(cleanup): test and document below
 
 class Gaussian(Prior):
@@ -74,7 +81,9 @@ class Gaussian(Prior):
         self.constant = -0.5 * np.log(2 * np.pi * self.var)
 
     def __str__(self):
-        return "N({:.2g}, {:.2g})".format(self.mu, self.var)
+        mustr = Prior._param_print(self.mu)
+        varstr = Prior._param_print(self.var)
+        return "N({}, {})".format(mustr, varstr)
 
     def lnpdf(self, x):
         return self.constant - 0.5 * np.square(x - self.mu) / self.var
@@ -91,7 +100,9 @@ class Gamma(Prior):
         self.constant = -gammaln(self.a) + a * np.log(b)
 
     def __str__(self):
-        return "Gamma({:.2g}, {:.2g})".format(self.a, self.b)
+        astr = Prior._param_print(self.a)
+        bstr = Prior._param_print(self.b)
+        return "Gamma({},{})".format(astr, bstr)
 
     def lnpdf(self, x):
         return self.constant + (self.a - 1) * np.log(x) - self.b * x
@@ -121,7 +132,9 @@ class InverseGamma(Prior):
         self.constant = -gammaln(self.a) + a * np.log(b)
 
     def __str__(self):
-        return "InvGamma({:.2g}, {:.2g})".format(self.a, self.b)
+        astr = Prior._param_print(self.a)
+        bstr = Prior._param_print(self.b)
+        return "InverseGamma({},{})".format(astr, bstr)
 
     def lnpdf(self, x):
         return self.constant - (self.a + 1) * np.log(x) - self.b / x
@@ -137,7 +150,7 @@ class HalfLaplace:
         self.constant = - np.log(self.b)
 
     def __str__(self):
-        return "HalfLaplace({:.2g})".format(self.b)
+        return "HalfLaplace({})".format(Prior._param_print(self.b))
 
     def lnpdf(self, x):
         return self.constant - x / self.b
