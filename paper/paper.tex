@@ -244,7 +244,7 @@ The full predictive covariance estimate requires finding a new term $K_{*,X}K_{X
 
 \section{Results}
 \label{sec:results}
-We evaluate the methods on held out data by using standardized mean square error (SMSE) of the test points with the predicted mean, and the negative log predictive density (NLPD) of the Gaussian likelihood of the inferred model. NLPD takes confidence into account, while SMSE only evaluates the mean prediction. In both cases, lower values represent better performance. We evaluated the performance of our flexible representations of the kernel, \textsc{sum}, \textsc{bt}, and \textsc{slfm}, by computing exact gradients using the standard Cholesky algorithm for a grid of different kernels (see Supplement).\footnote{Hyperparameters for the stopping condition, code, and benchmarking scripts are available in <anonymous repository>.}
+We evaluate the methods on held out data by using standardized mean square error (SMSE) of the test points with the predicted mean, and the negative log predictive density (NLPD) of the Gaussian likelihood of the inferred model. NLPD takes confidence into account, while SMSE only evaluates the mean prediction. In both cases, lower values represent better performance. We evaluated the performance of our flexible representations of the kernel, \textsc{sum}, \textsc{bt}, and \textsc{slfm}, by computing exact gradients using the standard Cholesky algorithm for a grid of different kernels (see Supplement).\footnote{Hyperparameters for the stopping condition, code, and benchmarking scripts are available in \url{https://github.com/vlad17/runlmc}.}
 
 \subsection{Foreign exchange rate prediction (FX2007)}\label{fx2007-results}
 
