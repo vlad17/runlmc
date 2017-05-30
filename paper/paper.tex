@@ -140,8 +140,8 @@ We depart from Gibbs and MacKay in two important ways (Algorithm~\ref{alg:grad})
 
 \begin{figure}[!h]
 \begin{center}
-  \subfigure[]{\includegraphics[width=0.4\columnwidth]{iterations.eps}}
-  \subfigure[]{\includegraphics[width=0.4\columnwidth]{running_cutoff.eps}}
+  \subfigure[]{\includegraphics[width=0.4\columnwidth]{iterations.pdf}}
+  \subfigure[]{\includegraphics[width=0.4\columnwidth]{running_cutoff.pdf}}
 \end{center}
 \caption{Trace of (a) the number of MVMs that \textsc{minres} must perform to invert $K_{|\bsth}^{-1}\Ty$ and (b) $\mcL, \norm{\nabla\mcL}$ given $\bsth$ at each optimization iteration for a GP applied to the dataset in Sec.~\ref{fx2007-results}. In (b), in green, we have 20\% of the rolling maximum $\infty$-norm of previous gradients.
 }
@@ -292,7 +292,7 @@ LLGP performed slightly worse than COGP in SMSE, but both NLPD and runtime indic
 \begin{wrapfigure}{r}{0.5\textwidth}
 %\begin{figure}[!h]
 \centering
-{\includegraphics[width=0.4\columnwidth]{m_time_nlpd.eps}}
+{\includegraphics[width=0.4\columnwidth]{m_time_nlpd.pdf}}
 \caption{Average and standard error of NLPD and runtime of the SLFM model on LLGP across over varying interpolating points. Every setting was run $10$ times.}
 \label{fig:llgpweather}
 %\end{figure}
