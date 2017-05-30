@@ -1,0 +1,127 @@
+\begin{thebibliography}{19}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alvarez et~al.(2012)Alvarez, Rosasco, Lawrence,
+  et~al.]{alvarez2012kernels}
+Mauricio Alvarez, Lorenzo Rosasco, Neil Lawrence, et~al.
+\newblock Kernels for vector-valued functions: A review.
+\newblock \emph{Foundations and Trends{\textregistered} in Machine Learning},
+  4\penalty0 (3):\penalty0 195--266, 2012.
+
+\bibitem[Wilson et~al.(2015)Wilson, Dann, and Nickisch]{msgp}
+Andrew Wilson, Christoph Dann, and Hannes Nickisch.
+\newblock Thoughts on massively scalable {G}aussian processes.
+\newblock \emph{arXiv preprint arXiv:1511.01870}, 2015.
+
+\bibitem[Williams and Rasmussen(1996)]{williams1996gaussian}
+Christopher Williams and Carl Rasmussen.
+\newblock Gaussian processes for regression.
+\newblock \emph{Advances in neural information processing systems}, pages
+  514--520, 1996.
+
+\bibitem[Osborne et~al.(2008)Osborne, Roberts, Rogers, Ramchurn, and
+  Jennings]{osborne2008towards}
+Michael Osborne, Stephen Roberts, Alex Rogers, Sarvapali Ramchurn, and Nicholas
+  Jennings.
+\newblock Towards real-time information processing of sensor network data using
+  computationally efficient multi-output {G}aussian processes.
+\newblock In \emph{7th international conference on Information processing in
+  sensor networks}, pages 109--120. IEEE Computer Society, 2008.
+
+\bibitem[Alvarez et~al.(2010)Alvarez, Luengo, Titsias, and
+  Lawrence]{alvarez2010efficient}
+Mauricio Alvarez, David Luengo, Michalis Titsias, and Neil~D Lawrence.
+\newblock Efficient multioutput {G}aussian processes through variational
+  inducing kernels.
+\newblock In \emph{AISTATS}, volume~9, pages 25--32, 2010.
+
+\bibitem[Nguyen et~al.(2014)Nguyen, Bonilla, et~al.]{nguyen2014collaborative}
+Trung Nguyen, Edwin Bonilla, et~al.
+\newblock Collaborative multi-output {G}aussian processes.
+\newblock In \emph{UAI}, pages 643--652, 2014.
+
+\bibitem[Gilboa et~al.(2015)Gilboa, Saat{\c{c}}i, and
+  Cunningham]{gilboa2015scaling}
+Elad Gilboa, Yunus Saat{\c{c}}i, and John Cunningham.
+\newblock Scaling multidimensional inference for structured {G}aussian
+  processes.
+\newblock \emph{IEEE transactions on pattern analysis and machine
+  intelligence}, 37\penalty0 (2):\penalty0 424--436, 2015.
+
+\bibitem[Cunningham et~al.(2008)Cunningham, Shenoy, and
+  Sahani]{cunningham2008fast}
+John Cunningham, Krishna Shenoy, and Maneesh Sahani.
+\newblock Fast {G}aussian process methods for point process intensity
+  estimation.
+\newblock In \emph{25th international conference on Machine learning}, pages
+  192--199. ACM, 2008.
+
+\bibitem[Qui{\~n}onero-Candela and Rasmussen(2005)]{quinonero2005unifying}
+Joaquin Qui{\~n}onero-Candela and Carl Rasmussen.
+\newblock A unifying view of sparse approximate {G}aussian process regression.
+\newblock \emph{Journal of Machine Learning Research}, 6\penalty0
+  (Dec):\penalty0 1939--1959, 2005.
+
+\bibitem[Seeger et~al.(2005)Seeger, Teh, and Jordan]{seeger2005semiparametric}
+Matthias Seeger, Yee-Whye Teh, and Michael Jordan.
+\newblock Semiparametric latent factor models.
+\newblock In \emph{Eighth Conference on Artificial Intelligence and
+  Statistics}, 2005.
+
+\bibitem[Wilson and Nickisch(2015)]{kiss-gp}
+Andrew Wilson and Hannes Nickisch.
+\newblock Kernel interpolation for scalable structured {G}aussian processes
+  (kiss-gp).
+\newblock In \emph{The 32nd International Conference on Machine Learning},
+  pages 1775--1784, 2015.
+
+\bibitem[Keys(1981)]{keys1981cubic}
+Robert Keys.
+\newblock Cubic convolution interpolation for digital image processing.
+\newblock \emph{IEEE transactions on acoustics, speech, and signal processing},
+  29\penalty0 (6):\penalty0 1153--1160, 1981.
+
+\bibitem[Wilson et~al.(2014)Wilson, Gilboa, Cunningham, and
+  Nehorai]{wilson2014fast}
+Andrew Wilson, Elad Gilboa, John Cunningham, and Arye Nehorai.
+\newblock Fast kernel learning for multidimensional pattern extrapolation.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pages
+  3626--3634, 2014.
+
+\bibitem[Zeiler(2012)]{zeiler2012adadelta}
+Matthew Zeiler.
+\newblock Adadelta: an adaptive learning rate method.
+\newblock \emph{arXiv preprint arXiv:1212.5701}, 2012.
+
+\bibitem[Gibbs and MacKay(1996)]{gibbs1996cient}
+Mark Gibbs and David MacKay.
+\newblock Efficient implementation of {G}aussian processes, 1996.
+
+\bibitem[Cutajar et~al.(2016)Cutajar, Osborne, Cunningham, and
+  Filippone]{cutajar2016preconditioning}
+Kurt Cutajar, Michael Osborne, John Cunningham, and Maurizio Filippone.
+\newblock Preconditioning kernel matrices.
+\newblock In \emph{ICML}, pages 2529--2538, 2016.
+
+\bibitem[Fong and Saunders(2012)]{fong2012cg}
+David Fong and Michael Saunders.
+\newblock {CG} versus {MINRES}: an empirical comparison.
+\newblock \emph{SQU Journal for Science}, 17\penalty0 (1):\penalty0 44--62,
+  2012.
+
+\bibitem[Raykar and Duraiswami(2007)]{raykar2007fast}
+Vikas Raykar and Ramani Duraiswami.
+\newblock Fast large scale {G}aussian process regression using approximate
+  matrix-vector products.
+\newblock In \emph{Learning workshop}, 2007.
+
+\bibitem[Chan and Olkin(1994)]{chan1994circulant}
+Tony Chan and Julia Olkin.
+\newblock Circulant preconditioners for toeplitz-block matrices.
+\newblock \emph{Numerical Algorithms}, 6\penalty0 (1):\penalty0 89--101, 1994.
+
+\end{thebibliography}
