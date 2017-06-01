@@ -68,6 +68,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
+0. HalfLaplace should be a Prior, add vectorized priors (remembering the shape)
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?
