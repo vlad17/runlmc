@@ -18,6 +18,7 @@ from ..util.numpy_convenience import begin_end_indices
 # TODO(test): all of below. Should be able to copy flow of benchmark,
 # more or less
 
+
 class LMCKernel:
 
     def __init__(self, params):
@@ -86,6 +87,7 @@ class LMCKernel:
             grad[i] = self._dLdt_from_dKdt(dKdt)
         return grad
 
+
 class ApproxLMCKernel(LMCKernel):
     def __init__(self, params, grid_kern, grid_dists, metrics, pool=None):
         super().__init__(params)
@@ -116,6 +118,7 @@ class ApproxLMCKernel(LMCKernel):
 
     def alpha(self):
         return self.deriv.alpha
+
 
 class ExactLMCKernel(LMCKernel):
     def __init__(self, params, pair_dists, invert=True, noise=True):

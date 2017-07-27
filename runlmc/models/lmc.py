@@ -30,6 +30,7 @@ from ..util.docs import inherit_doc
 
 _LOG = logging.getLogger(__name__)
 
+
 @inherit_doc
 class LMC(MultiGP):
     """
@@ -154,7 +155,8 @@ class LMC(MultiGP):
                                  values.
     :raises: :class:`ValueError` if no kernels
     """
-    def __init__(self, Xs, Ys, normalize=True, kernels=[], # pylint: disable=too-many-arguments
+
+    def __init__(self, Xs, Ys, normalize=True, kernels=[],  # pylint: disable=too-many-arguments
                  ranks=None, lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='matrix-free',
                  variance_samples=20, max_procs=None,
@@ -208,7 +210,8 @@ class LMC(MultiGP):
             ranks = [1 for _ in kernels]
 
         distrib = scipy.stats.truncnorm(-1, 1)
-        randinit = lambda sx, sy: distrib.rvs(size=(sx, sy))
+
+        def randinit(sx, sy): return distrib.rvs(size=(sx, sy))
 
         self.coreg_vecs = []
         initial_vecs = []
@@ -317,8 +320,9 @@ class LMC(MultiGP):
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
+
             def np_print(x):
-                return np.array2string(np.copy(x), formatter={'float':fmt})
+                return np.array2string(np.copy(x), formatter={'float': fmt})
             _LOG.debug('Parameters changed')
             _LOG.debug('log likelihood   %f', self.log_likelihood())
             _LOG.debug('normal quadratic %f', self.normal_quadratic())
@@ -406,7 +410,7 @@ class LMC(MultiGP):
 
     def log_likelihood(self):
         nll = self.log_det_K() + self.normal_quadratic()
-        nll += len(self.y) * np.log(2*np.pi)
+        nll += len(self.y) * np.log(2 * np.pi)
         return -0.5 * nll
 
     # Predictive mean for grid points U
