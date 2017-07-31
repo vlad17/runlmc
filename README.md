@@ -68,33 +68,7 @@ All below invocations should be done from the repo root.
 
 ### Roadmap
 
-0. HalfLaplace should be a Prior, add vectorized priors (remembering the shape)
-0. Automatically find `min_grad_ratio` parameter. 
-    * validate on small subset to get min grad ratio?
-    * use quadratic form as a proxy?
-    * Logdet approximations: (1) [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet) (2) [Integral Probing](https://arxiv.org/abs/1504.02661) (3) [Lanczos](http://www-users.cs.umn.edu/~saad/PDF/ys-2016-04.pdf).
-0. Preconditioning
-    * Cache Krylov solutions over iterations?
-    * Cutajar 2016 iterative inversion approach?
-    * T.Chan preconditioning for specialized on-grid case (needs development of partial grid)
-0. Minor perf improvements: what helps?
-    * CPython; numba.
-    * In-place multiplication where possible
-    * square matrix optimizations
-    * TODO(sparse-derivatives)
-0. Benchmark speedup: slurm-broadcasted prediction...?
 0. move to read the docs
-0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups? -> No, don't waste time on this.
-0. multidimensional inputs and ARD.
-0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
-
-### Considerations 
-
-* Real datasets: [link1](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php)
-* Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
-
-### Low-priority Tasks
-
 0. migrate (and, in turn, clean up both stylistically and in terms of hackiness of code) `stadard_tester.py` in `benchmarks/benchlib`
 0. TODO(cleanup) - apprx to approx everywhere, kerns to kernels
 0. Allow extrapolation in util.interpolation.py
@@ -102,7 +76,31 @@ All below invocations should be done from the repo root.
 0. test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math
 0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh (numpy.linalg -> scipy.linalg as la, scipy.sparse.linalg as sla)
 0. rename `rand_psd` -> `rand_pd`
-0. Continuous integration for unit tests
+0. Benchmark speedup: slurm-broadcasted prediction, or maybe AWS? Some kind of centralized processing solution?
+0. Automatically find `min_grad_ratio` parameter. 
+    * validate on small subset to get min grad ratio?
+    * use quadratic form as a proxy?
+    * Logdet approximations: (1) [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet) (2) [Integral Probing](https://arxiv.org/abs/1504.02661) (3) [Lanczos](http://www-users.cs.umn.edu/~saad/PDF/ys-2016-04.pdf) (4) approx `tr log (A)` with MVM from [f(A)b](http://epubs.siam.org/doi/abs/10.1137/090778250) paper
+0. Preconditioning
+    * Cache Krylov solutions over iterations?
+    * Cutajar 2016 iterative inversion approach?
+    * T.Chan preconditioning for specialized on-grid case (needs development of partial grid)
+0. Compare to [MTGP](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php), [CGP](http://www.jmlr.org/papers/volume12/alvarez11a/alvarez11a.pdf)
+0. Minor perf improvements: what helps?
+    * CPython; numba.
+    * In-place multiplication where possible
+    * square matrix optimizations
+    * TODO(sparse-derivatives)
+0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups?
+0. multidimensional inputs and ARD.
+0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
+0. HalfLaplace should be a Prior, add vectorized priors (remembering the shape)
 0. mean functions
 0. product kernels (multiple factors) 
 0. active dimension optimization
+
+### Considerations 
+
+* Real datasets: 
+* Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
+
