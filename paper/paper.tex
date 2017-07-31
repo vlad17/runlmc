@@ -66,21 +66,21 @@ Our paper is organized as follows. In Sec.~\ref{sec:background} we give backgrou
 A GP is a set of random variables (RVs) $\{y_\Tx\}_\Tx$ indexed by $\Tx\in\mcX$, with the property that, for any finite collection $X=\idx{\Tx_i}{i=1}{n}$ of $\mcX$, the RVs are jointly Gaussian \cite{williams1996gaussian}. With zero mean without loss of generality and a prespecified covariance $K:\mcX^2\rightarrow\R$, $\Ty_X\sim N\pa{\bsz, K_{X, X}}$, where $(\Ty_X)_i=y_{\Tx_i}$ and $(K_{X,X})_{ij}=K(\Tx_i,\Tx_j)$. Given observations of $\Ty_X$, inference at a single point $*\in\mcX$ of an $\R$-valued RV $y_*$ is performed by the marginalization $y_*|\Ty_X$ \cite{williams1996gaussian}.
 Predictive accuracy is sensitive to a particular parameterization of our kernel, and model estimation is performed by maximizing data log likelihood with respect to parameters $\bsth$ of $K$, $\mcL(\bsth)=\log p(\Ty_{X}|X,\bsth)$. Gradient-based optimization methods then require the gradient with respect to every parameter $\theta_j$ of $\bsth$:
 \begin{align}
-\partial_{\theta_j}\mcL = \frac{1}{2}\bsa^\top\partial_{\theta_j}K_{|\bsth}\bsa -\frac{1}{2}\Tr\pa{K_{|\bsth}^{-1}\partial_{\theta_j}K_{|\bsth}};\;\; \bsa=K_{|\bsth}^{-1}\Ty.\label{llgradient}
+\partial_{\theta_j}\mcL = \frac{1}{2}\bsa^\top\partial_{\theta_j}K_{X,X}\bsa -\frac{1}{2}\Tr\pa{K_{X,X}^{-1}\partial_{\theta_j}K_{X,X}};\;\; \bsa=K_{X,X}^{-1}\Ty.\label{llgradient}
 \end{align}
 
 \subsection{Multi-output linear GPs}
 
 We build multi-output GP models as instances of general GPs, where a multi-output model explicitly represents correlations between outputs through a shared input space \cite{alvarez2012kernels}. Here, for $D$ outputs, we write our indexing set as $\mcX'=[D]\times \mcX$, a point from a shared domain coupled with an output index. Then, if we make observations at $X_d\subset\mcX$ for output $d\in[D]$, we can set:
 \begin{align*}
-\TX=\set{(d, x)}{d\in[D],x\in X_d}\subset{\mcX'};\;\; n=\card{\TX}.
+X'=\set{(d, x)}{d\in[D],x\in X_d}\subset{\mcX'};\;\; n=\card{X'}.
 \end{align*}
 
 An LMC kernel $K$ is of the form 
 \begin{align}
 K([i,\Tx_i],[j,\Tx_j])=\sum_{q=1}^Qb_{ij}^{(q)}k_q(\norm{\Tx_i-\Tx_j})+\epsilon_i1_{i=j},\label{lmcpointwise}
 \end{align} 
-where $k_q:\R\rightarrow\R$ is a stationary kernel on $\mcX$. Typically, the positive semi-definite (PSD) matrices $B_q\in\R^{D\times D}$ formed by $b_{ij}^{(q)}$ are parameterized as $A_qA_q^\top+\bsk_q I_D$, with $A_q\in\R^{D\times R_q},\bsk_q\in\R_+^D$ and $R_q$ a preset rank. Importantly, even though each $k_q$ is stationary, $K$ is only stationary on $\mcX'$ if $B_q$ is Toeplitz. In practice, where we wish to capture covariance across outputs as a $D^2$-dimensional latent process, $B_q$ is not Toeplitz, so $K([i,\Tx_i],[j,\Tx_j])\neq K([i+1,\Tx_i+1],[j+1,\Tx_j+1])$.
+where $k_q:\R\rightarrow\R$ is a stationary kernel on $\mcX$. Typically, the positive semi-definite (PSD) matrices $B_q\in\R^{D\times D}$ formed by $b_{ij}^{(q)}$ are parameterized as $A_qA_q^\top+\diag\bsk_q$, with $A_q\in\R^{D\times R_q},\bsk_q\in\R_+^D$ and $R_q$ a preset rank. Importantly, even though each $k_q$ is stationary, $K$ is only stationary on $\mcX'$ if $B_q$ is Toeplitz. In practice, where we wish to capture covariance across outputs as a $D^2$-dimensional latent process, $B_q$ is not Toeplitz, so $K([i,\Tx_i],[j,\Tx_j])\neq K([i+1,\Tx_i],[j+1,\Tx_j])$.
 
 The LMC kernel provides a flexible way of specifying multiple additive contributions to the covariance between two inputs for two different outputs. The contribution of the $q$th kernel $k_q$ to the covariance between the $i$th and $j$th outputs is then specified by the multiplicative factor $b_{ij}^{(q)}$. By choosing $B_q$ to have rank $R_q=D$, the corresponding LMC model can have any positive contribution between two outputs that best fits the data, so long as $B_q$ remains PSD. By reducing the rank $R_q$, the interactions of the outputs have lower-rank latent processes, with rank 0 indicating no interaction (i.e., if $A=0$, then we have an independent GP for each output).
 
@@ -98,25 +98,23 @@ Furthermore, we can embed $T$ in the upper-left corner of a circulant matrix $C$
 \label{sec:related-work}
 \subsection{Approximate inference methods}
 
-Inducing point approaches create a tractable model to approximate the exact GP. For example, the deterministic training conditional (DTC) for a single-output GP fixes inducing points $T\subset\mcX$ and estimates kernel hyperparameters for $\Ty_{X}|\Ty_{T}\sim N(K_{X,T}K_{T,T}^{-1}\Ty_T,\sigma^2)$ \cite{quinonero2005unifying}. This approach is agnostic to kernel stationarity, so one may use inducing points for all outputs $\textbf{T}\subset \mcX'$, with the model equal to the original GP model when $\textbf{T}=\TX$ \cite{alvarez2010efficient}. Computationally, these approaches resemble making rank-$m$ approximations to the $n\times n$ covariance matrix.
+Inducing point approaches create a tractable model to approximate the exact GP. For example, the deterministic training conditional (DTC) for a single-output GP fixes inducing points $T\subset\mcX$ and estimates kernel hyperparameters for $\Ty_{X}|\Ty_{T}\sim N(K_{X,T}K_{T,T}^{-1}\Ty_T,\sigma^2)$ \cite{quinonero2005unifying}. This approach is agnostic to kernel stationarity, so one may use inducing points for all outputs $T'\subset \mcX'$, with the model equal to the exact GP model when $T'={X'}$ \cite{alvarez2010efficient}. Computationally, these approaches resemble making rank-$m$ approximations to the $n\times n$ covariance matrix.
 
-In Collaborative Multi-output Gaussian Processes (COGP), multi-output GP algorithms further share an internal representation of the covariance structure among all outputs at once~\cite{nguyen2014collaborative}. COGP fixes inducing points $\textbf{T}=[D]\times T$ for some $m$-sized $T\subset \mcX$ and puts a GP prior on $\Ty_{\textbf{T}}$ with a restricted LMC kernel that matches the Semiparametric Latent Factor Model (SLFM) \cite{seeger2005semiparametric}. Applying the COGP prior to $\Ty_X$ corresponds to an LMC kernel (Eq.~\ref{lmcpointwise}) where $\bsk_q$ is set to 0 and $A_q=\textbf{a}_q\in\R^{D\times 1}$. Moreover, SLFM and COGP models include an independent GP for each output, represented in LMC as additional kernels $\idx{k_d}{d=1}{D}$, where $A_d=0$ and $\bsk_d=\Te_d\in\R^D$. COGP uses its shared structure to derive efficient expressions for variational inference for parameter estimation.
+In Collaborative Multi-output Gaussian Processes (COGP), multi-output GP algorithms further share an internal representation of the covariance structure among all outputs at once~\cite{nguyen2014collaborative}. COGP fixes inducing points ${T'}=[D]\times T$ for some $m$-sized $T\subset \mcX$ and puts a GP prior on $\Ty_{{T'}}$ with a restricted LMC kernel that matches the Semiparametric Latent Factor Model (SLFM) \cite{seeger2005semiparametric}. Applying the COGP prior to $\Ty_X$ corresponds to an LMC kernel (Eq.~\ref{lmcpointwise}) where $\bsk_q$ is set to 0 and $A_q=\textbf{a}_q\in\R^{D\times 1}$. Moreover, SLFM and COGP models include an independent GP for each output, represented in LMC as additional kernels $\idx{k_d}{d=1}{D}$, where $A_d=0$ and $\bsk_d=\Te_d\in\R^D$. COGP uses its shared structure to derive efficient expressions for variational inference for parameter estimation.
 
-\subsection{Approaches for stationary kernels}
+\subsection{Structured Kernel Interpolation (SKI)}\label{ski-section}
 
-\subsubsection{Structured Kernel Interpolation (SKI)}\label{ski-section}
+SKI abandons the inducing-point approach: instead of using an intrinsically sparse model, SKI approximates the original $K_{X,X}$ directly \cite{kiss-gp}. To do this efficiently, SKI relies on the differentiability of $K$. For $\Tx,\Tz$ within a grid $U$, $\card{U}=m$, and $W_{\Tx,U}\in\R^{1\times m}$ as the cubic interpolation weights~\cite{keys1981cubic}, $\abs{K_{\Tx,\Tz}-W_{\Tx,U}K_{U,\Tz}}=O(m^{-3})$. The simultaneous interpolation $W_{X,U}\in\R^{n\times m}$ then yields the SKI approximation: $K_{X,X}\approx W_{X,U}K_{U,U}W_{U,X}^\top$. $W$ has only $4^dn$ nonzero entries, with $\mcX=\R^d$. Even without relying on structure, SKI reduces the representation of $K_{X,X}$ to an $m$-rank matrix.
 
-SKI abandons the inducing-point approach: instead of using an intrinsically sparse model, SKI approximates the original $K_{X,X}$ directly \cite{kiss-gp}. To do this efficiently, SKI relies on the differentiability of $K$. For $\Tx,\Tz$ within a grid $U$, $\card{U}=m$, and $W_{\Tx,U}\in\R^{1\times m}$ as the cubic interpolation weights~\cite{keys1981cubic}, $\abs{K_{\Tx,\Tz}-W_{\Tx,U}K_{U,\Tz}}=O(m^{-3})$. The simultaneous interpolation $W\triangleq W_{X,U}\in\R^{n\times m}$ then yields the SKI approximation: $K_{X,X}\approx WK_{U,U}W^\top$. $W$ has only $4^dn$ nonzero entries, with $\mcX=\R^d$. Even without relying on structure, SKI reduces the representation of $K_{X,X}$ to an $m$-rank matrix.
+Massively Scalable Gaussian Processes (MSGP) exploits structure as well: the kernel $K_{U,U}$ on a grid has Kronecker and Toeplitz matrix structure \cite{msgp}. Drawing on previous work on structured GPs \cite{cunningham2008fast, gilboa2015scaling}, MSGP uses linear conjugate gradient descent as a method for evaluating $K_{X,X}^{-1}\Ty$ efficiently for Eq.~\ref{llgradient}. In addition, an efficient eigendecomposition that carries over to the SKI kernel for the remaining $\log\abs{K_{X,X}}$ term in Eq.~\ref{llgradient} has been noted previously \cite{wilson2014fast}.
 
-Massively Scalable Gaussian Processes (MSGP) exploits structure as well: the kernel $K_{U,U}$ on a grid has Kronecker and Toeplitz matrix structure \cite{msgp}. Drawing on previous work on structured GPs \cite{cunningham2008fast, gilboa2015scaling}, MSGP uses linear conjugate gradient descent as a method for evaluating $K_{|\bsth}^{-1}\Ty$ efficiently for Eq.~\ref{llgradient}. In addition, an efficient eigendecomposition that carries over to the SKI kernel for the remaining $\log\abs{K_{|\bsth}}$ term in Eq.~\ref{llgradient} has been noted previously \cite{wilson2014fast}.
-
-Although evaluating $\log\abs{K_{|\bsth}}$ is not feasible in the LMC setting because the LMC sum breaks Kronecker and Toeplitz structure, the approach of creating structure with SKI carries over to LLGP.
+Although evaluating $\log\abs{K_{X',X'}}$ is not feasible in the LMC setting because the LMC sum breaks Kronecker and Toeplitz structure, the approach of creating structure with SKI carries over to LLGP.
 
 \section{Contributions of LLGP}\label{sec:contributions}
 
 First, we identify a block-Toeplitz structure induced by the LMC kernel evaluated on a uniformly spaced grid of inputs. Next, we show how an LMC kernel can be decomposed into two block diagonal components, one of which has structure similar to that of SLFM \cite{seeger2005semiparametric}. Both of these structures coordinate for fast matrix-vector multiplication $K\Tz$ with the covariance matrix $K$ for any vector $\Tz$.
 
-With multiple outputs, LMC cross-covariance interactions violate the assumptions of SKI's cubic interpolation, which require full stationarity (invariance to translation in the indexing space $\mcX'$). We show a modification to SKI is compatible with the piecewise-differentiable LMC kernel, which is only invariant to translation along the indexing subspace $\mcX$ (the subkernels $k_q$ are stationary). This partial stationarity induces the previously-identified block-Toeplitz structure of the LMC kernel and enables acceleration of GP estimation for non-uniform inputs.
+With multiple outputs, LMC cross-covariance interactions violate the assumptions of SKI's cubic interpolation, which require full stationarity (invariance to translation in the indexing space $\mcX'$) and differentiability. We show a modification to SKI is compatible with the piecewise-differentiable LMC kernel, which is only invariant to translation along the indexing subspace $\mcX$ (the subkernels $k_q$ are stationary). This partial stationarity induces the previously-identified block-Toeplitz structure of the LMC kernel and enables acceleration of GP estimation for non-uniform inputs.
 
 For low-dimensional inputs, the above contributions offer an asymptotic and practical runtime improvement in hyperparameter estimation while also expanding the feasible kernel families to any differentiable LMC kernels, relative to COGP (Tab.~\ref{asymp}) \cite{nguyen2014collaborative}.
 
@@ -125,45 +123,45 @@ For low-dimensional inputs, the above contributions offer an asymptotic and prac
 We propose a linear model of coregionalization (LMC) method based on recent structure-based optimizations for GP estimation instead of variational approaches. Critically, the accuracy of the method need not be reduced by keeping the number of interpolation points $m$ low, because its reliance on structure allows better asymptotic performance.
 For simplicity, our work focuses on multi-dimensional outputs, one-dimensional inputs, and Gaussian likelihoods.
 
-For a given $\bsth$, we construct an operator $\tilde{K}_{|\bsth}$ which approximates MVMs with the covariance matrix, $K_{|\bsth}\Tz\approx \tilde{K}_{|\bsth}\Tz$. Using only the action of MVM with the covariance operator, we derive $\nabla\mcL(\bsth)$. Critically, we cannot access $\mcL$ itself, only $\nabla\mcL$, so we choose AdaDelta as a gradient-only high-level optimization routine for $\mcL$ \cite{zeiler2012adadelta}.
+For a given $\bsth$, we construct an operator $\tilde{K}$ which approximates MVMs with the exact covariance matrix evaluated, which for brevity we overload as $K\triangleq K_{X',X'}$, so $K\Tz\approx \tilde{K}\Tz$. Using only the action of MVM with the covariance operator, we derive $\nabla\mcL(\bsth)$. Critically, we cannot access $\mcL$ itself, only $\nabla\mcL$, so we choose AdaDelta as a gradient-only high-level optimization routine for $\mcL$ \cite{zeiler2012adadelta}.
 
 
 \subsection{Gradient construction}
 
-\citet{gibbs1996cient} describe the algorithm for GP model estimation in terms of only MVMs with the covariance matrix. In particular, they note that we can solve for $\bsa$ satisfying $K_{|\bsth}\bsa=\Ty$ in Eq.~\ref{llgradient} using linear conjugate gradient descent (LCG). Moreover, they develop a stochastic approximation by introducing RV $\tbr$ with $\cov \tbr=I$:
+\citet{gibbs1996cient} describe the algorithm for GP model estimation in terms of only MVMs with the covariance matrix. In particular, we can solve for $\bsa$ satisfying $K\bsa=\Ty$ in Eq.~\ref{llgradient} using linear conjugate gradient descent (LCG). Moreover, Gibbs and MacKay develop a stochastic approximation by introducing RV $\tbr$ with $\cov \tbr=I$:
 \begin{align}
-  \Tr\pa{K_{|\bsth}^{-1}\partial_{\theta_j}K_{|\bsth}} = \E\left[(K_{|\bsth}^{-1}\tbr)^\top\partial_{\theta_j}K_{|\bsth}\tbr\right]\label{eq:trace}.
+  \Tr\pa{K^{-1}\partial_{\theta_j}K} = \E\left[(K^{-1}\tbr)^\top\partial_{\theta_j}K\tbr\right]\label{eq:trace}.
 \end{align}
-This approximation improves as the size of $K_{|\bsth}$ increases, so, as in other work \cite{cutajar2016preconditioning}, we let $\tbr\sim\Unif\{\pm 1\}$ and take a fixed number $N$ samples from $\tbr$.
+This approximation improves as the size of $K$ increases, so, as in other work \cite{cutajar2016preconditioning}, we let $\tbr\sim\Unif\{\pm 1\}$ and take a fixed number $N$ samples from $\tbr$.
 
-We depart from Gibbs and MacKay in two important ways (Algorithm~\ref{alg:grad}). First, we do not construct $K_{|\bsth}$, but instead keep a low-memory representation $\tilde{K}_{|\bsth}$ (Sec.~\ref{fast-mvm}). Second, we use \textsc{minres} instead of LCG as the Krylov-subspace inversion method used to compute inverses from MVMs. Iterative \textsc{minres} solutions to numerically semidefinite matrices monotonically improve in practice, as opposed to LCG \cite{fong2012cg}. This is essential in GP optimization, where the diagonal noise matrix $\bse$, iid for each output, shrinks throughout learning. Inversion-based methods then require additional iterations because $\kappa_2$, the spectral condition number of $K_{|\bsth}$, increases as $K_{|\bsth}$ becomes less diagonally dominant (Fig.~\ref{fx2007-iterations}).
+We depart from Gibbs and MacKay in two important ways (Algorithm~\ref{alg:grad}). First, we do not construct $K$, but instead keep a low-memory representation $\tilde{K}$ (Sec.~\ref{fast-mvm}). Second, we use \textsc{minres} instead of LCG as the Krylov-subspace inversion method used to compute inverses from MVMs. Iterative \textsc{minres} solutions to numerically semidefinite matrices monotonically improve in practice, as opposed to LCG \cite{fong2012cg}. This is essential in GP optimization, where the diagonal noise matrix $\bse$, iid for each output, shrinks throughout learning. Inversion-based methods then require additional iterations because $\kappa_2$, the spectral condition number of $K$, increases as $K$ becomes less diagonally dominant (Fig.~\ref{fx2007-iterations}).
 
 \begin{figure}[!h]
 \begin{center}
   \subfigure[]{\includegraphics[width=0.4\columnwidth]{iterations.eps}}
   \subfigure[]{\includegraphics[width=0.4\columnwidth]{running_cutoff.eps}}
 \end{center}
-\caption{Trace of (a) the number of MVMs that \textsc{minres} must perform to invert $K_{|\bsth}^{-1}\Ty$ and (b) $\mcL, \norm{\nabla\mcL}$ given $\bsth$ at each optimization iteration for a GP applied to the dataset in Sec.~\ref{fx2007-results}. In (b), in green, we have 20\% of the rolling maximum $\infty$-norm of previous gradients.
+\caption{Trace of (a) the number of MVMs that \textsc{minres} must perform to invert $K^{-1}\Ty$ and (b) $\mcL, \norm{\nabla\mcL}$ given $\bsth$ at each optimization iteration for a GP applied to the dataset in Sec.~\ref{fx2007-results}. In (b), in green, we have 20\% of the rolling maximum $\infty$-norm of previous gradients.
 }
 \label{fx2007-iterations}
 \end{figure}
 
-Every AdaDelta iteration (invoking Algorithm~\ref{alg:grad}) then takes total time $\tilde{O}(\mvm(\tilde{K}_{|\bsth})\sqrt{\kappa_2})$ \cite{raykar2007fast}. This analysis holds as long as the error in the gradients is fixed and we can compute MVMs with the matrix $\partial_{\theta_j}K_{|\bsth}$ for each $j$ at least as fast as $\mvm({\tilde{K}_{|\bsth}})$. Indeed, we assume a differentiable kernel and then recall that applying the linear operator $\partial_{\theta_j}$ will maintain the structure of $K_{|\bsth}$.
+Every AdaDelta iteration (invoking Algorithm~\ref{alg:grad}) then takes total time $\tilde{O}(\mvm(\tilde{K})\sqrt{\kappa_2})$ \cite{raykar2007fast}. This analysis holds as long as the error in the gradients is fixed and we can compute MVMs with the matrix $\partial_{\theta_j}K$ for each $j$ at least as fast as $\mvm({\tilde{K}})$. Indeed, we assume a differentiable kernel and then recall that applying the linear operator $\partial_{\theta_j}$ will maintain the structure of $K$.
 
 For a gradient-only stopping heuristic, we maintain the running maximum gradient $\infty$-norm. If gradient norms drop below a proportion of the running max norm more than a pre-set number of times, we terminate (Fig.~\ref{fx2007-iterations}).
 
 \begin{algorithm}[!ht]
-  \caption{Compute an approximation of $\nabla L$. Assume \textsc{minres} is the inversion routine. We also assume we have access to linear operators $D_{\theta_j}$, representing matrices $\partial_{\theta_j}\tilde{K}_{|\bsth}$.} \label{alg:grad}
+  \caption{Compute an approximation of $\nabla L$. Assume \textsc{minres} is the inversion routine. We also assume we have access to linear operators $\partial_{\theta_j}$, representing matrices $\partial_{\theta_j}\tilde{K}$.} \label{alg:grad}
 \begin{algorithmic}[1]
-  \Procedure{LLGP}{$\tilde{K}_{|\bsth}$, $\Ty$, $N$, $\{D_{\theta_j}\}$}
+  \Procedure{LLGP}{$\tilde{K}$, $\Ty$, $N$, $\{\partial_{\theta_j}\}$}
   \State $R\gets\idx{\tbr_i}{i=1}{N}$, sampling $\tbr\sim\Unif\{\pm 1\}$.
 \For{$\Tz$ in $\{\Ty\}\cup R$, in parallel}
-\State $K^{-1}\Tz\gets\textsc{minres}(\tilde{K}_{|\bsth},\Tz)$.
+\State $K^{-1}\Tz\gets\textsc{minres}(\tilde{K},\Tz)$.
 \EndFor
 \State $g\gets \bsz$
 \For{$\theta_j$ in $\bsth$}\Comment{Compute $\partial_{\theta_j}\mcL$}
-\State $t\gets \frac{1}{N}\sum_{i=1}^{N}\pa{K^{-1}\tbr_i}\cdot D_{\theta_j}(\tbr_i)$\Comment{$t$ approximates the trace term of Eq.~\ref{eq:trace}}
-\State $g_j\gets \frac{1}{2}\pa{K^{-1}\Ty}\cdot \tilde{K}_{|\bsth}\pa{K^{-1}\Ty}-\frac{1}{2}t$\Comment{Eq.~\ref{llgradient}}
+\State $t\gets \frac{1}{N}\sum_{i=1}^{N}\pa{K^{-1}\tbr_i}\cdot \partial_{\theta_j}(\tbr_i)$\Comment{$t$ approximates the trace term of Eq.~\ref{eq:trace}}
+\State $g_j\gets \frac{1}{2}\pa{K^{-1}\Ty}\cdot \tilde{K}\pa{K^{-1}\Ty}-\frac{1}{2}t$\Comment{Eq.~\ref{llgradient}}
 \EndFor
 \State \Return $g$ 
 \EndProcedure
@@ -172,45 +170,45 @@ For a gradient-only stopping heuristic, we maintain the running maximum gradient
 
 \subsection{Fast MVMs and parsimonious kernels}\label{fast-mvm}
 
-The bottleneck of Algorithm~\ref{alg:grad} is the iterative MVM operations in $\textsc{minres}$. Since $K_{|\bsth}$ only enters computation as an MVM operator, the required memory is dictated by its representation $\tilde{K}_{|\bsth}$, which need not be dense as long as we can perform MVM with any vector to arbitrary, fixed precision.
+The bottleneck of Algorithm~\ref{alg:grad} is the iterative MVM operations in $\textsc{minres}$. Since $K$ only enters computation as an MVM operator, the required memory is dictated by its representation $\tilde{K}$, which need not be dense as long as we can perform MVM with any vector to arbitrary, fixed precision.
 
-When LMC kernels are evaluated on a grid of points for each output, so $X_d=U$, the simultaneous covariance matrix equation without noise over $\TU$  (Eq.~\ref{lmcgrid}) holds for Toeplitz matrices $K_q$ formed by the stationary kernels $k_q$ evaluated the shared interpolating points $U$ for all outputs:
+When LMC kernels are evaluated on a grid of points for each output, so $X_d=U$, the simultaneous covariance matrix equation without noise over ${U'}$  (Eq.~\ref{lmcgrid}) holds for Toeplitz matrices $K_q$ formed by the stationary kernels $k_q$ evaluated the shared interpolating points $U$ for all outputs:
 \begin{align}
-  K_{\TU,\TU}=\sum_q(A_qA_q^\top+\diag\bsk_q)\otimes K_q\label{lmcgrid}.
+  K_{{U'},{U'}}=\sum_q(A_qA_q^\top+\diag\bsk_q)\otimes K_q\label{lmcgrid}.
 \end{align}
-To adapt SKI to our context of multi-output GPs, we build a grid $\TU\subset\mcX'$ out of a common subgrid $U\subset\mcX$ that extends to all outputs with $\TU = [D]\times U$. Since the LMC kernel evaluated between two sets of outputs $K_{X_i,X_j}$ is differentiable, as long as $U$ spans a range larger than each $\{X_d\}_{d\in[D]}$, the corresponding SKI approximation (Eq.~\ref{lmcski}) holds with the same asymptotic convergence cubic in $1/m$.
+To adapt SKI to our context of multi-output GPs, we build a grid ${U'}\subset\mcX'$ out of a common subgrid $U\subset\mcX$ that extends to all outputs with ${U'} = [D]\times U$. Since the LMC kernel evaluated between two sets of outputs $K_{X_i,X_j}$ is differentiable, as long as $U$ spans a range larger than each $\{X_d\}_{d\in[D]}$, the corresponding SKI approximation (Eq.~\ref{lmcski}) holds with the same asymptotic convergence cubic in $1/m$.
 \begin{align}
-  K_{\TX,\TX}\approx WK_{\TU,\TU}W^\top+\bse.\label{lmcski}
+  K\approx \tilde{K}=WK_{{U'},{U'}}W^\top+\bse.\label{lmcski}
 \end{align}
-We cannot fold $\bse$ into the interpolated term $K_{\TU,\TU}$ since it does not correspond to a differentiable kernel. However, since $\bse$ is diagonal, it is efficient to represent and multiply with. Then, the MVM $K_{\TX,\TX}\Tz$ can be approximated by $WK_{\TU,\TU}W^\top\Tz+\bse\Tz$, where matrix multiplication by the sparse matrices $\bse, W,W^\top$ requires $O(n)$ space and time.
+We cannot fold $\bse$ into the interpolated term $K_{{U'},{U'}}$ since it does not correspond to a differentiable kernel. However, since $\bse$ is diagonal, it is efficient to represent and multiply with. MVM with $\tilde{K}$ requires MVM by the sparse matrices $\bse, W,W^\top$, which all take $O(n)$ space and time.
 
-We consider different representations of $K_{\TU,\TU}$ (Eq.~\ref{lmcski}) to reduce the memory and runtime requirements for performing the multiplication $K_{\TU,\TU}\Tz$ in the following sections.
+We consider different representations of $K_{{U'},{U'}}$ (Eq.~\ref{lmcski}) to reduce the memory and runtime requirements for performing the multiplication $K_{{U'},{U'}}\Tz$ in the following sections.
 
 \subsubsection{\textsc{sum}: sum representation}
 
-In \textsc{sum}, we represent $K_{\TU,\TU}$ with a $Q$-length list. At each index $q$, $B_q$ is a dense matrix of order $D$ and $K_q$ is a Toeplitz matrix of order $m$, represented using only the top row. In turn, multiplication $K_{\TU,\TU}\Tz$ is performed by multiplying each matrix in the list with $\Tz$ and summing the results. The Kronecker MVM $(B_q\otimes K_q)\Tz$ may be expressed as $D$ fast Toeplitz MVMs with $K_q$ and $m$ dense MVMs with $B_q$. In turn, assuming $D\ll m$, the runtime for each of the $Q$ terms is $O(Dm\log m)$.
+In \textsc{sum}, we represent $K_{{U'},{U'}}$ with a $Q$-length list. At each index $q$, $B_q$ is a dense matrix of order $D$ and $K_q$ is a Toeplitz matrix of order $m$, represented using only the top row. In turn, multiplication $K_{{U'},{U'}}\Tz$ is performed by multiplying each matrix in the list with $\Tz$ and summing the results. The Kronecker MVM $(B_q\otimes K_q)\Tz$ may be expressed as $D$ fast Toeplitz MVMs with $K_q$ and $m$ dense MVMs with $B_q$. In turn, assuming $D\ll m$, the runtime for each of the $Q$ terms is $O(Dm\log m)$.
 
 \subsubsection{\textsc{bt}: block-Toeplitz representation}
 
-In \textsc{bt}, we note that $K_{\TU,\TU}$ is a block matrix with blocks $T_{ij}$:
+In \textsc{bt}, we note that $K_{{U'},{U'}}$ is a block matrix with blocks $T_{ij}$:
 \begin{align*}
 \sum_qB_q\otimes K_q =\mat{T_{ij}}_{i,j\in[D]^2},\;\; T_{ij}=\sum_qb_{ij}^{(q)}K_q.
 \end{align*}
-On a one-dimensional grid $U$, these matrices are Toeplitz because they are linear combinations of Toeplitz matrices. \textsc{bt} requires $D^2$ $m$-sized rows to represent each $T_{ij}$. Then, using the usual block matrix multiplication, an MVM $K_{\TU,\TU}\Tz$ takes $O(D^2m\log m)$ time.
+On a one-dimensional grid $U$, these matrices are Toeplitz because they are linear combinations of Toeplitz matrices. \textsc{bt} requires $D^2$ $m$-sized rows to represent each $T_{ij}$. Then, using the usual block matrix multiplication, an MVM $K_{{U'},{U'}}\Tz$ takes $O(D^2m\log m)$ time.
 
-On a grid of inputs with $\TX=\TU$, the SKI interpolation becomes $W=I$. In this case, using \textsc{bt} alone leads to a faster algorithm---applying the Chan block-Toeplitz preconditioner in reduces the number of MVMs necessary to iteratively find an inverse~\cite{chan1994circulant}.
+On a grid of inputs with ${X'}={U'}$, the SKI interpolation becomes $W=I$. In this case, using \textsc{bt} alone leads to a faster algorithm---applying the Chan block-Toeplitz preconditioner in reduces the number of MVMs necessary to iteratively find an inverse~\cite{chan1994circulant}.
 
 \subsubsection{\textsc{slfm}: SLFM representation}
 
 For the rank-based \textsc{slfm} representation, let $R\triangleq \nicefrac{\sum_qR_q}{Q}$ be the average rank, $R\le D$, and re-write the kernel:
 \begin{align*}
-  K_{\TU,\TU}=\sum_q\sum_{r=1}^{R_q}\textbf{a}_q^{(r)}{\textbf{a}_q^{(r)}}^\top\otimes K_q + \sum_q\diag\bsk_q \otimes K_q.
+  K_{{U'},{U'}}=\sum_q\sum_{r=1}^{R_q}\textbf{a}_q^{(r)}{\textbf{a}_q^{(r)}}^\top\otimes K_q + \sum_q\diag\bsk_q \otimes K_q.
 \end{align*}
 Note $\textbf{a}_q^{(r)}{\textbf{a}_q^{(r)}}^\top$ is rank $1$. Under some re-indexing $q'\in[RQ]$, which flattens the double summation such that each $q'$ corresponds to a unique $(r, q)$, the term $\sum_q\sum_{r=1}^{R_q}\textbf{a}_q^{(r)}{\textbf{a}_q^{(r)}}^\top\otimes K_q $ may be rewritten as
 \begin{align*}
   \sum_{q'}\textbf{a}_{q'}\textbf{a}_{q'}^\top\otimes K_{q'} = \textbf{A}\blockdiag_{q'}\colv{K_{q'}}\textbf{A}^\top,
 \end{align*}
-where $\textbf{A}=\mat{ \textbf{a}_{q'}}_{q'}\otimes I_m$ with $\mat{ \textbf{a}_{q'}}_{q'}$ a matrix of horizontally stacked column vectors \cite{seeger2005semiparametric}. Next, we rearrange the remaining term $\sum_q\diag\bsk_q \otimes K_q$ as $\blockdiag_d(T_d)$, where $T_d=\sum_q \kappa_{qd}K_q$ is Toeplitz. Thus, \textsc{slfm} represents $K_{\TU,\TU}$ as the sum of two block diagonal matrices of block order $QR$ and $D$, where each block is a Toeplitz order $m$ matrix; thus, MVMs run in $O((QR + D)m\log m)$.
+where $\textbf{A}=\mat{ \textbf{a}_{q'}}_{q'}\otimes I_m$ with $\mat{ \textbf{a}_{q'}}_{q'}$ a matrix of horizontally stacked column vectors \cite{seeger2005semiparametric}. Next, we rearrange the remaining term $\sum_q\diag\bsk_q \otimes K_q$ as $\blockdiag_d(T_d)$, where $T_d=\sum_q \kappa_{qd}K_q$ is Toeplitz. Thus, \textsc{slfm} represents $K_{{U'},{U'}}$ as the sum of two block diagonal matrices of block order $QR$ and $D$, where each block is a Toeplitz order $m$ matrix; thus, MVMs run in $O((QR + D)m\log m)$.
 
 Note that \textsc{bt} and \textsc{slfm} each have a faster run time than the other depending on whether $D^2>QR$. An algorithm that uses this condition to decide between representations can minimize runtime (Tab.~\ref{asymp}). We found that \textsc{sum} is efficient in practice for $Q=1$.
 
@@ -238,7 +236,7 @@ Note that \textsc{bt} and \textsc{slfm} each have a faster run time than the oth
 
 \subsection{GP mean and variance prediction}
 
-The predictive mean can be computed in $O(1)$ time by $K_{*,X}\bsa\approx W_{*,\TU}K_{\TU,\TU}\bsa$ \cite{msgp}.
+The predictive mean can be computed in $O(1)$ time by $K_{*,X}\bsa\approx W_{*,{U'}}K_{{U'},{U'}}\bsa$ \cite{msgp}.
 
 The full predictive covariance estimate requires finding a new term $K_{*,X}K_{X,X}^{-1}K_{X,*}$. This is done by solving the linear system in a matrix-free manner on-the-fly; in particular, $K_{X,X}^{-1}K_{X,*}$ is computed via \textsc{minres} for every new test point $K_{X,*}$. Over several test points, this process is parallelizable.
 
@@ -304,7 +302,7 @@ In this paper, we present LLGP, which we show adapts and accelerates SKI \cite{k
 
 LLGP provides an efficient means to approximate the log-likelihood gradients using interpolation. We have shown on several datasets that this can be done in a way that is faster and leads to more accurate results than variational approximations. Because LLGP scales well with increases in $m$, capturing complex interactions in the covariance with an accurate interpolation is cheap, as demonstrated by performance on both the FX2007 and weather datasets (Fig.~\ref{fx2007-graph}, Tab.~\ref{fx2007-tbl}, Tab.~\ref{weather-tbl}).
 
-Future work would extend the inputs to accept multiple dimensions. This can be done without losing internal structure in the kernel \cite{msgp}: Toeplitz covariance matrices become block-Toeplitz with Toeplitz-blocks (BTTB). The cubic interpolation $W$ requires a number of terms exponential in the dimension, so projection into lower dimensions estimated in a supervised manner would be essential.
+Future work would extend the inputs to accept multiple dimensions. This can be done without losing internal structure in the kernel, again so long as only $k_q$ are stationary \cite{msgp}: Toeplitz covariance matrices become block-Toeplitz with Toeplitz-blocks (BTTB). The cubic interpolation $W$ requires a number of terms exponential in the dimension, so projection into lower dimensions estimated in a supervised manner would be essential.
 Another useful line for investigation would be more informed stopping heuristics. % cut if space needed
 Finally, an extension to non-Gaussian noise is also feasible in a matrix-free manner by following prior work \cite{cutajar2016preconditioning}.
 
