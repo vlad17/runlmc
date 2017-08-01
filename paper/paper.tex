@@ -2,7 +2,8 @@
 
 \PassOptionsToPackage{numbers, compress}{natbib}
 % Camera ready: \usepackage[final]{nips_2017}
-\usepackage{nips_2017}
+% currently, doesn't print NIPS
+\usepackage[final]{nips_2017}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -82,13 +83,13 @@ K([i,\Tx_i],[j,\Tx_j])=\sum_{q=1}^Qb_{ij}^{(q)}k_q(\norm{\Tx_i-\Tx_j})+\epsilon_
 \end{align} 
 where $k_q:\R\rightarrow\R$ is a stationary kernel on $\mcX$. Typically, the positive semi-definite (PSD) matrices $B_q\in\R^{D\times D}$ formed by $b_{ij}^{(q)}$ are parameterized as $A_qA_q^\top+\diag\bsk_q$, with $A_q\in\R^{D\times R_q},\bsk_q\in\R_+^D$ and $R_q$ a preset rank. Importantly, even though each $k_q$ is stationary, $K$ is only stationary on $\mcX'$ if $B_q$ is Toeplitz. In practice, where we wish to capture covariance across outputs as a $D^2$-dimensional latent process, $B_q$ is not Toeplitz, so $K([i,\Tx_i],[j,\Tx_j])\neq K([i+1,\Tx_i],[j+1,\Tx_j])$.
 
-The LMC kernel provides a flexible way of specifying multiple additive contributions to the covariance between two inputs for two different outputs. The contribution of the $q$th kernel $k_q$ to the covariance between the $i$th and $j$th outputs is then specified by the multiplicative factor $b_{ij}^{(q)}$. By choosing $B_q$ to have rank $R_q=D$, the corresponding LMC model can have any positive contribution between two outputs that best fits the data, so long as $B_q$ remains PSD. By reducing the rank $R_q$, the interactions of the outputs have lower-rank latent processes, with rank 0 indicating no interaction (i.e., if $A=0$, then we have an independent GP for each output).
+The LMC kernel provides a flexible way of specifying multiple additive contributions to the covariance between two inputs for two different outputs. The contribution of the $q$th kernel $k_q$ to the covariance between the $i$th and $j$th outputs is then specified by the multiplicative factor $b_{ij}^{(q)}$. By choosing $B_q$ to have rank $R_q=D$, the corresponding LMC model can have any contribution between two outputs that best fits the data, so long as $B_q$ remains PSD. By reducing the rank $R_q$, the interactions of the outputs have lower-rank latent processes, with rank 0 indicating no interaction (i.e., if $A=0$, then we have an independent GP for each output).
 
 \subsection{Structured covariance matrices}
 
 If we can identify structure in the covariance $K$, then we can develop fast in-memory representations and efficient matrix-vector multiplications (MVMs) for $K$---this has been used in the past to accelerate GP model estimation \cite{gilboa2015scaling, cunningham2008fast}. The Kronecker product $A\otimes B$ of matrices of order $a,b$ is a block matrix of order $ab$ with $ij$th block $A_{ij}B$. We can represent the product by keeping representations of $A$ and $B$ separately, rather than the product. Then, the corresponding MVMs can be computed in time $O(a\mvm(B)+b\mvm(A))$, where $\text{MVM}(\cdot)$ is the runtime of a MVM. For GPs on uniform dimension-$P$ grids, this reduces the runtime of finding $\mcL$ from $O(n^3)$ to $O\pa{Pn^{\nicefrac{1+P}{P}}}$ \cite{gilboa2015scaling}.
 
-Symmetric Toeplitz matrices $T$ are constant along their diagonal and fully determined by their top row $\{T_{1j}\}_{j=1}^n$, yielding an $O(n)$ representation. Such matrices arise naturally when we examine the covariance matrix induced by a stationary kernel $k$ applied to a one-dimensional grid of inputs. Since the difference in adjacent inputs $t_{i+1}-t_{i}$ is the same for all $i$, we have the Toeplitz property that:
+Symmetric Toeplitz matrices $T$ are constant along their diagonals and fully determined by their top row $\{T_{1j}\}_{j=1}^n$, yielding an $O(n)$ representation. Such matrices arise naturally when we examine the covariance matrix induced by a stationary kernel $k$ applied to a one-dimensional grid of inputs. Since the difference in adjacent inputs $t_{i+1}-t_{i}$ is the same for all $i$, we have the Toeplitz property that:
 \[
 T_{(i+1)(j+1)}=k(\abs{t_{i+1} -t_{j+1}})=k(\abs{t_i-t_j})=T_{ij}.
 \]
@@ -138,15 +139,15 @@ We depart from Gibbs and MacKay in two important ways (Algorithm~\ref{alg:grad})
 
 \begin{figure}[!h]
 \begin{center}
-  \subfigure[]{\includegraphics[width=0.4\columnwidth]{iterations.eps}}
-  \subfigure[]{\includegraphics[width=0.4\columnwidth]{running_cutoff.eps}}
+  \subfigure[]{\includegraphics[width=0.4\columnwidth]{iterations.pdf}}
+  \subfigure[]{\includegraphics[width=0.4\columnwidth]{running_cutoff.pdf}}
 \end{center}
 \caption{Trace of (a) the number of MVMs that \textsc{minres} must perform to invert $K^{-1}\Ty$ and (b) $\mcL, \norm{\nabla\mcL}$ given $\bsth$ at each optimization iteration for a GP applied to the dataset in Sec.~\ref{fx2007-results}. In (b), in green, we have 20\% of the rolling maximum $\infty$-norm of previous gradients.
 }
 \label{fx2007-iterations}
 \end{figure}
 
-Every AdaDelta iteration (invoking Algorithm~\ref{alg:grad}) then takes total time $\tilde{O}(\mvm(\tilde{K})\sqrt{\kappa_2})$ \cite{raykar2007fast}. This analysis holds as long as the error in the gradients is fixed and we can compute MVMs with the matrix $\partial_{\theta_j}K$ for each $j$ at least as fast as $\mvm({\tilde{K}})$. Indeed, we assume a differentiable kernel and then recall that applying the linear operator $\partial_{\theta_j}$ will maintain the structure of $K$.
+Every AdaDelta iteration (invoking Algorithm~\ref{alg:grad}) then takes total time $\tilde{O}(\mvm(\tilde{K})\sqrt{\kappa_2})$ \cite{raykar2007fast}. This analysis holds as long as the error in the gradients is fixed and we can compute MVMs with the matrix $\partial_{\theta_j}K$ for each $j$ at least as fast as $\mvm({\tilde{K}})$. Indeed, we assume a differentiable kernel and then recall that applying the linear operator $\partial_{\theta_j}$ will maintain the structure of $\tilde{K}$.
 
 For a gradient-only stopping heuristic, we maintain the running maximum gradient $\infty$-norm. If gradient norms drop below a proportion of the running max norm more than a pre-set number of times, we terminate (Fig.~\ref{fx2007-iterations}).
 
@@ -242,11 +243,12 @@ The full predictive covariance estimate requires finding a new term $K_{*,X}K_{X
 
 \section{Results}
 \label{sec:results}
-We evaluate the methods on held out data by using standardized mean square error (SMSE) of the test points with the predicted mean, and the negative log predictive density (NLPD) of the Gaussian likelihood of the inferred model. NLPD takes confidence into account, while SMSE only evaluates the mean prediction. In both cases, lower values represent better performance. We evaluated the performance of our flexible representations of the kernel, \textsc{sum}, \textsc{bt}, and \textsc{slfm}, by computing exact gradients using the standard Cholesky algorithm for a grid of different kernels (see Supplement).\footnote{Hyperparameters for the stopping condition, code, and benchmarking scripts are available in <anonymous repository>.}
-
+We evaluate the methods on held out data by using standardized mean square error (SMSE) of the test points with the predicted mean, and the negative log predictive density (NLPD) of the Gaussian likelihood of the inferred model. NLPD takes confidence into account, while SMSE only evaluates the mean prediction. In both cases, lower values represent better performance. We evaluated the performance of our flexible representations of the kernel, \textsc{sum}, \textsc{bt}, and \textsc{slfm}, by computing exact gradients using the standard Cholesky algorithm for a grid of different kernels (see Supplement).\footnote{Hyperparameters for the stopping condition, code, and benchmarking scripts are available in
+\url{https://github.com/vlad17/runlmc}.} % camera ready
+%\texttt{<anonymous repository>}.}
 \subsection{Foreign exchange rate prediction (FX2007)}\label{fx2007-results}
 
-We replicate the medium-sized dataset from COGP as an application to evaluate LLGP performance. The dataset includes ten foreign currency exchange rates---CAD, EUR, JPY, GBP, CHF, AUD, HKD, NZD, KRW, and MXN---and three precious metals---XAU, XAG, and XPT---implying that $D=13$.\footnote{Data are from \url{http://fx.sauder.ubc.ca/data.html}} In LLGP, we set $Q=1,R=2$, as recommended for LMC models on this dataset~\cite{alvarez2010efficient}. COGP roughly corresponds to the the SLFM model, which has a total of 94 hyperparameters, compared to 53 for LLGP. All kernels are squared exponential. The data used in this example are from 2007, and include $n=3054$ training points and $150$ test points. The test points include 50 contiguous points extracted from each of the CAD, JPY, and AUD exchanges. For this application, LLGP uses $m=n/D=238$ interpolating points. We used the COGP settings from the paper.\footnote{COGP hyperparameters for FX2007 were 100 inducing points, 500 iterations, 200 mini-batch size.} LLGP outperforms COGP in terms of predictive mean and variance estimation as well as runtime (Tab.~\ref{fx2007-tbl}).
+We replicate the medium-sized dataset from COGP as an application to evaluate LLGP performance. The dataset includes ten foreign currency exchange rates---CAD, EUR, JPY, GBP, CHF, AUD, HKD, NZD, KRW, and MXN---and three precious metals---XAU, XAG, and XPT---implying that $D=13$.\footnote{Data are from \url{http://fx.sauder.ubc.ca/data.html}} In LLGP, we set $Q=1,R=2$, as recommended for LMC models on this dataset~\cite{alvarez2010efficient}. COGP roughly corresponds to the the SLFM model, which has a total of 94 hyperparameters, compared to 53 for LLGP. All kernels are squared exponential. The data used in this example are from 2007, and include $n=3054$ training points and $150$ test points. The test points include 50 contiguous points extracted from each of the CAD, JPY, and AUD exchanges. For this application, LLGP uses $m=n/D=238$ interpolating points. We used the COGP settings from the paper. LLGP outperforms COGP in terms of predictive mean and variance estimation as well as runtime (Tab.~\ref{fx2007-tbl}).
 
 \begin{table}[!h]
   \caption{Average predictive performance and training time over $10$ runs for LLGP and COGP on the FX2007 dataset. Parenthesized values are standard error. LLGP was run with LMC set to $Q=1$, $R=2$, and $238$ interpolating points. COGP used a $Q=2$ kernel with $100$ inducing points.}
@@ -271,7 +273,7 @@ We replicate the medium-sized dataset from COGP as an application to evaluate LL
 
 Next, we replicate results from a weather dataset, a large time series used to validate COGP. Here, $D=4$ weather sensors Bramblemet, Sotonmet, Cambermet, and Chimet record air temperature over five days in five minute intervals, with some dropped records due to equipment failure. Parts of Cambernet and Chimet are dropped for imputation, yielding $n=15789$ training measurements and $374$ test measurements. 
 
-We use the default COGP parameters\footnote{\url{https://github.com/trungngv/cogp}, commit \texttt{3b07f621ff11838e89700cfb58d26ca39b119a35}. The weather dataset was run on 1500 iterations, mini-batch size $1000$, $200$ interpolating points.} LLGP was run with the same parameters as in FX2007, simulating the SLFM model. We tested LLGP models on $m=\{500, 1000\}$ interpolating points.
+We use the default COGP parameters\footnote{\url{https://github.com/trungngv/cogp}, commit \texttt{3b07f621ff11}} LLGP was run with the same parameters as in FX2007, simulating the SLFM model. We tested LLGP models on $m=\{500, 1000\}$ interpolating points.
 
 \begin{table}[!h]
   \caption{Average predictive performance and training time over $10$ runs of LLGP and COGP on the weather dataset. Parenthesized values are standard error. Both LLGP and COGP trained the SLFM model. We show LLGP with $500$ and $1000$ interpolating points and COGP with $200$ inducing points.}
@@ -290,7 +292,7 @@ LLGP performed slightly worse than COGP in SMSE, but both NLPD and runtime indic
 \begin{wrapfigure}{r}{0.5\textwidth}
 %\begin{figure}[!h]
 \centering
-{\includegraphics[width=0.4\columnwidth]{m_time_nlpd.eps}}
+{\includegraphics[width=0.4\columnwidth]{m_time_nlpd.pdf}}
 \caption{Average and standard error of NLPD and runtime of the SLFM model on LLGP across over varying interpolating points. Every setting was run $10$ times.}
 \label{fig:llgpweather}
 %\end{figure}

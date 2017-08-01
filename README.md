@@ -66,8 +66,11 @@ All below invocations should be done from the repo root.
 | `./docpush.sh`   | Publish current docs (requries write access to repo) |
 | `nosetests -l DEBUG`       | Run unit tests |
 
+Python requirements are in the repository's `requirements.txt` file. To build the paper, the packages `epstool` and `epstopdf` are required.
+
 ### Roadmap
 
+0. Generate horizontal rules only in tables (results_*.tex)
 0. move to read the docs
 0. migrate (and, in turn, clean up both stylistically and in terms of hackiness of code) `stadard_tester.py` in `benchmarks/benchlib`
 0. TODO(cleanup) - apprx to approx everywhere, kerns to kernels

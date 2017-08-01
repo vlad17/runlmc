@@ -2,7 +2,7 @@
 
 \PassOptionsToPackage{numbers, compress}{natbib}
 % Camera ready: \usepackage[final]{nips_2017}
-\usepackage{nips_2017}
+\usepackage[final]{nips_2017}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -37,7 +37,9 @@
 
 \section{Implementation Details}
 
-LLGP was implemented in Python 3 from the Anaconda, which offered an Intel MKL-linked scipy \cite{scipy}. The code made heavy use of other packages, namely climin \cite{climin}, GPy \cite{gpy}, and paramz \cite{paramz}. Code and benchmarks are available at \texttt{<anonymous repository>}.
+LLGP was implemented in Python 3 from the Anaconda, which offered an Intel MKL-linked scipy \cite{scipy}. The code made heavy use of other packages, namely climin \cite{climin}, GPy \cite{gpy}, and paramz \cite{paramz}. Code and benchmarks are available at
+\url{https://github.com/vlad17/runlmc}. % camera ready
+%\texttt{<anonymous repository>}.
 
 Application of our approach to all replication studies was carried out on a large server in a multiprogramming environment: CentOS 6.5 with 80 Intel(R) Xeon(R) CPU E7-4870 @ 2.40GHz. The representation evaluation benchmarks were done at once on a cluster of machines running CentOS 5.2-5.9 with Intel(R) Xeon(R) CPU E5430 @ 2.66GHz, where these jobs ran on a single thread per CPU.
 
@@ -64,14 +66,14 @@ We next evaluated the accuracy of the gradients for $N=10$ trace samples. Fixing
 
 \begin{figure}[!ht]
   \centering
-{\includegraphics[width=\textwidth]{relgrad_l2.eps}}
+{\includegraphics[width=\textwidth]{relgrad_l2.pdf}}
 \caption{Negative logarithm of the relative error from the LLGP gradient construction to the exact log likelihood gradient. In each case, higher is better, and extremal values are noted.  For each data point, the average was taken over five runs. Reducing average noise, corresponding to increases in $-\log_{10}\varepsilon$, and increases in $Q$, generally make gradient reconstruction more difficult by making $K$ more ill-conditioned, reducing the accuracy of \textsc{minres}.}
 \label{fig:relgrad}
 \end{figure}
 
 \begin{figure}[!ht]
 \centering
-{\includegraphics[width=\textwidth]{relalpha_l2.eps}}
+{\includegraphics[width=\textwidth]{relalpha_l2.pdf}}
 \caption{Negative logarithm of the relative error in $K^{-1}\Ty$, using \textsc{minres} compared to the Cholesky solution. Higher is better, and extremal values are noted. An average was taken over five runs.}
 \label{fig:rellog}
 \end{figure}
