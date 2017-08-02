@@ -17,6 +17,7 @@ from ..util.numpy_convenience import begin_end_indices
 
 _LOG = logging.getLogger(__name__)
 
+
 def cubic_kernel(x):
     """
     The cubic convolution kernel can be used to compute interpolation
@@ -29,11 +30,12 @@ def cubic_kernel(x):
     2 and is defined as:
 
     .. math::
-        \\newcommand{abs}[1]{\\left\\vert{#1}\\right\\vert}
         u(x) = \\begin{cases}
-        \\frac{3}{2}\\abs{x}^3-\\frac{5}{2}\\abs{x}^2+1 & 0\\le \\abs{x}\\le 1
+        \\frac{3}{2}\\left\\vert{x}\\right\\vert^3-\\frac{5}{2}\\left\\vert{x}
+        \\right\\vert^2+1 & 0\\le \\left\\vert{x}\\right\\vert\\le 1
         \\\\
-        \\frac{3}{2}\\abs{x}^3+\\frac{5}{2}-4\\abs{x}+2 & 1 < \\abs{x} \\le 2
+        \\frac{3}{2}\\left\\vert{x}\\right\\vert^3+\\frac{5}{2}-4\\left
+        \\vert{x}\\right\\vert+2 & 1 < \\left\\vert{x}\\right\\vert \\le 2
         \\end{cases}
 
     :param x: input array
@@ -49,6 +51,7 @@ def cubic_kernel(x):
     q = ~q
     y[q] = ((-0.5 * x[q] + 2.5) * x[q] - 4) * x[q] + 2
     return y
+
 
 def interp_cubic(grid, samples):
     """
@@ -97,13 +100,13 @@ def interp_cubic(grid, samples):
     factors = (samples - grid[0]) / delta
     # closest refers to the closest grid point that is smaller
     idx_of_closest = np.floor(factors)
-    dist_to_closest = factors - idx_of_closest # in units of delta
+    dist_to_closest = factors - idx_of_closest  # in units of delta
 
     csr = scipy.sparse.csr_matrix((n_samples, grid_size), dtype=float)
-    for conv_idx in range(-2, 2): # cubic conv window
+    for conv_idx in range(-2, 2):  # cubic conv window
         coeff_idx = idx_of_closest - conv_idx
-        coeff_idx[coeff_idx < 0] = 0 # threshold (no wraparound below)
-        coeff_idx[coeff_idx >= grid_size] = grid_size - 1 # none above
+        coeff_idx[coeff_idx < 0] = 0  # threshold (no wraparound below)
+        coeff_idx[coeff_idx >= grid_size] = grid_size - 1  # none above
 
         relative_dist = dist_to_closest + conv_idx
         data = cubic_kernel(relative_dist)
@@ -115,7 +118,9 @@ def interp_cubic(grid, samples):
 
 # TODO(test)
 # TODO(cleanup) - refactor to get rid of pylint warning
-def multi_interpolant(Xs, inducing_grid): # pylint: disable=too-many-locals
+
+
+def multi_interpolant(Xs, inducing_grid):  # pylint: disable=too-many-locals
     """
     Creates a sparse CSR matrix across multiple inputs `Xs`.
 

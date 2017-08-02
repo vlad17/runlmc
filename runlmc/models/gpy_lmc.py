@@ -10,12 +10,11 @@
 from itertools import count
 
 import numpy as np
-import GPy.models as models
-from GPy.util.multioutput import ICM
 
 from .multigp import MultiGP
 from ..util.docs import inherit_doc
 from ..util.numpy_convenience import tesselate
+
 
 @inherit_doc
 class GPyLMC(MultiGP):
@@ -52,6 +51,7 @@ class GPyLMC(MultiGP):
                    used by the DTCVAR algorithm in
                    use :py:class:`GPy.models.SparseGPCoregionalizedRegression`
     """
+
     def __init__(self, Xs, Ys, kernels, ranks, name='GPyLMC', sparse=0):
         super().__init__(Xs, Ys, normalize=False, name=name)
         self.gpy_model = GPyLMC._construct_gpy(
@@ -95,12 +95,14 @@ class GPyLMC(MultiGP):
 
     @staticmethod
     def _construct_gpy(Xs, Ys, kernels, ranks, sparse):
+        import GPy.models as models
+        from GPy.util.multioutput import ICM
+
         kernels = [k.to_gpy() for k in kernels]
         input_dim = 1
         num_outputs = len(Ys)
         Xs = [X.reshape(-1, 1) for X in Xs]
         Ys = [Y.reshape(-1, 1) for Y in Ys]
-
 
         K = ICM(input_dim, num_outputs, kernels[0], ranks[0], name='ICM0')
         for kernel, rank, idx in zip(kernels[1:], ranks[1:], count(1)):

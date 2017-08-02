@@ -3,11 +3,18 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-# command to install dependencies
+addons:
+  apt:
+    packages:
+    - libblas-dev
+    - liblapack-dev
+    - gfortran
+before_install:
+  - pip install -U pip
+  - pip install nose
 install:
-  - python -m pip install --upgrade pip
-  - pip install -r requirements.txt
-# command to run tests
+  - python setup.py install
+  - pip install matplotlib
+  - pip install GPy
 script:
   - nosetests
-  - ./docbuild.sh

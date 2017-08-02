@@ -17,11 +17,12 @@ import logging
 
 import numpy as np
 import scipy.stats
-from GPy.util.normalizer import Standardize as Norm
 
 from ..parameterization.model import Model
+from ..util.normalizer import Norm
 
 _LOG = logging.getLogger(__name__)
+
 
 class MultiGP(Model):
     """
@@ -50,6 +51,7 @@ class MultiGP(Model):
                                  or values in `Xs` have multiple identical
                                  values.
     """
+
     def __init__(self, Xs, Ys, normalize=True, name='multigp'):
         super().__init__(name)
         self.input_dim, self.output_dim = self._validate_io(Xs, Ys)
@@ -74,8 +76,8 @@ class MultiGP(Model):
         which the may during the optimization process.
 
         Classes should update their posterior information, log likelihood,
-        and gradients when this happens, such that `self._raw_predict`,
-        `self.log_likelihood`, and `self.gradient`
+        and gradients when this happens, such that :meth:`_raw_predict`,
+        :meth:`log_likelihood`, and :meth:`gradient`
         are consistent with the new parameters.
 
         .. Note: This method should not be called except by the internal
@@ -120,17 +122,17 @@ class MultiGP(Model):
                    This is a :class:`list` of :class:`numpy.ndarray` for each
                    output `d`, one-dimensional
                    of size `n_d` each. Length of `Xs` should be equal to the
-                   number of outputs `self.output_dim`.
+                   number of outputs :py:attr:`output_dim`.
         :returns: `(mean, var)`:
 
-            `mean`: posterior mean, a list of length `self.output_dim` with
+            `mean`: posterior mean, a list of length :py:attr:`output_dim` with
                     one-dimensional numpy arrays of length `n_d` at index `d`.
 
             `var`: posterior variance, corresponding to each mean entry.
 
         .. Note:
             If you want the predictive quantiles (e.g. 95% confidence interval)
-            use :func:"predict_quantiles".
+            use :func:`predict_quantiles`.
         """
         return self._predict(Xs, normalize=True)
 
@@ -149,7 +151,7 @@ class MultiGP(Model):
         mu, var = self._predict(Xs, normalize=False)
         quantiles = np.fromiter(quantiles, dtype=float)
         quantiles = [
-            np.outer(np.sqrt(v), scipy.stats.norm.ppf(quantiles/100.))
+            np.outer(np.sqrt(v), scipy.stats.norm.ppf(quantiles / 100.))
             + m[:, np.newaxis]
             for m, v in zip(mu, var)]
         if self.normalizer:
@@ -159,8 +161,8 @@ class MultiGP(Model):
 
     def optimize(self, **kwargs):
         """
-        Optimize the model using :func:`self.log_likelihood` and
-        :func:`self.log_likelihood_gradient`, as well as :func:`self.priors`.
+        Optimize the model using :func:`log_likelihood` with a
+        gradient descent method that involves the priors.
 
         `kwargs` are passed to the optimizer. See parameters for handled
         keywords.

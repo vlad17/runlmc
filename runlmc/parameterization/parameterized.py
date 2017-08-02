@@ -19,6 +19,7 @@ import paramz
 
 from .priorizable import _PriorizableNode
 
+
 class Parameterized(paramz.Parameterized, _PriorizableNode):
     """
     A :class:`Parameterized` class is responsible for keeping track of

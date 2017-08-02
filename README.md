@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Doclink](https://img.shields.io/badge/docs-5a07fd-lightgrey.svg)](https://vlad17.github.io/runlmc/)
+[![Documentation Status](https://readthedocs.org/projects/runlmc/badge/?version=latest)](http://runlmc.readthedocs.io/en/latest/?badge=latest)
 [![CI](https://api.travis-ci.org/vlad17/runlmc.svg?branch=master)](https://travis-ci.org/vlad17/runlmc)
 
 # runlmc
@@ -62,8 +62,7 @@ All below invocations should be done from the repo root.
 | Command           | Purpose  |
 | ----------------- | -------- |
 | `./style.sh`      | Check style with pylint, ignoring TODOs and locally-disabled warnings. |
-| `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/runlmc.html`) |
-| `./docpush.sh`   | Publish current docs (requries write access to repo) |
+| `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/index.html`) |
 | `nosetests -l DEBUG`       | Run unit tests |
 
 Python requirements are in the repository's `requirements.txt` file. To build the paper, the packages `epstool` and `epstopdf` are required.
