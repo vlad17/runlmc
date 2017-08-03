@@ -65,8 +65,9 @@ All below invocations should be done from the repo root.
 | `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/index.html`) |
 | `nosetests -l DEBUG`       | Run unit tests |
 | `./arxiv-tar.sh`       | Create an arxiv-friendly tarball of the paper sources |
+| `python setup.py install`       | Install minimal requirements for GPy |
 
-Python requirements are in the repository's `requirements.txt` file. To build the paper, the packages `epstool` and `epstopdf` are required.
+To build the paper, the packages `epstool` and `epstopdf` are required. Developers should also have `sphinx sphinx_rtd_theme matplotlib GPy` installed.
 
 ### Roadmap
 

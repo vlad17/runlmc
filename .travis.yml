@@ -14,7 +14,8 @@ before_install:
   - pip install nose
 install:
   - python setup.py install
-  - pip install matplotlib
+  - pip install sphinx sphinx_rtd_theme matplotlib
   - pip install GPy
 script:
   - nosetests
+  - ./docbuild.sh
