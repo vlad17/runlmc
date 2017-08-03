@@ -15,7 +15,7 @@ In other words, this provides a matrix-free implementation of multi-output GPs f
 ## Usage Notes
 
 * Currently, I'm only supporting 1 input dimension.
-* Docs avaliable [on the product page](https://vlad17.github.io/runlmc)
+* Check out the [latest documentation](http://runlmc.readthedocs.io/en/latest/)
 
 ## A note on GPy
 
@@ -64,14 +64,13 @@ All below invocations should be done from the repo root.
 | `./style.sh`      | Check style with pylint, ignoring TODOs and locally-disabled warnings. |
 | `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/index.html`) |
 | `nosetests -l DEBUG`       | Run unit tests |
+| `./arxiv-tar.sh`       | Create an arxiv-friendly tarball of the paper sources |
 
 Python requirements are in the repository's `requirements.txt` file. To build the paper, the packages `epstool` and `epstopdf` are required.
 
 ### Roadmap
 
-0. Generate horizontal rules only in tables (results_*.tex)
-0. move to read the docs
-0. migrate (and, in turn, clean up both stylistically and in terms of hackiness of code) `stadard_tester.py` in `benchmarks/benchlib`
+0. migrate into main repo (and, in turn, clean up both stylistically and in terms of hackiness of code) `stadard_tester.py` in `benchmarks/benchlib`
 0. TODO(cleanup) - apprx to approx everywhere, kerns to kernels
 0. Allow extrapolation in util.interpolation.py
 0. TODO(test) - document everything that's missing documentation along the way.
