@@ -2,6 +2,7 @@
 
 set -e
 
-sphinx-apidoc -H runlmc -A "Vladimir Feinberg" --separate --force --output-dir=doc/_generated runlmc/
+sphinx-apidoc -H runlmc -A "Vladimir Feinberg" --separate --force --output-dir=doc/_generated runlmc/ $(echo $(find . -iname "test_*.py"))
 cp doc/index.rst doc/_generated/
-PYTHONPATH=. sphinx-build -j $(nproc) -c doc/ -b html doc/_generated doc/_generated/_build/
+cd doc
+PYTHONPATH=.. sphinx-build -j $(nproc) -c . -b html _generated/ _generated/_build/

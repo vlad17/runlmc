@@ -19,7 +19,8 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
     import subprocess
     apidoc_cmd = 'cd .. && '
-    apidoc_cmd += 'sphinx-apidoc --separate --force --output-dir=doc/ runlmc/'
+    apidoc_cmd += 'sphinx-apidoc --separate --force --output-dir=doc/ runlmc/ '
+    apidoc_cmd += '$(echo $(find . -iname "test_*.py"))'
     proc = subprocess.Popen(apidoc_cmd, stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     print(apidoc_cmd)
@@ -79,8 +80,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_templates', '_build',
-                    '*test_*', '*flycheck_*', 'modules.rst']
+exclude_patterns = ['_build', '*test_*', '*flycheck_*', 'modules.rst']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -311,3 +311,9 @@ def linkcode_resolve(domain, info):
     filename = info['module'].replace('.', '/')
     return "https://github.com/vlad17/runlmc/blob/master/{}.py".format(
         filename)
+
+
+html_context = {
+    'display_github': False,
+    'show_source': False
+}
