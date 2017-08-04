@@ -63,11 +63,11 @@ All below invocations should be done from the repo root.
 | ----------------- | -------- |
 | `./style.sh`      | Check style with pylint, ignoring TODOs and locally-disabled warnings. |
 | `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/index.html`) |
-| `nosetests -l DEBUG`       | Run unit tests |
+| `nosetests`       | Run unit tests |
 | `./arxiv-tar.sh`       | Create an arxiv-friendly tarball of the paper sources |
 | `python setup.py install`       | Install minimal requirements for GPy |
 
-To build the paper, the packages `epstool` and `epstopdf` are required. Developers should also have `sphinx sphinx_rtd_theme matplotlib GPy` installed.
+To build the paper, the packages `epstool` and `epstopdf` are required. Developers should also have `sphinx sphinx_rtd_theme matplotlib GPy codecov` installed.
 
 ### Roadmap
 

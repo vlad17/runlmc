@@ -14,8 +14,10 @@ before_install:
   - pip install nose
 install:
   - python setup.py install
-  - pip install sphinx sphinx_rtd_theme matplotlib
+  - pip install sphinx sphinx_rtd_theme matplotlib codecov
   - pip install GPy
 script:
-  - nosetests
+  - nosetests --debug=DEFAULT --with-coverage
   - ./docbuild.sh
+after_success:
+  - codecov
