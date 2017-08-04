@@ -69,12 +69,10 @@ All below invocations should be done from the repo root.
 | `./arxiv-tar.sh`       | Create an arxiv-friendly tarball of the paper sources |
 | `python setup.py install`       | Install minimal requirements for GPy |
 
-To build the paper, the packages `epstool` and `epstopdf` are required. Developers should also have `sphinx sphinx_rtd_theme matplotlib GPy codecov` installed.
+To build the paper, the packages `epstool` and `epstopdf` are required. Developers should also have `sphinx sphinx_rtd_theme matplotlib GPy codecov pylint` installed.
 
 ### Roadmap
 
-0. Fixup `./style.sh`, add `./style.sh` to travis tests
-0. for testing move to https://github.com/wolever/parameterized
 0. migrate into main repo (and, in turn, clean up both stylistically and in terms of hackiness of code) `stadard_tester.py` in `benchmarks/benchlib`
 0. TODO(cleanup) - apprx to approx everywhere, kerns to kernels
 0. Allow extrapolation in util.interpolation.py

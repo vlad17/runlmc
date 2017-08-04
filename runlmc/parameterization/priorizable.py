@@ -24,6 +24,7 @@ from paramz.transformations import __fixed__
 
 from .priors import Prior
 
+
 class _PriorizableNode(Parameterizable):
     """
     Mixin which allows derived classes to have linked parameters
@@ -36,6 +37,7 @@ class _PriorizableNode(Parameterizable):
     def __init__(self, name, *a, **kw):
         super().__init__(name=name, *a, **kw)
         self.add_index_operation('priors', ParameterIndexOperations())
+
 
 class _PriorizableLeaf(_PriorizableNode):
     """
@@ -54,7 +56,6 @@ class _PriorizableLeaf(_PriorizableNode):
                              parameter
         """
         repriorized = self._unset_priors()
-        #assert len(repriorized) == 1, 'More than one prior per leaf: {}'.format(reprioritized)
         self._add_to_index_operations(
             self.priors, repriorized, prior, warning=True)
 

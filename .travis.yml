@@ -8,10 +8,11 @@ before_install:
   - pip install --only-binary=numpy,scipy numpy scipy
 install:
   - python setup.py install
-  - pip install sphinx sphinx_rtd_theme matplotlib codecov
+  - pip install sphinx sphinx_rtd_theme matplotlib codecov pylint
   - pip install GPy
 script:
   - nosetests --debug=DEFAULT --with-coverage
   - ./docbuild.sh
+  - ./style.sh
 after_success:
   - codecov

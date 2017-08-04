@@ -15,8 +15,10 @@ import numpy as np
 from paramz.domains import _REAL
 from scipy.special import gammaln
 
+
 def _assert_no_constraints(x):
     assert all(c is _REAL for c in x._all_constraints())
+
 
 class Prior:
     """
@@ -70,6 +72,7 @@ class Prior:
 
 # TODO(cleanup): test and document below
 
+
 class Gaussian(Prior):
     domain = 'real'
 
@@ -90,6 +93,7 @@ class Gaussian(Prior):
 
     def lnpdf_grad(self, x):
         return -(x - self.mu) / self.var
+
 
 class Gamma(Prior):
     domain = 'positive'
@@ -113,8 +117,7 @@ class Gamma(Prior):
     @staticmethod
     def from_EV(E, V):
         """
-        Creates an instance of a Gamma Prior  by specifying the Expected value(s)
-        and Variance(s) of the distribution.
+        Creates an instance of a Gamma Prior with prescribed statistics
 
         :param E: expected value
         :param V: variance
@@ -122,6 +125,7 @@ class Gamma(Prior):
         a = np.square(E) / V
         b = E / V
         return Gamma(a, b)
+
 
 class InverseGamma(Prior):
     domain = 'positive'
@@ -141,6 +145,7 @@ class InverseGamma(Prior):
 
     def lnpdf_grad(self, x):
         return -(self.a + 1.) / x + self.b / x ** 2
+
 
 class HalfLaplace:
     domain = 'positive'

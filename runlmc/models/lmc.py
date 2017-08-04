@@ -31,7 +31,7 @@ from ..util.docs import inherit_doc
 _LOG = logging.getLogger(__name__)
 
 
-@inherit_doc
+@inherit_doc  # pylint: disable=too-many-instance-attributes
 class LMC(MultiGP):
     """
     The main class of this package, `LMC` implements linearithmic
@@ -156,7 +156,7 @@ class LMC(MultiGP):
     :raises: :class:`ValueError` if no kernels
     """
 
-    def __init__(self, Xs, Ys, normalize=True, kernels=[],  # pylint: disable=too-many-arguments
+    def __init__(self, Xs, Ys, normalize=True, kernels=[],  # pylint: disable=too-many-arguments,dangerous-default-value,too-many-locals
                  ranks=None, lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='matrix-free',
                  variance_samples=20, max_procs=None,
@@ -165,6 +165,7 @@ class LMC(MultiGP):
         self.update_model(False)
         # TODO(cleanup) - this entire constructor needs reorg, refactor
         # into smaller methods, etc. Large number of arguments is OK, though.
+        # basically address all pylint complaints (disabled in the constructor)
 
         if not kernels and not slfm_kerns and not indep_gp:
             raise ValueError('Number of kernels should be >0')
@@ -211,7 +212,8 @@ class LMC(MultiGP):
 
         distrib = scipy.stats.truncnorm(-1, 1)
 
-        def randinit(sx, sy): return distrib.rvs(size=(sx, sy))
+        def randinit(sx, sy):
+            return distrib.rvs(size=(sx, sy))
 
         self.coreg_vecs = []
         initial_vecs = []
