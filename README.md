@@ -1,6 +1,8 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Documentation Status](https://readthedocs.org/projects/runlmc/badge/?version=latest)](http://runlmc.readthedocs.io/en/latest/?badge=latest)
 [![CI](https://api.travis-ci.org/vlad17/runlmc.svg?branch=master)](https://travis-ci.org/vlad17/runlmc)
+[![codecov](https://codecov.io/gh/vlad17/runlmc/branch/master/graph/badge.svg)](https://codecov.io/gh/vlad17/runlmc)
+
 
 # runlmc
 
@@ -71,6 +73,8 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
+0. Fixup `./style.sh`, add `./style.sh` to travis tests
+0. for testing move to https://github.com/wolever/parameterized
 0. migrate into main repo (and, in turn, clean up both stylistically and in terms of hackiness of code) `stadard_tester.py` in `benchmarks/benchlib`
 0. TODO(cleanup) - apprx to approx everywhere, kerns to kernels
 0. Allow extrapolation in util.interpolation.py
