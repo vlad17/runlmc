@@ -13,6 +13,7 @@ from ..util.numpy_convenience import EPS
 
 _LOG = logging.getLogger(__name__)
 
+
 @inherit_doc
 class Toeplitz(Matrix):
     """
@@ -34,7 +35,7 @@ class Toeplitz(Matrix):
     def __init__(self, top):
         if top.shape != (len(top),):
             raise ValueError('top shape {} is not 1D'.format(top.shape))
-        if len(top) == 0:
+        if not top.size:
             raise ValueError('top is empty')
 
         super().__init__(len(top), len(top))
@@ -48,7 +49,7 @@ class Toeplitz(Matrix):
         n = len(x)
         extended = np.zeros(n * 2)
         extended[:n] = x
-        extended[n+1:] = x[1:][::-1]
+        extended[n + 1:] = x[1:][::-1]
         return extended
 
     def as_numpy(self):

@@ -478,8 +478,7 @@ class LMC(MultiGP):
         tot_grid_size = len(self.inducing_grid) * len(self.noise)
         if tot_pred_size > tot_grid_size:
             return self._var_predict_precompute(W, Xs)
-        else:
-            return self._var_predict_on_the_fly(W, Xs)
+        return self._var_predict_on_the_fly(W, Xs)
 
     def _var_predict_exact(self, _, Xs):
         # TODO(cleanup) refactor ExactLMCKernel so that we can reuse code

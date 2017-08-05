@@ -112,5 +112,4 @@ class GPyLMC(MultiGP):
         if sparse > 0:
             return models.SparseGPCoregionalizedRegression(
                 Xs, Ys, kernel=K, num_inducing=sparse)
-        else:
-            return models.GPCoregionalizedRegression(Xs, Ys, kernel=K)
+        return models.GPCoregionalizedRegression(Xs, Ys, kernel=K)

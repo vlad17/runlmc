@@ -24,6 +24,7 @@ from ..linalg.numpy_matrix import NumpyMatrix
 from ..parameterization.model import Model
 from .numpy_convenience import smallest_eig
 
+
 class RandomTest(unittest.TestCase):
     """
     This test case sets the random seed to be based on the time
@@ -49,6 +50,7 @@ class RandomTest(unittest.TestCase):
         random.seed(self.seed)
         np.random.seed(self.seed)
 
+
 def poor_cond_toep(n):
     """
     :param n: size of output
@@ -62,6 +64,7 @@ def poor_cond_toep(n):
 
     return top
 
+
 def random_toep(n):
     """
     :returns: top row of a random PSDT matrix of size `n`.
@@ -72,6 +75,7 @@ def random_toep(n):
         top[0] += 1
     return top
 
+
 def exp_decr_toep(n):
     """
     :returns: top row of a PSDT matrix of size `n` with terms
@@ -80,6 +84,7 @@ def exp_decr_toep(n):
               :math:`e`.
     """
     return np.exp(-np.random.rand() * np.arange(n))
+
 
 def run_main(f, help_str):
     """
@@ -139,9 +144,12 @@ def run_main(f, help_str):
                             for dense, top in zip(dense_mats, toep_tops)])
         # added noise
         my_mat.orig_matvec = my_mat.matvec
-        my_mat.matvec = lambda x: my_mat.orig_matvec(x) + eps * x # pylint:disable=cell-var-from-loop
-        my_mat.logdet = lambda: np.log(my_mat.approx_eigs(0) + eps).sum() # pylint:disable=cell-var-from-loop
+        my_mat.matvec = lambda x: my_mat.orig_matvec(  # pylint:disable=cell-var-from-loop
+            x) + eps * x
+        my_mat.logdet = lambda: np.log(my_mat.approx_eigs(  # pylint:disable=cell-var-from-loop
+            0) + eps).sum()
         f(my_mat)
+
 
 def rand_psd(n):
     """
@@ -164,6 +172,7 @@ def check_np_lists(a, b, atol=1e-7, rtol=1e-7):
         np.testing.assert_allclose(
             sub_a, sub_b, err_msg='output {}'.format(i), atol=atol, rtol=rtol)
 
+
 class SingleGradOptimizer(Optimizer):
     def __init__(self, lipschitz=1):
         super().__init__()
@@ -177,6 +186,7 @@ class SingleGradOptimizer(Optimizer):
         # to make the likelihood maximization into a minimization problem.
         self.gradient_observed = -fp(x_init)
         self.x_opt = x_init + self.gradient_observed / self.L
+
 
 class BasicModel(Model):
     def __init__(self, dists, Y, kern):
@@ -192,6 +202,8 @@ class BasicModel(Model):
         # Prevent slight negative eigenvalues from roundoff.
         sign, logdet = np.linalg.slogdet(
             scipy.linalg.toeplitz(K_top) + 1e-10 * np.identity(len(K_top)))
+        print(self.dists)
+        print(K_top)
         assert sign > 0, (sign, logdet)
         return -0.5 * self.Y.dot(KinvY) - 0.5 * logdet
 

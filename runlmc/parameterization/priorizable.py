@@ -8,13 +8,12 @@
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 """
-
 .. Note: Developer API
 
 This module contains internal classes having to do with adding
 priors and containing parameters that have priors.
 
-Both :class:`_PriorizableNode` and :class:`_PriorizableLeaf`
+Both :class:`_PriorizableNode` and :class:`PriorizableLeaf`
 shouldn't be used externally.
 """
 
@@ -39,9 +38,9 @@ class _PriorizableNode(Parameterizable):
         self.add_index_operation('priors', ParameterIndexOperations())
 
 
-class _PriorizableLeaf(_PriorizableNode):
+class PriorizableLeaf(_PriorizableNode):
     """
-    A :class:`_PriorizableLeaf` contains a prior, and, by virtue of
+    A :class:`PriorizableLeaf` contains a prior, and, by virtue of
     being a :class:`_PriorizableNode`, will automatically notify
     parents of a new prior being set.
     """
@@ -52,12 +51,11 @@ class _PriorizableLeaf(_PriorizableNode):
 
         :param  prior: prior set for this parameter
         :type prior: :class:`runlmc.parameterization.Prior`
-        :param bool warning: whether to warn if another prior was set for this
-                             parameter
         """
-        repriorized = self._unset_priors()
+        # Warn if overwriting previous prior
+        prev_priors = self._unset_prior()
         self._add_to_index_operations(
-            self.priors, repriorized, prior, warning=True)
+            self.priors, prev_priors, prior, warning=True)
 
         constrain = Prior._CONSTRAIN_DOMAIN[prior.domain]
         constrain(self)
@@ -70,13 +68,11 @@ class _PriorizableLeaf(_PriorizableNode):
             for i in con:
                 yield i
 
-    def _unset_priors(self, *priors):
-        return self._remove_from_index_operations(self.priors, priors)
+    def _unset_prior(self):
+        return self._remove_from_index_operations(self.priors, [])
 
-    def unset_priors(self, *priors):
+    def unset_prior(self):
         """
-        Un-set all priors given in `*priors` from this parameter handle.
-
-        :param priors: the list of :class:`runlmc.priors.Prior` to unset
+        Unset prior, if present.
         """
-        self._unset_priors(*priors)
+        self._unset_prior()

@@ -192,7 +192,7 @@ class MultiGP(Model):
             raise
 
     def _validate_io(self, Xs, Ys):
-        if len(Xs) == 0:
+        if not Xs:
             raise ValueError('Expecting at least 1 output')
         if len(Xs) != len(Ys):
             raise ValueError('Differing number of inputs {} and outputs {}'

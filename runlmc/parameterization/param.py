@@ -20,27 +20,14 @@ it is priorizable.
 
 import paramz
 
-from .priorizable import _PriorizableLeaf
+from .priorizable import PriorizableLeaf
 from ..util.docs import inherit_doc
 
+
 @inherit_doc
-class Param(paramz.Param, _PriorizableLeaf):
+class Param(paramz.Param, PriorizableLeaf):
     """
     A :class:`Param` should be initialized and used just like a
-    :class:`paramz.Param`. It contains additional functionality for
+    :class:`paramz.param.Param`. It contains additional functionality for
     adding priors.
-
-    .. Note: Developer API. Most users should not need to interact with this.
     """
-
-    # Repeat base methods we want documented here.
-
-    def __init__(self, name, input_array, default_constraint=None, *a, **kw):
-        super().__init__(name, input_array, default_constraint, *a, **kw)
-        self.prior = None
-
-    def set_prior(self, prior):
-        super().set_prior(prior)
-
-    def unset_priors(self, *priors):
-        super().unset_priors(*priors)

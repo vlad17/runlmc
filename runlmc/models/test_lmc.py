@@ -11,6 +11,7 @@ from ..lmc.parameter_values import ParameterValues
 from ..lmc.kernel import ExactLMCKernel
 from ..util.testing_utils import RandomTest, check_np_lists
 
+
 class ExactAnalogue:
     def __init__(self, kerns, sizes, coregs, xss=None, yss=None):
         assert len(coregs) == len(kerns)
@@ -66,10 +67,8 @@ class ExactAnalogue:
                for f, xs, noise in zip(true_func, xss, noises)]
         return yss
 
-class LMCTest(RandomTest):
 
-    def setUp(self):
-        super().setUp()
+class LMCTest(RandomTest):
 
     @staticmethod
     def _case_1d():
@@ -109,7 +108,8 @@ class LMCTest(RandomTest):
         return np.fabs(x1 - x2).mean()
 
     def _check_kernel_reconstruction(self, exact):
-        reconstruct = lambda x: x.kernel.K.as_numpy()
+        def reconstruct(x):
+            return x.kernel.K.as_numpy()
         actual = reconstruct(exact.gen_lmc(sum(exact.params.lens)))
         exact_mat = exact.gen_exact().K
         tol = 1e-4
@@ -157,7 +157,7 @@ class LMCTest(RandomTest):
         expected = y.dot(Kinv_y)
 
         lmc = exact.gen_lmc(sum(exact.params.lens))
-        lmc.TOL = 1e-15 # tighten tolerance for tests
+        lmc.TOL = 1e-15  # tighten tolerance for tests
         tol = 1e-4
 
         actual = lmc.normal_quadratic()
@@ -173,7 +173,8 @@ class LMCTest(RandomTest):
         self.assertGreater(ll_after, ll_before)
 
     def test_no_kernel(self):
-        mapnp = lambda x: list(map(np.array, x))
+        def mapnp(x):
+            return list(map(np.array, x))
         basic_Xs = mapnp([[0, 1, 2], [0.5, 1.5, 2.5]])
         basic_Ys = mapnp([[5, 6, 7], [7, 6, 5]])
         self.assertRaises(ValueError, LMC,
@@ -244,7 +245,6 @@ class LMCTest(RandomTest):
         ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
                            ea.params.coreg_vecs, ea.xss, yss)
         self._check_fit(ea)
-
 
     def test_multirank_fit(self):
         ea = self._case_multirank()

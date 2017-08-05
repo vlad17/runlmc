@@ -5,8 +5,10 @@ import unittest
 
 from .docs import inherit_doc
 
+
 class A:
     """A"""
+
     def __init__(self):
         """A.__init__"""
         pass
@@ -15,32 +17,42 @@ class A:
         """A.a"""
         pass
 
-class B: # pylint: disable=invalid-name
+
+class B:  # pylint: disable=invalid-name
     """B"""
+
     def a(self):
         """B.a"""
         pass
+
     def b(self):
         """B.b"""
         pass
+
     def nodoc(self):
         pass
 
-@inherit_doc # pylint: disable=invalid-name
+
+@inherit_doc  # pylint: disable=invalid-name
 class C(A):
-    def __init__(self):
+    def __init__(self):  # pylint: disable=useless-super-delegation
         super().__init__()
+
     def a(self):
         pass
 
-@inherit_doc # pylint: disable=invalid-name
+
+@inherit_doc  # pylint: disable=invalid-name
 class D(A, B):
     def a(self):
         pass
+
     def b(self):
         pass
+
     def nodoc(self):
         pass
+
 
 class TestDocs(unittest.TestCase):
     def test_doc_inheritance_public(self):

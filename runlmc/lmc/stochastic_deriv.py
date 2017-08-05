@@ -8,6 +8,7 @@ from ..approx.iterative import Iterative
 
 # https://github.com/mauriziofilippone/preconditioned_GPs/blob/d7bc09b6804ef002cc3fc6bbf936517578d7436e/code/accuracy_vs_time/gp_functions/gp_regression_cg.r
 
+
 class StochasticDeriv(Derivative):
     # This code accepts arbitrary linear operators for the derivatives
     # K, however, should have a "solve" function
@@ -40,8 +41,7 @@ class StochasticDeriv(Derivative):
     def _concurrent_solve(pool, ls):
         if pool is None:
             return [Iterative.solve(*x) for x in ls]
-        else:
-            return pool.starmap(Iterative.solve, ls)
+        return pool.starmap(Iterative.solve, ls)
 
     def d_normal_quadratic(self, dKdt):
         return self.alpha.dot(dKdt.matvec(self.alpha))

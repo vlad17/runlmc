@@ -34,25 +34,11 @@ class Parameterized(paramz.Parameterized, _PriorizableNode):
 
     Printing parameters:
 
-        - `print(m)`:           prints a nice summary over all parameters
-
-        - `print(name)`:      prints details for param with name 'name'
-
-        - `print m[regexp]`:   prints details for all the parameters
-                               which match (!) regexp
-
-        - `print `m['']`:       prints details for all parameters
-
-    Printed fields:
-
-        **name**:         The name of the param, can be renamed!
-
-        **value**:        Shape or value, if one-valued
-
-        **constraints**:  constraint of the param, curly "{c}" brackets
-                          indicate
-                          some parameters are constrained by c. See detailed
-                          print to get exact constraints.
+        - `print(m)` prints a nice summary over all parameters
+        - `print(name)` prints details for param with name `name`
+        - `print(m[regexp])` prints details for all the parameters \
+           which match regexp
+        - `print(m[''])` prints details for all parameters
 
     Getting and setting parameters::
 
@@ -76,12 +62,14 @@ class Parameterized(paramz.Parameterized, _PriorizableNode):
         parameters in detail.
     """
 
-    def link_parameter(self, param, index=None):
+    def link_parameter(self, param, index=None):  # pylint: disable=useless-super-delegation
         """
-        Internal API for indicating that a class depends on a certain
-        parameter, and therefore should include it in gradient computations.
+        Indicate that a class depends on a certain
+        parameter, and therefore should include it in gradient computations,
+        and change it during, e.g, model optimization.
 
-        .. Note: Developer API. Users should not need to call this.
+        .. note:: Unless you're creating your own parameters, you shouldn't
+                  need to call this.
 
         :param param:  the parameter to add.
         :type parameters: `runlmc.parametrization.Param`

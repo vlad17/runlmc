@@ -11,6 +11,7 @@ import numpy as np
 import scipy.linalg
 import scipy.sparse.linalg
 
+
 def map_entries(f, nparr):
     """
     Map a function over a numpy array.
@@ -27,6 +28,7 @@ def map_entries(f, nparr):
     dtype = nparr.dtype
     return np.fromiter(map(f, it), dtype).reshape(shape)
 
+
 def tesselate(nparr, lenit):
     """
     Create a ragged array by splitting `nparr` into contiguous
@@ -40,14 +42,16 @@ def tesselate(nparr, lenit):
                        size.
     """
     ends = np.fromiter(accumulate(lenit), dtype=np.int)
-    if len(ends) == 0:
+    if not ends.size:
         raise ValueError('no segment lengths specified')
     if nparr.shape[0] != ends[-1]:
         raise ValueError('shape {}[0] != {} num elements'.format(
             nparr.shape, ends[-1]))
     return np.split(nparr, ends[:-1])
 
+
 EPS = np.finfo('float64').eps
+
 
 def search_descending(x, xs, inclusive):
     """
@@ -65,6 +69,7 @@ def search_descending(x, xs, inclusive):
     idx = np.searchsorted(xs[::-1], x, option)
     return len(xs) - idx
 
+
 def smallest_eig(top):
     """
     :param top: top row of Toeplitz matrix to get eigenvalues for
@@ -78,6 +83,8 @@ def smallest_eig(top):
     return scipy.linalg.eigvalsh(scipy.linalg.toeplitz(top)).min()
 
 # TODO(test)
+
+
 def symm_2d_list_map(f, arr, D, dtype='object'):
     """Symmetric map construction"""
     out = np.empty((D, D), dtype=dtype)
@@ -88,6 +95,8 @@ def symm_2d_list_map(f, arr, D, dtype='object'):
     return out
 
 # TODO(test)
+
+
 def begin_end_indices(lens):
     ends = np.add.accumulate(lens)
     begins = np.roll(ends, 1)

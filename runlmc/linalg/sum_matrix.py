@@ -4,6 +4,7 @@
 from .matrix import Matrix
 from ..util.docs import inherit_doc
 
+
 @inherit_doc
 class SumMatrix(Matrix):
     """
@@ -16,7 +17,7 @@ class SumMatrix(Matrix):
     """
 
     def __init__(self, Ks):
-        if len(Ks) == 0:
+        if not Ks:
             raise ValueError('Need at least one matrix to sum')
 
         shapes = [K.shape for K in Ks]

@@ -8,12 +8,15 @@ import scipy.sparse.linalg as sla
 
 _LOG = logging.getLogger(__name__)
 
+
 class _EarlyTerm(Exception):
     def __init__(self, x):
         super().__init__('')
         self.x = x
 
 # TODO(test) + classdoc
+
+
 class Iterative:
     TOL = 1e-4
     """Target solve() tolerance. Only errors > TOL reported."""
@@ -30,10 +33,11 @@ class Iterative:
         :return: :math:`\\textbf{x}`, number of iterations and error if verbose
         """
         ctr = 0
+
         def cb(x):
             nonlocal ctr, y
             ctr += 1
-            if ctr % 100 == 0: # early termination
+            if ctr % 100 == 0:  # early termination
                 reconstruction = np.linalg.norm(y - op.matvec(x))
                 if reconstruction < Iterative.TOL:
                     raise _EarlyTerm(x)
@@ -56,5 +60,4 @@ class Iterative:
 
         if verbose:
             return Kinv_y, ctr, error
-        else:
-            return Kinv_y
+        return Kinv_y

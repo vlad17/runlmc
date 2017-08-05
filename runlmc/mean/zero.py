@@ -6,13 +6,15 @@ import numpy as np
 from .mean_function import MeanFunction
 from ..util.docs import inherit_doc
 
+
 @inherit_doc
 class Zero(MeanFunction):
     """
     The zero mapping. Note that leaving the `mean_function` parameter
     as none in all of the models does the same job.
     """
-    def __init__(self, input_dim, output_dim, name='zero'):
+
+    def __init__(self, input_dim, output_dim, name='zero'):  # pylint: disable=useless-super-delegation
         super().__init__(input_dim, output_dim, name)
 
     def f(self, Xs):

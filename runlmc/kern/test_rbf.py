@@ -11,6 +11,7 @@ from .rbf import RBF
 from ..util.numpy_convenience import map_entries, smallest_eig
 from ..util.testing_utils import BasicModel, check_np_lists
 
+
 class RBFTest(unittest.TestCase):
 
     def setUp(self):
@@ -44,6 +45,7 @@ class RBFTest(unittest.TestCase):
 
     def test_numerical_gradients(self):
         actual = self.testK.kernel_gradient(self.cases)
+
         def deriv(x):
             return nd.Derivative(lambda l: RBF(l).from_dist(x))
         expected = [deriv(x)(self.inv_lengthscale)[0] for x in self.cases]
