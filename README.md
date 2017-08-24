@@ -100,7 +100,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 0. multidimensional inputs and ARD.
 0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 0. HalfLaplace should be a Prior, add vectorized priors (remembering the shape)
-0. Migrate to asv, separate tests/ folder
+0. Migrate to asv, separate tests/ folder (then no autodoc hack to skip test_* modules)
 0. mean functions
 0. product kernels (multiple factors) 
 0. active dimension optimization
