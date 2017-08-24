@@ -230,5 +230,5 @@ def error_context(s):
     try:
         yield
     except AssertionError as e:
-        e.args = (e.args[0] + '\n' + s, *e.args[1:])
+        e.args = (e.args[0] + '\n' + s,) + e.args[1:]
         raise e

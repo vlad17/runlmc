@@ -1,6 +1,8 @@
 #!/bin/bash
 # Runs grid comparison for gradient benchmarking script
 
+set -e
+
 USAGE="Usage: ./run.sh [--help|--validate]"
 EXPECTED_DIR="runlmc/benchmarks/grad-grid"
 HELP_STR="$USAGE
@@ -96,6 +98,7 @@ echo "n,d,r,q,eps,k,time_ratio,relgrad_l1,relgrad_l2,relalpha_l1,relalpha_l2" > 
 
 maxrun=4
 for gridpoint in ${indices[@]} ; do
+    echo $gridpoint
     mine=$gridpoint
     QQ=${QQs[$(echo $mine | cut -d"+" -f1)]}
     EPS=${EPSs[$(echo $mine | cut -d"+" -f2)]}
@@ -117,20 +120,30 @@ for gridpoint in ${indices[@]} ; do
     alphas2=""
     for i in $(seq 0 $maxrun); do
         file="$base$i.txt"
-        grep -A 2 "total optimization iteration time" $file | tail -n 2 | tr -s " " | cut -d" " -f2 > /tmp/$file-times
+        grep -A 2 "total optimization iteration time" $file | tail -n 2 | tr -s " " | cut -d" " -f2 > times-$file
         ratios1=$(echo $ratios1 $(grep "err:grad l1" $file | tr -s " " | cut -d" " -f2))
         ratios2=$(echo $ratios2 $(grep "err:grad l2" $file | tr -s " " | cut -d" " -f2))
         alphas1=$(echo $alphas1 $(grep "alpha l1" $file | tr -s " " | cut -d" " -f2))
         alphas2=$(echo $alphas2 $(grep "alpha l2" $file | tr -s " " | cut -d" " -f2))
     done
 
-    avg_times=($(paste /tmp/$base*.txt-times | awk '{s=0; for (i=1;i<=NF;i++)s+=$i; print s/NF;}'))
+    avg_times=($(paste times-$base*.txt | awk '{s=0; for (i=1;i<=NF;i++)s+=$i; print s/NF;}') )
+
+    echo 'avg times'
+    echo ${avg_times[@]}
     time_ratio=$(bc -l <<< "${avg_times[0]} / ${avg_times[1]}")
+    echo 'time ratio'
+    echo $time_ratio
     
     ratios1a=(${ratios1})
     ratios2a=(${ratios2})
     alphas1a=(${alphas1})
     alphas2a=(${alphas2})
+    echo 'arrays'
+    echo ${ratios1a[@]}
+    echo ${ratios2a[@]}
+    echo ${alphas1a[@]}
+    echo ${alphas2a[@]}    
 
     if [ -z ${ratios1a[$maxrun]} ]; then
         echo error for ratios1 $ratios1 on "Q $QQ eps $EPS k $KERN, skipping"
@@ -178,11 +191,6 @@ if $IS_VALIDATION ; then
     noutputs=$(find . -maxdepth 1 -name "n100-*.txt" | wc -l)
     if [ "$noutputs" -ne 80 ]; then # 16 * 5
         echo "Expecting 80 output files, found $noutputs"
-        exit 1
-    fi
-    nlines=$(cat extracted_summary.csv | wc -l)
-    if [ "$nlines" -ne 18 ]; then # 16 + 2
-        echo "Expecting 18 lines in the summary, found $nlines"
         exit 1
     fi
     nlines=$(cat extracted_summary.csv | wc -l)
