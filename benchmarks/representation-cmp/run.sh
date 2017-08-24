@@ -62,6 +62,11 @@ else
 fi
 
 cd out/
+mkdir -p /tmp/grad-grid
+cachedir="/tmp/grad-grid/$(date '+%Y-%m-%d-%H:%M:%S')"
+mkdir -p $cachedir
+echo "moving old benchmarks to $cachedir"
+mv * $cachedir
 
 OUTFOLDER=$PWD
 REPOROOT=$(readlink -f "$PWD/../../../")
@@ -130,6 +135,27 @@ done
 echo
 echo 'latex table in out/results.tex'
 
-latex="$latex \\\\bottomrule $newline \\end{tabular}"
+latex="$latex \\\\bottomrule $newline \\\\end{tabular}"
 
 printf "${latex}" > results.tex
+
+if $IS_VALIDATION ; then
+    echo "****************************************"
+    njobs=$(find . -maxdepth 1 -name "slurm-out*.txt" | wc -l)
+    if [ "$njobs" -ne 5 ]; then
+        echo "Expecting 5 slurm jobs, found $njobs"
+        exit 1
+    fi
+    noutputs=$(find . -maxdepth 1 -name "inv-run-*.txt" | wc -l)
+    if [ "$noutputs" -ne 5 ]; then
+        echo "Expecting 5 output files, found $noutputs"
+        exit 1
+    fi
+    nlines=$(cat results.tex | wc -l)
+    if [ "$nlines" -ne 9 ]; then
+        echo "Expecting 9 lines in the summary, found $nlines"
+        exit 1
+    fi
+    echo 'VALIDATION SUCCESSFUL'
+    echo "****************************************"
+fi

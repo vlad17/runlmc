@@ -21,6 +21,5 @@ fi
     
 cd $REPOROOT
 
-#benchmarks/benchlib/inv-run.sh $MATRIX_SIZE # Warmup
 benchmarks/benchlib/inv-run.sh $MATRIX_SIZE > $OUTFOLDER/inv-run-$SLURM_ARRAY_TASK_ID.txt
 
