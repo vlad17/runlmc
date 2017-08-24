@@ -62,8 +62,8 @@ else
 fi
 
 cd out/
-mkdir -p /tmp/grad-grid
-cachedir="/tmp/grad-grid/$(date '+%Y-%m-%d-%H:%M:%S')"
+mkdir -p /tmp/representation-cmp
+cachedir="/tmp/representation-cmp/$(date '+%Y-%m-%d-%H:%M:%S')"
 mkdir -p $cachedir
 echo "moving old benchmarks to $cachedir"
 mv * $cachedir
