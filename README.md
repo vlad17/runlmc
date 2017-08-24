@@ -73,8 +73,6 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. un-hackify benchlib a bit.
-   - validation tests (shell based) for benchmarks, add to travis.
 0. TODO(cleanup) - apprx to approx everywhere, kerns to kernels, git grep TODO
 0. Allow extrapolation in util.interpolation.py
 0. TODO(test) - document everything that's missing documentation along the way.
@@ -100,7 +98,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 0. multidimensional inputs and ARD.
 0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
 0. HalfLaplace should be a Prior, add vectorized priors (remembering the shape)
-0. Migrate to asv, separate tests/ folder (then no autodoc hack to skip test_* modules)
+0. Migrate to asv, separate tests/ folder (then no autodoc hack to skip test_* modules; pure-python benchmarks enable validation of weather/ and fx2007 benchmarks on travis-ci but then need to be decoupled from MATLAB implementations)
 0. mean functions
 0. product kernels (multiple factors) 
 0. active dimension optimization
