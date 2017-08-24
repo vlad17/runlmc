@@ -131,7 +131,7 @@ def multi_interpolant(Xs, inducing_grid):  # pylint: disable=too-many-locals
     the :math:`i`-th element of `Xs` onto the shared inducing grid.
 
     :param Xs: list of 1-dimensional numpy vectors, the inputs.
-    :param inducing_gird: 1-dimensional vector of grid points
+    :param inducing_grid: 1-dimensional vector of grid points
     :return: the rectangular block diagonal matrix of :math:`W_i`.
     """
     multiout_grid_sizes = np.arange(len(Xs)) * len(inducing_grid)
@@ -159,3 +159,34 @@ def multi_interpolant(Xs, inducing_grid):  # pylint: disable=too-many-locals
     ncols = len(Xs) * len(inducing_grid)
     return scipy.sparse.csr_matrix(
         (data, col_indices, ind_ptr), shape=(order, ncols))
+
+
+def autogrid(Xs, lo, hi, m):
+    """
+    Generate a grid from `lo` to `hi` with `m` points, but with sensible
+    defaults based on `Xs` if any of the other parameters are `None`.
+
+    In particular, the defaults are chosen such that all elements in `Xs`
+    fall within the grid by two elements on both sides. If a user's values
+    do not guarantee this property, they are changed.
+
+    :param Xs: list of 1-dimensional numpy vectors, the inputs.
+    :param lo: optional lower bound
+    :param hi: optional upper bound
+    :param m: optional grid size
+    :return: a pair of equally-spaced points between low, hi
+    """
+
+    m = m or sum(len(X) for X in Xs) // len(Xs)
+    max_lo = min(X.min() for X in Xs)
+    min_hi = max(X.max() for X in Xs)
+
+    lo = min(lo, max_lo) if lo else max_lo
+    hi = max(hi, min_hi) if hi else min_hi
+
+    delta = (hi - lo) / m
+    lo -= 2 * delta
+    hi += 2 * delta
+    m += 4
+
+    return np.linspace(lo, hi, m), m

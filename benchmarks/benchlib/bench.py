@@ -12,7 +12,7 @@ import scipy.spatial.distance
 import scipy.sparse.linalg as sla
 import scipy.stats
 
-from runlmc.approx.interpolation import multi_interpolant
+from runlmc.approx.interpolation import multi_interpolant, autogrid
 from runlmc.approx.iterative import Iterative
 from runlmc.kern.rbf import RBF
 from runlmc.kern.matern32 import Matern32
@@ -69,6 +69,7 @@ sum preferable on rare occasion.
 Inputs/outputs are random and uniform in (0, 1). The interpolation grid
 used by the SKI approximation is a grid with n_o datapoints.
 """
+
 
 def _main():
     """Runs the benchmarking program."""
@@ -132,13 +133,14 @@ def _main():
     run_kernel_benchmark(
         params, dists, grid_dists, interpolant, interpolant_T, testtype)
 
+
 def prep(d, n_o, Xs):
     # Replicates LMC (runlmc.models.lmc) code minimally.
     with contexttimer.Timer() as exact:
         dists = scipy.spatial.distance.pdist(Xs.reshape(-1, 1))
         dists = scipy.spatial.distance.squareform(dists)
     with contexttimer.Timer() as apprx:
-        grid, m = LMC._autogrid(Xs, lo=None, hi=None, m=None)
+        grid, m = autogrid(Xs, lo=None, hi=None, m=None)
         grid_dists = grid - grid[0]
         interpolant = multi_interpolant(Xs, grid)
         interpolantT = interpolant.transpose().tocsr()
@@ -151,6 +153,7 @@ def prep(d, n_o, Xs):
           .format(apprx.elapsed))
 
     return dists, grid_dists, interpolant, interpolantT
+
 
 def run_kernel_benchmark(
         params, dists, grid_dists, interpolant, interpolantT, testtype):
@@ -169,6 +172,7 @@ def run_kernel_benchmark(
         print('    krylov subspace methods m={}'.format(len(grid_dists)))
 
         solve = Iterative.solve
+
         def make_solve(k, minres):
             k = GridKernel(params, grid_dists, interpolant, interpolantT, k)
             return lambda y: solve(k, y, verbose=True, minres=minres)
@@ -258,6 +262,7 @@ def run_kernel_benchmark(
     print('        {:10.4f} sec cholesky'.format(tot_exact_time + chol_time))
     print('        {:10.4f} sec runlmc'.format(tot_apprx_time + aprx_time))
 
+
 def gen_kernels(q):
     kern_funcs = [RBF, lambda period: StdPeriodic(1, period), Matern32]
     kernels = [[kfunc(gamma)
@@ -273,11 +278,13 @@ def gen_kernels(q):
             mix.append(RBF(1))
     return kernels + [mix]
 
+
 def vector_errors(apprx, exact):
     diff = apprx - exact
     e1 = np.linalg.norm(diff, 1) / np.linalg.norm(exact, 1)
     e2 = np.linalg.norm(diff, 2) / np.linalg.norm(exact, 2)
     return e1, e2
+
 
 if __name__ == '__main__':
     _main()

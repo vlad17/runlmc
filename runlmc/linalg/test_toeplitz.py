@@ -8,6 +8,7 @@ from .test_matrix_base import MatrixTestBase
 from .toeplitz import Toeplitz
 from ..util import testing_utils as utils
 
+
 class ToeplitzTest(utils.RandomTest, MatrixTestBase):
 
     @staticmethod

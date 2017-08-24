@@ -13,7 +13,7 @@ import scipy.stats
 from paramz.transformations import Logexp
 
 from .multigp import MultiGP
-from ..approx.interpolation import multi_interpolant
+from ..approx.interpolation import multi_interpolant, autogrid
 from ..approx.iterative import Iterative
 from ..linalg.composition import Composition
 from ..linalg.matrix import Matrix
@@ -195,7 +195,7 @@ class LMC(MultiGP):
         _LOG.info('LMC %s generating inducing grid n = %d',
                   self.name, n)
         # Grid corresponds to U
-        self.inducing_grid, m = self._autogrid(Xs, lo, hi, m)
+        self.inducing_grid, m = autogrid(Xs, lo, hi, m)
 
         # Toeplitz(self.dists) is the pairwise distance matrix of U
         self.dists = self.inducing_grid - self.inducing_grid[0]
@@ -274,25 +274,6 @@ class LMC(MultiGP):
                          ' incompatible with OMP-level parallelism '
                          '(OMP_NUM_THREADS env var is unset, using all '
                          'available cores)', procs_info)
-
-    # TODO(cleanup): move to interpolation as its own method; test it.
-    @staticmethod
-    def _autogrid(Xs, lo, hi, m):
-        if m is None:
-            m = sum(len(X) for X in Xs) // len(Xs)
-
-        if lo is None:
-            lo = min(X.min() for X in Xs)
-
-        if hi is None:
-            hi = max(X.max() for X in Xs)
-
-        delta = (hi - lo) / m
-        lo -= 2 * delta
-        hi += 2 * delta
-        m += 4
-
-        return np.linspace(lo, hi, m), m
 
     def optimize(self, **kwargs):
         if self.metrics is not None:

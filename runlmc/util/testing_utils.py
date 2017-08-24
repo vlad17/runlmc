@@ -7,6 +7,7 @@ The following methods are useful for generating various matrices for testing.
 "PSDT" stands for positive semi-definite Toeplitz (and, implicitly, symmetric).
 """
 
+from contextlib import contextmanager
 import os
 import random
 import time
@@ -222,3 +223,12 @@ class BasicModel(Model):
             likelihood_grad[i] = 0.5 * trace
 
         self.kern.update_gradient(likelihood_grad)
+
+
+@contextmanager
+def error_context(s):
+    try:
+        yield
+    except AssertionError as e:
+        e.args = (e.args[0] + '\n' + s, *e.args[1:])
+        raise e

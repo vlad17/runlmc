@@ -4,8 +4,11 @@
 import unittest
 
 import numpy as np
+from parameterized import parameterized
 
-from .interpolation import cubic_kernel, interp_cubic
+from .interpolation import cubic_kernel, interp_cubic, autogrid
+from ..util.testing_utils import error_context
+
 
 class TestInterpolation(unittest.TestCase):
 
@@ -87,3 +90,23 @@ class TestInterpolation(unittest.TestCase):
             approxf = M.dot(f(grid))
             exactf = f(sample)
             np.testing.assert_allclose(approxf, exactf, err_msg=str(f))
+
+    @parameterized.expand([
+        (-1, 13, 10),
+        (-1, 13, 10),
+        (5, 9, 3),
+        (None, None, None),
+        (None, 13, None),
+        (-1, None, None),
+        (-1, 13, None)
+    ])
+    def test_autogrid_lo_hi_m(self, lo, hi, m):
+        Xs = [np.arange(10), np.arange(4, 12)]
+        grid, m_returned = autogrid(Xs, lo, hi, m)
+        with error_context('lo {} hi {} m {} returned m {}\ngrid {}'
+                           .format(lo, hi, m, m_returned, grid)):
+            self.assertGreaterEqual(0, grid[1])
+            self.assertLessEqual(11, grid[-2])
+            grid_lens = np.unique(np.diff(grid))
+            span = grid_lens.max() - grid_lens.min()
+            np.testing.assert_allclose(span, 0, atol=1e-6)
