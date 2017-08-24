@@ -74,8 +74,6 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 ### Roadmap
 
 0. un-hackify benchlib a bit.
-   - run_kerenel_benchmark : break down, call from _main
-   - all functions filter_list .. nlpd in standard_tester.py
    - validation tests (shell based) for benchmarks, add to travis.
 0. TODO(cleanup) - apprx to approx everywhere, kerns to kernels, git grep TODO
 0. Allow extrapolation in util.interpolation.py

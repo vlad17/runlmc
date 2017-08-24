@@ -62,6 +62,11 @@ else
 fi
 
 cd out/
+mkdir -p /tmp/grad-grid
+cachedir="/tmp/grad-grid/$(date '+%Y-%m-%d-%H:%M:%S')"
+mkdir -p $cachedir
+echo "moving old benchmarks to $cachedir"
+mv * $cachedir
 
 OUTFOLDER=$PWD
 REPOROOT=$(readlink -f "$PWD/../../../")
@@ -69,29 +74,34 @@ REPOROOT=$(readlink -f "$PWD/../../../")
 
 sumfile=extracted_summary.csv
 
-rm -f $sumfile
-
 QQs=(1 5 10)
-EPSs=(1 0.1 0.01 0.001 0.0001)
 KERNs=(rbf periodic matern mix)
 
 if $IS_VALIDATION ; then
     SIZE="10"
+    QQs=(1 5)
+    EPSs=(1 0.1)
+    indices=({0..1}"+"{0..1}"+"{0..3})
+    dims="1"
+    rank="1"
 else
     SIZE="500"
+    EPSs=(1 0.1 0.01 0.001 0.0001)
+    indices=({0..2}"+"{0..4}"+"{0..3})
+    dims="10"
+    rank="3"
 fi
 
 echo "n,d,r,q,eps,k,time_ratio,relgrad_l1,relgrad_l2,relalpha_l1,relalpha_l2" > $sumfile
 
 maxrun=4
-
-for gridpoint in $(echo {0..2}"+"{0..4}"+"{0..3}) ; do
+for gridpoint in ${indices[@]} ; do
     mine=$gridpoint
     QQ=${QQs[$(echo $mine | cut -d"+" -f1)]}
     EPS=${EPSs[$(echo $mine | cut -d"+" -f2)]}
     KERN=${KERNs[$(echo $mine | cut -d"+" -f3)]}
 
-    base="n${SIZE}0-d10-r3-q${QQ}-eps${EPS}-k${KERN}-run"
+    base="n${SIZE}0-d${dims}-r${rank}-q${QQ}-eps${EPS}-k${KERN}-run"
 
     nfile=$(find . -maxdepth 1 -name "$base*.txt" | wc -l)
 
@@ -157,3 +167,35 @@ done
 echo >> $sumfile
 
 python3 ../makepics.py
+
+if $IS_VALIDATION ; then
+    echo "****************************************"
+    njobs=$(find . -maxdepth 1 -name "slurm-out*.txt" | wc -l)
+    if [ "$njobs" -ne 60 ]; then
+        echo "Expecting 60 slurm jobs, found $njobs"
+        exit 1
+    fi
+    noutputs=$(find . -maxdepth 1 -name "n100-*.txt" | wc -l)
+    if [ "$noutputs" -ne 80 ]; then # 16 * 5
+        echo "Expecting 80 output files, found $noutputs"
+        exit 1
+    fi
+    nlines=$(cat extracted_summary.csv | wc -l)
+    if [ "$nlines" -ne 18 ]; then # 16 + 2
+        echo "Expecting 18 lines in the summary, found $nlines"
+        exit 1
+    fi
+    nlines=$(cat extracted_summary.csv | wc -l)
+    if [ "$nlines" -ne 18 ]; then # 16 + 2
+        echo "Expecting 18 lines in the summary, found $nlines"
+        exit 1
+    fi
+    for expected_file in relalpha_l1.eps relalpha_l2.eps relgrad_l1.eps relgrad_l2.eps time_ratio.eps; do
+        if ! [ -f $expected_file ]; then
+            echo "Expecting file $expected_file, but it was missing"
+            exit 1
+        fi
+    done
+    echo 'VALIDATION SUCCESSFUL'
+    echo "****************************************"
+fi

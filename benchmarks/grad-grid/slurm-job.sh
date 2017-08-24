@@ -17,26 +17,30 @@ PYTHONPATH="$REPOROOT"
 
 script="$REPOROOT/benchmarks/benchlib/bench.py"
 
-QQs=(1 5 10)
-EPSs=(1 0.1 0.01 0.001 0.0001)
-KERNs=(rbf periodic matern mix)
+if $IS_VALIDATION ; then
+    # 2 * 2 * 4 = 16 total grid size
+    QQs=(1 5)
+    EPSs=(1 0.1)
+    KERNs=(rbf periodic matern mix)
+    grid=($(echo {0..1}"+"{0..1}"+"{0..3}))
+else
+    # 3 * 5 * 4 = 60 total grid size
+    QQs=(1 5 10)
+    EPSs=(1 0.1 0.01 0.001 0.0001)
+    KERNs=(rbf periodic matern mix)
+    grid=($(echo {0..2}"+"{0..4}"+"{0..3}))
+fi
 
-# 3 * 5 * 4 = 60 total grid size
-grid=($(echo {0..2}"+"{0..4}"+"{0..3}))
+if [ "$SLURM_ARRAY_TASK_ID" -ge ${#grid[@]} ]; then
+    exit 0
+fi
 
 mine=${grid[$SLURM_ARRAY_TASK_ID]}
-
 QQ=${QQs[$(echo $mine | cut -d"+" -f1)]}
 EPS=${EPSs[$(echo $mine | cut -d"+" -f2)]}
 KERN=${KERNs[$(echo $mine | cut -d"+" -f3)]}
 
 if $IS_VALIDATION ; then
-    if [[ "$Q" -eq 10 ]]; then
-        exit 0
-    fi
-    if [[ "$EPS" != "1" && "$EPS" != "0.1" ]]; then
-        exit 0
-    fi
     SIZE="10"
     RANK="1"
     DIM="1"

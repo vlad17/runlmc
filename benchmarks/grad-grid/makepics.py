@@ -9,8 +9,9 @@ df = pd.read_csv('extracted_summary.csv', header=0).dropna()
 print('num rows', len(df))
 print('cols', list(df.columns))
 
+
 def printimg(col, ttl, negate=False):
-    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(8,6))
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(8, 6))
     kerns = df['k'].unique()
 
     mult = -1 if negate else 1
@@ -43,23 +44,31 @@ def printimg(col, ttl, negate=False):
         ax.set_yticklabels(q_coord[rsort])
         for extreme in [M.argmin(), M.argmax()]:
             extreme = np.unravel_index(extreme, M.shape)
-            ax.text(extreme[1], extreme[0], '{:.2f}'.format(M[extreme]), va='center', ha='center')
+            ax.text(extreme[1], extreme[0], '{:.2f}'.format(
+                M[extreme]), va='center', ha='center')
         ax.set_title(k, fontsize=14)
 
-    fig.text(0.51, 0.025, r'$\log_{10}\epsilon$', ha='center', fontsize=18)
-    fig.text(0, 0.5, r'$Q$', va='center', rotation='vertical', fontsize=18)
-    fig.subplots_adjust(right=0.7, top=1.1, hspace=0.4)
-    plt.tight_layout()
-    cbar_ax = fig.add_axes([1, 0.15, 0.05, 0.7])
-    fig.colorbar(im, cax=cbar_ax)
-    f = col + '.eps'
-    fig.suptitle(ttl, fontsize=18)
-    plt.savefig(f, format='eps', bbox_inches='tight')
-    print('made', f)
+    if im:
+        fig.text(0.51, 0.025, r'$\log_{10}\epsilon$', ha='center', fontsize=18)
+        fig.text(0, 0.5, r'$Q$', va='center', rotation='vertical', fontsize=18)
+        fig.subplots_adjust(right=0.7, top=1.1, hspace=0.4)
+        plt.tight_layout()
+        cbar_ax = fig.add_axes([1, 0.15, 0.05, 0.7])
+        fig.colorbar(im, cax=cbar_ax)
+        f = col + '.eps'
+        fig.suptitle(ttl, fontsize=18)
+        plt.savefig(f, format='eps', bbox_inches='tight')
+        print('made', f)
+
     plt.clf()
 
+
 printimg('time_ratio', r'log ratio in cholesky to LLGP gradient runtime')
-printimg('relgrad_l1', r'negative log relative error in $\|\nabla\mathcal{L}\|_1$', True)
-printimg('relgrad_l2', r'negative log relative error in $\|\nabla\mathcal{L}\|_2$', True)
-printimg('relalpha_l1', r'negative log relative error in $\|K^{-1}\mathbf{y}\|_1$', True)
-printimg('relalpha_l2', r'negative log relative error in $\|K^{-1}\mathbf{y}\|_2$', True)
+printimg('relgrad_l1',
+         r'negative log relative error in $\|\nabla\mathcal{L}\|_1$', True)
+printimg('relgrad_l2',
+         r'negative log relative error in $\|\nabla\mathcal{L}\|_2$', True)
+printimg('relalpha_l1',
+         r'negative log relative error in $\|K^{-1}\mathbf{y}\|_1$', True)
+printimg('relalpha_l2',
+         r'negative log relative error in $\|K^{-1}\mathbf{y}\|_2$', True)

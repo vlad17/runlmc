@@ -14,5 +14,7 @@ script:
   - nosetests --debug=DEFAULT --with-coverage
   - ./docbuild.sh
   - ./style.sh
+  - cd benchmarks
+  - cd grad-grid && ./run.sh --validate && cd ..
 after_success:
   - codecov
