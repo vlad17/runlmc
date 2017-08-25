@@ -139,7 +139,7 @@ def prep(d, n_o, Xs):
     with contexttimer.Timer() as exact:
         dists = scipy.spatial.distance.pdist(Xs.reshape(-1, 1))
         dists = scipy.spatial.distance.squareform(dists)
-    with contexttimer.Timer() as apprx:
+    with contexttimer.Timer() as approx:
         grid, m = autogrid(Xs, lo=None, hi=None, m=None)
         grid_dists = grid - grid[0]
         interpolant = multi_interpolant(Xs, grid)
@@ -149,8 +149,8 @@ def prep(d, n_o, Xs):
     print('preparation time (once per optimization)')
     print('    {:8.4f} sec exact - pairwise distances (for dense approaches)'
           .format(exact.elapsed))
-    print('    {:8.4f} sec apprx - linear interpolation (for approximations)'
-          .format(apprx.elapsed))
+    print('    {:8.4f} sec approx - linear interpolation (for approximations)'
+          .format(approx.elapsed))
 
     return dists, grid_dists, interpolant, interpolantT
 
@@ -199,16 +199,16 @@ def run_kernel_benchmark(
     with contexttimer.Timer() as t:
         grid_kernel = gen_grid_kernel(
             params, grid_dists, interpolant, interpolantT)
-        apprx = ApproxLMCKernel(params, grid_kernel, grid_dists, None)
+        approx = ApproxLMCKernel(params, grid_kernel, grid_dists, None)
     aprx_time = t.elapsed
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))
-    print('        {:10.4f} sec apprx - solve K*alpha=y, solve {} trace terms'
+    print('        {:10.4f} sec approx - solve K*alpha=y, solve {} trace terms'
           .format(aprx_time, StochasticDeriv.N_IT))
 
-    matrix_diff = np.fabs(apprx.K.as_numpy() - exact.K).mean()
-    print('        {:9.4e} |K_exact - K_apprx|_1 / n^2'.format(matrix_diff))
-    alpha1, alpha2 = vector_errors(apprx.deriv.alpha, exact.deriv.alpha)
+    matrix_diff = np.fabs(approx.K.as_numpy() - exact.K).mean()
+    print('        {:9.4e} |K_exact - K_approx|_1 / n^2'.format(matrix_diff))
+    alpha1, alpha2 = vector_errors(approx.deriv.alpha, exact.deriv.alpha)
     print('        {:9.4e} rel alpha l1 error'.format(alpha1))
     print('        {:9.4e} rel alpha l2 error'.format(alpha2))
 
@@ -221,16 +221,16 @@ def run_kernel_benchmark(
               .format(t.elapsed / ngrad))
         tot_exact_time = t.elapsed
         with contexttimer.Timer() as t:
-            apprx_kgrad = f(apprx)
-        assert ngrad == sum(map(len, apprx_kgrad))
-        print('        {:10.4f} sec apprx per gradient'
+            approx_kgrad = f(approx)
+        assert ngrad == sum(map(len, approx_kgrad))
+        print('        {:10.4f} sec approx per gradient'
               .format(t.elapsed / ngrad))
-        tot_apprx_time = t.elapsed
+        tot_approx_time = t.elapsed
         exact_kgrad = np.hstack(exact_kgrad)
-        apprx_kgrad = np.hstack(apprx_kgrad)
-        err = exact_kgrad - apprx_kgrad
+        approx_kgrad = np.hstack(approx_kgrad)
+        err = exact_kgrad - approx_kgrad
         print('        {:9.4e} avg grad error'.format(np.fabs(err).mean()))
-        return err, tot_exact_time, tot_apprx_time, exact_kgrad
+        return err, tot_exact_time, tot_approx_time, exact_kgrad
 
     gradient_type = [
         (lambda x: x.kernel_gradients(), 'kernel'),
@@ -240,19 +240,19 @@ def run_kernel_benchmark(
 
     errs = np.array([])
     tot_exact_time = 0
-    tot_apprx_time = 0
+    tot_approx_time = 0
     grads = np.array([])
     for f, name in gradient_type:
-        err, exact_time, apprx_time, grad = check_grads(f, name)
+        err, exact_time, approx_time, grad = check_grads(f, name)
         grads = np.append(grads, grad)
         errs = np.append(errs, err)
         tot_exact_time += exact_time
-        tot_apprx_time += apprx_time
+        tot_approx_time += approx_time
 
     print('    total gradient runtime summary ({} partial derivatives)'
           .format(len(errs)))
     print('        {:10.4f} sec exact all gradients'.format(tot_exact_time))
-    print('        {:10.4f} sec apprx all gradients'.format(tot_apprx_time))
+    print('        {:10.4f} sec approx all gradients'.format(tot_approx_time))
     print('        {:9.4e} avg grad error'.format(np.fabs(errs).mean()))
     print('        {:9.4e} avg grad magnitude'.format(np.fabs(grads).mean()))
     grad1, grad2 = vector_errors(errs + grads, grads)
@@ -260,7 +260,7 @@ def run_kernel_benchmark(
     print('        {:9.4e} err:grad l2 ratio'.format(grad2))
     print('    total optimization iteration time')
     print('        {:10.4f} sec cholesky'.format(tot_exact_time + chol_time))
-    print('        {:10.4f} sec runlmc'.format(tot_apprx_time + aprx_time))
+    print('        {:10.4f} sec runlmc'.format(tot_approx_time + aprx_time))
 
 
 def gen_kernels(q):
@@ -279,8 +279,8 @@ def gen_kernels(q):
     return kernels + [mix]
 
 
-def vector_errors(apprx, exact):
-    diff = apprx - exact
+def vector_errors(approx, exact):
+    diff = approx - exact
     e1 = np.linalg.norm(diff, 1) / np.linalg.norm(exact, 1)
     e2 = np.linalg.norm(diff, 2) / np.linalg.norm(exact, 2)
     return e1, e2
