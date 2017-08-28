@@ -229,20 +229,20 @@ class LMC(MultiGP):
         self.coreg_diags = []
         for _ in range(self.nkernels['lmc']):
             i = len(self.coreg_diags)
-            coreg_diag = np.ones(self.output_dim)
+            coreg_diags = np.ones(self.output_dim)
             self.coreg_diags.append(
-                Param('kappa{}'.format(i), coreg_diag, Logexp()))
+                Param('kappa{}'.format(i), coreg_diags, Logexp()))
             self.link_parameter(self.coreg_diags[-1])
         for _ in range(self.nkernels['slfm']):
             i = len(self.coreg_diags)
-            coreg_diag = np.zeros(self.output_dim)
-            self.coreg_diags.append(Param('kappa{}'.format(i), coreg_diag))
+            coreg_diags = np.zeros(self.output_dim)
+            self.coreg_diags.append(Param('kappa{}'.format(i), coreg_diags))
             self.coreg_diags[-1].constrain_fixed()
         for d in range(self.nkernels['indep']):
             i = len(self.coreg_diags)
-            coreg_diag = np.zeros(self.output_dim)
-            coreg_diag[d] = 1
-            self.coreg_diags.append(Param('kappa{}'.format(i), coreg_diag))
+            coreg_diags = np.zeros(self.output_dim)
+            coreg_diags[d] = 1
+            self.coreg_diags.append(Param('kappa{}'.format(i), coreg_diags))
             self.coreg_diags[-1].constrain_fixed()
 
         # Corresponds to epsilon
@@ -320,7 +320,7 @@ class LMC(MultiGP):
 
         for x, dx in zip(self.coreg_vecs, self.kernel.coreg_vec_gradients()):
             x.gradient = dx
-        for x, dx in zip(self.coreg_diags, self.kernel.coreg_diag_gradients()):
+        for x, dx in zip(self.coreg_diags, self.kernel.coreg_diags_gradients()):
             x.gradient = dx
         for k, dk in zip(self.kernels, self.kernel.kernel_gradients()):
             k.update_gradient(dk)
@@ -338,7 +338,7 @@ class LMC(MultiGP):
             exact_grad = np.concatenate((
                 np.concatenate(
                     exact.coreg_vec_gradients()).reshape(-1),
-                np.concatenate(exact.coreg_diag_gradients()),
+                np.concatenate(exact.coreg_diags_gradients()),
                 np.concatenate(exact.kernel_gradients()),
                 exact.noise_gradient()))
 

@@ -40,7 +40,7 @@ class ExactAnalogue:
                   kernels=self.params.kernels, ranks=ranks, m=m)
         for lmc_coreg, coreg in zip(lmc.coreg_vecs, self.params.coreg_vecs):
             lmc_coreg[:] = coreg
-        for lmc_coreg, coreg in zip(lmc.coreg_diags, self.params.coreg_diag):
+        for lmc_coreg, coreg in zip(lmc.coreg_diags, self.params.coreg_diags):
             lmc_coreg[:] = coreg
         lmc.noise[:] = self.params.noise
         return lmc
@@ -132,7 +132,7 @@ class LMCTest(RandomTest):
                 a.coreg_vec_gradients(), b.coreg_vec_gradients(),
                 atol=tol, rtol=tol)
             check_np_lists(
-                a.coreg_diag_gradients(), b.coreg_diag_gradients(),
+                a.coreg_diags_gradients(), b.coreg_diags_gradients(),
                 atol=tol, rtol=tol)
             check_np_lists(
                 a.kernel_gradients(), b.kernel_gradients(),

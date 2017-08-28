@@ -83,7 +83,7 @@ def _gen_coreg_Ks(params, tops):
 def _gen_diag_Ks(params, tops):
     if params.nkernels['lmc'] == 0 and params.nkernels['indep'] == 0:
         return Identity(params.n)
-    diags = np.column_stack(params.coreg_diag)
+    diags = np.column_stack(params.coreg_diags)
     diag_tops = diags.dot(tops)
     diag_Ks = BlockDiag([Toeplitz(top) for top in diag_tops])
     return diag_Ks

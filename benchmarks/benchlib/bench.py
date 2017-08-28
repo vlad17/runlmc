@@ -235,7 +235,7 @@ def run_kernel_benchmark(
     gradient_type = [
         (lambda x: x.kernel_gradients(), 'kernel'),
         (lambda x: x.coreg_vec_gradients(), 'coregionalization Aq'),
-        (lambda x: x.coreg_diag_gradients(), 'coregionalization kappa'),
+        (lambda x: x.coreg_diags_gradients(), 'coregionalization kappa'),
         (lambda x: [x.noise_gradient()], 'noise')]
 
     errs = np.array([])

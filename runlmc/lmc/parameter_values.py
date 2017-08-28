@@ -3,6 +3,7 @@
 
 import numpy as np
 
+
 class ParameterValues:
     def __init__(self, coreg_vecs, coreg_diags, kernels, lens, y, noise,
                  nkernels=None):
@@ -10,13 +11,13 @@ class ParameterValues:
             nkernels = {'lmc': len(kernels), 'slfm': 0, 'indep': 0}
 
         self.coreg_vecs = coreg_vecs
-        self.coreg_diag = coreg_diags # TODO(cleanup): coreg_diags
+        self.coreg_diags = coreg_diags
 
         self.kernels = kernels
         self.nkernels = nkernels
 
         self.coreg_mats = [a.T.dot(a) + np.diag(k)
-                           for a, k in zip(coreg_vecs, self.coreg_diag)]
+                           for a, k in zip(coreg_vecs, self.coreg_diags)]
 
         self.lens = lens
         self.noise = noise

@@ -58,7 +58,7 @@ class LMCKernel:
             grads.append(grad)
         return grads
 
-    def coreg_diag_gradients(self):
+    def coreg_diags_gradients(self):
         grads = []
         for q in range(self.params.Q):
             zeros = np.zeros((self.params.D, self.params.D))
