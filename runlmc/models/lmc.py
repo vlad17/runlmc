@@ -35,7 +35,8 @@ _LOG = logging.getLogger(__name__)
 class LMC(MultiGP):
     """
     The main class of this package, `LMC` implements linearithmic
-    Gaussian Process learning in the multi-output case. [TODO(PAPER)].
+    Gaussian Process learning in the multi-output case. See
+    the paper on `arxiv <https://arxiv.org/abs/1705.10813>`_.
 
     .. Note: Currently, only one-dimensional input is supported.
 
@@ -49,11 +50,11 @@ class LMC(MultiGP):
         K_{\\text{exact}}=\sum_{q=1}^Q\\left(A_qA_q^\\top+
              \\boldsymbol\\kappa_q I\\right)
              \circ [k_q(X_i, X_j)]_{ij\in[D]^2} +
-             \\boldsymbol\epsilon I
+             \\boldsymbol\epsilon
 
     :math:`[\cdot]_{ij}` represents a block matrix, with rows and columns
     possibly of different widths. :math:`\circ` is the Hadamard product.
-    :math:`\\boldsymbol\\epsilon I` is a Gaussian noise
+    :math:`\\boldsymbol\\epsilon` is a diagonal Gaussian noise
     addition, iid within each output. The input arrays for our observations
     of each of the different outputs are denoted :math:`X_i` and may be
     variable-length. Each :math:`k_q(X_i,X_j)` is built from a stationary
@@ -95,16 +96,14 @@ class LMC(MultiGP):
     The functionality for the various prediction modes is summarized below.
     Note `'matrix-free'` is the default.
 
-    * `'matrix-free'` - If the number of test points is smaller than the
-                        number of grid points, use `'on-the-fly'`. If the
-                        number of points is greater than the number of grid
-                        points, use `'precompute'`, and use that from then
-                        onwards.
-    * `'on-the-fly'` - Use matrix-free inversion to compute the covariance
-                       for the entire set of points on which we're predicting.
-    * `'precompute'` - Compute an auxiliary predictive variance matrix for the
-                       grid points, but then cheaply re-use that work for
-                       prediction.
+    * `'matrix-free'` - If the number of test points is smaller than the \
+    number of grid points, use `'on-the-fly'`. If the \
+    number of points is greater than the number of grid \
+    points, use `'precompute'`, and use that from then onwards.
+    * `'on-the-fly'` - Use matrix-free inversion to compute the covariance \
+    for the entire set of points on which we're predicting.
+    * `'precompute'` - Compute an auxiliary predictive variance matrix for \
+    the grid points, but then cheaply re-use that work for prediction.
     * `'exact'` - Use the exact cholesky-based algorithm (not matrix free)
     * `'sample'` - Use the sampling algorithm from Wilson 2015.
 
@@ -320,7 +319,8 @@ class LMC(MultiGP):
 
         for x, dx in zip(self.coreg_vecs, self.kernel.coreg_vec_gradients()):
             x.gradient = dx
-        for x, dx in zip(self.coreg_diags, self.kernel.coreg_diags_gradients()):
+        for x, dx in zip(self.coreg_diags,
+                         self.kernel.coreg_diags_gradients()):
             x.gradient = dx
         for k, dk in zip(self.kernels, self.kernel.kernel_gradients()):
             k.update_gradient(dk)
