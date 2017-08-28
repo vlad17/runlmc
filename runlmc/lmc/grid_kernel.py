@@ -96,10 +96,10 @@ def _gen_bt_grid(params, tops):
     return blocked
 
 def _gen_sum_grid(params, tops):
-    kerns_on_grid = [Toeplitz(top) for top in tops]
+    kernels_on_grid = [Toeplitz(top) for top in tops]
     # TODO(sum-fast)
     # Coreg_mats can be in decomposed representation to be a bit faster.
     products = [Kronecker(NumpyMatrix(A), K) for A, K in
-                zip(params.coreg_mats, kerns_on_grid)]
+                zip(params.coreg_mats, kernels_on_grid)]
     ksum = SumMatrix(products)
     return ksum

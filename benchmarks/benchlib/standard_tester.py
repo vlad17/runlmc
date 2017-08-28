@@ -203,7 +203,7 @@ def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
         slfm = slfmgen()
         indep = indepgen()
         lmc = LMC(xss, yss, kernels=ks, ranks=rs,
-                  slfm_kerns=slfm, indep_gp=indep,
+                  slfm_kernels=slfm, indep_gp=indep,
                   normalize=True, m=m, **kwargs)
         for i in range(lmc.nkernels['lmc']):
             print('LMC kernel', i, 'A matrix')

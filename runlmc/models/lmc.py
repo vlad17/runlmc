@@ -139,7 +139,7 @@ class LMC(MultiGP):
                              variance.
     :param max_procs: maximum number of processes to use for parallelism,
                       defaults to cpu count.
-    :param slfm_kerns: add kernel terms with kernel :math:`k_q` given by this
+    :param slfm_kernels: add kernel terms with kernel :math:`k_q` given by this
                        list
                        using the SLFM model, which means the corresponding rank
                        is 1 and terms :math:`\\boldsymbol\\kappa_q=\\textbf{0}`
@@ -160,17 +160,17 @@ class LMC(MultiGP):
                  ranks=None, lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='matrix-free',
                  variance_samples=20, max_procs=None,
-                 slfm_kerns=[], indep_gp=[]):
+                 slfm_kernels=[], indep_gp=[]):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
         self.update_model(False)
         # TODO(cleanup) - this entire constructor needs reorg, refactor
         # into smaller methods, etc. Large number of arguments is OK, though.
         # basically address all pylint complaints (disabled in the constructor)
 
-        if not kernels and not slfm_kerns and not indep_gp:
+        if not kernels and not slfm_kernels and not indep_gp:
             raise ValueError('Number of kernels should be >0')
 
-        if metrics and (slfm_kerns or indep_gp):
+        if metrics and (slfm_kernels or indep_gp):
             raise ValueError('Metrics incompatible with slfm/indep gp')
 
         if len(indep_gp) not in [0, len(Xs)]:
@@ -183,10 +183,10 @@ class LMC(MultiGP):
             raise ValueError('Variance prediction method {} unrecognized'
                              .format(prediction))
 
-        self.kernels = kernels + slfm_kerns + indep_gp
+        self.kernels = kernels + slfm_kernels + indep_gp
         self.nkernels = {
             'lmc': len(kernels),
-            'slfm': len(slfm_kerns),
+            'slfm': len(slfm_kernels),
             'indep': len(indep_gp)}
         for k in self.kernels:
             self.link_parameter(k)
@@ -219,7 +219,7 @@ class LMC(MultiGP):
         initial_vecs = []
         initial_vecs += [randinit(rank, self.output_dim) for rank in ranks]
         initial_vecs += [randinit(1, self.output_dim)
-                         for _ in slfm_kerns]
+                         for _ in slfm_kernels]
         initial_vecs += [np.zeros((1, self.output_dim)) for _ in indep_gp]
         for i, coreg_vec in enumerate(initial_vecs):
             self.coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
@@ -410,8 +410,8 @@ class LMC(MultiGP):
             coregs = np.column_stack(np.square(per_output).sum(axis=0)
                                      for per_output in self.coreg_vecs)
             coregs += np.column_stack(self.coreg_diags)
-            kerns = [k.from_dist(0) for k in self.kernels]
-            native_output_var = coregs.dot(kerns).reshape(-1)
+            kernels = [k.from_dist(0) for k in self.kernels]
+            native_output_var = coregs.dot(kernels).reshape(-1)
             native_var = native_output_var + self.noise
 
             self._cache['native_var'] = native_var

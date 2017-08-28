@@ -12,13 +12,13 @@ print('cols', list(df.columns))
 
 def printimg(col, ttl, negate=False):
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(8, 6))
-    kerns = df['k'].unique()
+    kernels = df['k'].unique()
 
     mult = -1 if negate else 1
 
     smax = 0
     smin = 0
-    for ax, k in zip(axes.flat, kerns):
+    for ax, k in zip(axes.flat, kernels):
         konly = df[df['k'] == k]
         konly.set_index(['q', 'eps'], inplace=True)
         M = mult * np.log(konly.unstack()[col].values)
@@ -26,7 +26,7 @@ def printimg(col, ttl, negate=False):
         smin = min(M.min(), smin)
 
     im = None
-    for ax, k in zip(axes.flat, kerns):
+    for ax, k in zip(axes.flat, kernels):
         konly = df[df['k'] == k]
         qs = konly['q']
         eps = konly['eps']
