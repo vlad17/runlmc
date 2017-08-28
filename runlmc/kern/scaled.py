@@ -8,6 +8,8 @@ from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 
 # TODO(test)
+
+
 @inherit_doc
 class Scaled(StationaryKern):
     def __init__(self, k):
@@ -21,7 +23,6 @@ class Scaled(StationaryKern):
         return self.scale * self.k.from_dist(dists)
 
     def to_gpy(self):
-        # TODO(cleanup) - will correspond to "variance" or something similar
         raise NotImplementedError
 
     def kernel_gradient(self, dists):

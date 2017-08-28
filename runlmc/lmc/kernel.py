@@ -14,12 +14,16 @@ from ..linalg.kronecker import Kronecker
 from ..linalg.numpy_matrix import NumpyMatrix
 from ..util.numpy_convenience import begin_end_indices
 
-# TODO(cleanup): document purpose: separated from paramz logic <- document
-# TODO(test): all of below. Should be able to copy flow of benchmark,
-# more or less
+# TODO(test): all of below
 
 
 class LMCKernel:
+    """
+    Separate hyperparameter-based likelihood differentiation from the
+    model class for separation of concerns. Different sub-classes may implement
+    the below methods differently, with different asymptotic performance
+    properties.
+    """
 
     def __init__(self, params):
         self.params = params
