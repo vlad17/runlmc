@@ -4,8 +4,7 @@
 import logging
 
 import numpy as np
-import scipy.linalg
-import scipy.sparse.linalg
+import scipy.linalg as la
 
 from .matrix import Matrix
 from ..util.docs import inherit_doc
@@ -53,7 +52,7 @@ class Toeplitz(Matrix):
         return extended
 
     def as_numpy(self):
-        return scipy.linalg.toeplitz(self.top)
+        return la.toeplitz(self.top)
 
     def matvec(self, x):
         # This MVM takes advantage of a well-known circulant embedding

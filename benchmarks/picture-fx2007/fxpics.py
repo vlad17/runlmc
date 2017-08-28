@@ -8,6 +8,7 @@ import sys
 import contexttimer
 
 import numpy as np
+import scipy.linalg as la
 from standard_tester import *
 
 from runlmc.models.lmc import LMC
@@ -48,7 +49,8 @@ stats, cogp_mu, cogp_var = cogp_fx2007(1, 100)
 statsnames = ['time', 'smse', 'nlpd']
 print(' '.join(map(' '.join, zip(statsnames, statprintlist(stats)))))
 
-all_xs = np.arange(min(xs.min() for xs in xss), max(xs.max() for xs in xss) + 1)
+all_xs = np.arange(min(xs.min() for xs in xss), max(xs.max()
+                                                    for xs in xss) + 1)
 test_ix = {col: list(cols).index(col) for col in test_fx}
 pred_xss = [all_xs if col in test_fx else np.array([]) for col in cols]
 lmc.prediction = 'exact'
@@ -77,12 +79,14 @@ for col, ax in zip(test_fx, axs):
     marker_size = 5
     test_xs = test_xss[test_ix[col]]
     test_ys = test_yss[test_ix[col]]
-    ax.scatter(test_xs, test_ys, c='blue', edgecolors='none', s=marker_size, zorder=11)
+    ax.scatter(test_xs, test_ys, c='blue',
+               edgecolors='none', s=marker_size, zorder=11)
 
     # Rest of image (training)
     rest_xs = xss[test_ix[col]]
     rest_ys = yss[test_ix[col]]
-    ax.scatter(rest_xs, rest_ys, c='magenta', edgecolors='none', s=marker_size, zorder=10)
+    ax.scatter(rest_xs, rest_ys, c='magenta',
+               edgecolors='none', s=marker_size, zorder=10)
 
     ax.set_xlim([0, 250])
     ax.set_title('output {} (95%)'.format(col))
@@ -108,9 +112,10 @@ for m in methods:
                          t.elapsed))
     results.append(np.hstack(pred_vss))
 
+
 def rel_norm_diff(exact, x):
-    diff = np.linalg.norm(exact - x)
-    orig = np.linalg.norm(exact)
+    diff = la.norm(exact - x)
+    orig = la.norm(exact)
     return diff / orig
 
 

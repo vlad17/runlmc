@@ -3,7 +3,7 @@
 
 import logging
 
-import numpy as np
+import scipy.linalg as la
 import scipy.sparse.linalg as sla
 
 _LOG = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ class Iterative:
             nonlocal ctr, y
             ctr += 1
             if ctr % 100 == 0:  # early termination
-                reconstruction = np.linalg.norm(y - op.matvec(x))
+                reconstruction = la.norm(y - op.matvec(x))
                 if reconstruction < Iterative.TOL:
                     raise _EarlyTerm(x)
 
@@ -52,7 +52,7 @@ class Iterative:
                 op, y, tol=1e-10, maxiter=n, M=M, callback=cb)
         except _EarlyTerm as e:
             Kinv_y, succ = e.x, 0
-        error = np.linalg.norm(y - op.matvec(Kinv_y))
+        error = la.norm(y - op.matvec(Kinv_y))
         if error > Iterative.TOL or succ != 0:
             _LOG.critical('MINRES (n = %d) did not converge in n iterations.'
                           ' Reconstruction error %e',

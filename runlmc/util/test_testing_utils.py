@@ -4,9 +4,10 @@
 import os
 
 import numpy as np
-import scipy.linalg
+import scipy.linalg as la
 
 from . import testing_utils as utils
+
 
 class RandomTestTest(utils.RandomTest):
     def setUp(self):
@@ -21,6 +22,7 @@ class RandomTestTest(utils.RandomTest):
     def test_random(self):
         self.assertEqual(self.seed, 123456)
 
+
 class PSDConstructionTest(utils.RandomTest):
 
     SIZES = [1 << n for n in range(2, 6)]
@@ -29,7 +31,7 @@ class PSDConstructionTest(utils.RandomTest):
         return map(f, self.SIZES)
 
     def generate_toep(self, f):
-        return map(scipy.linalg.toeplitz, self.generate(f))
+        return map(la.toeplitz, self.generate(f))
 
     def test_poor_cond_toep_distinct(self):
         self.assertFalse(np.allclose(
@@ -37,7 +39,7 @@ class PSDConstructionTest(utils.RandomTest):
 
     def test_poor_cond_toep_psd(self):
         mats = list(self.generate_toep(utils.poor_cond_toep))
-        eigss = [np.linalg.eigvalsh(mat)
+        eigss = [la.eigvalsh(mat)
                  for mat in mats]
         for eigs, mat in zip(eigss, mats):
             msg = '\nmatrix\n{}\neigs\n{}'.format(mat, eigs)
@@ -55,7 +57,7 @@ class PSDConstructionTest(utils.RandomTest):
 
     def test_random_toep_psd(self):
         mats = list(self.generate_toep(utils.random_toep))
-        eigss = [np.linalg.eigvalsh(mat)
+        eigss = [la.eigvalsh(mat)
                  for mat in mats]
         for eigs, mat in zip(eigss, mats):
             msg = '\nmatrix\n{}\neigs\n{}'.format(mat, eigs)
@@ -67,7 +69,7 @@ class PSDConstructionTest(utils.RandomTest):
 
     def test_exp_decr_toep_psd(self):
         mats = list(self.generate_toep(utils.exp_decr_toep))
-        eigss = [np.linalg.eigvalsh(mat)
+        eigss = [la.eigvalsh(mat)
                  for mat in mats]
         for eigs, mat in zip(eigss, mats):
             msg = '\nmatrix\n{}\neigs\n{}'.format(mat, eigs)
@@ -84,7 +86,7 @@ class PSDConstructionTest(utils.RandomTest):
 
     def test_rand_pd_psd(self):
         mats = list(self.generate(utils.rand_pd))
-        eigss = [np.linalg.eigvalsh(mat)
+        eigss = [la.eigvalsh(mat)
                  for mat in mats]
         for eigs, mat in zip(eigss, mats):
             msg = '\nmatrix\n{}\neigs\n{}'.format(mat, eigs)

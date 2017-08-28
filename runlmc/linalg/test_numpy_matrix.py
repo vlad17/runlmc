@@ -2,11 +2,12 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import numpy as np
-import scipy.linalg
+import scipy.linalg as la
 
 from .test_matrix_base import MatrixTestBase
 from .numpy_matrix import NumpyMatrix
 from ..util.testing_utils import RandomTest
+
 
 class NumpyMatrixTest(RandomTest, MatrixTestBase):
 
@@ -16,10 +17,13 @@ class NumpyMatrixTest(RandomTest, MatrixTestBase):
         random = np.abs(np.hstack([np.random.rand(30), np.zeros(10)]))
         random[::-1].sort()
         random[0] += np.abs(random[1:]).sum()
-        random_toep = scipy.linalg.toeplitz(random)
+        random_toep = la.toeplitz(random)
 
-        up = lambda x: np.diag(np.arange(x) + 1)
-        down = lambda x: up(x)[::-1, ::-1]
+        def up(x):
+            return np.diag(np.arange(x) + 1)
+
+        def down(x):
+            return up(x)[::-1, ::-1]
 
         self.eigtol = 1e-3
 

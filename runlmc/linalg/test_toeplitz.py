@@ -2,7 +2,7 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import numpy as np
-import scipy.linalg
+import scipy.linalg as la
 
 from .test_matrix_base import MatrixTestBase
 from .toeplitz import Toeplitz
@@ -37,7 +37,7 @@ class ToeplitzTest(utils.RandomTest, MatrixTestBase):
     def test_as_numpy(self):
         for t in self.examples:
             np.testing.assert_array_equal(
-                t.as_numpy(), scipy.linalg.toeplitz(t.top))
+                t.as_numpy(), la.toeplitz(t.top))
 
     def test_bad_shape(self):
         two_d = np.arange(8).reshape(2, 4)

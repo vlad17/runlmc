@@ -2,6 +2,7 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import numpy as np
+import scipy.linalg as la
 import scipy.spatial.distance as dist
 
 from .lmc import LMC
@@ -153,7 +154,7 @@ class LMCTest(RandomTest):
     def _check_normal_quadratic(self, exact):
         exact_mat = exact.gen_exact().K
         y = np.hstack(exact.yss)
-        Kinv_y = np.linalg.solve(exact_mat, y)
+        Kinv_y = la.solve(exact_mat, y)
         expected = y.dot(Kinv_y)
 
         lmc = exact.gen_lmc(sum(exact.params.lens))

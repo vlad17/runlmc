@@ -161,7 +161,7 @@ def run_kernel_benchmark(
     with contexttimer.Timer() as t:
         exact = ExactLMCKernel(params, dists)
     chol_time = t.elapsed
-    eigs = np.fabs(np.linalg.eigvalsh(exact.K))
+    eigs = np.fabs(la.eigvalsh(exact.K))
     print('    covariance matrix info')
     print('        largest  eig        {:8.4e}'.format(eigs.max()))
     print('        smallest eig        {:8.4e}'.format(eigs.min()))
@@ -183,7 +183,7 @@ def run_kernel_benchmark(
             ('slfm', True),
             ('slfm', False)]
 
-        chol_err = np.linalg.norm(params.y - exact.K.dot(exact.deriv.alpha))
+        chol_err = la.norm(params.y - exact.K.dot(exact.deriv.alpha))
         fmt = '        {:9.4e} reconstruction {:10.4f} sec {:8d} iterations {}'
         print(fmt.format(chol_err, chol_time, 0, 'chol'))
 
@@ -281,8 +281,8 @@ def gen_kernels(q):
 
 def vector_errors(approx, exact):
     diff = approx - exact
-    e1 = np.linalg.norm(diff, 1) / np.linalg.norm(exact, 1)
-    e2 = np.linalg.norm(diff, 2) / np.linalg.norm(exact, 2)
+    e1 = la.norm(diff, 1) / la.norm(exact, 1)
+    e2 = la.norm(diff, 2) / la.norm(exact, 2)
     return e1, e2
 
 

@@ -2,7 +2,7 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import numpy as np
-import scipy.linalg
+import scipy.linalg as la
 
 from .test_matrix_base import MatrixTestBase
 from .kronecker import Kronecker
@@ -12,13 +12,17 @@ from .sum_matrix import SumMatrix
 from .toeplitz import Toeplitz
 from ..util.testing_utils import RandomTest, exp_decr_toep
 
+
 class SumMatrixTest(RandomTest, MatrixTestBase):
 
     def setUp(self):
         super().setUp()
 
-        up = lambda x: np.diag(np.arange(x) + 1)
-        down = lambda x: up(x)[::-1, ::-1]
+        def up(x):
+            return np.diag(np.arange(x) + 1)
+
+        def down(x):
+            return up(x)[::-1, ::-1]
 
         self.eigtol = 1e-3
 
@@ -33,17 +37,17 @@ class SumMatrixTest(RandomTest, MatrixTestBase):
 
             [self._rpsd(3), self._rpsd(3), np.diag(np.random.rand(3))],
 
-            [scipy.linalg.toeplitz(self._toep_eig(1e-3 * i, 5))
+            [la.toeplitz(self._toep_eig(1e-3 * i, 5))
              for i in range(1, 4)] + [np.diag(1e-3 * (1 + np.random.rand(6)))],
 
-            [scipy.linalg.toeplitz(self._toep_eig(1e-6 * i, 5))
+            [la.toeplitz(self._toep_eig(1e-6 * i, 5))
              for i in range(1, 4)] + [np.diag(1e-6 * (1 + np.random.rand(6)))],
 
-            [scipy.linalg.toeplitz(self._toep_eig(1e-10 * i, 5))
+            [la.toeplitz(self._toep_eig(1e-10 * i, 5))
              for i in range(1, 4)] +
             [np.diag(1e-10 * (1 + np.random.rand(6)))],
 
-            [scipy.linalg.toeplitz(np.arange(10)[::-1] * i)
+            [la.toeplitz(np.arange(10)[::-1] * i)
              for i in range(1, 4)] +
             [np.diag(1e-5 * (1 + np.random.rand(10)))],
 

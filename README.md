@@ -73,9 +73,6 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-
-0. rename `rand_psd` -> `rand_pd`
-0. np.linalg.eigvalsh -> scipy.linalg.eigvalsh (numpy.linalg -> scipy.linalg as la, scipy.sparse.linalg as sla)
 0. Add basic components for block-toeplitz.
 0. LMC class refactor (to allow multi-input-dimension grids)
    -> prediction interface -- return full variance?

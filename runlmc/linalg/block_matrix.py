@@ -2,10 +2,12 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import numpy as np
+import scipy.linalg as la
 
 from .matrix import Matrix
 from ..util.docs import inherit_doc
 from ..util.numpy_convenience import symm_2d_list_map
+
 
 @inherit_doc
 class SymmSquareBlockMatrix(Matrix):
@@ -15,6 +17,7 @@ class SymmSquareBlockMatrix(Matrix):
     :param blocks: a 2D array
     :raises ValueError: if the size is 0.
     """
+
     def __init__(self, blocks):
         self.D = len(blocks)
         if set(map(len, blocks)) != {self.D}:
@@ -43,7 +46,7 @@ class SymmSquareBlockMatrix(Matrix):
     def upper_eig_bound(self):
         bounds = symm_2d_list_map(lambda x: x.upper_eig_bound(),
                                   self.blocks, self.D, dtype=float)
-        return np.linalg.norm(bounds, 1)
+        return la.norm(bounds, 1)
 
     def __str__(self):
         return ('SymmBlockMatrix(..., block(i,j), ...)\n' +

@@ -327,7 +327,7 @@ class LMC(MultiGP):
         self.noise.gradient = self.kernel.noise_gradient()
 
         if self.metrics is not None:
-            grad_norm = np.linalg.norm(self.gradient, self.EVAL_NORM)
+            grad_norm = la.norm(self.gradient, self.EVAL_NORM)
             ordered_grad = np.concatenate((
                 np.concatenate(
                     [x.gradient for x in self.coreg_vecs]).reshape(-1),
@@ -344,8 +344,8 @@ class LMC(MultiGP):
 
             self.metrics.grad_norms.append(grad_norm)
             self.metrics.grad_error.append(
-                np.linalg.norm(ordered_grad - exact_grad, self.EVAL_NORM)
-                / np.linalg.norm(exact_grad, self.EVAL_NORM))
+                la.norm(ordered_grad - exact_grad, self.EVAL_NORM)
+                / la.norm(exact_grad, self.EVAL_NORM))
             self.metrics.log_likely.append(self.log_likelihood())
 
     def _dense(self):
@@ -479,13 +479,13 @@ class LMC(MultiGP):
 
     @staticmethod
     def _chol_sample(W, B, t, randn_samps, q):
-        LB = np.linalg.cholesky(B)
+        LB = la.cholesky(B)
         # bareiss and cholesky both work very poorly since we're
         # numerically rank deficient
         # from runlmc.linalg.shur import shur
         # Lt = shur(t).T
-        # Lt = np.linalg.cholesky(la.toeplitz(t))
-        w, v = np.linalg.eigh(la.toeplitz(t))
+        # Lt = la.cholesky(la.toeplitz(t))
+        w, v = la.eigh(la.toeplitz(t))
         w[w < 0] = 0
         nnz = np.count_nonzero(w)
         if nnz < len(w):

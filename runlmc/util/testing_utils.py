@@ -16,7 +16,7 @@ import unittest
 
 import numpy as np
 from paramz.optimization import Optimizer
-import scipy.linalg
+import scipy.linalg as la
 
 from ..linalg.kronecker import Kronecker
 from ..linalg.sum_matrix import SumMatrix
@@ -199,10 +199,10 @@ class BasicModel(Model):
 
     def log_likelihood(self):
         K_top = self.kern.from_dist(self.dists)
-        KinvY = scipy.linalg.solve_toeplitz(K_top, self.Y)
+        KinvY = la.solve_toeplitz(K_top, self.Y)
         # Prevent slight negative eigenvalues from roundoff.
         sign, logdet = np.linalg.slogdet(
-            scipy.linalg.toeplitz(K_top) + 1e-10 * np.identity(len(K_top)))
+            la.toeplitz(K_top) + 1e-10 * np.identity(len(K_top)))
         print(self.dists)
         print(K_top)
         assert sign > 0, (sign, logdet)
@@ -212,12 +212,12 @@ class BasicModel(Model):
         # maximize -0.5 * (y . K^-1 y) - 0.5 log |K|
         # gradient wrt t is 0.5 tr((a a^T - K^-1)dK/dt), a = K^-1 a
         K_top = self.kern.from_dist(self.dists)
-        a = scipy.linalg.solve_toeplitz(K_top, self.Y)
+        a = la.solve_toeplitz(K_top, self.Y)
         all_grad = self.kern.kernel_gradient(self.dists)
         likelihood_grad = np.zeros(len(all_grad))
         for i, grad in enumerate(all_grad):
-            dKdt = scipy.linalg.toeplitz(grad)
-            Kinv_dKdt = scipy.linalg.solve_toeplitz(K_top, dKdt)
+            dKdt = la.toeplitz(grad)
+            Kinv_dKdt = la.solve_toeplitz(K_top, dKdt)
             aaT_dKdt = np.outer(a, dKdt.dot(a))
             trace = np.trace(aaT_dKdt - Kinv_dKdt)
             likelihood_grad[i] = 0.5 * trace

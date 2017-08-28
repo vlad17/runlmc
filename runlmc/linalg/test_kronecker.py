@@ -4,7 +4,7 @@
 from functools import reduce
 
 import numpy as np
-import scipy.linalg
+import scipy.linalg as la
 
 from .matrix import Matrix
 from .kronecker import Kronecker
@@ -12,6 +12,7 @@ from .test_matrix_base import MatrixTestBase
 from .toeplitz import Toeplitz
 from .numpy_matrix import NumpyMatrix
 from ..util import testing_utils as utils
+
 
 class KroneckerTest(utils.RandomTest, MatrixTestBase):
 
@@ -22,8 +23,11 @@ class KroneckerTest(utils.RandomTest, MatrixTestBase):
         random[::-1].sort()
         random[0] += np.abs(random[1:]).sum()
 
-        up = lambda x: np.diag(np.arange(x) + 1)
-        down = lambda x: up(x)[::-1, ::-1]
+        def up(x):
+            return np.diag(np.arange(x) + 1)
+
+        def down(x):
+            return up(x)[::-1, ::-1]
 
         self.eigtol = 1e-3
 
@@ -32,7 +36,7 @@ class KroneckerTest(utils.RandomTest, MatrixTestBase):
             [up(1), down(1)],
             [up(3), down(2)],
             [up(2), down(3)],
-            [scipy.linalg.hilbert(3), scipy.linalg.hilbert(3)],
+            [la.hilbert(3), la.hilbert(3)],
             [self._rpsd(3), np.identity(2)],
             [self._rpsd(2), self._rpsd(3)],
             [up(3), Toeplitz(np.arange(10)[::-1] + 1)],

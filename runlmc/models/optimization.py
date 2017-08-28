@@ -3,11 +3,13 @@
 
 import climin
 from paramz.optimization import Optimizer
-import numpy as np
+import scipy.linalg as la
 
 from .lmc import LMC
 
 # TODO(test)
+
+
 class AdaDelta(Optimizer):
 
     @staticmethod
@@ -17,20 +19,20 @@ class AdaDelta(Optimizer):
     def __init__(self, **kwargs):
         super().__init__()
         default = {
-            'step_rate':1, 'decay':0.9, 'momentum':0.5, 'offset':1e-4,
-            'max_it':100, 'verbosity':0, 'min_grad_ratio':0.1,
-            'permitted_drops':5, 'callback':AdaDelta.noop}
+            'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 1e-4,
+            'max_it': 100, 'verbosity': 0, 'min_grad_ratio': 0.1,
+            'permitted_drops': 5, 'callback': AdaDelta.noop}
         default.update(**kwargs)
         self.kwargs = default
 
     def _prepare_adadelta(self, x, fp):
         exclude = ['verbosity', 'min_grad_ratio', 'max_it',
                    'permitted_drops', 'callback']
-        ada_kwargs = {k:v for k, v in self.kwargs.items() if k not in exclude}
+        ada_kwargs = {k: v for k, v in self.kwargs.items() if k not in exclude}
         return climin.Adadelta(x, fp, **ada_kwargs)
 
     def _grad_norm(self, info):
-        return np.linalg.norm(info['gradient'], LMC.EVAL_NORM)
+        return la.norm(info['gradient'], LMC.EVAL_NORM)
 
     def _print_prolog(self):
         if self.kwargs['verbosity']:
