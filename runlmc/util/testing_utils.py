@@ -139,7 +139,7 @@ def run_main(f, help_str):
 
     for name, generator in cases:
         print(name)
-        dense_mats = [rand_psd(d) for _ in range(q)]
+        dense_mats = [rand_pd(d) for _ in range(q)]
         toep_tops = [generator(n) for _ in range(q)]
         my_mat = SumMatrix([Kronecker(NumpyMatrix(dense), Toeplitz(top))
                             for dense, top in zip(dense_mats, toep_tops)])
@@ -152,7 +152,7 @@ def run_main(f, help_str):
         f(my_mat)
 
 
-def rand_psd(n):
+def rand_pd(n):
     """
     :returns: a random `n` by `n` symmetric PSD matrix with positive entries
     """

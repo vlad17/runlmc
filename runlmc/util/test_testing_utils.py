@@ -73,17 +73,17 @@ class PSDConstructionTest(utils.RandomTest):
             msg = '\nmatrix\n{}\neigs\n{}'.format(mat, eigs)
             self.assertTrue(np.all(eigs >= 0), msg=msg)
 
-    def test_rand_psd_distinct(self):
+    def test_rand_pd_distinct(self):
         self.assertFalse(np.allclose(
-            utils.rand_psd(50), utils.rand_psd(50)))
+            utils.rand_pd(50), utils.rand_pd(50)))
 
-    def test_rand_psd_symm(self):
-        for mat in self.generate(utils.rand_psd):
+    def test_rand_pd_symm(self):
+        for mat in self.generate(utils.rand_pd):
             msg = '\nmatrix\n{}'.format(mat)
             np.testing.assert_allclose(mat, mat.T, err_msg=msg)
 
-    def test_rand_psd_psd(self):
-        mats = list(self.generate(utils.rand_psd))
+    def test_rand_pd_psd(self):
+        mats = list(self.generate(utils.rand_pd))
         eigss = [np.linalg.eigvalsh(mat)
                  for mat in mats]
         for eigs, mat in zip(eigss, mats):
