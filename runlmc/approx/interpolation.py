@@ -116,9 +116,6 @@ def interp_cubic(grid, samples):
                                        shape=(n_samples, grid_size))
     return csr
 
-# TODO(test)
-# TODO(cleanup) - refactor to get rid of pylint warning
-
 
 def multi_interpolant(Xs, inducing_grid):  # pylint: disable=too-many-locals
     """
@@ -150,11 +147,13 @@ def multi_interpolant(Xs, inducing_grid):  # pylint: disable=too-many-locals
     ind_ptr = np.append(np.repeat(ind_starts, row_lens), width)
     data = np.empty(width)
     col_indices = np.repeat(multiout_grid_sizes, col_lens)
-    for rbegin, rend, cbegin, cend, W in zip(
-            row_begins, row_ends, col_begins, col_ends, Ws):
-        ind_ptr[rbegin:rend] += W.indptr[:-1]
-        data[cbegin:cend] = W.data
-        col_indices[cbegin:cend] += W.indices
+    for rows, cols, W in zip(
+            map(slice, row_begins, row_ends),
+            map(slice, col_begins, col_ends),
+            Ws):
+        ind_ptr[rows] += W.indptr[:-1]
+        data[cols] = W.data
+        col_indices[cols] += W.indices
 
     ncols = len(Xs) * len(inducing_grid)
     return scipy.sparse.csr_matrix(

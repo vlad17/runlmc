@@ -7,6 +7,7 @@ import numpy as np
 from parameterized import parameterized
 
 from .interpolation import cubic_kernel, interp_cubic, autogrid
+from .interpolation import multi_interpolant
 from ..util.testing_utils import error_context
 
 
@@ -90,6 +91,19 @@ class TestInterpolation(unittest.TestCase):
             approxf = M.dot(f(grid))
             exactf = f(sample)
             np.testing.assert_allclose(approxf, exactf, err_msg=str(f))
+
+    def test_multi_interpolant(self):
+        grid = np.arange(-0.1, 10.1, 0.1)
+        sample1 = np.arange(10) + 0.5
+        sample2 = np.sin(np.arange(6)) + 4
+        int1 = interp_cubic(grid, sample1)
+        int2 = interp_cubic(grid, sample2)
+
+        exact = np.bmat([
+            [int1.toarray(), np.zeros((len(sample1), len(grid)))],
+            [np.zeros((len(sample2), len(grid))), int2.toarray()]])
+        multi = multi_interpolant([sample1, sample2], grid)
+        np.testing.assert_equal(exact, multi.toarray())
 
     @parameterized.expand([
         (-1, 13, 10),
