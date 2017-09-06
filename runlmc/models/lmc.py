@@ -8,7 +8,6 @@ import os
 
 import numpy as np
 import scipy.linalg as la
-import scipy.spatial.distance as dist
 import scipy.stats
 from paramz.transformations import Logexp
 
@@ -350,10 +349,8 @@ class LMC(MultiGP):
 
     def _dense(self):
         if 'exact_kernel' not in self._cache:
-            pdists = dist.pdist(np.hstack(self.Xs).reshape(-1, 1))
-            pdists = dist.squareform(pdists)
             self._cache['exact_kernel'] = ExactLMCKernel(
-                ParameterValues.generate(self), pdists)
+                ParameterValues.generate(self), self.Xs)
         return self._cache['exact_kernel']
 
     def K(self):
@@ -417,6 +414,7 @@ class LMC(MultiGP):
             self._cache['native_var'] = native_var
         return self._cache['native_var']
 
+    # TODO(test) prediction testing
     def _prediction_methods(self):
         return {
             'matrix-free': self._var_predict_matrix_free,
@@ -462,17 +460,12 @@ class LMC(MultiGP):
         return self._var_predict_on_the_fly(W, Xs)
 
     def _var_predict_exact(self, _, Xs):
-        # TODO(cleanup) refactor ExactLMCKernel so that we can reuse code
-        # without the ugly construction and params.lens_x stuff used here.
         exact = self._dense()
-
+        # TODO(1d)
         test_Xs = np.hstack(Xs).reshape(-1, 1)
         train_Xs = np.hstack(self.Xs).reshape(-1, 1)
         params = ParameterValues.generate(self)
-        params.lens_x = [len(X) for X in Xs]
-        K_test_X = ExactLMCKernel(params,
-                                  dist.cdist(test_Xs, train_Xs),
-                                  invert=False, noise=False).K
+        K_test_X = ExactLMCKernel.from_indices(test_Xs, train_Xs, params)
         var_explained = K_test_X.dot(la.cho_solve(exact.L, K_test_X.T))
 
         return np.diag(var_explained)
@@ -582,16 +575,11 @@ class LMC(MultiGP):
         return prediction_interpolant.dot(nu)
 
     def _var_predict_on_the_fly(self, _, Xs):
-        # TODO(cleanup) refactor ExactLMCKernel so that we can reuse code
-        # without the ugly construction and params.lens_x stuff used here.
-
+        # TODO(1d)
         test_Xs = np.hstack(Xs).reshape(-1, 1)
         train_Xs = np.hstack(self.Xs).reshape(-1, 1)
         params = ParameterValues.generate(self)
-        params.lens_x = [len(X) for X in Xs]
-        K_test_X = ExactLMCKernel(params,
-                                  dist.cdist(test_Xs, train_Xs),
-                                  invert=False, noise=False).K
+        K_test_X = ExactLMCKernel.from_indices(test_Xs, train_Xs, params)
         n_test = test_Xs.shape[0]
         par = min(max(self.max_procs, 1), n_test)
         _LOG.info('Using %d processors for %d on-the-fly variance'

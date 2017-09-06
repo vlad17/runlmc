@@ -73,7 +73,6 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. Add basic components for block-toeplitz.
 0. LMC class refactor (to allow multi-input-dimension grids)
    -> prediction interface -- return full variance?
    -> reorg but keep Non-unif (time series) LMC -> InterpolatedLLGP
@@ -87,6 +86,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
        -> find chunks during initialization to pull out
        -> SLFM/indep GP story needs to be solid
    -> (?) test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math
+0. Add basic components for block-toeplitz.
 0. Benchmark speedup: slurm-broadcasted prediction, or maybe AWS? Some kind of centralized processing solution?
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?

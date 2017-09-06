@@ -28,9 +28,6 @@ class ExactAnalogue:
             xss = [np.random.rand(sz) for sz in sizes]
 
         self.xss, self.yss = xss, yss
-        pdists = dist.pdist(np.hstack(xss).reshape(-1, 1))
-        self.pdists = dist.squareform(pdists)
-
         self.params = ParameterValues(
             coregs, diags, kernels, sizes, np.hstack(yss), noise)
         self.exact = None
@@ -48,7 +45,7 @@ class ExactAnalogue:
 
     def gen_exact(self):
         if self.exact is None:
-            self.exact = ExactLMCKernel(self.params, self.pdists)
+            self.exact = ExactLMCKernel(self.params, self.xss)
 
         return self.exact
 

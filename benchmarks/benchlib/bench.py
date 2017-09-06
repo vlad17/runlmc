@@ -131,7 +131,7 @@ def _main():
         coreg_vecs, coreg_diags, k, [len(X) for X in Xs], np.hstack(Ys), noise)
 
     run_kernel_benchmark(
-        params, dists, grid_dists, interpolant, interpolant_T, testtype)
+        Xs, params, dists, grid_dists, interpolant, interpolant_T, testtype)
 
 
 def prep(d, n_o, Xs):
@@ -156,10 +156,10 @@ def prep(d, n_o, Xs):
 
 
 def run_kernel_benchmark(
-        params, dists, grid_dists, interpolant, interpolantT, testtype):
+        Xs, params, dists, grid_dists, interpolant, interpolantT, testtype):
 
     with contexttimer.Timer() as t:
-        exact = ExactLMCKernel(params, dists)
+        exact = ExactLMCKernel(params, Xs)
     chol_time = t.elapsed
     eigs = np.fabs(la.eigvalsh(exact.K))
     print('    covariance matrix info')
