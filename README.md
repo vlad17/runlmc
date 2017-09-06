@@ -73,8 +73,11 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
+0. Add asv classes to fx2007 + weather. Track time, memory, accuracy. (add benchrun script which does asv locally, then pushes). (add mmx as a machine)
 0. LMC class refactor (to allow multi-input-dimension grids)
-   -> prediction interface -- return full variance?
+   -> cache -> use lru_cache + `clear_cache()`
+   -> prediction interface -- return full variance (cached?)
+   -> get rid of sample prediction.
    -> reorg but keep Non-unif (time series) LMC -> InterpolatedLLGP
        -> runtime-only check for 1-d input
    -> make new LLGP class, which assumes uniformity
@@ -86,8 +89,8 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
        -> find chunks during initialization to pull out
        -> SLFM/indep GP story needs to be solid
    -> (?) test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math
-0. Add basic components for block-toeplitz.
-0. Benchmark speedup: slurm-broadcasted prediction, or maybe AWS? Some kind of centralized processing solution?
+0. Add basic components for block-toeplitz
+0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?
