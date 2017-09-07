@@ -103,3 +103,5 @@ profiles
 .nfs*
 **/.nfs*
 paper.tgz
+
+.asv

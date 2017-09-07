@@ -6,25 +6,10 @@ os.environ['OMP_NUM_THREADS'] = '1'
 import numpy as np
 from standard_tester import *
 
-activate_logs()
-
-if is_validation():
-    import runlmc.lmc.stochastic_deriv
-    runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 1
-    runs = 1
-    cogp_runs = 1
-    interpolating_points = [10]
-    inducing_points = 10
-else:
-    runs = 10
-    cogp_runs = 10
-    interpolating_points = [500, 600, 700, 800, 900, 1000]
-    inducing_points = 200
-
-
 class Suite:
-    def __init__(self, num_interp=750):
-        self.num_interp = 750
+    def __init__(self, num_interp=750, runs=10):
+        self.num_interp = num_interp
+        self.runs = runs
 
     def setup_cache(self):
         xss, yss, test_xss, test_yss, _ = weather()
@@ -33,7 +18,7 @@ class Suite:
         # rank 2 SLFM, same as Q=2 model of COGP
         kgen, rgen, slfmgen, indepgen = slfm_gp(len(xss), 2)
         llgp_stats = bench_runlmc(
-            runs, self.num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
+            self.runs, self.num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
             slfmgen, indepgen, {'verbosity': 100})
         return llgp_stats
 
@@ -78,9 +63,25 @@ def make_llgp_colname(interp):
 
 
 def main():
+
+    activate_logs()
+
+    if is_validation():
+        import runlmc.lmc.stochastic_deriv
+        runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 1
+        runs = 1
+        cogp_runs = 1
+        interpolating_points = [10]
+        inducing_points = 10
+    else:
+        runs = 10
+        cogp_runs = 10
+        interpolating_points = [500, 600, 700, 800, 900, 1000]
+        inducing_points = 200
+
     llgp_stats = []
     for num_interp in interpolating_points:
-        stats = Suite(num_interp).setup_cache()
+        stats = Suite(num_interp, runs).setup_cache()
         llgp_stats.append(stats)
         print('---> llgp slfm m', num_interp, statsline(stats))
 
@@ -93,3 +94,6 @@ def main():
     latex_table('results_weather.tex',
                 colnames,
                 [llgp_stats[0], llgp_stats[-1], cogp_stats])
+
+if __name__ == '__main__':
+    main()

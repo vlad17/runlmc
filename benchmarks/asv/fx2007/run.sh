@@ -2,7 +2,7 @@
 # Runs fx2007 dataset example
 
 USAGE="Usage: ./run.sh [--help|--validate]"
-EXPECTED_DIR="runlmc/benchmarks/fx2007"
+EXPECTED_DIR="runlmc/benchmarks/asv/fx2007"
 HELP_STR="$USAGE
 
 Must be run from $EXPECTED_DIR.
@@ -16,8 +16,8 @@ and NLPD statistics outputted (mean and standard error).
 
 Then, we run COGP on the same dataset.
 
-Results are printed to a trace file, ./out/stdout-fx2007.txt
-Extracted results, printed as latex, ./out/results_fx2007.tex
+Results are printed to a trace file, ../../fx2007-out/stdout-fx2007.txt
+Extracted results, printed as latex, ../../fx2007-out/results_fx2007.tex
 
 Flags
     --validate Run a small case to verify configuration.
@@ -27,13 +27,9 @@ Flags
 base1=$(basename $PWD)
 base2=$(cd .. && basename $PWD)
 base3=$(cd .. && cd .. && basename $PWD)
+base4=$(cd .. && cd .. && cd .. && basename $PWD)
 
-if [[ "$base3/$base2/$base1" != "$EXPECTED_DIR" ]]; then
-    echo "Must be run from $EXPECTED_DIR" >/dev/stderr
-    exit 1
-fi
-
-if [[ "$base3/$base2/$base1" != "$EXPECTED_DIR" ]]; then
+if [[ "$base4/$base3/$base2/$base1" != "$EXPECTED_DIR" ]]; then
     echo "Must be run from $EXPECTED_DIR" >/dev/stderr
     exit 1
 fi
@@ -61,11 +57,12 @@ else
     IS_VALIDATION="false"
 fi
 
-cd out/
+
+REPOROOT=$(readlink -f "$PWD/../../../")
+cd ../../fx2007-out/
 
 OUTFOLDER=$PWD
-REPOROOT=$(readlink -f "$PWD/../../../")
 
 cd $REPOROOT
 
-OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/fx2007/fx2007.py $IS_VALIDATION $OUTFOLDER 2>&1 | tee $OUTFOLDER/stdout-fx2007.txt | egrep -e '--->'
+OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/asv/fx2007/fx2007.py $IS_VALIDATION $OUTFOLDER 2>&1 | tee $OUTFOLDER/stdout-fx2007.txt | egrep -e '--->'

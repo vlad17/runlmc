@@ -26,10 +26,10 @@ import tempfile
 
 TMP = tempfile.gettempdir() + '/'
 
-assert os.path.basename(os.getcwd()) == 'runlmc', \
-    'CWD {} expected to be repo runlmc root'.format(os.getcwd())
-
 def is_validation():
+    assert os.path.basename(os.getcwd()) == 'runlmc', \
+        'CWD {} expected to be repo runlmc root'.format(os.getcwd())
+
     assert sys.argv[1] in ['true', 'false'], sys.argv[1]
     return sys.argv[1] == 'true'
 
