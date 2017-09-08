@@ -19,7 +19,6 @@ from runlmc.models.lmc import LMC
 from runlmc.kern.rbf import RBF
 from runlmc.kern.scaled import Scaled
 from runlmc.models.optimization import AdaDelta
-from runlmc.models.gpy_lmc import GPyLMC
 from runlmc.util.numpy_convenience import begin_end_indices
 
 import tempfile

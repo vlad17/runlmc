@@ -12,8 +12,9 @@ setup(
         'paramz',
         'scipy',
         'numpy',
-        'scipy',
         'climin',
         'numdifftools',
+        'contexttimer',
+        'pandas',
     ],
 )
