@@ -47,6 +47,7 @@
     //     {"platform": "win32", "environment_type": "conda", "python": "2.7", "libpython": ""},
     // ],
     
+    "show_commit_url": "http://github.com/vlad17/runlmc/commit/",
     "benchmark_dir": "benchmarks/asv",
     "env_dir": ".asv/env",
     "results_dir": ".asv/results",

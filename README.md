@@ -68,6 +68,7 @@ All below invocations should be done from the repo root.
 | `nosetests`       | Run unit tests |
 | `./arxiv-tar.sh`       | Create an arxiv-friendly tarball of the paper sources |
 | `python setup.py install`       | Install minimal requirements for GPy |
+| `./asvrun.sh` | run performance benchmarks |
 
 To build the paper, the packages `epstool` and `epstopdf` are required. Developers should also have `sphinx sphinx_rtd_theme matplotlib GPy codecov pylint parameterized pandas contexttimer` installed.
 
