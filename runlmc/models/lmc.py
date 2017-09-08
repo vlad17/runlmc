@@ -461,11 +461,8 @@ class LMC(MultiGP):
 
     def _var_predict_exact(self, _, Xs):
         exact = self._dense()
-        # TODO(1d)
-        test_Xs = np.hstack(Xs).reshape(-1, 1)
-        train_Xs = np.hstack(self.Xs).reshape(-1, 1)
         params = ParameterValues.generate(self)
-        K_test_X = ExactLMCKernel.from_indices(test_Xs, train_Xs, params)
+        K_test_X = ExactLMCKernel.from_indices(Xs, self.Xs, params)
         var_explained = K_test_X.dot(la.cho_solve(exact.L, K_test_X.T))
 
         return np.diag(var_explained)
@@ -575,12 +572,9 @@ class LMC(MultiGP):
         return prediction_interpolant.dot(nu)
 
     def _var_predict_on_the_fly(self, _, Xs):
-        # TODO(1d)
-        test_Xs = np.hstack(Xs).reshape(-1, 1)
-        train_Xs = np.hstack(self.Xs).reshape(-1, 1)
         params = ParameterValues.generate(self)
-        K_test_X = ExactLMCKernel.from_indices(test_Xs, train_Xs, params)
-        n_test = test_Xs.shape[0]
+        K_test_X = ExactLMCKernel.from_indices(Xs, self.Xs, params)
+        n_test = sum(map(len, Xs))
         par = min(max(self.max_procs, 1), n_test)
         _LOG.info('Using %d processors for %d on-the-fly variance'
                   ' predictions', par, n_test)
@@ -588,4 +582,5 @@ class LMC(MultiGP):
         with closing(Pool(processes=par)) as pool:
             inverted = np.array(pool.starmap(Iterative.solve, ls)).T
 
-        return np.diag(K_test_X.dot(inverted))
+        full_mat = K_test_X.dot(inverted)
+        return np.diag(full_mat)
