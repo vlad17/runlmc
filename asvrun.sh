@@ -18,7 +18,7 @@ asv gh-pages || true
 # https://github.com/spacetelescope/asv/issues/515
 git checkout gh-pages
 git push -f
-git checkout $(currbranch)
+git checkout $currbranch
 
 
 
