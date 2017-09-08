@@ -2,6 +2,7 @@
 [![Documentation Status](https://readthedocs.org/projects/runlmc/badge/?version=latest)](http://runlmc.readthedocs.io/en/latest/?badge=latest)
 [![CI](https://api.travis-ci.org/vlad17/runlmc.svg?branch=master)](https://travis-ci.org/vlad17/runlmc)
 [![codecov](https://codecov.io/gh/vlad17/runlmc/branch/master/graph/badge.svg)](https://codecov.io/gh/vlad17/runlmc)
+[![asv](http://img.shields.io/badge/benchmarked%20by-asv-green.svg?style=flat)](https://vlad17.github.io/runlmc/)
 
 
 # runlmc
