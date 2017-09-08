@@ -27,9 +27,6 @@ import tempfile
 TMP = tempfile.gettempdir() + '/'
 
 def is_validation():
-    assert os.path.basename(os.getcwd()) == 'runlmc', \
-        'CWD {} expected to be repo runlmc root'.format(os.getcwd())
-
     assert sys.argv[1] in ['true', 'false'], sys.argv[1]
     return sys.argv[1] == 'true'
 
@@ -66,12 +63,16 @@ def _foreign_exchange_shared():
     # Nguyen and Bonilla et al. 2014
 
     fx_files = ['2007-2009.csv', '2010-2013.csv', '2014-2017.csv']
-    fx = pd.concat([pd.read_csv('data/fx/{}'.format(f), index_col=1) for f in fx_files])
+    datadir = os.path.join(_download_own_data(), 'fx')
+    fx = pd.concat([pd.read_csv(os.path.join(datadir, f), index_col=1) for f in fx_files])
     fx.drop(['Wdy', 'Jul.Day'], axis=1, inplace=True)
     fx.rename(columns={old: old[:3] for old in fx.columns}, inplace=True)
     return fx
 
 def foreign_exchange_2007():
+    import os
+    print(os.getcwd())
+    print(os.listdir(os.getcwd()))
     # This example uses only 2007 data
     fx = _foreign_exchange_shared()
     fx2007 = fx.ix['2007/01/01':'2008/01/01']
@@ -111,11 +112,12 @@ def weather():
     holdout = [None, (10.2, 10.8), (13.5, 14.2), None]
     xss, yss = [], []
     test_xss, test_yss = [], []
+    datadir = _download_own_data()
     for sensor, expected_na, hold in zip(sensors, expected_nas, holdout):
-        y = pd.read_csv('data/weather/{}y.csv'.format(sensor),
+        y = pd.read_csv('{}/weather/{}y.csv'.format(datadir, sensor),
                         header=None, names=['WSPD','WD','GST','ATMP'],
                         usecols=['ATMP'])
-        x = pd.read_csv('data/weather/{}x.csv'.format(sensor),
+        x = pd.read_csv('{}/weather/{}x.csv'.format(datadir, sensor),
                         header=None, names=['time'])
         assert (x['time'] == -1).sum() == 0
         assert (y['ATMP'] == -1).sum() == expected_na
@@ -233,8 +235,17 @@ def _download_cogp():
     # Download paper code if it is not there
     if not os.path.isdir(TMP + '/cogp'):
         print('cloning COGP repo')
-        repo = 'git@github.com:vlad17/cogp.git'
+        repo = 'https://github.com/vlad17/cogp.git'
         subprocess.call(['git', 'clone', repo, TMP + '/cogp'])
+
+def _download_own_data():
+    # Download data code if it is not there
+    datadir = os.path.join(TMP, 'runlmc')
+    if not os.path.isdir(datadir):
+        print('cloning runlmc repo')
+        repo = 'https://github.com/vlad17/runlmc.git'
+        subprocess.call(['git', 'clone', repo, datadir])
+    return os.path.join(datadir, 'data')
 
 def env_no_omp():
     env = os.environ.copy()
@@ -244,8 +255,8 @@ def env_no_omp():
 
 def cogp_fx2007(num_runs, inducing_pts):
     _download_cogp()
-    benchmark_dir = 'benchmarks/benchlib'
-    datafile = '../../data/fx/fx2007_matlab.csv'
+    benchmark_dir = os.path.join(_download_own_data(), os.pardir, 'benchmarks', 'benchlib')
+    datafile = os.path.join(_download_own_data(), 'fx', 'fx2007_matlab.csv')
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
            """infile='{}';M={};runs={};cogp_fx2007;exit"""
@@ -285,8 +296,8 @@ def cogp_fx2007(num_runs, inducing_pts):
 
 def cogp_weather(num_runs, M):
     _download_cogp()
-    # relative to benchmark dir
-    datafile = '../../data/weather/'
+    benchmark_dir = os.path.join(_download_own_data(), os.pardir, 'benchmarks', 'benchlib')
+    datafile = os.path.join(_download_own_data(), 'fx', 'fx2007_matlab.csv')
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
            """datadir='{}';M={};runs={};cogp_weather;exit"""
