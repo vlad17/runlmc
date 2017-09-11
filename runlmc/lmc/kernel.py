@@ -165,7 +165,7 @@ class ExactLMCKernel(LMCKernel):
 
         This means that `params.y` and `params.lens` are unused."""
 
-        #TODO(1d)
+        # TODO(1d)
         pair_dists = dist.cdist(np.hstack(Xs).reshape(-1, 1),
                                 np.hstack(Zs).reshape(-1, 1))
         Kqs = [k.from_dist(pair_dists) for k in params.kernels]

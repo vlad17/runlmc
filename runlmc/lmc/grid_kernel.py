@@ -18,6 +18,8 @@ from ..util.numpy_convenience import symm_2d_list_map
 
 # TODO(test)
 # notably for parallelism, this is paramz.Param-free.
+
+
 class GridKernel(Matrix):
     def __init__(
             self, params, grid_dists, interpolant, interpolantT, ktype):
@@ -46,6 +48,8 @@ class GridKernel(Matrix):
         return ski.W, ski.WT
 
 # TODO(test)
+
+
 def gen_grid_kernel(params, grid_dists, interpolant, interpolantT):
     if params.Q == 1:
         ktype = 'sum'
@@ -62,10 +66,12 @@ def gen_grid_kernel(params, grid_dists, interpolant, interpolantT):
             ktype = 'bt'
     return GridKernel(params, grid_dists, interpolant, interpolantT, ktype)
 
+
 def _gen_slfm_grid(params, tops):
     coreg_Ks = _gen_coreg_Ks(params, tops)
     diag_Ks = _gen_diag_Ks(params, tops)
     return SumMatrix([coreg_Ks, diag_Ks])
+
 
 def _gen_coreg_Ks(params, tops):
     non_indep = params.nkernels['lmc'] + params.nkernels['slfm']
@@ -80,6 +86,7 @@ def _gen_coreg_Ks(params, tops):
     coreg_Ks = Composition([left, toeps, right])
     return coreg_Ks
 
+
 def _gen_diag_Ks(params, tops):
     if params.nkernels['lmc'] == 0 and params.nkernels['indep'] == 0:
         return Identity(params.n)
@@ -88,12 +95,14 @@ def _gen_diag_Ks(params, tops):
     diag_Ks = BlockDiag([Toeplitz(top) for top in diag_tops])
     return diag_Ks
 
+
 def _gen_bt_grid(params, tops):
     Bs = np.array(params.coreg_mats)
     bt = np.tensordot(Bs, tops, axes=(0, 0))
     blocked = symm_2d_list_map(Toeplitz, bt, params.D)
     blocked = SymmSquareBlockMatrix(blocked)
     return blocked
+
 
 def _gen_sum_grid(params, tops):
     kernels_on_grid = [Toeplitz(top) for top in tops]
