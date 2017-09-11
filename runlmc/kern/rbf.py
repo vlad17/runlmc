@@ -14,6 +14,7 @@ from .stationary_kern import StationaryKern
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 
+
 @inherit_doc
 class RBF(StationaryKern):
     """
@@ -26,6 +27,7 @@ class RBF(StationaryKern):
     :param inv_lengthscale: :math:`\gamma`, above.
     :param name:
     """
+
     def __init__(self, inv_lengthscale=1, name='rbf'):
         super().__init__(name=name)
         self.inv_lengthscale = Param(

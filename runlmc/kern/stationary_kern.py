@@ -14,6 +14,7 @@ would be redundant with the coregionalization constants.
 
 from ..parameterization.parameterized import Parameterized
 
+
 class StationaryKern(Parameterized):
     """
     The :class:`StationaryKern` defines a stationary kernel.
@@ -34,6 +35,7 @@ class StationaryKern(Parameterized):
 
     :param name:
     """
+
     def __init__(self, name):
         super().__init__(name=name)
 
