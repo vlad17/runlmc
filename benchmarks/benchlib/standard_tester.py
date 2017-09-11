@@ -25,17 +25,24 @@ import tempfile
 
 TMP = tempfile.gettempdir() + '/'
 
+
 def is_validation():
     assert sys.argv[1] in ['true', 'false'], sys.argv[1]
     return sys.argv[1] == 'true'
 
+
 def slfm_gp(num_outputs, slfm_rank):
-    kgen = lambda: []
-    rgen = lambda: []
-    slfmgen = lambda: [RBF(name='slfm{}'.format(i)) for i in range(slfm_rank)]
-    indepgen = lambda: [Scaled(RBF(name='rbf{}'.format(i)))
-                        for i in range(num_outputs)]
+    def kgen(): return []
+
+    def rgen(): return []
+
+    def slfmgen(): return [RBF(name='slfm{}'.format(i))
+                           for i in range(slfm_rank)]
+
+    def indepgen(): return [Scaled(RBF(name='rbf{}'.format(i)))
+                            for i in range(num_outputs)]
     return kgen, rgen, slfmgen, indepgen
+
 
 def alvarez_and_lawrence_gp():
     # Nguyen 2014 COGP uses Q=2 R=1, but that is not LMC
@@ -43,6 +50,7 @@ def alvarez_and_lawrence_gp():
     # Álvarez and Lawrence 2010 find that vanilla LMC works best with Q=1 R=2
     # that is what we use here
     return lambda: [RBF(name='rbf0')], lambda: [2], lambda: [], lambda: []
+
 
 def activate_logs():
     logger = logging.getLogger()
@@ -56,6 +64,7 @@ def activate_logs():
     _LOG.setLevel(logging.INFO)
     _LOG2.setLevel(logging.INFO)
 
+
 def _foreign_exchange_shared():
     # Adapts the foreign currency exchange problem
     # Collaborative Multi-output Gaussian Processes
@@ -63,10 +72,12 @@ def _foreign_exchange_shared():
 
     fx_files = ['2007-2009.csv', '2010-2013.csv', '2014-2017.csv']
     datadir = os.path.join(_download_own_data(), 'fx')
-    fx = pd.concat([pd.read_csv(os.path.join(datadir, f), index_col=1) for f in fx_files])
+    fx = pd.concat([pd.read_csv(os.path.join(datadir, f), index_col=1)
+                    for f in fx_files])
     fx.drop(['Wdy', 'Jul.Day'], axis=1, inplace=True)
     fx.rename(columns={old: old[:3] for old in fx.columns}, inplace=True)
     return fx
+
 
 def foreign_exchange_2007():
     import os
@@ -105,6 +116,7 @@ def foreign_exchange_2007():
                 for col in fx2007.columns]
     return xss, yss, test_xss, test_yss, test_fx, fx2007.columns
 
+
 def weather():
     sensors = ['bra', 'cam', 'chi', 'sot']
     expected_nas = [100, 0, 15, 1002]
@@ -114,7 +126,7 @@ def weather():
     datadir = _download_own_data()
     for sensor, expected_na, hold in zip(sensors, expected_nas, holdout):
         y = pd.read_csv('{}/weather/{}y.csv'.format(datadir, sensor),
-                        header=None, names=['WSPD','WD','GST','ATMP'],
+                        header=None, names=['WSPD', 'WD', 'GST', 'ATMP'],
                         usecols=['ATMP'])
         x = pd.read_csv('{}/weather/{}x.csv'.format(datadir, sensor),
                         header=None, names=['time'])
@@ -137,6 +149,7 @@ def weather():
 
     return xss, yss, test_xss, test_yss, sensors
 
+
 def toy_sinusoid():
     # Adapts the 2-output toy problem from
     # Collaborative Multi-output Gaussian Processes
@@ -146,33 +159,40 @@ def toy_sinusoid():
     # we instead look at uniformly distributed inputs.
 
     sz = 1500
-    xss = [np.random.uniform(-10,10,size=sz) for _ in range(2)]
-    f1 = lambda x: np.sin(x) + 1e-7 + np.random.randn(len(x)) * 1e-2
-    f2 = lambda x: -np.sin(x) + 1e-7 + np.random.randn(len(x)) * 1e-2
+    xss = [np.random.uniform(-10, 10, size=sz) for _ in range(2)]
+
+    def f1(x): return np.sin(x) + 1e-7 + np.random.randn(len(x)) * 1e-2
+
+    def f2(x): return -np.sin(x) + 1e-7 + np.random.randn(len(x)) * 1e-2
     yss = [f1(xss[0]), f2(xss[1])]
     ks = [RBF(name='rbf0')]
-    ranks=[1]
+    ranks = [1]
     pred_xss = [np.linspace(-11, 11, 100) for _ in range(2)]
     test_yss = [f1(pred_xss[0]), f2(pred_xss[1])]
     return None
 
+
 def filter_list(ls, ixs):
     return [ls[i] for i in ixs]
+
 
 def filter_nonempty_cols(a, b, c):
     nonempty_ixs = [i for i, x in enumerate(a) if len(x) > 0]
     return (filter_list(x, nonempty_ixs) for x in (a, b, c))
 
+
 def filter_by_selection(a, b, c, selects):
     return ([x[select] for x, select in zip(xs, selects)] for xs in (a, b, c))
+
 
 def smse(test_yss, pred_yss, train_yss):
     test_yss, pred_yss, train_yss = filter_nonempty_cols(
         test_yss, pred_yss, train_yss)
     return np.mean([np.square(test_ys - pred_ys).mean() /
-            np.square(train_ys.mean() - test_ys).mean() for
-            test_ys, pred_ys, train_ys in
-            zip(test_yss, pred_yss, train_yss)])
+                    np.square(train_ys.mean() - test_ys).mean() for
+                    test_ys, pred_ys, train_ys in
+                    zip(test_yss, pred_yss, train_yss)])
+
 
 def nlpd(test_yss, pred_yss, pred_vss):
     test_yss, pred_yss, pred_vss = filter_nonempty_cols(
@@ -190,13 +210,14 @@ def nlpd(test_yss, pred_yss, pred_vss):
     test_yss, pred_yss, pred_vss = filter_nonempty_cols(
         test_yss, pred_yss, pred_vss)
     return np.mean([0.5 * np.mean(
-            np.square(test_ys - pred_ys) / pred_vs
-            + np.log(2 * np.pi * pred_vs))
-            for test_ys, pred_ys, pred_vs in
-            zip(test_yss, pred_yss, pred_vss)])
+        np.square(test_ys - pred_ys) / pred_vs
+        + np.log(2 * np.pi * pred_vs))
+        for test_ys, pred_ys, pred_vs in
+        zip(test_yss, pred_yss, pred_vss)])
+
 
 def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
-           kgen, rgen, slfmgen, indepgen, optimizer_opts, **kwargs):
+                 kgen, rgen, slfmgen, indepgen, optimizer_opts, **kwargs):
     times, smses, nlpds = [], [], []
     for i in range(num_runs):
         ks = kgen()
@@ -230,12 +251,14 @@ def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
     stats = [(np.mean(x), np.std(x) / np.sqrt(len(x))) for x in points]
     return stats
 
+
 def _download_cogp():
     # Download paper code if it is not there
     if not os.path.isdir(TMP + '/cogp'):
         print('cloning COGP repo')
         repo = 'https://github.com/vlad17/cogp.git'
         subprocess.call(['git', 'clone', repo, TMP + '/cogp'])
+
 
 def _download_own_data():
     # Download data code if it is not there
@@ -246,20 +269,28 @@ def _download_own_data():
         subprocess.call(['git', 'clone', repo, datadir])
     return os.path.join(datadir, 'data')
 
+
 def env_no_omp():
     env = os.environ.copy()
     if 'OMP_NUM_THREADS' in env:
         del env['OMP_NUM_THREADS']
     return env
 
-def cogp_fx2007(num_runs, inducing_pts):
+
+def cogp_fx2007(num_runs, inducing_pts, nthreads):
     _download_cogp()
-    benchmark_dir = os.path.join(_download_own_data(), os.pardir, 'benchmarks', 'benchlib')
+    benchmark_dir = os.path.join(
+        _download_own_data(), os.pardir, 'benchmarks', 'benchlib')
     datafile = os.path.join(_download_own_data(), 'fx', 'fx2007_matlab.csv')
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """infile='{}';M={};runs={};cogp_fx2007;exit"""
-           .format(datafile, inducing_pts, num_runs)]
+           """infile='{}';
+              M={};
+              runs={};
+              maxNumCompThreads({});
+              cogp_fx2007;
+              exit"""
+           .format(datafile, inducing_pts, num_runs, nthreads)]
     with open(TMP + '/out-{}'.format(num_runs), 'w') as f:
         f.write(' '.join(cmd))
     process = subprocess.Popen(
@@ -293,14 +324,21 @@ def cogp_fx2007(num_runs, inducing_pts):
     stats = [(m_time, se_time), (m_smse, se_smse), (m_nlpd, se_nlpd)]
     return stats, cogp_mu, cogp_var
 
-def cogp_weather(num_runs, M):
+
+def cogp_weather(num_runs, M, nthreads):
     _download_cogp()
-    benchmark_dir = os.path.join(_download_own_data(), os.pardir, 'benchmarks', 'benchlib')
+    benchmark_dir = os.path.join(
+        _download_own_data(), os.pardir, 'benchmarks', 'benchlib')
     datafile = os.path.join(_download_own_data(), 'fx', 'fx2007_matlab.csv')
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """datadir='{}';M={};runs={};cogp_weather;exit"""
-           .format(datafile, M, num_runs)]
+           """datadir='{}';
+              M={};
+              runs={};
+              maxNumCompThreads({});
+              cogp_weather;
+              exit"""
+           .format(datafile, M, num_runs, nthreads)]
     with open(TMP + '/outw-{}-{}'.format(num_runs, M), 'a') as f:
         f.write(' '.join(cmd))
     benchmark_dir = 'benchmarks/benchlib'
@@ -335,10 +373,12 @@ def cogp_weather(num_runs, M):
     stats = [(m_time, se_time), (m_smse, se_smse), (m_nlpd, se_nlpd)]
     return stats, cogp_mu, cogp_var
 
+
 def statprint(x, fmt='10.4f', flank=''):
     formatter = flank + '{:' + fmt + '}' + flank
     formatter += ' (' + flank + '{:' + fmt + '}' + flank + ')'
     return formatter.format(*x)
+
 
 def statsline(ls):
     names = ['time', 'smse', 'nlpd']
@@ -346,10 +386,12 @@ def statsline(ls):
     combined = [name + ' ' + res for name, res in zip(names, results)]
     return ' '.join(combined)
 
+
 TABLE_EPILOG = r"""
 \bottomrule
 \end{tabular}
 """
+
 
 def latex_table(filename, cols, col_results):
     metrics = ['seconds', 'SMSE', 'NLPD']
@@ -359,7 +401,7 @@ def latex_table(filename, cols, col_results):
     ncols = len(cols)
 
     for metric, fmt, results in zip(metrics, formatting, transposed):
-        best = min(range(len(results)), key=lambda r:results[r][0])
+        best = min(range(len(results)), key=lambda r: results[r][0])
         print('min idx', best, results[best])
         if fmt == 'd':
             results = [tuple(map(int, r)) for r in results]
