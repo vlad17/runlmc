@@ -10,6 +10,7 @@ from .optimization import AdaDelta
 from ..kern.rbf import RBF
 from ..lmc.parameter_values import ParameterValues
 from ..lmc.kernel import ExactLMCKernel
+from ..lmc.functional_kernel import FunctionalKernel
 from ..util.testing_utils import RandomTest, check_np_lists
 
 
@@ -28,19 +29,20 @@ class ExactAnalogue:
             xss = [np.random.rand(sz) for sz in sizes]
 
         self.xss, self.yss = xss, yss
-        self.params = ParameterValues(
-            coregs, diags, kernels, sizes, np.hstack(yss), noise)
+        ranks = [len(x) for x in coregs]
+        fk = FunctionalKernel(D=len(xss), lmc_kernels=kernels,
+                              lmc_ranks=ranks)
+        for lmc_coreg, coreg in zip(fk._coreg_vecs, coregs):
+            lmc_coreg[:] = coreg
+        for lmc_coreg, coreg in zip(fk._coreg_diags, diags):
+            lmc_coreg[:] = coreg
+        fk._noise[:] = noise
+        self.params = ParameterValues(fk, sizes, np.hstack(yss))
         self.exact = None
 
     def gen_lmc(self, m):
-        ranks = [len(x) for x in self.params.coreg_vecs]
-        lmc = LMC(self.xss, self.yss, normalize=False,
-                  kernels=self.params.kernels, ranks=ranks, m=m)
-        for lmc_coreg, coreg in zip(lmc.coreg_vecs, self.params.coreg_vecs):
-            lmc_coreg[:] = coreg
-        for lmc_coreg, coreg in zip(lmc.coreg_diags, self.params.coreg_diags):
-            lmc_coreg[:] = coreg
-        lmc.noise[:] = self.params.noise
+        lmc = LMC(self.xss, self.yss, normalize=False, m=m,
+                  functional_kernel=self.params.functional_kernel)
         return lmc
 
     def gen_exact(self):
@@ -175,8 +177,7 @@ class LMCTest(RandomTest):
             return list(map(np.array, x))
         basic_Xs = mapnp([[0, 1, 2], [0.5, 1.5, 2.5]])
         basic_Ys = mapnp([[5, 6, 7], [7, 6, 5]])
-        self.assertRaises(ValueError, LMC,
-                          basic_Xs, basic_Ys, kernels=[])
+        self.assertRaises(ValueError, LMC, basic_Xs, basic_Ys)
 
     def test_kernel_reconstruction_1d(self):
         ea = self._case_1d()

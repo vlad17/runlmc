@@ -8,8 +8,6 @@ import os
 
 import numpy as np
 import scipy.linalg as la
-import scipy.stats
-from paramz.transformations import Logexp
 
 from .multigp import MultiGP
 from ..approx.interpolation import multi_interpolant, autogrid
@@ -24,7 +22,6 @@ from ..lmc.parameter_values import ParameterValues
 from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
 from ..lmc.kernel import ExactLMCKernel, ApproxLMCKernel
-from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 
 _LOG = logging.getLogger(__name__)
@@ -42,55 +39,32 @@ class LMC(MultiGP):
     Upon construction, this class assumes ownership of its parameters and
     does not account for changes in their values.
 
-    The exact kernel that this approximates is the following:
+    For a dataset of inputs `Xs` across multiple outputs `Ys`, let :math:`X`
+    refer to the concatenation of `Xs`. According to the functional
+    specification of the LMC kernel by `functional_kernel` (see documentation
+    in :class:`runlmc.lmc.functional_kernel.FunctionalKernel`), we can create
+    the covariance matrix for a multi-output GP model applied to all pairs
+    of :math:`X`, resulting in :math:`K_{X,X}`.
 
-    .. math::
+    The point of this class is to vary hyperparameters of :math:`K`, the
+    `FunctionalKernel` given by `functional_kernel`, until the model log
+    likelihood is as large as possible.
 
-        K_{\\text{exact}}=\sum_{q=1}^Q\\left(A_qA_q^\\top+
-             \\boldsymbol\\kappa_q I\\right)
-             \circ [k_q(X_i, X_j)]_{ij\in[D]^2} +
-             \\boldsymbol\epsilon
-
-    :math:`[\cdot]_{ij}` represents a block matrix, with rows and columns
-    possibly of different widths. :math:`\circ` is the Hadamard product.
-    :math:`\\boldsymbol\\epsilon` is a diagonal Gaussian noise
-    addition, iid within each output. The input arrays for our observations
-    of each of the different outputs are denoted :math:`X_i` and may be
-    variable-length. Each :math:`k_q(X_i,X_j)` is built from a stationary
-    Mercer kernel :math:`k_q`, where the :math:`ab`-th entry of the
-    rectangular matrix is
-    :math:`k_q(\\textbf{x}_a^{(i)}, \\textbf{x}_b^{(j)})` with
-    :math:`\\textbf{x}_a^{(i)}` as the
-    :math:`a`-th input of the input set :math:`X_i` (and correspondingly for
-    :math:`j`).
-
-    The :math:`\\left(A_qA_q^\\top+ \\boldsymbol\\kappa_q I\\right)` terms
-    create a kernel which captures some linear correlation between outputs.
-
-    This class uses the SKI approximation, which shares a single grid
+    This class uses the SKI approximation to do this efficiently,
+    which shares a single grid
     :math:`U` as the input array for all the outputs. Then,
-    :math:`K_{\\text{exact}}` is interpolated from the approximation kernel
+    :math:`K_{X,X}` is interpolated from the approximation kernel
     :math:`K_{\\text{SKI}}`, as directed in
     *Thoughts on Massively Scalable Gaussian Processes* by Wilson, Dann,
     and Nickisch. This is done with sparse interpolation matrices :math:`W`.
 
     .. math::
 
-        K_{\\text{exact}}\\approx K_{\\text{SKI}} = W K W^\\top +
+        K_{X,X}\\approx K_{\\text{SKI}} = W K_{U,U} W^\\top +
             \\boldsymbol\\epsilon I
 
-    Above, :math:`K` is a structured kernel over a grid :math:`U`, derived
-    from :math:`A_q, k_q` as before. The grid structure enables us to
-    express :math:`K` more succintly, relying on the Kronecker product
-    :math:`\\otimes`.
-
-    .. math::
-
-        K=\sum_{q=1}^QA_qA_q^\\top \\otimes k_q(U, U)
-
-    Each :math:`A_q` (only a column vector for now) is a parameter of
-    this model, with name `a<q>`, where `<q>` is replaced with a specific
-    number.
+    Above, :math:`K_{U,U}` is a structured kernel over a grid :math:`U`. This
+    grid is specified by `lo,hi,m`.
 
     The functionality for the various prediction modes is summarized below.
     Note `'matrix-free'` is the default.
@@ -106,21 +80,12 @@ class LMC(MultiGP):
     * `'exact'` - Use the exact cholesky-based algorithm (not matrix free)
     * `'sample'` - Use the sampling algorithm from Wilson 2015.
 
-    TODO(new parameters)
-    mean-function - zero-mean for now
-
     :param Xs: input observations, should be a list of numpy arrays,
                where the numpy arrays are one dimensional.
     :param Ys: output observations, this must be a list of one-dimensional
                numpy arrays, matching up with the number of rows in `Xs`.
     :param normalize: optional normalization for outputs `Ys`.
                            Prediction will be un-normalized.
-    :param kernels: a list of (stationary) kernels which constitute the
-                    terms of the LMC sums prior to coregionalization. The
-                    :math:`q`-th index here corresponds to :math:`k_q` above.
-                    This list's length is :math:`Q`
-    :param ranks: list of integer ranks for coregionalization factors,
-                  defaults to 1 everywhere.
     :param lo: lexicographically smallest point in inducing point grid used
                (by default, a bit less than the minimum of input)
     :param hi: lexicographically largest point in inducing point grid used
@@ -137,57 +102,35 @@ class LMC(MultiGP):
                              variance.
     :param max_procs: maximum number of processes to use for parallelism,
                       defaults to cpu count.
-    :param slfm_kernels: add kernel terms with kernel :math:`k_q` given by this
-                       list
-                       using the SLFM model, which means the corresponding rank
-                       is 1 and terms :math:`\\boldsymbol\\kappa_q=\\textbf{0}`
-    :param indep_gp: add in a term for independent GPs for each output,
-                     this must be a list of :math:`D` kernels if specified
-                     at all, corresponding to terms with
-                     :math:`A_q=0,\\boldsymbol\\kappa_q=\\boldsymbol\\kron_d`
-                     for the :math:`d`-th element of this list
-                     :math:`k_d`.
+    :param functional_kernel: a
+        :class:`runlmc.lmc.functional_kernel.FunctionalKernel` determining
+        :math:`K`.
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
     :raises: :class:`ValueError` if normalization if any `Ys` have no variance
                                  or values in `Xs` have multiple identical
                                  values.
-    :raises: :class:`ValueError` if no kernels
     """
 
-    def __init__(self, Xs, Ys, normalize=True, kernels=[],  # pylint: disable=too-many-arguments,dangerous-default-value,too-many-locals
-                 ranks=None, lo=None, hi=None, m=None, name='lmc',
+    def __init__(self, Xs, Ys, normalize=True,  # pylint: disable=too-many-arguments,dangerous-default-value,too-many-locals
+                 lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='matrix-free',
                  variance_samples=20, max_procs=None,
-                 slfm_kernels=[], indep_gp=[]):
+                 functional_kernel=None):
+
         super().__init__(Xs, Ys, normalize=normalize, name=name)
         self.update_model(False)
         # TODO(cleanup) - this entire constructor needs reorg, refactor
         # into smaller methods, etc. Large number of arguments is OK, though.
         # basically address all pylint complaints (disabled in the constructor)
 
-        if not kernels and not slfm_kernels and not indep_gp:
-            raise ValueError('Number of kernels should be >0')
-
-        if metrics and (slfm_kernels or indep_gp):
-            raise ValueError('Metrics incompatible with slfm/indep gp')
-
-        if len(indep_gp) not in [0, len(Xs)]:
-            raise ValueError('Independent GP kernels should be one-per-output'
-                             ' or not specified at all')
+        if not functional_kernel:
+            raise ValueError('functional_kernel must be provided')
 
         self.variance_samples = variance_samples
         self.prediction = prediction
         if prediction not in self._prediction_methods():
             raise ValueError('Variance prediction method {} unrecognized'
                              .format(prediction))
-
-        self.kernels = kernels + slfm_kernels + indep_gp
-        self.nkernels = {
-            'lmc': len(kernels),
-            'slfm': len(slfm_kernels),
-            'indep': len(indep_gp)}
-        for k in self.kernels:
-            self.link_parameter(k)
 
         n = sum(map(len, self.Xs))
         _LOG.info('LMC %s generating inducing grid n = %d',
@@ -205,48 +148,8 @@ class LMC(MultiGP):
         _LOG.info('LMC %s grid (n = %d, m = %d) complete, ',
                   self.name, n, m)
 
-        if ranks is None:
-            ranks = [1 for _ in kernels]
-
-        distrib = scipy.stats.truncnorm(-1, 1)
-
-        def randinit(sx, sy):
-            return distrib.rvs(size=(sx, sy))
-
-        self.coreg_vecs = []
-        initial_vecs = []
-        initial_vecs += [randinit(rank, self.output_dim) for rank in ranks]
-        initial_vecs += [randinit(1, self.output_dim)
-                         for _ in slfm_kernels]
-        initial_vecs += [np.zeros((1, self.output_dim)) for _ in indep_gp]
-        for i, coreg_vec in enumerate(initial_vecs):
-            self.coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
-            if i < self.nkernels['lmc'] + self.nkernels['slfm']:
-                self.link_parameter(self.coreg_vecs[-1])
-
-        self.coreg_diags = []
-        for _ in range(self.nkernels['lmc']):
-            i = len(self.coreg_diags)
-            coreg_diags = np.ones(self.output_dim)
-            self.coreg_diags.append(
-                Param('kappa{}'.format(i), coreg_diags, Logexp()))
-            self.link_parameter(self.coreg_diags[-1])
-        for _ in range(self.nkernels['slfm']):
-            i = len(self.coreg_diags)
-            coreg_diags = np.zeros(self.output_dim)
-            self.coreg_diags.append(Param('kappa{}'.format(i), coreg_diags))
-            self.coreg_diags[-1].constrain_fixed()
-        for d in range(self.nkernels['indep']):
-            i = len(self.coreg_diags)
-            coreg_diags = np.zeros(self.output_dim)
-            coreg_diags[d] = 1
-            self.coreg_diags.append(Param('kappa{}'.format(i), coreg_diags))
-            self.coreg_diags[-1].constrain_fixed()
-
-        # Corresponds to epsilon
-        self.noise = Param('noise', 0.1 * np.ones(self.output_dim), Logexp())
-        self.link_parameter(self.noise)
-
+        self._functional_kernel = functional_kernel
+        self.link_parameter(self._functional_kernel)
         self.y = np.hstack(self.Ys)
 
         self.kernel = None
@@ -308,43 +211,33 @@ class LMC(MultiGP):
             _LOG.debug('log likelihood   %f', self.log_likelihood())
             _LOG.debug('normal quadratic %f', self.normal_quadratic())
             _LOG.debug('log det K        %f', self.log_det_K())
-            _LOG.debug('noise %s', np_print(self.noise))
+            _LOG.debug('noise %s', np_print(params.noise))
             _LOG.debug('coreg vecs')
-            for i, a in enumerate(self.coreg_vecs):
+            for i, a in enumerate(params.coreg_vecs):
                 _LOG.debug('  a%d %s', i, np_print(a))
             _LOG.debug('coreg diags')
-            for i, a in enumerate(self.coreg_diags):
+            for i, a in enumerate(params.coreg_diags):
                 _LOG.debug('  kappa%d %s', i, np_print(a))
 
-        for x, dx in zip(self.coreg_vecs, self.kernel.coreg_vec_gradients()):
-            x.gradient = dx
-        for x, dx in zip(self.coreg_diags,
-                         self.kernel.coreg_diags_gradients()):
-            x.gradient = dx
-        for k, dk in zip(self.kernels, self.kernel.kernel_gradients()):
-            k.update_gradient(dk)
-        self.noise.gradient = self.kernel.noise_gradient()
+        self._functional_kernel.update_gradient(self.kernel)
 
         if self.metrics is not None:
-            grad_norm = la.norm(self.gradient, self.EVAL_NORM)
-            ordered_grad = np.concatenate((
-                np.concatenate(
-                    [x.gradient for x in self.coreg_vecs]).reshape(-1),
-                np.concatenate([x.gradient for x in self.coreg_diags]),
-                np.concatenate([x.gradient for x in self.kernels]),
-                self.noise.gradient))
+            approx = self.kernel
             exact = self._dense()
-            exact_grad = np.concatenate((
-                np.concatenate(
-                    exact.coreg_vec_gradients()).reshape(-1),
-                np.concatenate(exact.coreg_diags_gradients()),
-                np.concatenate(exact.kernel_gradients()),
-                exact.noise_gradient()))
+            approx_grad, exact_grad = (
+                np.concatenate((
+                    np.concatenate(
+                        k.coreg_vec_gradients()).reshape(-1),
+                    np.concatenate(k.coreg_diags_gradients()),
+                    np.concatenate(k.kernel_gradients()),
+                    k.noise_gradient()))
+                for k in [approx, exact])
 
-            self.metrics.grad_norms.append(grad_norm)
-            self.metrics.grad_error.append(
-                la.norm(ordered_grad - exact_grad, self.EVAL_NORM)
-                / la.norm(exact_grad, self.EVAL_NORM))
+            approx_norm = la.norm(approx_grad, self.EVAL_NORM)
+            exact_norm = la.norm(exact_grad, self.EVAL_NORM)
+            diff_norm = la.norm(approx_grad - exact_grad, self.EVAL_NORM)
+            self.metrics.grad_norms.append(approx_norm)
+            self.metrics.grad_error.append(diff_norm / exact_norm)
             self.metrics.log_likely.append(self.log_likelihood())
 
     def _dense(self):
@@ -404,12 +297,14 @@ class LMC(MultiGP):
     # the a priori variance of a single point for each output.
     def _native_variance(self):
         if 'native_var' not in self._cache:
+            params = ParameterValues.generate(self)
             coregs = np.column_stack(np.square(per_output).sum(axis=0)
-                                     for per_output in self.coreg_vecs)
-            coregs += np.column_stack(self.coreg_diags)
-            kernels = [k.from_dist(0) for k in self.kernels]
+                                     for per_output in params.coreg_vecs)
+            coregs += np.column_stack(params.coreg_diags)
+            kernels = [k.from_dist(0)
+                       for k in params._kernels]
             native_output_var = coregs.dot(kernels).reshape(-1)
-            native_var = native_output_var + self.noise
+            native_var = native_output_var + params.noise
 
             self._cache['native_var'] = native_var
         return self._cache['native_var']
@@ -497,7 +392,7 @@ class LMC(MultiGP):
         # Thus, we're not matrix-free in the predictions.
 
         Ns = self.variance_samples
-        Q = len(self.kernels)
+        Q = len(self._functional_kernel.kernels)
         par = min(max(self.max_procs, 1), max(Ns, Q))
         W = self.interpolant
         ls = [(W, coreg_mat, toep.top, np.random.randn(W.shape[1], Ns), i)

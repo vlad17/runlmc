@@ -3,36 +3,31 @@
 
 import numpy as np
 
+# TODO(cleanup): elim parametervalues thanks to functional_kernel OO
+# get rid of _functional_kernel. accesses too
+
 
 class ParameterValues:
-    def __init__(self, coreg_vecs, coreg_diags, kernels, lens, y, noise,
-                 nkernels=None):
-        if nkernels is None:
-            nkernels = {'lmc': len(kernels), 'slfm': 0, 'indep': 0}
+    def __init__(self, functional_kernel, lens, y):
 
-        self.coreg_vecs = coreg_vecs
-        self.coreg_diags = coreg_diags
-
-        self.kernels = kernels
-        self.nkernels = nkernels
-
+        self.functional_kernel = functional_kernel
+        self.kernels = functional_kernel._kernels
+        self.nkernels = functional_kernel._nkernels
+        self.coreg_vecs = self.functional_kernel._coreg_vecs
+        self.coreg_diags = self.functional_kernel._coreg_diags
         self.coreg_mats = [a.T.dot(a) + np.diag(k)
-                           for a, k in zip(coreg_vecs, self.coreg_diags)]
+                           for a, k in zip(self.coreg_vecs, self.coreg_diags)]
 
         self.lens = lens
-        self.noise = noise
+        self.noise = self.functional_kernel._noise
         self.y = y
         self.n = len(self.y)
         self.D = len(self.noise)
-        self.Q = len(self.kernels)
+        self.Q = len(self.functional_kernel._kernels)
 
     @staticmethod
     def generate(lmc_model):
         return ParameterValues(
-            [x.values for x in lmc_model.coreg_vecs],
-            [x.values for x in lmc_model.coreg_diags],
-            lmc_model.kernels,
+            lmc_model._functional_kernel,
             list(map(len, lmc_model.Xs)),
-            lmc_model.y,
-            lmc_model.noise.values,
-            lmc_model.nkernels)
+            lmc_model.y)

@@ -18,6 +18,7 @@ In other words, this provides a matrix-free implementation of multi-output GPs f
 ## Usage Notes
 
 * Currently, I'm only supporting 1 input dimension.
+* Zero-mean only for now.
 * Check out the [latest documentation](http://runlmc.readthedocs.io/en/latest/)
 
 ## A note on GPy
@@ -75,13 +76,16 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. Add asv classes to fx2007 + weather. Track time, memory, accuracy. (add benchrun script which does asv locally, then pushes). (add mmx as a machine)
 0. LMC class refactor (to allow multi-input-dimension grids)
+   -> elim ParameterValues -> FunctionalKernel
+   -> LMCKernel -> LMCDerivative, Derivative -> ?
+   -> GridKernel -> NonuniformKernel (subclass) Kernel = Matrix
    -> cache -> use lru_cache + `clear_cache()`
    -> prediction interface -- return full variance (cached?)
    -> get rid of sample prediction.
    -> reorg but keep Non-unif (time series) LMC -> InterpolatedLLGP
        -> runtime-only check for 1-d input
+       -> Corresponding modifications in `README.md, benchmarks/benchlib/standard_tester.py, benchmarks/picture-fx2007/fxmetrics.py, benchmarks/picture-fx2007/fxpics.py, examples/example.ipynb, examples/fx2007.ipynb, runlmc/models/test_lmc.py`
    -> make new LLGP class, which assumes uniformity
    -> Separate out non-model functionality:
        -> prediction
