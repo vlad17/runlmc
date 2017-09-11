@@ -75,8 +75,6 @@ def main():
         interpolating_points = [10]
         inducing_points = 10
     else:
-        import runlmc.lmc.stochastic_deriv
-        runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 3
         runs = 10
         cogp_runs = 10
         interpolating_points = [500, 600, 700, 800, 900, 1000]
