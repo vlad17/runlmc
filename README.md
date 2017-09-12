@@ -78,23 +78,19 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 0. LMC class refactor (to allow multi-input-dimension grids)
    -> elim ParameterValues -> FunctionalKernel
-   -> LMCKernel -> LMCDerivative, Derivative -> ?
+   -> LMCKernel -> LMCLikelihood, 
    -> GridKernel -> NonuniformKernel (subclass) Kernel = Matrix
+       -> modify docs in FunctionalKernel correspondingly.
    -> cache -> use lru_cache + `clear_cache()`
+   -> StochasticDerivative -> StochasticDerivativeService (parameterized w/ metrics, pool)
+       -> Make wrapper for pool for in-band parallelism (max_proc=0, should be default)
+       -> validate `_check_omp` accordingly.
    -> prediction interface -- return full variance (cached?)
    -> get rid of sample prediction.
    -> reorg but keep Non-unif (time series) LMC -> InterpolatedLLGP
-       -> runtime-only check for 1-d input
+       -> runtime check for 1-d input
        -> Corresponding modifications in `README.md, benchmarks/benchlib/standard_tester.py, benchmarks/picture-fx2007/fxmetrics.py, benchmarks/picture-fx2007/fxpics.py, examples/example.ipynb, examples/fx2007.ipynb, runlmc/models/test_lmc.py`
-   -> make new LLGP class, which assumes uniformity
-   -> Separate out non-model functionality:
-       -> prediction
-       -> parallelism
-       -> exact kernel version needs to be cleaned
-        (current is hack).
-       -> find chunks during initialization to pull out
-       -> SLFM/indep GP story needs to be solid
-   -> (?) test `LMC._raw_predict` unit testing, by using K_SKI() and anlogous math
+   -> Separate out non-model functionality: prediction
 0. Add basic components for block-toeplitz
 0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)
 0. Automatically find `min_grad_ratio` parameter. 

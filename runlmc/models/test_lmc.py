@@ -8,7 +8,6 @@ import scipy.spatial.distance as dist
 from .lmc import LMC
 from .optimization import AdaDelta
 from ..kern.rbf import RBF
-from ..lmc.parameter_values import ParameterValues
 from ..lmc.kernel import ExactLMCKernel
 from ..lmc.functional_kernel import FunctionalKernel
 from ..util.testing_utils import RandomTest, check_np_lists
@@ -29,6 +28,7 @@ class ExactAnalogue:
             xss = [np.random.rand(sz) for sz in sizes]
 
         self.xss, self.yss = xss, yss
+        self.lens = sizes
         ranks = [len(x) for x in coregs]
         fk = FunctionalKernel(D=len(xss), lmc_kernels=kernels,
                               lmc_ranks=ranks)
@@ -37,17 +37,19 @@ class ExactAnalogue:
         for lmc_coreg, coreg in zip(fk._coreg_diags, diags):
             lmc_coreg[:] = coreg
         fk._noise[:] = noise
-        self.params = ParameterValues(fk, sizes, np.hstack(yss))
+        self.kernels = kernels
+        self.functional_kernel = fk
         self.exact = None
 
     def gen_lmc(self, m):
         lmc = LMC(self.xss, self.yss, normalize=False, m=m,
-                  functional_kernel=self.params.functional_kernel)
+                  functional_kernel=self.functional_kernel)
         return lmc
 
     def gen_exact(self):
         if self.exact is None:
-            self.exact = ExactLMCKernel(self.params, self.xss)
+            self.exact = ExactLMCKernel(
+                self.functional_kernel, self.xss, self.yss)
 
         return self.exact
 
@@ -110,14 +112,14 @@ class LMCTest(RandomTest):
     def _check_kernel_reconstruction(self, exact):
         def reconstruct(x):
             return x.kernel.K.as_numpy()
-        actual = reconstruct(exact.gen_lmc(sum(exact.params.lens)))
+        actual = reconstruct(exact.gen_lmc(sum(exact.lens)))
         exact_mat = exact.gen_exact().K
         tol = 1e-4
         np.testing.assert_allclose(
             exact_mat, actual, rtol=tol, atol=tol)
         avg_diff_sz = self._avg_entry_diff(exact_mat, actual)
 
-        actual = reconstruct(exact.gen_lmc(sum(exact.params.lens) * 2))
+        actual = reconstruct(exact.gen_lmc(sum(exact.lens) * 2))
         np.testing.assert_allclose(
             exact_mat, actual, rtol=tol, atol=tol)
         avg_diff_2sz = self._avg_entry_diff(exact_mat, actual)
@@ -141,7 +143,7 @@ class LMCTest(RandomTest):
                 a.noise_gradient(), b.noise_gradient(), tol, tol)
 
     def _check_kernel_params(self, ea):
-        m = sum(ea.params.lens) / len(ea.params.lens)
+        m = sum(ea.lens) / len(ea.lens)
         actual = ea.gen_lmc(m)
         exact = ea.gen_exact()
 
@@ -156,7 +158,7 @@ class LMCTest(RandomTest):
         Kinv_y = la.solve(exact_mat, y)
         expected = y.dot(Kinv_y)
 
-        lmc = exact.gen_lmc(sum(exact.params.lens))
+        lmc = exact.gen_lmc(sum(exact.lens))
         lmc.TOL = 1e-15  # tighten tolerance for tests
         tol = 1e-4
 
@@ -164,7 +166,7 @@ class LMCTest(RandomTest):
         np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
 
     def _check_fit(self, ea):
-        lmc = ea.gen_lmc(sum(ea.params.lens))
+        lmc = ea.gen_lmc(sum(ea.lens))
 
         ll_before = lmc.log_likelihood()
         lmc.optimize(optimizer=AdaDelta(max_it=5))
@@ -232,8 +234,8 @@ class LMCTest(RandomTest):
         noise_sd = [0.05]
         true_func = [np.sin]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
-        ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
-                           ea.params.coreg_vecs, ea.xss, yss)
+        ea = ExactAnalogue(ea.kernels, ea.lens,
+                           ea.functional_kernel.coreg_vecs, ea.xss, yss)
         self._check_fit(ea)
 
     def test_2d_fit(self):
@@ -241,8 +243,8 @@ class LMCTest(RandomTest):
         noise_sd = [0.05, 0.08]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
-        ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
-                           ea.params.coreg_vecs, ea.xss, yss)
+        ea = ExactAnalogue(ea.kernels, ea.lens,
+                           ea.functional_kernel.coreg_vecs, ea.xss, yss)
         self._check_fit(ea)
 
     def test_multirank_fit(self):
@@ -250,8 +252,8 @@ class LMCTest(RandomTest):
         noise_sd = [0.05, 0.08]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
-        ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
-                           ea.params.coreg_vecs, ea.xss, yss)
+        ea = ExactAnalogue(ea.kernels, ea.lens,
+                           ea.functional_kernel.coreg_vecs, ea.xss, yss)
         self._check_fit(ea)
 
     def test_2d_fit_noisediff(self):
@@ -259,8 +261,8 @@ class LMCTest(RandomTest):
         noise_sd = [1e-8, 0.09]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
-        ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
-                           ea.params.coreg_vecs, ea.xss, yss)
+        ea = ExactAnalogue(ea.kernels, ea.lens,
+                           ea.functional_kernel.coreg_vecs, ea.xss, yss)
         self._check_fit(ea)
 
     def test_2d_1k_fit_large_offset(self):
@@ -271,6 +273,6 @@ class LMCTest(RandomTest):
         noise_sd = [0.02, 0.08]
         true_func = [np.sin, lambda x: np.cos(x) + 100]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
-        ea = ExactAnalogue(ea.params.kernels, ea.params.lens,
-                           ea.params.coreg_vecs, ea.xss, yss)
+        ea = ExactAnalogue(ea.kernels, ea.lens,
+                           ea.functional_kernel.coreg_vecs, ea.xss, yss)
         self._check_fit(ea)

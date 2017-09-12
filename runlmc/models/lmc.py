@@ -18,7 +18,6 @@ from ..linalg.numpy_matrix import NumpyMatrix
 from ..linalg.kronecker import Kronecker
 from ..linalg.diag import Diag
 from ..lmc.stochastic_deriv import StochasticDeriv
-from ..lmc.parameter_values import ParameterValues
 from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
 from ..lmc.kernel import ExactLMCKernel, ApproxLMCKernel
@@ -196,11 +195,19 @@ class LMC(MultiGP):
     def parameters_changed(self):
         self._cache = {}
 
-        params = ParameterValues.generate(self)
         grid_kernel = gen_grid_kernel(
-            params, self.dists, self.interpolant, self.interpolantT)
+            self._functional_kernel,
+            self.dists,
+            self.interpolant,
+            self.interpolantT,
+            list(map(len, self.Ys)))
         self.kernel = ApproxLMCKernel(
-            params, grid_kernel, self.dists, self.metrics, self._pool)
+            self._functional_kernel,
+            grid_kernel,
+            self.dists,
+            self.Ys,
+            self.metrics,
+            self._pool)
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
@@ -211,12 +218,12 @@ class LMC(MultiGP):
             _LOG.debug('log likelihood   %f', self.log_likelihood())
             _LOG.debug('normal quadratic %f', self.normal_quadratic())
             _LOG.debug('log det K        %f', self.log_det_K())
-            _LOG.debug('noise %s', np_print(params.noise))
+            _LOG.debug('noise %s', np_print(self._functional_kernel.noise))
             _LOG.debug('coreg vecs')
-            for i, a in enumerate(params.coreg_vecs):
+            for i, a in enumerate(self._functional_kernel.coreg_vecs):
                 _LOG.debug('  a%d %s', i, np_print(a))
             _LOG.debug('coreg diags')
-            for i, a in enumerate(params.coreg_diags):
+            for i, a in enumerate(self._functional_kernel.coreg_diags):
                 _LOG.debug('  kappa%d %s', i, np_print(a))
 
         self._functional_kernel.update_gradient(self.kernel)
@@ -243,7 +250,7 @@ class LMC(MultiGP):
     def _dense(self):
         if 'exact_kernel' not in self._cache:
             self._cache['exact_kernel'] = ExactLMCKernel(
-                ParameterValues.generate(self), self.Xs)
+                self._functional_kernel, self.Xs, self.Ys)
         return self._cache['exact_kernel']
 
     def K(self):
@@ -297,14 +304,13 @@ class LMC(MultiGP):
     # the a priori variance of a single point for each output.
     def _native_variance(self):
         if 'native_var' not in self._cache:
-            params = ParameterValues.generate(self)
             coregs = np.column_stack(np.square(per_output).sum(axis=0)
-                                     for per_output in params.coreg_vecs)
-            coregs += np.column_stack(params.coreg_diags)
-            kernels = [k.from_dist(0)
-                       for k in params._kernels]
+                                     for per_output
+                                     in self._functional_kernel.coreg_vecs)
+            coregs += np.column_stack(self._functional_kernel.coreg_diags)
+            kernels = self._functional_kernel.eval_kernels(0)
             native_output_var = coregs.dot(kernels).reshape(-1)
-            native_var = native_output_var + params.noise
+            native_var = native_output_var + self._functional_kernel.noise
 
             self._cache['native_var'] = native_var
         return self._cache['native_var']
@@ -356,8 +362,8 @@ class LMC(MultiGP):
 
     def _var_predict_exact(self, _, Xs):
         exact = self._dense()
-        params = ParameterValues.generate(self)
-        K_test_X = ExactLMCKernel.from_indices(Xs, self.Xs, params)
+        K_test_X = ExactLMCKernel.from_indices(
+            Xs, self.Xs, self._functional_kernel)
         var_explained = K_test_X.dot(la.cho_solve(exact.L, K_test_X.T))
 
         return np.diag(var_explained)
@@ -397,7 +403,7 @@ class LMC(MultiGP):
         W = self.interpolant
         ls = [(W, coreg_mat, toep.top, np.random.randn(W.shape[1], Ns), i)
               for i, (coreg_mat, toep) in
-              enumerate(zip(self.kernel.params.coreg_mats,
+              enumerate(zip(self._functional_kernel.coreg_mats(),
                             self.kernel.materialized_kernels))]
         _LOG.info('Using %d processors to '
                   'precompute %d kernel factors',
@@ -467,8 +473,8 @@ class LMC(MultiGP):
         return prediction_interpolant.dot(nu)
 
     def _var_predict_on_the_fly(self, _, Xs):
-        params = ParameterValues.generate(self)
-        K_test_X = ExactLMCKernel.from_indices(Xs, self.Xs, params)
+        K_test_X = ExactLMCKernel.from_indices(
+            Xs, self.Xs, self._functional_kernel)
         n_test = sum(map(len, Xs))
         par = min(max(self.max_procs, 1), n_test)
         _LOG.info('Using %d processors for %d on-the-fly variance'

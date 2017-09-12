@@ -17,27 +17,28 @@ from ..linalg.sum_matrix import SumMatrix
 from ..util.numpy_convenience import symm_2d_list_map
 
 # TODO(test)
-# notably for parallelism, this is paramz.Param-free.
 
 
 class GridKernel(Matrix):
-    def __init__(
-            self, params, grid_dists, interpolant, interpolantT, ktype):
-        super().__init__(params.n, params.n)
+    def __init__(self, functional_kernel, grid_dists,
+                 interpolant, interpolantT, ktype, lens_per_output):
+        n = interpolant.shape[0]
+        super().__init__(n, n)
 
-        tops = np.array([k.from_dist(grid_dists) for k in params.kernels])
+        tops = functional_kernel.eval_kernels(grid_dists)
 
         if ktype == 'sum':
-            self.grid_K = _gen_sum_grid(params, tops)
+            self.grid_K = _gen_sum_grid(functional_kernel, tops)
         elif ktype == 'bt':
-            self.grid_K = _gen_bt_grid(params, tops)
+            self.grid_K = _gen_bt_grid(functional_kernel, tops)
         elif ktype == 'slfm':
-            self.grid_K = _gen_slfm_grid(params, tops)
+            self.grid_K = _gen_slfm_grid(functional_kernel, tops, n)
         else:
             assert False, ktype
 
         self.ski = SKI(self.grid_K, interpolant, interpolantT)
-        self.noise = Diag(np.repeat(params.noise, params.lens))
+        self.noise = Diag(
+            np.repeat(functional_kernel.noise, lens_per_output))
         self.K = SumMatrix([self.ski, self.noise])
 
     def matvec(self, x):
@@ -50,32 +51,34 @@ class GridKernel(Matrix):
 # TODO(test)
 
 
-def gen_grid_kernel(params, grid_dists, interpolant, interpolantT):
-    if params.Q == 1:
+def gen_grid_kernel(functional_kernel, grid_dists, interpolant, interpolantT,
+                    lens_per_output):
+    if functional_kernel.Q == 1:
         ktype = 'sum'
     else:
-        tot_rank = sum(len(coreg) for coreg in params.coreg_vecs)
-        no_diag_correction = (
-            params.D if
-            params.nkernels['lmc'] == 0 and params.nkernels['indep'] == 0 else
-            0)
-        dsq = params.D ** 2
-        if tot_rank + params.D - no_diag_correction < dsq:
+        tot_rank = functional_kernel.total_rank()
+        if functional_kernel.num_lmc == 0 and functional_kernel.num_indep == 0:
+            correction_if_no_diagonal = functional_kernel.D
+        else:
+            correction_if_no_diagonal = 0
+        dsq = functional_kernel.D ** 2
+        if tot_rank + functional_kernel.D < dsq + correction_if_no_diagonal:
             ktype = 'slfm'
         else:
             ktype = 'bt'
-    return GridKernel(params, grid_dists, interpolant, interpolantT, ktype)
+    return GridKernel(functional_kernel, grid_dists,
+                      interpolant, interpolantT, ktype, lens_per_output)
 
 
-def _gen_slfm_grid(params, tops):
-    coreg_Ks = _gen_coreg_Ks(params, tops)
-    diag_Ks = _gen_diag_Ks(params, tops)
+def _gen_slfm_grid(functional_kernel, tops, n):
+    coreg_Ks = _gen_coreg_Ks(functional_kernel, tops)
+    diag_Ks = _gen_diag_Ks(functional_kernel, tops, n)
     return SumMatrix([coreg_Ks, diag_Ks])
 
 
-def _gen_coreg_Ks(params, tops):
-    non_indep = params.nkernels['lmc'] + params.nkernels['slfm']
-    all_coreg = params.coreg_vecs[:non_indep]
+def _gen_coreg_Ks(functional_kernel, tops):
+    non_indep = functional_kernel.num_lmc + functional_kernel.num_slfm
+    all_coreg = functional_kernel.coreg_vecs[:non_indep]
     ranks = np.array([len(coreg) for coreg in all_coreg])
     A_star = np.vstack(all_coreg).T
     I_m = Identity(tops.shape[1])
@@ -87,28 +90,28 @@ def _gen_coreg_Ks(params, tops):
     return coreg_Ks
 
 
-def _gen_diag_Ks(params, tops):
-    if params.nkernels['lmc'] == 0 and params.nkernels['indep'] == 0:
-        return Identity(params.n)
-    diags = np.column_stack(params.coreg_diags)
+def _gen_diag_Ks(functional_kernel, tops, n):
+    if functional_kernel.num_lmc == 0 and functional_kernel.num_indep == 0:
+        return Identity(n)
+    diags = np.column_stack(functional_kernel.coreg_diags)
     diag_tops = diags.dot(tops)
     diag_Ks = BlockDiag([Toeplitz(top) for top in diag_tops])
     return diag_Ks
 
 
-def _gen_bt_grid(params, tops):
-    Bs = np.array(params.coreg_mats)
+def _gen_bt_grid(functional_kernel, tops):
+    Bs = np.array(functional_kernel.coreg_mats())
     bt = np.tensordot(Bs, tops, axes=(0, 0))
-    blocked = symm_2d_list_map(Toeplitz, bt, params.D)
+    blocked = symm_2d_list_map(Toeplitz, bt, functional_kernel.D)
     blocked = SymmSquareBlockMatrix(blocked)
     return blocked
 
 
-def _gen_sum_grid(params, tops):
+def _gen_sum_grid(functional_kernel, tops):
     kernels_on_grid = [Toeplitz(top) for top in tops]
     # TODO(sum-fast)
     # Coreg_mats can be in decomposed representation to be a bit faster.
     products = [Kronecker(NumpyMatrix(A), K) for A, K in
-                zip(params.coreg_mats, kernels_on_grid)]
+                zip(functional_kernel.coreg_mats(), kernels_on_grid)]
     ksum = SumMatrix(products)
     return ksum

@@ -18,8 +18,8 @@ from runlmc.kern.rbf import RBF
 from runlmc.kern.matern32 import Matern32
 from runlmc.kern.std_periodic import StdPeriodic
 from runlmc.models.lmc import LMC
-from runlmc.lmc.parameter_values import ParameterValues
 from runlmc.lmc.stochastic_deriv import StochasticDeriv
+from runlmc.lm.functional_kernel import FunctionalKernel
 from runlmc.lmc.grid_kernel import *
 from runlmc.lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 
@@ -127,11 +127,14 @@ def _main():
     print()
     print(desc)
 
-    params = ParameterValues(
-        coreg_vecs, coreg_diags, k, [len(X) for X in Xs], np.hstack(Ys), noise)
+    fkern = FunctionalKernel(lmc_kernels=k,
+                             lmc_ranks=[len(x) for x in coreg_vecs])
+    fkern.noise = noise
+    fkern.coreg_vecs = coreg_vecs
+    fkern.coreg_diags = coreg_diags
 
     run_kernel_benchmark(
-        Xs, params, dists, grid_dists, interpolant, interpolant_T, testtype)
+        Xs, Ys, fkern, dists, grid_dists, interpolant, interpolant_T, testtype)
 
 
 def prep(d, n_o, Xs):
@@ -156,10 +159,10 @@ def prep(d, n_o, Xs):
 
 
 def run_kernel_benchmark(
-        Xs, params, dists, grid_dists, interpolant, interpolantT, testtype):
+        Xs, Ys, fkern, dists, grid_dists, interpolant, interpolantT, testtype):
 
     with contexttimer.Timer() as t:
-        exact = ExactLMCKernel(params, Xs)
+        exact = ExactLMCKernel(fkern, Xs, Ys)
     chol_time = t.elapsed
     eigs = np.fabs(la.eigvalsh(exact.K))
     print('    covariance matrix info')
@@ -174,7 +177,8 @@ def run_kernel_benchmark(
         solve = Iterative.solve
 
         def make_solve(k, minres):
-            k = GridKernel(params, grid_dists, interpolant, interpolantT, k)
+            k = GridKernel(fkern, grid_dists, interpolant, interpolantT, k,
+                           list(map(len, Xs)))
             return lambda y: solve(k, y, verbose=True, minres=minres)
 
         methods = [
@@ -183,14 +187,14 @@ def run_kernel_benchmark(
             ('slfm', True),
             ('slfm', False)]
 
-        chol_err = la.norm(params.y - exact.K.dot(exact.deriv.alpha))
+        chol_err = la.norm(fkern.y - exact.K.dot(exact.deriv.alpha))
         fmt = '        {:9.4e} reconstruction {:10.4f} sec {:8d} iterations {}'
         print(fmt.format(chol_err, chol_time, 0, 'chol'))
 
         for name, minres in methods:
             f = make_solve(name, minres)
             with contexttimer.Timer() as t:
-                x, it, recon_err = f(params.y)
+                x, it, recon_err = f(np.hstack(Ys))
             name = '{:5} ({})'.format(name, 'minres' if minres else 'lcg')
             print(fmt.format(recon_err, t.elapsed, it, name))
 
@@ -198,8 +202,8 @@ def run_kernel_benchmark(
 
     with contexttimer.Timer() as t:
         grid_kernel = gen_grid_kernel(
-            params, grid_dists, interpolant, interpolantT)
-        approx = ApproxLMCKernel(params, grid_kernel, grid_dists, None)
+            fkern, grid_dists, interpolant, interpolantT, list(map(len, Xs)))
+        approx = ApproxLMCKernel(fkern, grid_kernel, grid_dists, Ys, None)
     aprx_time = t.elapsed
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))

@@ -63,7 +63,11 @@ class FunctionalKernel(Parameterized):
     :param name: :mod:`paramz` name for this kernel
     :raises ValueError: if any of the parameters don't meet the above
         requirements, or `D,Q` are unspecified, 0, or inconsistent.
-    :ivar D: `D`
+    :ivar Q: `Q`, subkernel count including SLFM and indpendent kernels
+    :ivar D: `D`, output dimension
+    :ivar num_lmc: number of LMC kernels
+    :ivar num_slfm: number of SLFM kernels
+    :ivar num_indep: number of independent GP kernels (either `0` or `D`)
     """
 
     def __init__(self, D=None, lmc_kernels=None, lmc_ranks=None,
@@ -91,10 +95,9 @@ class FunctionalKernel(Parameterized):
         slfm_kernels = slfm_kernels or []
         indep_gp = indep_gp or []
         self._kernels = lmc_kernels + slfm_kernels + indep_gp
-        self._nkernels = {
-            'lmc': len(lmc_kernels),
-            'slfm': len(slfm_kernels),
-            'indep': len(indep_gp)}
+        self.num_lmc = len(lmc_kernels)
+        self.num_slfm = len(slfm_kernels)
+        self.num_indep = len(indep_gp)
         for k in self._kernels:
             self.link_parameter(k)
 
@@ -120,14 +123,14 @@ class FunctionalKernel(Parameterized):
         initial_vecs += [FunctionalKernel.randinit(rank, self.D)
                          for rank in lmc_ranks]
         initial_vecs += [FunctionalKernel.randinit(1, self.D)
-                         for _ in range(self._nkernels['slfm'])]
+                         for _ in range(self.num_slfm)]
         initial_vecs += [np.zeros((1, self.D))
-                         for _ in range(self._nkernels['indep'])]
+                         for _ in range(self.num_indep)]
         for i, coreg_vec in enumerate(initial_vecs):
             coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
             # independent kernels have no off-diagonal coregionalization
             # and it certainly isn't modifiable during optimization
-            if i < self._nkernels['lmc'] + self._nkernels['slfm']:
+            if i < self.num_lmc + self.num_slfm:
                 self.link_parameter(coreg_vecs[-1])
 
         return coreg_vecs
@@ -135,18 +138,18 @@ class FunctionalKernel(Parameterized):
     def _initialize_kq(self):
         """Initializes kappa_q analogously as Aq in _initialize_Aq()"""
         coreg_diags = []
-        for _ in range(self._nkernels['lmc']):
+        for _ in range(self.num_lmc):
             i = len(coreg_diags)
             coreg_diag = np.ones(self.D)
             coreg_diags.append(
                 Param('kappa{}'.format(i), coreg_diag, Logexp()))
             self.link_parameter(coreg_diags[-1])
-        for _ in range(self._nkernels['slfm']):
+        for _ in range(self.num_slfm):
             i = len(coreg_diags)
             coreg_diag = np.zeros(self.D)
             coreg_diags.append(Param('kappa{}'.format(i), coreg_diag))
             coreg_diags[-1].constrain_fixed()
-        for d in range(self._nkernels['indep']):
+        for d in range(self.num_indep):
             i = len(coreg_diags)
             coreg_diag = np.zeros(self.D)
             coreg_diag[d] = 1
@@ -165,3 +168,49 @@ class FunctionalKernel(Parameterized):
         for k, dk in zip(self._kernels, grads.kernel_gradients()):
             k.update_gradient(dk)
         self._noise.gradient = grads.noise_gradient()
+
+    def total_rank(self):
+        """Total (added) coregionalization rank for all B_q matrices"""
+        return sum(len(coreg) for coreg in self._coreg_vecs)
+
+    def eval_kernels(self, dists):
+        """Computes the array of k_q applied to each distance in dists"""
+        return np.array([k.from_dist(dists) for k in self._kernels])
+
+    def eval_kernel_gradients(self, dists):
+        """Computes the list of grad k_q applied to each distance in dists"""
+        return [k.kernel_gradient(dists) for k in self._kernels]
+
+    @property
+    def noise(self):
+        return self._noise.values
+
+    @noise.setter
+    def noise(self, value):
+        self._noise[:] = value
+
+    @property
+    def coreg_vecs(self):
+        return [coreg_vec.values for coreg_vec in self._coreg_vecs]
+
+    @coreg_vecs.setter
+    def coreg_vecs(self, values):
+        for coreg_vec, value in zip(self._coreg_vecs, values):
+            coreg_vec[:] = value
+
+    @property
+    def coreg_diags(self):
+        return [coreg_diag.values for coreg_diag in self._coreg_diags]
+
+    @coreg_diags.setter
+    def coreg_diags(self, values):
+        for coreg_diag, value in zip(self._coreg_diags, values):
+            coreg_diag[:] = value
+
+    def coreg_mats(self):
+        return [a.T.dot(a) + np.diag(k)
+                for a, k in zip(self.coreg_vecs, self.coreg_diags)]
+
+    @property
+    def Q(self):
+        return len(self._kernels)

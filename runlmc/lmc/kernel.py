@@ -26,8 +26,10 @@ class LMCKernel:
     properties.
     """
 
-    def __init__(self, params):
-        self.params = params
+    def __init__(self, functional_kernel, Ys):
+        self.functional_kernel = functional_kernel
+        self.y = np.hstack(Ys)
+        self.lens = list(map(len, Ys))
 
     def _dKdt_from_dAdt(self, dAdt, q):
         raise NotImplementedError
@@ -46,11 +48,12 @@ class LMCKernel:
 
     def coreg_vec_gradients(self):
         grads = []
-        for q, a in enumerate(self.params.coreg_vecs):
+        for q, a in enumerate(self.functional_kernel.coreg_vecs):
             grad = np.zeros(a.shape)
             for i, ai in enumerate(a):
-                for j in range(self.params.D):
-                    dAdt = np.zeros((self.params.D, self.params.D))
+                for j in range(self.functional_kernel.D):
+                    dAdt = np.zeros((self.functional_kernel.D,
+                                     self.functional_kernel.D))
                     dAdt[j] += ai
                     dAdt.T[j] += ai
                     # TODO(sparse-derivatives)
@@ -61,10 +64,11 @@ class LMCKernel:
 
     def coreg_diags_gradients(self):
         grads = []
-        for q in range(self.params.Q):
-            zeros = np.zeros((self.params.D, self.params.D))
-            grad = np.zeros(self.params.D)
-            for i in range(self.params.D):
+        for q in range(self.functional_kernel.Q):
+            zeros = np.zeros(
+                (self.functional_kernel.D, self.functional_kernel.D))
+            grad = np.zeros(self.functional_kernel.D)
+            for i in range(self.functional_kernel.D):
                 zeros[i, i] = 1
                 # TODO(sparse-derivatives)
                 dKdt = self._dKdt_from_dAdt(zeros, q)
@@ -75,7 +79,7 @@ class LMCKernel:
 
     def kernel_gradients(self):
         grads = []
-        for q, A in enumerate(self.params.coreg_mats):
+        for q, A in enumerate(self.functional_kernel.coreg_mats()):
             kern_grad = []
             for dKdt in self._dKdts_from_dKqdts(A, q):
                 dLdt = self._dLdt_from_dKdt(dKdt)
@@ -84,9 +88,9 @@ class LMCKernel:
         return grads
 
     def noise_gradient(self):
-        grad = np.zeros(len(self.params.noise))
-        for i in range(self.params.D):
-            d_noise = np.zeros(self.params.D)
+        grad = np.zeros(len(self.functional_kernel.noise))
+        for i in range(self.functional_kernel.D):
+            d_noise = np.zeros(self.functional_kernel.D)
             d_noise[i] = 1
             dKdt = self._dKdt_from_dEpsdt(d_noise)
             grad[i] = self._dLdt_from_dKdt(dKdt)
@@ -94,13 +98,15 @@ class LMCKernel:
 
 
 class ApproxLMCKernel(LMCKernel):
-    def __init__(self, params, grid_kern, grid_dists, metrics, pool=None):
-        super().__init__(params)
-        self.materialized_kernels = [Toeplitz(k.from_dist(grid_dists))
-                                     for k in self.params.kernels]
+    def __init__(self, functional_kernel, grid_kern, grid_dists, Ys, metrics,
+                 pool=None):
+        super().__init__(functional_kernel, Ys)
+        kernels_on_grid = self.functional_kernel.eval_kernels(grid_dists)
+        self.materialized_kernels = [Toeplitz(d) for d in kernels_on_grid]
         self.K = grid_kern
-        self.dists = grid_dists
-        self.deriv = StochasticDeriv(self.K, self.params.y, metrics, pool)
+        self.deriv = StochasticDeriv(self.K, self.y, metrics, pool)
+        self.materialized_grads = self.functional_kernel.eval_kernel_gradients(
+            grid_dists)
 
     def _ski(self, X):
         return SKI(X, *self.K.interpolants())
@@ -110,13 +116,13 @@ class ApproxLMCKernel(LMCKernel):
             NumpyMatrix(dAdt), self.materialized_kernels[q]))
 
     def _dKdts_from_dKqdts(self, A, q):
-        for dKqdt in self.params.kernels[q].kernel_gradient(self.dists):
+        for dKqdt in self.materialized_grads[q]:
             yield self._ski(Kronecker(
                 NumpyMatrix(A), Toeplitz(dKqdt)))
 
     def _dKdt_from_dEpsdt(self, dEpsdt):
         # no SKI approximation for noise
-        return Diag(np.repeat(dEpsdt, self.params.lens))
+        return Diag(np.repeat(dEpsdt, self.lens))
 
     def _dLdt_from_dKdt(self, dKdt):
         return self.deriv.derivative(dKdt)
@@ -126,21 +132,22 @@ class ApproxLMCKernel(LMCKernel):
 
 
 class ExactLMCKernel(LMCKernel):
-    def __init__(self, params, Xs):
-        super().__init__(params)
+    def __init__(self, functional_kernel, Xs, Ys):
+        super().__init__(functional_kernel, Ys)
 
         # TODO(1d)
         pdists = dist.pdist(np.hstack(Xs).reshape(-1, 1))
         pdists = dist.squareform(pdists)
 
-        self.materialized_kernels = [
-            k.from_dist(pdists) for k in params.kernels]
-        self.pair_dists = pdists
+        self.materialized_kernels = self.functional_kernel.eval_kernels(pdists)
         self.K = sum(self._personalized_coreg_scale(A, Kq) for A, Kq in
-                     zip(params.coreg_mats, self.materialized_kernels))
-        self.K += np.diag(np.repeat(params.noise, params.lens))
+                     zip(self.functional_kernel.coreg_mats(),
+                         self.materialized_kernels))
+        self.K += np.diag(np.repeat(functional_kernel.noise, self.lens))
         self.L = la.cho_factor(self.K)
-        self.deriv = ExactDeriv(self.L, self.params.y)
+        self.deriv = ExactDeriv(self.L, self.y)
+        self.materialized_grads = self.functional_kernel.eval_kernel_gradients(
+            pdists)
 
     @staticmethod
     def _coreg_scale(A, K, row_block_lens, col_block_lens, D):
@@ -155,23 +162,24 @@ class ExactLMCKernel(LMCKernel):
 
     def _personalized_coreg_scale(self, A, K):
         return ExactLMCKernel._coreg_scale(
-            A, K, self.params.lens, self.params.lens, self.params.D)
+            A, K, self.lens, self.lens, self.functional_kernel.D)
 
     @staticmethod
-    def from_indices(Xs, Zs, params):
+    def from_indices(Xs, Zs, functional_kernel):
         """Computes the dense, exact kernel matrix for an LMC kernel specified
-        by `params`. The kernel matrix that is computed is relative to the
-        kernel application to pairs from the Cartesian product `Xs` and `Zs`.
-
-        This means that `params.y` and `params.lens` are unused."""
+        by `functional_kernel`. The kernel matrix that is computed is relative
+        to the kernel application to pairs from the Cartesian product `Xs` and
+        `Zs`.
+        """
 
         # TODO(1d)
         pair_dists = dist.cdist(np.hstack(Xs).reshape(-1, 1),
                                 np.hstack(Zs).reshape(-1, 1))
-        Kqs = [k.from_dist(pair_dists) for k in params.kernels]
+        Kqs = functional_kernel.eval_kernels(pair_dists)
         rlens, clens = [len(X) for X in Xs], [len(Z) for Z in Zs]
-        K = sum(ExactLMCKernel._coreg_scale(A, Kq, rlens, clens, params.D)
-                for A, Kq in zip(params.coreg_mats, Kqs))
+        K = sum(ExactLMCKernel._coreg_scale(A, Kq, rlens, clens,
+                                            functional_kernel.D)
+                for A, Kq in zip(functional_kernel.coreg_mats(), Kqs))
         return K
 
     def _dKdt_from_dAdt(self, dAdt, q):
@@ -179,11 +187,11 @@ class ExactLMCKernel(LMCKernel):
             dAdt, self.materialized_kernels[q])
 
     def _dKdts_from_dKqdts(self, A, q):
-        for dKqdt in self.params.kernels[q].kernel_gradient(self.pair_dists):
+        for dKqdt in self.materialized_grads[q]:
             yield self._personalized_coreg_scale(A, dKqdt)
 
     def _dKdt_from_dEpsdt(self, dEpsdt):
-        return np.diag(np.repeat(dEpsdt, self.params.lens))
+        return np.diag(np.repeat(dEpsdt, self.lens))
 
     def _dLdt_from_dKdt(self, dKdt):
         return self.deriv.derivative(dKdt)
