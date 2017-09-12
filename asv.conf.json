@@ -1,14 +1,14 @@
 {
     "version": 1,
     "project": "runlmc",
-    "project_url": "https://vlad17.github.io/runlmc/",
+    "project_url": "https://github.com/vlad17/runlmc/",
     "repo": ".",
     "branches": ["master"], // for git
     "dvcs": "git",
     "environment_type": "conda",
     "install_timeout": 3600,
     "pythons": ["3.6.0"],
-    "show_commit_url": "http://github.com/vlad17/runlmc/commit/",
+    "show_commit_url": "https://github.com/vlad17/runlmc/commit/",
     "benchmark_dir": "benchmarks/asv",
     "env_dir": ".asv/env",
     "results_dir": ".asv/results",
