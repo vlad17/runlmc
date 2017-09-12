@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 import numpy as np
 
+from runlmc.lmc.functional_kernel import FunctionalKernel
 from runlmc.models.lmc import LMC
 from runlmc.kern.rbf import RBF
 from runlmc.kern.scaled import Scaled
@@ -220,10 +221,12 @@ def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
                  kgen, rgen, slfmgen, indepgen, optimizer_opts, **kwargs):
     times, smses, nlpds = [], [], []
     for i in range(num_runs):
-        ks = kgen()
-        rs = rgen()
-        slfm = slfmgen()
-        indep = indepgen()
+        fk = FunctionalKernel(
+            D=len(xss),
+            lmc_kernels=kgen(),
+            lmc_ranks=rgen(),
+            slfm_kernels=slfmgen(),
+            indep_gp=indepgen())
         lmc = LMC(xss, yss, kernels=ks, ranks=rs,
                   slfm_kernels=slfm, indep_gp=indep,
                   normalize=True, m=m, **kwargs)

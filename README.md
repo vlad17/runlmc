@@ -77,7 +77,6 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 ### Roadmap
 
 0. LMC class refactor (to allow multi-input-dimension grids)
-   -> elim ParameterValues -> FunctionalKernel
    -> LMCKernel -> LMCLikelihood, 
    -> GridKernel -> NonuniformKernel (subclass) Kernel = Matrix
        -> modify docs in FunctionalKernel correspondingly.
@@ -89,7 +88,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
    -> get rid of sample prediction.
    -> reorg but keep Non-unif (time series) LMC -> InterpolatedLLGP
        -> runtime check for 1-d input
-       -> Corresponding modifications in `README.md, benchmarks/benchlib/standard_tester.py, benchmarks/picture-fx2007/fxmetrics.py, benchmarks/picture-fx2007/fxpics.py, examples/example.ipynb, examples/fx2007.ipynb, runlmc/models/test_lmc.py`
+       -> Corresponding modifications in `README.md, benchmarks/picture-fx2007/fxmetrics.py, benchmarks/picture-fx2007/fxpics.py, examples/example.ipynb, examples/fx2007.ipynb,`
    -> Separate out non-model functionality: prediction
 0. Add basic components for block-toeplitz
 0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)

@@ -127,7 +127,7 @@ def _main():
     print()
     print(desc)
 
-    fkern = FunctionalKernel(lmc_kernels=k,
+    fkern = FunctionalKernel(D=d, lmc_kernels=k,
                              lmc_ranks=[len(x) for x in coreg_vecs])
     fkern.noise = noise
     fkern.coreg_vecs = coreg_vecs
