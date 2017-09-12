@@ -7,11 +7,11 @@ os.environ['OMP_NUM_THREADS'] = '1'
 import numpy as np
 from standard_tester import *
 
-
 class Suite:
-    def __init__(self, runs=10, interpolation_points=None):
+    def __init__(self, runs=10, interpolation_points=None, nthreads=4):
         self.runs = runs
         self.interpolation_points = interpolation_points
+        self.nthreads = nthreads if nthreads else None
 
     def setup_cache(self):
         xss, yss, test_xss, test_yss, _, _ = foreign_exchange_2007()
@@ -23,7 +23,7 @@ class Suite:
             self.interpolation_points,
             xss, yss, test_xss, test_yss, kgen,
             rgen, slfmgen, indepgen, {'verbosity': 100, 'min_grad_ratio': 0.2},
-            max_procs=4)
+            max_procs=self.nthreads)
         return llgp_stats
 
     def track_mean_time(self, llgp_stats):
@@ -69,20 +69,22 @@ def main():
         import runlmc.lmc.stochastic_deriv
         runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 1
         runs = 1
-        cogp_runs = 1,
+        cogp_runs = 1
         interpolation_points = 10
         inducing_points = 10
+        nthreads = ''
     else:
         runs = 10
         cogp_runs = 10
         interpolation_points = None
         inducing_points = 100
+        nthreads = 4
 
-    llgp_stats = Suite(runs, interpolation_points).setup_cache()
+    llgp_stats = Suite(runs, interpolation_points, nthreads).setup_cache()
     print('---> llgp Q1R2 m', interpolation_points, statsline(llgp_stats))
     cogp_stats, _, _ = cogp_fx2007(cogp_runs,
                                    inducing_points,
-                                   4)
+                                   nthreads)
     print('---> cogp m', inducing_points, statsline(cogp_stats))
     latex_table('results_fx2007.tex',
                 ['LLGP', 'COGP'],

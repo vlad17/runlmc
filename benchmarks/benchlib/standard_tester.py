@@ -284,15 +284,16 @@ def cogp_fx2007(num_runs, inducing_pts, nthreads):
     datafile = os.path.join(_download_own_data(), 'fx', 'fx2007_matlab.csv')
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """infile='{}';
+           re.sub(r'[\s+]', '', """infile='{}';
               M={};
               runs={};
               maxNumCompThreads({});
               cogp_fx2007;
-              exit"""
+              exit""")
            .format(datafile, inducing_pts, num_runs, nthreads)]
-    with open(TMP + '/out-{}'.format(num_runs), 'w') as f:
+    with open(TMP + '/out-fx-{}-{}'.format(num_runs, inducing_pts), 'w') as f:
         f.write(' '.join(cmd))
+    print('--->', benchmark_dir, datafile)
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -329,19 +330,19 @@ def cogp_weather(num_runs, M, nthreads):
     _download_cogp()
     benchmark_dir = os.path.join(
         _download_own_data(), os.pardir, 'benchmarks', 'benchlib')
-    datafile = os.path.join(_download_own_data(), 'fx', 'fx2007_matlab.csv')
+    datafile = os.path.join(_download_own_data(), 'weather') + os.path.sep
     # This runs the COGP code; only learning is timed
     cmd = ['matlab', '-nojvm', '-r',
-           """datadir='{}';
+           re.sub(r'[\s+]', '', """
+              datadir='{}';
               M={};
               runs={};
               maxNumCompThreads({});
               cogp_weather;
-              exit"""
+              exit""")
            .format(datafile, M, num_runs, nthreads)]
-    with open(TMP + '/outw-{}-{}'.format(num_runs, M), 'a') as f:
+    with open(TMP + '/out-weather-{}-{}'.format(num_runs, M), 'a') as f:
         f.write(' '.join(cmd))
-    benchmark_dir = 'benchmarks/benchlib'
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
