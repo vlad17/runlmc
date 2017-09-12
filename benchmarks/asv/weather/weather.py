@@ -8,9 +8,10 @@ from standard_tester import *
 
 
 class Suite:
-    def __init__(self, num_interp=750, runs=10):
+    def __init__(self, num_interp=750, runs=10, nthreads=4):
         self.num_interp = num_interp
         self.runs = runs
+        self.nthreads = nthreads if nthreads else None
 
     def setup_cache(self):
         xss, yss, test_xss, test_yss, _ = weather()
@@ -20,7 +21,7 @@ class Suite:
         kgen, rgen, slfmgen, indepgen = slfm_gp(len(xss), 2)
         llgp_stats = bench_runlmc(
             self.runs, self.num_interp, xss, yss, test_xss, test_yss, kgen, rgen,
-            slfmgen, indepgen, {'verbosity': 100}, max_procs=4)
+            slfmgen, indepgen, {'verbosity': 100}, max_procs=self.nthreads)
         return llgp_stats
 
     def track_mean_time(self, llgp_stats):
@@ -74,21 +75,21 @@ def main():
         cogp_runs = 1
         interpolating_points = [10]
         inducing_points = 10
+        nthreads = ''
     else:
-        import runlmc.lmc.stochastic_deriv
-        runlmc.lmc.stochastic_deriv.StochasticDeriv.N_IT = 3
         runs = 10
         cogp_runs = 10
         interpolating_points = [500, 600, 700, 800, 900, 1000]
         inducing_points = 200
+        nthreads = 4
 
     llgp_stats = []
     for num_interp in interpolating_points:
-        stats = Suite(num_interp, runs).setup_cache()
+        stats = Suite(num_interp, runs, nthreads).setup_cache()
         llgp_stats.append(stats)
         print('---> llgp slfm m', num_interp, statsline(stats))
 
-    cogp_stats, _, _ = cogp_weather(cogp_runs, inducing_points, 4)
+    cogp_stats, _, _ = cogp_weather(cogp_runs, inducing_points, nthreads)
     print('---> cogp m', inducing_points, statsline(cogp_stats))
 
     colnames = [make_llgp_colname(interpolating_points[0]),
