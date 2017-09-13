@@ -5,8 +5,8 @@ SLFM kernel 0 A matrix
 [[-0.55512796  0.21050282 -0.10676582  0.50953484]]
 SLFM kernel 1 A matrix
 [[ 0.49907448 -0.39953    -0.39236439  0.54198321]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7457e+03
 iteration        2 grad norm 7.2944e+03
 iteration        3 grad norm 6.7931e+03
@@ -58,8 +58,8 @@ finished adadelta optimization
             47 iterations
     5.3494e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 144.86456205695868 smse 0.0740388378058 nlpd 1.84140616963
+Using 4 processors for 374 on-the-fly variance predictions
+time 324.5785850510001 smse 0.0740388378058 nlpd 1.84140616963
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 504) complete, 
 LMC lmc fully initialized
@@ -67,8 +67,8 @@ SLFM kernel 0 A matrix
 [[-0.99880025 -0.99204489 -0.80984791 -0.28399284]]
 SLFM kernel 1 A matrix
 [[-0.2142388  -0.58522485  0.81838969 -0.80441512]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7270e+03
 iteration        2 grad norm 7.2675e+03
 iteration        3 grad norm 6.7527e+03
@@ -97,8 +97,8 @@ finished adadelta optimization
             24 iterations
     8.5481e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 56.42363168299198 smse 0.109658376997 nlpd 1.61999867487
+Using 4 processors for 374 on-the-fly variance predictions
+time 110.05792193114758 smse 0.109658376997 nlpd 1.61999867487
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 504) complete, 
 LMC lmc fully initialized
@@ -106,8 +106,8 @@ SLFM kernel 0 A matrix
 [[-0.74557303 -0.01816633  0.40884294  0.11440171]]
 SLFM kernel 1 A matrix
 [[-0.72517389 -0.46402804  0.17193025 -0.77051231]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7319e+03
 iteration        2 grad norm 7.2720e+03
 iteration        3 grad norm 6.7597e+03
@@ -144,8 +144,8 @@ finished adadelta optimization
             32 iterations
     7.0740e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 74.49804264307022 smse 0.0787966363653 nlpd 1.45724547143
+Using 4 processors for 374 on-the-fly variance predictions
+time 153.0944700241089 smse 0.0787966363653 nlpd 1.45724547143
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 504) complete, 
 LMC lmc fully initialized
@@ -153,8 +153,8 @@ SLFM kernel 0 A matrix
 [[ 0.10335611 -0.20531556  0.15218573  0.00557778]]
 SLFM kernel 1 A matrix
 [[ 0.86914215 -0.59787653  0.47218257 -0.04321894]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7869e+03
 iteration        2 grad norm 7.3412e+03
 iteration        3 grad norm 6.8423e+03
@@ -171,8 +171,8 @@ finished adadelta optimization
             12 iterations
     1.0909e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 22.25968188047409 smse 0.0921755159819 nlpd 1.45560060589
+Using 4 processors for 374 on-the-fly variance predictions
+time 37.64260932058096 smse 0.0921755159819 nlpd 1.45560060589
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 504) complete, 
 LMC lmc fully initialized
@@ -180,8 +180,8 @@ SLFM kernel 0 A matrix
 [[ 0.49298603 -0.45562156 -0.91036463  0.3352588 ]]
 SLFM kernel 1 A matrix
 [[ 0.92682692  0.12164467  0.79170513 -0.06326335]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7821e+03
 iteration        2 grad norm 7.3328e+03
 iteration        3 grad norm 6.8355e+03
@@ -204,8 +204,8 @@ finished adadelta optimization
             18 iterations
     1.1339e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 34.63570662587881 smse 0.100536422577 nlpd 1.51654095463
+Using 4 processors for 374 on-the-fly variance predictions
+time 65.13944737613201 smse 0.100536422577 nlpd 1.51654095463
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 504) complete, 
 LMC lmc fully initialized
@@ -213,8 +213,8 @@ SLFM kernel 0 A matrix
 [[-0.13549167  0.10372331  0.76445739  0.14449227]]
 SLFM kernel 1 A matrix
 [[ 0.11338445 -0.08022153 -0.35040931 -0.19643194]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7808e+03
 iteration        2 grad norm 7.3296e+03
 iteration        3 grad norm 6.8257e+03
@@ -242,8 +242,8 @@ finished adadelta optimization
             23 iterations
     9.3949e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 48.713842302560806 smse 0.0723738066839 nlpd 1.32342419573
+Using 4 processors for 374 on-the-fly variance predictions
+time 93.83896844089031 smse 0.0723738066839 nlpd 1.32342419573
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 504) complete, 
 LMC lmc fully initialized
@@ -251,8 +251,8 @@ SLFM kernel 0 A matrix
 [[-0.53230098  0.49460184  0.53425065 -0.52401862]]
 SLFM kernel 1 A matrix
 [[ 0.13955315 -0.65888504 -0.04575214 -0.72564398]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7217e+03
 iteration        2 grad norm 7.2613e+03
 iteration        3 grad norm 6.7469e+03
@@ -302,9 +302,9 @@ finished adadelta optimization
             45 iterations
     8.0333e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
+Using 4 processors for 374 on-the-fly variance predictions
 warning: found 48 of 374 predictive variances set to 0
-time 146.7484161928296 smse 0.0616495082393 nlpd 7.58440577054
+time 330.64307054132223 smse 0.0616495082393 nlpd 7.58440577054
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 504) complete, 
 LMC lmc fully initialized
@@ -312,8 +312,8 @@ SLFM kernel 0 A matrix
 [[ 0.19172872 -0.3881509  -0.85115267 -0.6942193 ]]
 SLFM kernel 1 A matrix
 [[ 0.27725482  0.21002816  0.33856772  0.14897997]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7440e+03
 iteration        2 grad norm 7.2903e+03
 iteration        3 grad norm 6.7803e+03
@@ -332,8 +332,8 @@ finished adadelta optimization
             14 iterations
     1.1797e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 24.386420227587223 smse 0.108986318682 nlpd 1.54729692815
+Using 4 processors for 374 on-the-fly variance predictions
+time 46.333150051534176 smse 0.108986318682 nlpd 1.54729692815
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 504) complete, 
 LMC lmc fully initialized
@@ -341,8 +341,8 @@ SLFM kernel 0 A matrix
 [[ 0.95494543  0.42537081 -0.14975417 -0.02139807]]
 SLFM kernel 1 A matrix
 [[-0.30674458 -0.46187415 -0.49344016 -0.85705646]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7226e+03
 iteration        2 grad norm 7.2630e+03
 iteration        3 grad norm 6.7531e+03
@@ -363,8 +363,8 @@ finished adadelta optimization
             16 iterations
     1.1256e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 30.552913695573807 smse 0.0996130433953 nlpd 1.49571638581
+Using 4 processors for 374 on-the-fly variance predictions
+time 58.976676784455776 smse 0.0996130433953 nlpd 1.49571638581
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 504) complete, 
 LMC lmc fully initialized
@@ -372,8 +372,8 @@ SLFM kernel 0 A matrix
 [[ 0.69135635  0.8832964   0.9394306  -0.96063579]]
 SLFM kernel 1 A matrix
 [[-0.44657845 -0.09114984 -0.49296956 -0.43504656]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7321e+03
 iteration        2 grad norm 7.2756e+03
 iteration        3 grad norm 6.7685e+03
@@ -391,9 +391,9 @@ finished adadelta optimization
             13 iterations
     1.2099e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 25.265729136765003 smse 0.112945016469 nlpd 1.56271701126
----> llgp slfm m 500 time    60.8349 (   14.3109) smse     0.0911 (    0.0054) nlpd     2.1404 (    0.5752)
+Using 4 processors for 374 on-the-fly variance predictions
+time 47.230726547539234 smse 0.112945016469 nlpd 1.56271701126
+---> llgp slfm m 500 time   126.7536 (   33.4490) smse     0.0911 (    0.0054) nlpd     2.1404 (    0.5752)
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -401,8 +401,8 @@ SLFM kernel 0 A matrix
 [[-0.55512796  0.21050282 -0.10676582  0.50953484]]
 SLFM kernel 1 A matrix
 [[ 0.49907448 -0.39953    -0.39236439  0.54198321]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7457e+03
 iteration        2 grad norm 7.2944e+03
 iteration        3 grad norm 6.7931e+03
@@ -454,8 +454,8 @@ finished adadelta optimization
             47 iterations
     5.3511e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 305.84845242649317 smse 0.0741323356171 nlpd 1.72370181369
+Using 4 processors for 374 on-the-fly variance predictions
+time 727.7885002940893 smse 0.0741323356171 nlpd 1.72370181369
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -463,8 +463,8 @@ SLFM kernel 0 A matrix
 [[-0.99880025 -0.99204489 -0.80984791 -0.28399284]]
 SLFM kernel 1 A matrix
 [[-0.2142388  -0.58522485  0.81838969 -0.80441512]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7270e+03
 iteration        2 grad norm 7.2675e+03
 iteration        3 grad norm 6.7527e+03
@@ -493,8 +493,8 @@ finished adadelta optimization
             24 iterations
     8.5482e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 114.41388593614101 smse 0.10965735738 nlpd 1.61994854288
+Using 4 processors for 374 on-the-fly variance predictions
+time 245.20567543059587 smse 0.10965735738 nlpd 1.61994854288
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -502,8 +502,8 @@ SLFM kernel 0 A matrix
 [[-0.74557303 -0.01816633  0.40884294  0.11440171]]
 SLFM kernel 1 A matrix
 [[-0.72517389 -0.46402804  0.17193025 -0.77051231]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7319e+03
 iteration        2 grad norm 7.2720e+03
 iteration        3 grad norm 6.7597e+03
@@ -540,8 +540,8 @@ finished adadelta optimization
             32 iterations
     7.0743e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 160.20799715816975 smse 0.0787934453109 nlpd 1.45698014951
+Using 4 processors for 374 on-the-fly variance predictions
+time 342.0560309663415 smse 0.0787934453109 nlpd 1.45698014951
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -549,8 +549,8 @@ SLFM kernel 0 A matrix
 [[ 0.10335611 -0.20531556  0.15218573  0.00557778]]
 SLFM kernel 1 A matrix
 [[ 0.86914215 -0.59787653  0.47218257 -0.04321894]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7869e+03
 iteration        2 grad norm 7.3412e+03
 iteration        3 grad norm 6.8423e+03
@@ -567,8 +567,8 @@ finished adadelta optimization
             12 iterations
     1.0909e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 45.19604257494211 smse 0.0921747112119 nlpd 1.45559678695
+Using 4 processors for 374 on-the-fly variance predictions
+time 84.80464746057987 smse 0.0921747112119 nlpd 1.45559678695
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -576,8 +576,8 @@ SLFM kernel 0 A matrix
 [[ 0.49298603 -0.45562156 -0.91036463  0.3352588 ]]
 SLFM kernel 1 A matrix
 [[ 0.92682692  0.12164467  0.79170513 -0.06326335]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7821e+03
 iteration        2 grad norm 7.3328e+03
 iteration        3 grad norm 6.8355e+03
@@ -600,8 +600,8 @@ finished adadelta optimization
             18 iterations
     1.1339e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 74.14980882406235 smse 0.100536021497 nlpd 1.51653283103
+Using 4 processors for 374 on-the-fly variance predictions
+time 146.70705825090408 smse 0.100536021497 nlpd 1.51653283103
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -609,8 +609,8 @@ SLFM kernel 0 A matrix
 [[-0.13549167  0.10372331  0.76445739  0.14449227]]
 SLFM kernel 1 A matrix
 [[ 0.11338445 -0.08022153 -0.35040931 -0.19643194]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7808e+03
 iteration        2 grad norm 7.3296e+03
 iteration        3 grad norm 6.8257e+03
@@ -638,8 +638,8 @@ finished adadelta optimization
             23 iterations
     9.3951e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 100.12272787839174 smse 0.0723725295994 nlpd 1.32340968276
+Using 4 processors for 374 on-the-fly variance predictions
+time 208.06253588944674 smse 0.0723725295994 nlpd 1.32340968276
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -647,8 +647,8 @@ SLFM kernel 0 A matrix
 [[-0.53230098  0.49460184  0.53425065 -0.52401862]]
 SLFM kernel 1 A matrix
 [[ 0.13955315 -0.65888504 -0.04575214 -0.72564398]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7217e+03
 iteration        2 grad norm 7.2613e+03
 iteration        3 grad norm 6.7469e+03
@@ -698,8 +698,8 @@ finished adadelta optimization
             45 iterations
     8.0140e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 312.2788340970874 smse 0.0621783212638 nlpd 1.97854227608
+Using 4 processors for 374 on-the-fly variance predictions
+time 736.5713676735759 smse 0.0621783212638 nlpd 1.97854227608
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -707,8 +707,8 @@ SLFM kernel 0 A matrix
 [[ 0.19172872 -0.3881509  -0.85115267 -0.6942193 ]]
 SLFM kernel 1 A matrix
 [[ 0.27725482  0.21002816  0.33856772  0.14897997]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7440e+03
 iteration        2 grad norm 7.2903e+03
 iteration        3 grad norm 6.7803e+03
@@ -727,8 +727,8 @@ finished adadelta optimization
             14 iterations
     1.1797e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 53.32582139223814 smse 0.108985906646 nlpd 1.54729201827
+Using 4 processors for 374 on-the-fly variance predictions
+time 101.23274214565754 smse 0.108985906646 nlpd 1.54729201827
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -736,8 +736,8 @@ SLFM kernel 0 A matrix
 [[ 0.95494543  0.42537081 -0.14975417 -0.02139807]]
 SLFM kernel 1 A matrix
 [[-0.30674458 -0.46187415 -0.49344016 -0.85705646]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7226e+03
 iteration        2 grad norm 7.2630e+03
 iteration        3 grad norm 6.7531e+03
@@ -758,8 +758,8 @@ finished adadelta optimization
             16 iterations
     1.1256e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 65.17101576179266 smse 0.0996129534977 nlpd 1.49571319369
+Using 4 processors for 374 on-the-fly variance predictions
+time 127.1213017180562 smse 0.0996129534977 nlpd 1.49571319369
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 604) complete, 
 LMC lmc fully initialized
@@ -767,8 +767,8 @@ SLFM kernel 0 A matrix
 [[ 0.69135635  0.8832964   0.9394306  -0.96063579]]
 SLFM kernel 1 A matrix
 [[-0.44657845 -0.09114984 -0.49296956 -0.43504656]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7321e+03
 iteration        2 grad norm 7.2756e+03
 iteration        3 grad norm 6.7685e+03
@@ -786,9 +786,9 @@ finished adadelta optimization
             13 iterations
     1.2099e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 52.59358697384596 smse 0.112944395283 nlpd 1.5627105455
----> llgp slfm m 600 time   128.3308 (   30.4225) smse     0.0911 (    0.0054) nlpd     1.5680 (    0.0537)
+Using 4 processors for 374 on-the-fly variance predictions
+time 101.9100683927536 smse 0.112944395283 nlpd 1.5627105455
+---> llgp slfm m 600 time   282.1460 (   74.9718) smse     0.0911 (    0.0054) nlpd     1.5680 (    0.0537)
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -796,8 +796,8 @@ SLFM kernel 0 A matrix
 [[-0.55512796  0.21050282 -0.10676582  0.50953484]]
 SLFM kernel 1 A matrix
 [[ 0.49907448 -0.39953    -0.39236439  0.54198321]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7457e+03
 iteration        2 grad norm 7.2944e+03
 iteration        3 grad norm 6.7931e+03
@@ -849,8 +849,8 @@ finished adadelta optimization
             47 iterations
     5.3512e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 161.12886177748442 smse 0.07413841994 nlpd 1.69790739033
+Using 4 processors for 374 on-the-fly variance predictions
+time 359.8521842211485 smse 0.07413841994 nlpd 1.69790739033
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -858,8 +858,8 @@ SLFM kernel 0 A matrix
 [[-0.99880025 -0.99204489 -0.80984791 -0.28399284]]
 SLFM kernel 1 A matrix
 [[-0.2142388  -0.58522485  0.81838969 -0.80441512]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7270e+03
 iteration        2 grad norm 7.2675e+03
 iteration        3 grad norm 6.7527e+03
@@ -888,8 +888,8 @@ finished adadelta optimization
             24 iterations
     8.5482e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 60.92740571498871 smse 0.109658001504 nlpd 1.61995146157
+Using 4 processors for 374 on-the-fly variance predictions
+time 121.5514530390501 smse 0.109658001504 nlpd 1.61995146157
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -897,8 +897,8 @@ SLFM kernel 0 A matrix
 [[-0.74557303 -0.01816633  0.40884294  0.11440171]]
 SLFM kernel 1 A matrix
 [[-0.72517389 -0.46402804  0.17193025 -0.77051231]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7319e+03
 iteration        2 grad norm 7.2720e+03
 iteration        3 grad norm 6.7597e+03
@@ -935,8 +935,8 @@ finished adadelta optimization
             32 iterations
     7.0744e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 82.0149202644825 smse 0.0787931434353 nlpd 1.45691465108
+Using 4 processors for 374 on-the-fly variance predictions
+time 170.10561482608318 smse 0.0787931434353 nlpd 1.45691465108
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -944,8 +944,8 @@ SLFM kernel 0 A matrix
 [[ 0.10335611 -0.20531556  0.15218573  0.00557778]]
 SLFM kernel 1 A matrix
 [[ 0.86914215 -0.59787653  0.47218257 -0.04321894]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7869e+03
 iteration        2 grad norm 7.3412e+03
 iteration        3 grad norm 6.8423e+03
@@ -962,8 +962,8 @@ finished adadelta optimization
             12 iterations
     1.0909e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 22.813922382891178 smse 0.0921745451746 nlpd 1.4555963569
+Using 4 processors for 374 on-the-fly variance predictions
+time 42.64619521796703 smse 0.0921745451746 nlpd 1.4555963569
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -971,8 +971,8 @@ SLFM kernel 0 A matrix
 [[ 0.49298603 -0.45562156 -0.91036463  0.3352588 ]]
 SLFM kernel 1 A matrix
 [[ 0.92682692  0.12164467  0.79170513 -0.06326335]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7821e+03
 iteration        2 grad norm 7.3328e+03
 iteration        3 grad norm 6.8355e+03
@@ -995,8 +995,8 @@ finished adadelta optimization
             18 iterations
     1.1339e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 37.88768854737282 smse 0.10053588061 nlpd 1.5165323795
+Using 4 processors for 374 on-the-fly variance predictions
+time 72.2628241404891 smse 0.10053588061 nlpd 1.5165323795
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -1004,8 +1004,8 @@ SLFM kernel 0 A matrix
 [[-0.13549167  0.10372331  0.76445739  0.14449227]]
 SLFM kernel 1 A matrix
 [[ 0.11338445 -0.08022153 -0.35040931 -0.19643194]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7808e+03
 iteration        2 grad norm 7.3296e+03
 iteration        3 grad norm 6.8257e+03
@@ -1033,8 +1033,8 @@ finished adadelta optimization
             23 iterations
     9.3951e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 53.075860023498535 smse 0.0723727740721 nlpd 1.32341210736
+Using 4 processors for 374 on-the-fly variance predictions
+time 103.70929827541113 smse 0.0723727740721 nlpd 1.32341210736
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -1042,8 +1042,8 @@ SLFM kernel 0 A matrix
 [[-0.53230098  0.49460184  0.53425065 -0.52401862]]
 SLFM kernel 1 A matrix
 [[ 0.13955315 -0.65888504 -0.04575214 -0.72564398]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7217e+03
 iteration        2 grad norm 7.2613e+03
 iteration        3 grad norm 6.7469e+03
@@ -1093,8 +1093,8 @@ finished adadelta optimization
             45 iterations
     8.0236e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 161.90770504623652 smse 0.0621114536078 nlpd 1.79226728889
+Using 4 processors for 374 on-the-fly variance predictions
+time 365.07426515221596 smse 0.0621114536078 nlpd 1.79226728889
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -1102,8 +1102,8 @@ SLFM kernel 0 A matrix
 [[ 0.19172872 -0.3881509  -0.85115267 -0.6942193 ]]
 SLFM kernel 1 A matrix
 [[ 0.27725482  0.21002816  0.33856772  0.14897997]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7440e+03
 iteration        2 grad norm 7.2903e+03
 iteration        3 grad norm 6.7803e+03
@@ -1122,8 +1122,8 @@ finished adadelta optimization
             14 iterations
     1.1797e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 26.564766339957714 smse 0.108986050562 nlpd 1.54729296268
+Using 4 processors for 374 on-the-fly variance predictions
+time 49.73481407761574 smse 0.108986050562 nlpd 1.54729296268
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -1131,8 +1131,8 @@ SLFM kernel 0 A matrix
 [[ 0.95494543  0.42537081 -0.14975417 -0.02139807]]
 SLFM kernel 1 A matrix
 [[-0.30674458 -0.46187415 -0.49344016 -0.85705646]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7226e+03
 iteration        2 grad norm 7.2630e+03
 iteration        3 grad norm 6.7531e+03
@@ -1153,8 +1153,8 @@ finished adadelta optimization
             16 iterations
     1.1256e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 32.47777450829744 smse 0.0996131774772 nlpd 1.49571478689
+Using 4 processors for 374 on-the-fly variance predictions
+time 62.693874053657055 smse 0.0996131774772 nlpd 1.49571478689
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 704) complete, 
 LMC lmc fully initialized
@@ -1162,8 +1162,8 @@ SLFM kernel 0 A matrix
 [[ 0.69135635  0.8832964   0.9394306  -0.96063579]]
 SLFM kernel 1 A matrix
 [[-0.44657845 -0.09114984 -0.49296956 -0.43504656]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7321e+03
 iteration        2 grad norm 7.2756e+03
 iteration        3 grad norm 6.7685e+03
@@ -1181,9 +1181,9 @@ finished adadelta optimization
             13 iterations
     1.2099e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 27.929091416299343 smse 0.112944386354 nlpd 1.56271100572
----> llgp slfm m 700 time    66.6728 (   15.9612) smse     0.0911 (    0.0054) nlpd     1.5468 (    0.0398)
+Using 4 processors for 374 on-the-fly variance predictions
+time 50.33703025430441 smse 0.112944386354 nlpd 1.56271100572
+---> llgp slfm m 700 time   139.7968 (   37.1196) smse     0.0911 (    0.0054) nlpd     1.5468 (    0.0398)
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1191,8 +1191,8 @@ SLFM kernel 0 A matrix
 [[-0.55512796  0.21050282 -0.10676582  0.50953484]]
 SLFM kernel 1 A matrix
 [[ 0.49907448 -0.39953    -0.39236439  0.54198321]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7457e+03
 iteration        2 grad norm 7.2944e+03
 iteration        3 grad norm 6.7931e+03
@@ -1244,8 +1244,8 @@ finished adadelta optimization
             47 iterations
     5.3514e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 242.01214205473661 smse 0.0741364746859 nlpd 1.68767656856
+Using 4 processors for 374 on-the-fly variance predictions
+time 567.387933075428 smse 0.0741364746859 nlpd 1.68767656856
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1253,8 +1253,8 @@ SLFM kernel 0 A matrix
 [[-0.99880025 -0.99204489 -0.80984791 -0.28399284]]
 SLFM kernel 1 A matrix
 [[-0.2142388  -0.58522485  0.81838969 -0.80441512]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7270e+03
 iteration        2 grad norm 7.2675e+03
 iteration        3 grad norm 6.7527e+03
@@ -1283,8 +1283,8 @@ finished adadelta optimization
             24 iterations
     8.5482e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 89.83562660217285 smse 0.109657869709 nlpd 1.61994611345
+Using 4 processors for 374 on-the-fly variance predictions
+time 192.97898695617914 smse 0.109657869709 nlpd 1.61994611345
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1292,8 +1292,8 @@ SLFM kernel 0 A matrix
 [[-0.74557303 -0.01816633  0.40884294  0.11440171]]
 SLFM kernel 1 A matrix
 [[-0.72517389 -0.46402804  0.17193025 -0.77051231]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7319e+03
 iteration        2 grad norm 7.2720e+03
 iteration        3 grad norm 6.7597e+03
@@ -1330,8 +1330,8 @@ finished adadelta optimization
             32 iterations
     7.0745e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 127.30812437087297 smse 0.0787930327211 nlpd 1.45688046144
+Using 4 processors for 374 on-the-fly variance predictions
+time 267.7608696818352 smse 0.0787930327211 nlpd 1.45688046144
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1339,8 +1339,8 @@ SLFM kernel 0 A matrix
 [[ 0.10335611 -0.20531556  0.15218573  0.00557778]]
 SLFM kernel 1 A matrix
 [[ 0.86914215 -0.59787653  0.47218257 -0.04321894]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7869e+03
 iteration        2 grad norm 7.3412e+03
 iteration        3 grad norm 6.8423e+03
@@ -1357,8 +1357,8 @@ finished adadelta optimization
             12 iterations
     1.0909e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 34.63614458590746 smse 0.0921743623155 nlpd 1.455595652
+Using 4 processors for 374 on-the-fly variance predictions
+time 66.57007069885731 smse 0.0921743623155 nlpd 1.455595652
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1366,8 +1366,8 @@ SLFM kernel 0 A matrix
 [[ 0.49298603 -0.45562156 -0.91036463  0.3352588 ]]
 SLFM kernel 1 A matrix
 [[ 0.92682692  0.12164467  0.79170513 -0.06326335]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7821e+03
 iteration        2 grad norm 7.3328e+03
 iteration        3 grad norm 6.8355e+03
@@ -1390,8 +1390,8 @@ finished adadelta optimization
             18 iterations
     1.1339e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 57.292310915887356 smse 0.100536001155 nlpd 1.5165327018
+Using 4 processors for 374 on-the-fly variance predictions
+time 114.36621309071779 smse 0.100536001155 nlpd 1.5165327018
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1399,8 +1399,8 @@ SLFM kernel 0 A matrix
 [[-0.13549167  0.10372331  0.76445739  0.14449227]]
 SLFM kernel 1 A matrix
 [[ 0.11338445 -0.08022153 -0.35040931 -0.19643194]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7808e+03
 iteration        2 grad norm 7.3296e+03
 iteration        3 grad norm 6.8257e+03
@@ -1428,8 +1428,8 @@ finished adadelta optimization
             23 iterations
     9.3951e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 81.82538877427578 smse 0.0723726611094 nlpd 1.32341025008
+Using 4 processors for 374 on-the-fly variance predictions
+time 163.72406685352325 smse 0.0723726611094 nlpd 1.32341025008
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1437,8 +1437,8 @@ SLFM kernel 0 A matrix
 [[-0.53230098  0.49460184  0.53425065 -0.52401862]]
 SLFM kernel 1 A matrix
 [[ 0.13955315 -0.65888504 -0.04575214 -0.72564398]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7217e+03
 iteration        2 grad norm 7.2613e+03
 iteration        3 grad norm 6.7469e+03
@@ -1488,8 +1488,8 @@ finished adadelta optimization
             45 iterations
     8.0229e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 244.19477466493845 smse 0.0620914918799 nlpd 1.73843652258
+Using 4 processors for 374 on-the-fly variance predictions
+time 577.8003542348742 smse 0.0620914918799 nlpd 1.73843652258
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1497,8 +1497,8 @@ SLFM kernel 0 A matrix
 [[ 0.19172872 -0.3881509  -0.85115267 -0.6942193 ]]
 SLFM kernel 1 A matrix
 [[ 0.27725482  0.21002816  0.33856772  0.14897997]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7440e+03
 iteration        2 grad norm 7.2903e+03
 iteration        3 grad norm 6.7803e+03
@@ -1517,8 +1517,8 @@ finished adadelta optimization
             14 iterations
     1.1797e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 41.621881760656834 smse 0.108985775504 nlpd 1.54729116994
+Using 4 processors for 374 on-the-fly variance predictions
+time 79.22389842569828 smse 0.108985775504 nlpd 1.54729116994
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1526,8 +1526,8 @@ SLFM kernel 0 A matrix
 [[ 0.95494543  0.42537081 -0.14975417 -0.02139807]]
 SLFM kernel 1 A matrix
 [[-0.30674458 -0.46187415 -0.49344016 -0.85705646]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7226e+03
 iteration        2 grad norm 7.2630e+03
 iteration        3 grad norm 6.7531e+03
@@ -1548,8 +1548,8 @@ finished adadelta optimization
             16 iterations
     1.1256e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 50.05383834242821 smse 0.0996130389594 nlpd 1.49571368636
+Using 4 processors for 374 on-the-fly variance predictions
+time 99.73016966879368 smse 0.0996130389594 nlpd 1.49571368636
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 804) complete, 
 LMC lmc fully initialized
@@ -1557,8 +1557,8 @@ SLFM kernel 0 A matrix
 [[ 0.69135635  0.8832964   0.9394306  -0.96063579]]
 SLFM kernel 1 A matrix
 [[-0.44657845 -0.09114984 -0.49296956 -0.43504656]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7321e+03
 iteration        2 grad norm 7.2756e+03
 iteration        3 grad norm 6.7685e+03
@@ -1576,9 +1576,9 @@ finished adadelta optimization
             13 iterations
     1.2099e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 41.858559623360634 smse 0.112944418198 nlpd 1.56271082509
----> llgp slfm m 800 time   101.0639 (   23.9806) smse     0.0911 (    0.0054) nlpd     1.5404 (    0.0363)
+Using 4 processors for 374 on-the-fly variance predictions
+time 79.93515001237392 smse 0.112944418198 nlpd 1.56271082509
+---> llgp slfm m 800 time   220.9478 (   58.6062) smse     0.0911 (    0.0054) nlpd     1.5404 (    0.0363)
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1586,8 +1586,8 @@ SLFM kernel 0 A matrix
 [[-0.55512796  0.21050282 -0.10676582  0.50953484]]
 SLFM kernel 1 A matrix
 [[ 0.49907448 -0.39953    -0.39236439  0.54198321]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7457e+03
 iteration        2 grad norm 7.2944e+03
 iteration        3 grad norm 6.7931e+03
@@ -1639,8 +1639,8 @@ finished adadelta optimization
             47 iterations
     5.3511e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 334.2400232255459 smse 0.074154355268 nlpd 1.68336914938
+Using 4 processors for 374 on-the-fly variance predictions
+time 790.8466534242034 smse 0.074154355268 nlpd 1.68336914938
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1648,8 +1648,8 @@ SLFM kernel 0 A matrix
 [[-0.99880025 -0.99204489 -0.80984791 -0.28399284]]
 SLFM kernel 1 A matrix
 [[-0.2142388  -0.58522485  0.81838969 -0.80441512]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7270e+03
 iteration        2 grad norm 7.2675e+03
 iteration        3 grad norm 6.7527e+03
@@ -1678,8 +1678,8 @@ finished adadelta optimization
             24 iterations
     8.5482e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 124.11207626760006 smse 0.109657847853 nlpd 1.61994224817
+Using 4 processors for 374 on-the-fly variance predictions
+time 269.1478971838951 smse 0.109657847853 nlpd 1.61994224817
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1687,8 +1687,8 @@ SLFM kernel 0 A matrix
 [[-0.74557303 -0.01816633  0.40884294  0.11440171]]
 SLFM kernel 1 A matrix
 [[-0.72517389 -0.46402804  0.17193025 -0.77051231]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7319e+03
 iteration        2 grad norm 7.2720e+03
 iteration        3 grad norm 6.7597e+03
@@ -1725,8 +1725,8 @@ finished adadelta optimization
             32 iterations
     7.0745e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 171.14489179104567 smse 0.0787926818582 nlpd 1.45686256563
+Using 4 processors for 374 on-the-fly variance predictions
+time 372.6774476841092 smse 0.0787926818582 nlpd 1.45686256563
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1734,8 +1734,8 @@ SLFM kernel 0 A matrix
 [[ 0.10335611 -0.20531556  0.15218573  0.00557778]]
 SLFM kernel 1 A matrix
 [[ 0.86914215 -0.59787653  0.47218257 -0.04321894]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7869e+03
 iteration        2 grad norm 7.3412e+03
 iteration        3 grad norm 6.8423e+03
@@ -1752,8 +1752,8 @@ finished adadelta optimization
             12 iterations
     1.0909e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 47.925549671053886 smse 0.0921743257334 nlpd 1.45559538869
+Using 4 processors for 374 on-the-fly variance predictions
+time 92.77879816293716 smse 0.0921743257334 nlpd 1.45559538869
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1761,8 +1761,8 @@ SLFM kernel 0 A matrix
 [[ 0.49298603 -0.45562156 -0.91036463  0.3352588 ]]
 SLFM kernel 1 A matrix
 [[ 0.92682692  0.12164467  0.79170513 -0.06326335]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7821e+03
 iteration        2 grad norm 7.3328e+03
 iteration        3 grad norm 6.8355e+03
@@ -1785,8 +1785,8 @@ finished adadelta optimization
             18 iterations
     1.1339e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 79.13897601515055 smse 0.100535921531 nlpd 1.51653150179
+Using 4 processors for 374 on-the-fly variance predictions
+time 159.11037749797106 smse 0.100535921531 nlpd 1.51653150179
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1794,8 +1794,8 @@ SLFM kernel 0 A matrix
 [[-0.13549167  0.10372331  0.76445739  0.14449227]]
 SLFM kernel 1 A matrix
 [[ 0.11338445 -0.08022153 -0.35040931 -0.19643194]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7808e+03
 iteration        2 grad norm 7.3296e+03
 iteration        3 grad norm 6.8257e+03
@@ -1823,8 +1823,8 @@ finished adadelta optimization
             23 iterations
     9.3951e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 109.40962987393141 smse 0.0723725422741 nlpd 1.32340876772
+Using 4 processors for 374 on-the-fly variance predictions
+time 228.04078355431557 smse 0.0723725422741 nlpd 1.32340876772
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1832,8 +1832,8 @@ SLFM kernel 0 A matrix
 [[-0.53230098  0.49460184  0.53425065 -0.52401862]]
 SLFM kernel 1 A matrix
 [[ 0.13955315 -0.65888504 -0.04575214 -0.72564398]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7217e+03
 iteration        2 grad norm 7.2613e+03
 iteration        3 grad norm 6.7469e+03
@@ -1883,8 +1883,8 @@ finished adadelta optimization
             45 iterations
     8.0254e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 341.11773674190044 smse 0.0620321922859 nlpd 1.71642952248
+Using 4 processors for 374 on-the-fly variance predictions
+time 804.393235437572 smse 0.0620321922859 nlpd 1.71642952248
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1892,8 +1892,8 @@ SLFM kernel 0 A matrix
 [[ 0.19172872 -0.3881509  -0.85115267 -0.6942193 ]]
 SLFM kernel 1 A matrix
 [[ 0.27725482  0.21002816  0.33856772  0.14897997]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7440e+03
 iteration        2 grad norm 7.2903e+03
 iteration        3 grad norm 6.7803e+03
@@ -1912,8 +1912,8 @@ finished adadelta optimization
             14 iterations
     1.1797e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 57.421991504728794 smse 0.108985791074 nlpd 1.54729103857
+Using 4 processors for 374 on-the-fly variance predictions
+time 110.38987992703915 smse 0.108985791074 nlpd 1.54729103857
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1921,8 +1921,8 @@ SLFM kernel 0 A matrix
 [[ 0.95494543  0.42537081 -0.14975417 -0.02139807]]
 SLFM kernel 1 A matrix
 [[-0.30674458 -0.46187415 -0.49344016 -0.85705646]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7226e+03
 iteration        2 grad norm 7.2630e+03
 iteration        3 grad norm 6.7531e+03
@@ -1943,8 +1943,8 @@ finished adadelta optimization
             16 iterations
     1.1256e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 70.93358118832111 smse 0.0996130439791 nlpd 1.49571341015
+Using 4 processors for 374 on-the-fly variance predictions
+time 138.13924162834883 smse 0.0996130439791 nlpd 1.49571341015
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 904) complete, 
 LMC lmc fully initialized
@@ -1952,8 +1952,8 @@ SLFM kernel 0 A matrix
 [[ 0.69135635  0.8832964   0.9394306  -0.96063579]]
 SLFM kernel 1 A matrix
 [[-0.44657845 -0.09114984 -0.49296956 -0.43504656]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7321e+03
 iteration        2 grad norm 7.2756e+03
 iteration        3 grad norm 6.7685e+03
@@ -1971,9 +1971,9 @@ finished adadelta optimization
             13 iterations
     1.2099e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 56.01862759143114 smse 0.112944400566 nlpd 1.5627103272
----> llgp slfm m 900 time   139.1463 (   33.3395) smse     0.0911 (    0.0054) nlpd     1.5378 (    0.0349)
+Using 4 processors for 374 on-the-fly variance predictions
+time 111.31946077942848 smse 0.112944400566 nlpd 1.5627103272
+---> llgp slfm m 900 time   307.6844 (   81.6521) smse     0.0911 (    0.0054) nlpd     1.5378 (    0.0349)
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -1981,8 +1981,8 @@ SLFM kernel 0 A matrix
 [[-0.55512796  0.21050282 -0.10676582  0.50953484]]
 SLFM kernel 1 A matrix
 [[ 0.49907448 -0.39953    -0.39236439  0.54198321]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7457e+03
 iteration        2 grad norm 7.2944e+03
 iteration        3 grad norm 6.7931e+03
@@ -2034,8 +2034,8 @@ finished adadelta optimization
             47 iterations
     5.3506e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 626.3363562226295 smse 0.0742030546588 nlpd 1.68278484783
+Using 4 processors for 374 on-the-fly variance predictions
+time 1498.6182837337255 smse 0.0742030546588 nlpd 1.68278484783
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -2043,8 +2043,8 @@ SLFM kernel 0 A matrix
 [[-0.99880025 -0.99204489 -0.80984791 -0.28399284]]
 SLFM kernel 1 A matrix
 [[-0.2142388  -0.58522485  0.81838969 -0.80441512]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7270e+03
 iteration        2 grad norm 7.2675e+03
 iteration        3 grad norm 6.7527e+03
@@ -2073,8 +2073,8 @@ finished adadelta optimization
             24 iterations
     8.5482e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 230.64273715764284 smse 0.109657829341 nlpd 1.61994272959
+Using 4 processors for 374 on-the-fly variance predictions
+time 506.5442625358701 smse 0.109657829341 nlpd 1.61994272959
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -2082,8 +2082,8 @@ SLFM kernel 0 A matrix
 [[-0.74557303 -0.01816633  0.40884294  0.11440171]]
 SLFM kernel 1 A matrix
 [[-0.72517389 -0.46402804  0.17193025 -0.77051231]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7319e+03
 iteration        2 grad norm 7.2720e+03
 iteration        3 grad norm 6.7597e+03
@@ -2120,8 +2120,8 @@ finished adadelta optimization
             32 iterations
     7.0745e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 319.01597152650356 smse 0.078792610486 nlpd 1.45685418642
+Using 4 processors for 374 on-the-fly variance predictions
+time 704.2719171121716 smse 0.078792610486 nlpd 1.45685418642
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -2129,8 +2129,8 @@ SLFM kernel 0 A matrix
 [[ 0.10335611 -0.20531556  0.15218573  0.00557778]]
 SLFM kernel 1 A matrix
 [[ 0.86914215 -0.59787653  0.47218257 -0.04321894]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7869e+03
 iteration        2 grad norm 7.3412e+03
 iteration        3 grad norm 6.8423e+03
@@ -2147,8 +2147,8 @@ finished adadelta optimization
             12 iterations
     1.0909e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 91.78070750832558 smse 0.0921741947384 nlpd 1.45559485241
+Using 4 processors for 374 on-the-fly variance predictions
+time 175.4602159410715 smse 0.0921741947384 nlpd 1.45559485241
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -2156,8 +2156,8 @@ SLFM kernel 0 A matrix
 [[ 0.49298603 -0.45562156 -0.91036463  0.3352588 ]]
 SLFM kernel 1 A matrix
 [[ 0.92682692  0.12164467  0.79170513 -0.06326335]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7821e+03
 iteration        2 grad norm 7.3328e+03
 iteration        3 grad norm 6.8355e+03
@@ -2180,8 +2180,8 @@ finished adadelta optimization
             18 iterations
     1.1339e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 147.21408655494452 smse 0.100535912073 nlpd 1.51653167442
+Using 4 processors for 374 on-the-fly variance predictions
+time 300.98351662606 smse 0.100535912073 nlpd 1.51653167442
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -2189,8 +2189,8 @@ SLFM kernel 0 A matrix
 [[-0.13549167  0.10372331  0.76445739  0.14449227]]
 SLFM kernel 1 A matrix
 [[ 0.11338445 -0.08022153 -0.35040931 -0.19643194]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7808e+03
 iteration        2 grad norm 7.3296e+03
 iteration        3 grad norm 6.8257e+03
@@ -2218,8 +2218,8 @@ finished adadelta optimization
             23 iterations
     9.3951e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 205.10289162397385 smse 0.0723724644151 nlpd 1.32340879334
+Using 4 processors for 374 on-the-fly variance predictions
+time 429.89922892302275 smse 0.0723724644151 nlpd 1.32340879334
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -2227,8 +2227,8 @@ SLFM kernel 0 A matrix
 [[-0.53230098  0.49460184  0.53425065 -0.52401862]]
 SLFM kernel 1 A matrix
 [[ 0.13955315 -0.65888504 -0.04575214 -0.72564398]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7217e+03
 iteration        2 grad norm 7.2613e+03
 iteration        3 grad norm 6.7469e+03
@@ -2278,8 +2278,8 @@ finished adadelta optimization
             45 iterations
     8.0239e+02 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 634.7414349764585 smse 0.0620589747257 nlpd 1.7086573627
+Using 4 processors for 374 on-the-fly variance predictions
+time 1526.11504612118 smse 0.0620589747257 nlpd 1.7086573627
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -2287,8 +2287,8 @@ SLFM kernel 0 A matrix
 [[ 0.19172872 -0.3881509  -0.85115267 -0.6942193 ]]
 SLFM kernel 1 A matrix
 [[ 0.27725482  0.21002816  0.33856772  0.14897997]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7440e+03
 iteration        2 grad norm 7.2903e+03
 iteration        3 grad norm 6.7803e+03
@@ -2307,8 +2307,8 @@ finished adadelta optimization
             14 iterations
     1.1797e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 105.85347245633602 smse 0.108985852287 nlpd 1.54729150149
+Using 4 processors for 374 on-the-fly variance predictions
+time 209.07364897429943 smse 0.108985852287 nlpd 1.54729150149
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -2316,8 +2316,8 @@ SLFM kernel 0 A matrix
 [[ 0.95494543  0.42537081 -0.14975417 -0.02139807]]
 SLFM kernel 1 A matrix
 [[-0.30674458 -0.46187415 -0.49344016 -0.85705646]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7226e+03
 iteration        2 grad norm 7.2630e+03
 iteration        3 grad norm 6.7531e+03
@@ -2338,8 +2338,8 @@ finished adadelta optimization
             16 iterations
     1.1256e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 131.0769504159689 smse 0.0996130320894 nlpd 1.49571348155
+Using 4 processors for 374 on-the-fly variance predictions
+time 261.83135582506657 smse 0.0996130320894 nlpd 1.49571348155
 LMC lmc generating inducing grid n = 15789
 LMC lmc grid (n = 15789, m = 1004) complete, 
 LMC lmc fully initialized
@@ -2347,8 +2347,8 @@ SLFM kernel 0 A matrix
 [[ 0.69135635  0.8832964   0.9394306  -0.96063579]]
 SLFM kernel 1 A matrix
 [[-0.44657845 -0.09114984 -0.49296956 -0.43504656]]
-Optimization (18 hyperparams) starting with 11 workers
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f75180f7bf8>}
+Optimization (18 hyperparams) starting with 4 workers
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fc349a47f28>}
 iteration        1 grad norm 7.7321e+03
 iteration        2 grad norm 7.2756e+03
 iteration        3 grad norm 6.7685e+03
@@ -2366,11 +2366,11 @@ finished adadelta optimization
             13 iterations
     1.2099e+03 final grad norm
     norm used inf
-Using 80 processors for 374 on-the-fly variance predictions
-time 105.49967205524445 smse 0.112944416812 nlpd 1.56271060135
----> llgp slfm m 1000 time   259.7264 (   62.2304) smse     0.0911 (    0.0054) nlpd     1.5369 (    0.0345)
+Using 4 processors for 374 on-the-fly variance predictions
+time 209.74908738583326 smse 0.112944416812 nlpd 1.56271060135
+---> llgp slfm m 1000 time   582.2547 (  154.9102) smse     0.0911 (    0.0054) nlpd     1.5369 (    0.0345)
 
----> cogp m 200 time  1380.5114 (   12.7327) smse     0.0806 (    0.0003) nlpd    98.4793 (    1.3042)
-min idx 0 (60.834894644469024, 14.31093240825321)
-min idx 2 (0.080579066465997, 0.0003399380007339099)
+---> cogp m 200 time  1214.6522 (   10.8649) smse     0.0806 (    0.0003) nlpd    98.5461 (    1.2707)
+min idx 0 (126.75356260687113, 33.449024041749439)
+min idx 2 (0.080588352908181, 0.0003377919503216254)
 min idx 1 (1.5369490031095181, 0.034519671847414807)
