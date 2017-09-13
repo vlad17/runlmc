@@ -19,7 +19,7 @@ from runlmc.kern.matern32 import Matern32
 from runlmc.kern.std_periodic import StdPeriodic
 from runlmc.models.lmc import LMC
 from runlmc.lmc.stochastic_deriv import StochasticDeriv
-from runlmc.lm.functional_kernel import FunctionalKernel
+from runlmc.lmc.functional_kernel import FunctionalKernel
 from runlmc.lmc.grid_kernel import *
 from runlmc.lmc.kernel import ExactLMCKernel, ApproxLMCKernel
 
