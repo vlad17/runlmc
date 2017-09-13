@@ -296,7 +296,6 @@ def cogp_fx2007(num_runs, inducing_pts, nthreads):
            .format(datafile, inducing_pts, num_runs, nthreads)]
     with open(TMP + '/out-fx-{}-{}'.format(num_runs, inducing_pts), 'w') as f:
         f.write(' '.join(cmd))
-    print('--->', benchmark_dir, datafile)
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
