@@ -355,7 +355,7 @@ class LMC(MultiGP):
             return self._var_predict_precompute(W, Xs)
 
         tot_pred_size = sum(map(len, Xs))
-        tot_grid_size = len(self.inducing_grid) * len(self.noise)
+        tot_grid_size = len(self.inducing_grid) * len(self._functional_kernel.noise)
         if tot_pred_size > tot_grid_size:
             return self._var_predict_precompute(W, Xs)
         return self._var_predict_on_the_fly(W, Xs)
@@ -453,7 +453,7 @@ class LMC(MultiGP):
         K_UX = Composition([K_UU, Matrix.wrap(WT.shape, WT.dot)])
 
         m = len(self.inducing_grid)
-        D = len(self.noise)
+        D = len(self._functional_kernel.noise)
         Dm = D * m
         assert Dm == K_XU.shape[1] and Dm == K_UX.shape[0]
 
