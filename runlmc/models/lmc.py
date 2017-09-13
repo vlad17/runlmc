@@ -355,7 +355,8 @@ class LMC(MultiGP):
             return self._var_predict_precompute(W, Xs)
 
         tot_pred_size = sum(map(len, Xs))
-        tot_grid_size = len(self.inducing_grid) * len(self._functional_kernel.noise)
+        tot_grid_size = len(self.inducing_grid) * len(
+            self._functional_kernel.noise)
         if tot_pred_size > tot_grid_size:
             return self._var_predict_precompute(W, Xs)
         return self._var_predict_on_the_fly(W, Xs)
