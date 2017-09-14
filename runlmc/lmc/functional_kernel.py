@@ -37,8 +37,8 @@ class FunctionalKernel(Parameterized):
     tied to any data :math:`X` but represents the :math:`K` function, not
     matrix, above. This class is, however, tied to parameters.
     Especially important is the dichotomy with
-    :class:`runlmc.lmc.kernel.LMCKernel`, which is a fixed evaluation of
-    a `FunctionalKernel` with a fixed set of parameters on fixed data.
+    :class:`runlmc.lmc.likelihood.LMCLikelihood`, which is a fixed evaluation
+    of a `FunctionalKernel` with a fixed set of parameters on fixed data.
 
     After a successful initialization, we have
     `Q == len(lmc_kernels) + len(slfm_kernels) + len(indep_gp)` and
@@ -159,7 +159,7 @@ class FunctionalKernel(Parameterized):
 
     def update_gradient(self, grads):
         """Update the gradients of parameters in the functional kernel
-        with respect to those calculated by a concrete `LMCKernel` given
+        with respect to those calculated by a concrete `LMCLikelihood` given
         data."""
         for x, dx in zip(self._coreg_vecs, grads.coreg_vec_gradients()):
             x.gradient = dx

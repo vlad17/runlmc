@@ -21,7 +21,7 @@ from runlmc.models.lmc import LMC
 from runlmc.lmc.stochastic_deriv import StochasticDeriv
 from runlmc.lmc.functional_kernel import FunctionalKernel
 from runlmc.lmc.grid_kernel import *
-from runlmc.lmc.kernel import ExactLMCKernel, ApproxLMCKernel
+from runlmc.lmc.likelihood import ExactLMCLikelihood, ApproxLMCLikelihood
 
 _HELP_STR = """
 Usage: python bench.py n_o d r_q q eps [kern] [seed] [test-type]
@@ -162,7 +162,7 @@ def run_kernel_benchmark(
         Xs, Ys, fkern, dists, grid_dists, interpolant, interpolantT, testtype):
 
     with contexttimer.Timer() as t:
-        exact = ExactLMCKernel(fkern, Xs, Ys)
+        exact = ExactLMCLikelihood(fkern, Xs, Ys)
     chol_time = t.elapsed
     eigs = np.fabs(la.eigvalsh(exact.K))
     print('    covariance matrix info')
@@ -203,7 +203,7 @@ def run_kernel_benchmark(
     with contexttimer.Timer() as t:
         grid_kernel = gen_grid_kernel(
             fkern, grid_dists, interpolant, interpolantT, list(map(len, Xs)))
-        approx = ApproxLMCKernel(fkern, grid_kernel, grid_dists, Ys, None)
+        approx = ApproxLMCLikelihood(fkern, grid_kernel, grid_dists, Ys, None)
     aprx_time = t.elapsed
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))

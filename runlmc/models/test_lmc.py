@@ -8,7 +8,7 @@ import scipy.spatial.distance as dist
 from .lmc import LMC
 from .optimization import AdaDelta
 from ..kern.rbf import RBF
-from ..lmc.kernel import ExactLMCKernel
+from ..lmc.kernel import ExactLMCLikelihood
 from ..lmc.functional_kernel import FunctionalKernel
 from ..util.testing_utils import RandomTest, check_np_lists
 
@@ -48,7 +48,7 @@ class ExactAnalogue:
 
     def gen_exact(self):
         if self.exact is None:
-            self.exact = ExactLMCKernel(
+            self.exact = ExactLMCLikelihood(
                 self.functional_kernel, self.xss, self.yss)
 
         return self.exact

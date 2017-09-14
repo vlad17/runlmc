@@ -18,7 +18,7 @@ from ..util.numpy_convenience import begin_end_indices
 # TODO(test): all of below
 
 
-class LMCLikelihood:
+class LMCKernel:
     """
     Separate hyperparameter-based likelihood differentiation from the
     model class for separation of concerns. Different sub-classes may implement
@@ -97,7 +97,7 @@ class LMCLikelihood:
         return grad
 
 
-class ApproxLMCLikelihood(LMCLikelihood):
+class ApproxLMCKernel(LMCKernel):
     def __init__(self, functional_kernel, grid_kern, grid_dists, Ys, metrics,
                  pool=None):
         super().__init__(functional_kernel, Ys)
@@ -131,7 +131,7 @@ class ApproxLMCLikelihood(LMCLikelihood):
         return self.deriv.alpha
 
 
-class ExactLMCLikelihood(LMCLikelihood):
+class ExactLMCKernel(LMCKernel):
     def __init__(self, functional_kernel, Xs, Ys):
         super().__init__(functional_kernel, Ys)
 
@@ -161,11 +161,11 @@ class ExactLMCLikelihood(LMCLikelihood):
         return K
 
     def _personalized_coreg_scale(self, A, K):
-        return ExactLMCLikelihood._coreg_scale(
+        return ExactLMCKernel._coreg_scale(
             A, K, self.lens, self.lens, self.functional_kernel.D)
 
     @staticmethod
-    def kernel_from_indices(Xs, Zs, functional_kernel):
+    def from_indices(Xs, Zs, functional_kernel):
         """Computes the dense, exact kernel matrix for an LMC kernel specified
         by `functional_kernel`. The kernel matrix that is computed is relative
         to the kernel application to pairs from the Cartesian product `Xs` and
@@ -177,8 +177,8 @@ class ExactLMCLikelihood(LMCLikelihood):
                                 np.hstack(Zs).reshape(-1, 1))
         Kqs = functional_kernel.eval_kernels(pair_dists)
         rlens, clens = [len(X) for X in Xs], [len(Z) for Z in Zs]
-        K = sum(ExactLMCLikelihood._coreg_scale(A, Kq, rlens, clens,
-                                                functional_kernel.D)
+        K = sum(ExactLMCKernel._coreg_scale(A, Kq, rlens, clens,
+                                            functional_kernel.D)
                 for A, Kq in zip(functional_kernel.coreg_mats(), Kqs))
         return K
 

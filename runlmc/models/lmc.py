@@ -20,7 +20,7 @@ from ..linalg.diag import Diag
 from ..lmc.stochastic_deriv import StochasticDeriv
 from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
-from ..lmc.kernel import ExactLMCKernel, ApproxLMCKernel
+from ..lmc.kernel import ExactLMCLikelihood, ApproxLMCLikelihood
 from ..util.docs import inherit_doc
 
 _LOG = logging.getLogger(__name__)
@@ -201,7 +201,7 @@ class LMC(MultiGP):
             self.interpolant,
             self.interpolantT,
             list(map(len, self.Ys)))
-        self.kernel = ApproxLMCKernel(
+        self.kernel = ApproxLMCLikelihood(
             self._functional_kernel,
             grid_kernel,
             self.dists,
@@ -249,7 +249,7 @@ class LMC(MultiGP):
 
     def _dense(self):
         if 'exact_kernel' not in self._cache:
-            self._cache['exact_kernel'] = ExactLMCKernel(
+            self._cache['exact_kernel'] = ExactLMCLikelihood(
                 self._functional_kernel, self.Xs, self.Ys)
         return self._cache['exact_kernel']
 
@@ -363,7 +363,7 @@ class LMC(MultiGP):
 
     def _var_predict_exact(self, _, Xs):
         exact = self._dense()
-        K_test_X = ExactLMCKernel.from_indices(
+        K_test_X = ExactLMCLikelihood.kernel_from_indices(
             Xs, self.Xs, self._functional_kernel)
         var_explained = K_test_X.dot(la.cho_solve(exact.L, K_test_X.T))
 
@@ -474,7 +474,7 @@ class LMC(MultiGP):
         return prediction_interpolant.dot(nu)
 
     def _var_predict_on_the_fly(self, _, Xs):
-        K_test_X = ExactLMCKernel.from_indices(
+        K_test_X = ExactLMCLikelihood.kernel_from_indices(
             Xs, self.Xs, self._functional_kernel)
         n_test = sum(map(len, Xs))
         par = min(max(self.max_procs, 1), n_test)

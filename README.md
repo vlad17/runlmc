@@ -77,9 +77,6 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 ### Roadmap
 
 0. LMC class refactor (to allow multi-input-dimension grids)
-   -> LMCKernel -> LMCLikelihood, 
-   -> GridKernel -> NonuniformKernel (subclass) Kernel = Matrix
-       -> modify docs in FunctionalKernel correspondingly.
    -> cache -> use lru_cache + `clear_cache()`
    -> StochasticDerivative -> StochasticDerivativeService (parameterized w/ metrics, pool)
        -> Make wrapper for pool for in-band parallelism (max_proc=0, should be default)
