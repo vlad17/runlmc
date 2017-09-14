@@ -11,7 +11,7 @@ import numpy as np
 import scipy.linalg as la
 from standard_tester import *
 
-from runlmc.models.lmc import LMC
+from runlmc.models.interpolated_llgp import InterpolatedLLGP
 from runlmc.kern.rbf import RBF
 from runlmc.models.optimization import AdaDelta
 from runlmc.models.gpy_lmc import GPyLMC
@@ -32,7 +32,7 @@ ranks = [2]
 xss, yss, test_xss, test_yss, test_fx, cols = foreign_exchange_2007()
 
 np.random.seed(1234)
-lmc = LMC(xss, yss, kernels=ks, ranks=ranks)
+lmc = InterpolatedLLGP(xss, yss, kernels=ks, ranks=ranks)
 opt = AdaDelta(verbosity=20, min_grad_ratio=0.2)
 print('training LLGP')
 with contexttimer.Timer() as t:

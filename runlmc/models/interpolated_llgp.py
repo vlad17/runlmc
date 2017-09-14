@@ -27,9 +27,9 @@ _LOG = logging.getLogger(__name__)
 
 
 @inherit_doc  # pylint: disable=too-many-instance-attributes
-class LMC(MultiGP):
+class InterpolatedLLGP(MultiGP):
     """
-    The main class of this package, `LMC` implements linearithmic
+    The main class of this package, `InterpolatedLLGP` implements linearithmic
     Gaussian Process learning in the multi-output case. See
     the paper on `arxiv <https://arxiv.org/abs/1705.10813>`_.
 
@@ -132,7 +132,7 @@ class LMC(MultiGP):
                              .format(prediction))
 
         n = sum(map(len, self.Xs))
-        _LOG.info('LMC %s generating inducing grid n = %d',
+        _LOG.info('InterpolatedLLGP %s generating inducing grid n = %d',
                   self.name, n)
         # Grid corresponds to U
         self.inducing_grid, m = autogrid(Xs, lo, hi, m)
@@ -144,7 +144,7 @@ class LMC(MultiGP):
         self.interpolant = multi_interpolant(self.Xs, self.inducing_grid)
         self.interpolantT = self.interpolant.transpose().tocsr()
 
-        _LOG.info('LMC %s grid (n = %d, m = %d) complete, ',
+        _LOG.info('InterpolatedLLGP %s grid (n = %d, m = %d) complete, ',
                   self.name, n, m)
 
         self._functional_kernel = functional_kernel
@@ -160,13 +160,13 @@ class LMC(MultiGP):
         self._check_omp(max_procs)
 
         self.update_model(True)
-        _LOG.info('LMC %s fully initialized', self.name)
+        _LOG.info('InterpolatedLLGP %s fully initialized', self.name)
 
     EVAL_NORM = np.inf
 
     def _check_omp(self, procs_requested):
         omp = os.environ.get('OMP_NUM_THREADS', None)
-        procs_info = 'LMC(max_procs={})'.format(procs_requested)
+        procs_info = 'InterpolatedLLGP(max_procs={})'.format(procs_requested)
         if procs_requested is None:
             procs_info += ' [defaults to {}]'.format(self.max_procs)
         if omp is None and self.max_procs > 1:
@@ -410,7 +410,7 @@ class LMC(MultiGP):
                   'precompute %d kernel factors',
                   par, Q)
         with closing(Pool(processes=par)) as pool:
-            samples = pool.starmap(LMC._chol_sample, ls)
+            samples = pool.starmap(InterpolatedLLGP._chol_sample, ls)
             samples.append(
                 Diag(np.sqrt(self.kernel.K.noise.v)).matmat(
                     np.random.randn(len(self.y), Ns)))
@@ -464,7 +464,7 @@ class LMC(MultiGP):
         _LOG.info('Using %d processors to precompute %d '
                   'variance terms exactly', par, Dm)
         with closing(Pool(processes=par)) as pool:
-            nu = pool.starmap(LMC._var_solve, ls, chunks)
+            nu = pool.starmap(InterpolatedLLGP._var_solve, ls, chunks)
 
         self._cache['precomputed_nu'] = nu
         return nu

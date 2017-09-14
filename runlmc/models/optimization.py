@@ -5,7 +5,7 @@ import climin
 from paramz.optimization import Optimizer
 import scipy.linalg as la
 
-from .lmc import LMC
+from .interpolated_llgp import InterpolatedLLGP
 
 # TODO(test)
 
@@ -32,7 +32,7 @@ class AdaDelta(Optimizer):
         return climin.Adadelta(x, fp, **ada_kwargs)
 
     def _grad_norm(self, info):
-        return la.norm(info['gradient'], LMC.EVAL_NORM)
+        return la.norm(info['gradient'], InterpolatedLLGP.EVAL_NORM)
 
     def _print_prolog(self):
         if self.kwargs['verbosity']:
@@ -45,7 +45,9 @@ class AdaDelta(Optimizer):
                   '    {:10d} iterations\n'
                   '    {:10.4e} final grad norm\n'
                   '    norm used {}'
-                  .format(info['n_iter'], grad_norm, LMC.EVAL_NORM))
+                  .format(info['n_iter'],
+                          grad_norm,
+                          InterpolatedLLGP.EVAL_NORM))
 
     def _print_update(self, info, grad_norm):
         max_it, verbosity = (self.kwargs[x] for x in ['max_it', 'verbosity'])

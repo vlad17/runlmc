@@ -27,8 +27,8 @@ class GPyLMC(MultiGP):
     .. Note: Because this implementation uses GPy, mean functions and
              normalization are unsupported.
 
-    Uses the Gaussian likelihood. See :class:`runlmc.models.lmc.LMC` for the
-    explicit LMC formula.
+    Uses the Gaussian likelihood. See :class:`runlmc.lmc.functional_kernel`
+    for the explicit LMC formula.
 
     The DTCVAR algorithm (the `sparse` parameter) is based on Efficient
     Multioutput Gaussian Processes through Variational Inducing Kernels

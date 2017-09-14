@@ -16,7 +16,7 @@ import pandas as pd
 import numpy as np
 
 from runlmc.lmc.functional_kernel import FunctionalKernel
-from runlmc.models.lmc import LMC
+from runlmc.models.interpolated_llgp import InterpolatedLLGP
 from runlmc.kern.rbf import RBF
 from runlmc.kern.scaled import Scaled
 from runlmc.models.optimization import AdaDelta
@@ -59,7 +59,7 @@ def activate_logs():
     if logger.handlers:
         return
 
-    from runlmc.models.lmc import _LOG
+    from runlmc.models.interpolated_llgp import _LOG
     from runlmc.approx.iterative import _LOG as _LOG2
     logging.getLogger().addHandler(logging.StreamHandler())
     _LOG.setLevel(logging.INFO)
@@ -227,7 +227,7 @@ def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
             lmc_ranks=rgen(),
             slfm_kernels=slfmgen(),
             indep_gp=indepgen())
-        lmc = LMC(xss, yss, functional_kernel=fk,
+        lmc = InterpolatedLLGP(xss, yss, functional_kernel=fk,
                   normalize=True, m=m, **kwargs)
         opt = AdaDelta(**optimizer_opts)
         with contexttimer.Timer() as t:

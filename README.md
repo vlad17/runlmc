@@ -83,7 +83,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
        -> validate `_check_omp` accordingly.
    -> prediction interface -- return full variance (cached?)
    -> get rid of sample prediction.
-   -> reorg but keep Non-unif (time series) LMC -> InterpolatedLLGP
+   -> Update interface in following user files:
        -> runtime check for 1-d input
        -> Corresponding modifications in `README.md, benchmarks/picture-fx2007/fxmetrics.py, benchmarks/picture-fx2007/fxpics.py, examples/example.ipynb, examples/fx2007.ipynb,` (add example-running to .travis.yml checks (?))
    -> Separate out non-model functionality: prediction

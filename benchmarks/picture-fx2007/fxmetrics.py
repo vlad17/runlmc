@@ -10,7 +10,7 @@ import contexttimer
 import numpy as np
 from standard_tester import *
 
-from runlmc.models.lmc import LMC
+from runlmc.models.interpolated_llgp import InterpolatedLLGP
 from runlmc.kern.rbf import RBF
 from runlmc.models.optimization import AdaDelta
 from runlmc.models.gpy_lmc import GPyLMC
@@ -27,7 +27,7 @@ print('running MINRES metrics')
 
 # also takes ~10 min
 np.random.seed(1234)
-lmc_with_metrics = LMC(xss, yss, kernels=ks, ranks=ranks, metrics=True, max_procs=1)
+lmc_with_metrics = InterpolatedLLGP(xss, yss, kernels=ks, ranks=ranks, metrics=True, max_procs=1)
 lmc_with_metrics.optimize(optimizer=AdaDelta(
         # Force full 35 iterations with ratio = 0
         verbosity=10, max_it=35, min_grad_ratio=0))

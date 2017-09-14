@@ -17,7 +17,7 @@ from runlmc.approx.iterative import Iterative
 from runlmc.kern.rbf import RBF
 from runlmc.kern.matern32 import Matern32
 from runlmc.kern.std_periodic import StdPeriodic
-from runlmc.models.lmc import LMC
+from runlmc.models.interpolated_llgp import InterpolatedLLGP
 from runlmc.lmc.stochastic_deriv import StochasticDeriv
 from runlmc.lmc.functional_kernel import FunctionalKernel
 from runlmc.lmc.grid_kernel import *
@@ -138,7 +138,7 @@ def _main():
 
 
 def prep(d, n_o, Xs):
-    # Replicates LMC (runlmc.models.lmc) code minimally.
+    # Replicates InterpolatedLLGP (runlmc.models.interpolated_llgp) code minimally.
     with contexttimer.Timer() as exact:
         dists = scipy.spatial.distance.pdist(Xs.reshape(-1, 1))
         dists = scipy.spatial.distance.squareform(dists)

@@ -5,7 +5,7 @@ import numpy as np
 import scipy.linalg as la
 import scipy.spatial.distance as dist
 
-from .lmc import LMC
+from .interpolated_llgp import InterpolatedLLGP
 from .optimization import AdaDelta
 from ..kern.rbf import RBF
 from ..lmc.kernel import ExactLMCLikelihood
@@ -42,8 +42,8 @@ class ExactAnalogue:
         self.exact = None
 
     def gen_lmc(self, m):
-        lmc = LMC(self.xss, self.yss, normalize=False, m=m,
-                  functional_kernel=self.functional_kernel)
+        lmc = InterpolatedLLGP(self.xss, self.yss, normalize=False, m=m,
+                               functional_kernel=self.functional_kernel)
         return lmc
 
     def gen_exact(self):
@@ -179,7 +179,7 @@ class LMCTest(RandomTest):
             return list(map(np.array, x))
         basic_Xs = mapnp([[0, 1, 2], [0.5, 1.5, 2.5]])
         basic_Ys = mapnp([[5, 6, 7], [7, 6, 5]])
-        self.assertRaises(ValueError, LMC, basic_Xs, basic_Ys)
+        self.assertRaises(ValueError, InterpolatedLLGP, basic_Xs, basic_Ys)
 
     def test_kernel_reconstruction_1d(self):
         ea = self._case_1d()
