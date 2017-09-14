@@ -8,7 +8,7 @@ import scipy.spatial.distance as dist
 from .interpolated_llgp import InterpolatedLLGP
 from .optimization import AdaDelta
 from ..kern.rbf import RBF
-from ..lmc.kernel import ExactLMCLikelihood
+from ..lmc.likelihood import ExactLMCLikelihood
 from ..lmc.functional_kernel import FunctionalKernel
 from ..util.testing_utils import RandomTest, check_np_lists
 

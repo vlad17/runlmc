@@ -20,7 +20,7 @@ from ..linalg.diag import Diag
 from ..lmc.stochastic_deriv import StochasticDeriv
 from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
-from ..lmc.kernel import ExactLMCLikelihood, ApproxLMCLikelihood
+from ..lmc.likelihood import ExactLMCLikelihood, ApproxLMCLikelihood
 from ..util.docs import inherit_doc
 
 _LOG = logging.getLogger(__name__)
