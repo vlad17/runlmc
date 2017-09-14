@@ -77,15 +77,15 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 ### Roadmap
 
 0. LMC class refactor (to allow multi-input-dimension grids)
+   -> prediction interface 
+       -> Corresponding modifications in `README.md, benchmarks/picture-fx2007/fxmetrics.py, benchmarks/picture-fx2007/fxpics.py, examples/example.ipynb, examples/fx2007.ipynb,` (add example-running to .travis.yml checks (?))
    -> cache -> use lru_cache + `clear_cache()`
    -> StochasticDerivative -> StochasticDerivativeService (parameterized w/ metrics, pool)
        -> Make wrapper for pool for in-band parallelism (max_proc=0, should be default)
        -> validate `_check_omp` accordingly.
-   -> prediction interface -- return full variance (cached?)
    -> get rid of sample prediction.
    -> Update interface in following user files:
-       -> runtime check for 1-d input
-       -> Corresponding modifications in `README.md, benchmarks/picture-fx2007/fxmetrics.py, benchmarks/picture-fx2007/fxpics.py, examples/example.ipynb, examples/fx2007.ipynb,` (add example-running to .travis.yml checks (?))
+       -> runtime check for 1-d input (lo/hi/Xs should be validated)
    -> Separate out non-model functionality: prediction
 0. Add basic components for block-toeplitz
 0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)
@@ -98,6 +98,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
     * Cutajar 2016 iterative inversion approach?
     * T.Chan preconditioning for specialized on-grid case (needs development of partial grid)
 0. TODO(test) - document everything that's missing documentation along the way.
+0. Current prediction generates the full covariance matrix, then throws everything but the diagonal away. Can we do better?
 0. Compare to [MTGP](http://www.robots.ox.ac.uk/~davidc/publications_MTGP.php), [CGP](http://www.jmlr.org/papers/volume12/alvarez11a/alvarez11a.pdf)
 0. Minor perf improvements: what helps?
     * CPython; numba.
@@ -112,9 +113,5 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 0. mean functions
 0. product kernels (multiple factors) 
 0. active dimension optimization
-
-### Considerations 
-
-* Real datasets: 
-* Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
+0. Consider other approximate inverse algorithms: see Thm 2.4 of [Agarwal, Allen-Zhu, Bullins, Hazan, Ma 2016](https://arxiv.org/abs/1611.01146)
 
