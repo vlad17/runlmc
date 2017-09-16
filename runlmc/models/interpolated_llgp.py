@@ -65,20 +65,19 @@ class InterpolatedLLGP(MultiGP):
     The functionality for the various prediction modes is summarized below.
 
     * `'on-the-fly'` - Use matrix-free inversion to compute the covariance \
-    for the entire set of points on which we're predicting. This means that
-    variance prediction take :math:`O(n lg n)` time per test point, where
-    `Xs` has :math:`n` datapoints total. This should be preferred for small
+    for the entire set of points on which we're predicting. This means that \
+    variance prediction take :math:`O(n \log n)` time per test point, where \
+    `Xs` has :math:`n` datapoints total. This should be preferred for small \
     test sets.
     * `'precompute'` - Compute an auxiliary predictive variance matrix for \
-    the grid points, but then cheaply re-use that work for prediction. This
-    is an up-front :math:`O(n^2 lg n)` payment for :math:`O(1)` predictive
+    the grid points, but then cheaply re-use that work for prediction. This \
+    is an up-front :math:`O(n^2 \log n)` payment for :math:`O(1)` predictive \
     variance afterwards per test point.
-    * `'exact'` - Use the exact cholesky-based algorithm (not matrix free),
-    :math:`O(n^3)` runtime up-front and then :math:`O(n^2)` per data point.
+    * `'exact'` - Use the exact cholesky-based algorithm (not matrix free), \
+    :math:`O(n^3)` runtime up-front and then :math:`O(n^2)` per query.
 
     Note `'on-the-fly', 'precompute'` can be parallelized by the number
     of test points and training points, respectively.
-
 
     :param Xs: input observations, should be a list of numpy arrays,
                where the numpy arrays are one dimensional.
