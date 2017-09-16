@@ -14,9 +14,6 @@ from ..approx.interpolation import multi_interpolant, autogrid
 from ..approx.iterative import Iterative
 from ..linalg.composition import Composition
 from ..linalg.matrix import Matrix
-from ..linalg.numpy_matrix import NumpyMatrix
-from ..linalg.kronecker import Kronecker
-from ..linalg.diag import Diag
 from ..lmc.stochastic_deriv import StochasticDeriv
 from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
@@ -66,18 +63,22 @@ class InterpolatedLLGP(MultiGP):
     grid is specified by `lo,hi,m`.
 
     The functionality for the various prediction modes is summarized below.
-    Note `'matrix-free'` is the default.
 
-    * `'matrix-free'` - If the number of test points is smaller than the \
-    number of grid points, use `'on-the-fly'`. If the \
-    number of points is greater than the number of grid \
-    points, use `'precompute'`, and use that from then onwards.
     * `'on-the-fly'` - Use matrix-free inversion to compute the covariance \
-    for the entire set of points on which we're predicting.
+    for the entire set of points on which we're predicting. This means that
+    variance prediction take :math:`O(n lg n)` time per test point, where
+    `Xs` has :math:`n` datapoints total. This should be preferred for small
+    test sets.
     * `'precompute'` - Compute an auxiliary predictive variance matrix for \
-    the grid points, but then cheaply re-use that work for prediction.
-    * `'exact'` - Use the exact cholesky-based algorithm (not matrix free)
-    * `'sample'` - Use the sampling algorithm from Wilson 2015.
+    the grid points, but then cheaply re-use that work for prediction. This
+    is an up-front :math:`O(n^2 lg n)` payment for :math:`O(1)` predictive
+    variance afterwards per test point.
+    * `'exact'` - Use the exact cholesky-based algorithm (not matrix free),
+    :math:`O(n^3)` runtime up-front and then :math:`O(n^2)` per data point.
+
+    Note `'on-the-fly', 'precompute'` can be parallelized by the number
+    of test points and training points, respectively.
+
 
     :param Xs: input observations, should be a list of numpy arrays,
                where the numpy arrays are one dimensional.
@@ -96,9 +97,6 @@ class InterpolatedLLGP(MultiGP):
                     (runs exact solution alongside this one, may be slow).
     :param prediction: one of `'matrix-free'`, `'on-the-fly'`,
                               `'precompute'`, `'exact'`, `'sample'`.
-    :param variance_samples: only used if `prediction` is set to `'sample'`.
-                             number of variance samples used for predictive
-                             variance.
     :param max_procs: maximum number of processes to use for parallelism,
                       defaults to cpu count.
     :param functional_kernel: a
@@ -112,8 +110,7 @@ class InterpolatedLLGP(MultiGP):
 
     def __init__(self, Xs, Ys, normalize=True,  # pylint: disable=too-many-arguments,dangerous-default-value,too-many-locals
                  lo=None, hi=None, m=None, name='lmc',
-                 metrics=False, prediction='matrix-free',
-                 variance_samples=20, max_procs=None,
+                 metrics=False, prediction='on-the-fly', max_procs=None,
                  functional_kernel=None):
 
         super().__init__(Xs, Ys, normalize=normalize, name=name)
@@ -125,7 +122,6 @@ class InterpolatedLLGP(MultiGP):
         if not functional_kernel:
             raise ValueError('functional_kernel must be provided')
 
-        self.variance_samples = variance_samples
         self.prediction = prediction
         if prediction not in self._prediction_methods():
             raise ValueError('Variance prediction method {} unrecognized'
@@ -318,11 +314,9 @@ class InterpolatedLLGP(MultiGP):
     # TODO(test) prediction testing
     def _prediction_methods(self):
         return {
-            'matrix-free': self._var_predict_matrix_free,
             'on-the-fly': self._var_predict_on_the_fly,
             'precompute': self._var_predict_precompute,
             'exact': self._var_predict_exact,
-            'sample': self._var_predict_sample
         }
 
     def _raw_predict(self, Xs):
@@ -347,20 +341,6 @@ class InterpolatedLLGP(MultiGP):
         endpoints = np.add.accumulate(lens)[:-1]
         return np.split(mean, endpoints), np.split(var, endpoints)
 
-    # TODO(cleanup) all of the below variance prediction methods should
-    # be cleaned up and moved to a separate module.
-
-    def _var_predict_matrix_free(self, W, Xs):
-        if 'precomputed_nu' in self._cache:
-            return self._var_predict_precompute(W, Xs)
-
-        tot_pred_size = sum(map(len, Xs))
-        tot_grid_size = len(self.inducing_grid) * len(
-            self._functional_kernel.noise)
-        if tot_pred_size > tot_grid_size:
-            return self._var_predict_precompute(W, Xs)
-        return self._var_predict_on_the_fly(W, Xs)
-
     def _var_predict_exact(self, _, Xs):
         exact = self._dense()
         K_test_X = ExactLMCLikelihood.kernel_from_indices(
@@ -368,69 +348,6 @@ class InterpolatedLLGP(MultiGP):
         var_explained = K_test_X.dot(la.cho_solve(exact.L, K_test_X.T))
 
         return np.diag(var_explained)
-
-    @staticmethod
-    def _chol_sample(W, B, t, randn_samps, q):
-        LB = la.cholesky(B)
-        # bareiss and cholesky both work very poorly since we're
-        # numerically rank deficient
-        # from runlmc.linalg.shur import shur
-        # Lt = shur(t).T
-        # Lt = la.cholesky(la.toeplitz(t))
-        w, v = la.eigh(la.toeplitz(t))
-        w[w < 0] = 0
-        nnz = np.count_nonzero(w)
-        if nnz < len(w):
-            _LOG.info('encountered incomplete rank %d of %d order kernel %d',
-                      nnz, len(w), q)
-        Lt = v * np.sqrt(w)
-        L = Kronecker(NumpyMatrix(LB), NumpyMatrix(Lt))
-        return W.dot(L.matmat(randn_samps))
-
-    def _sampled_nu(self):
-        if 'sampled_nu' in self._cache:
-            return self._cache['sampled_nu']
-
-        # This performs linear algebra
-        # corresponding to Sections 5.1.1 and 5.1.2 from the MSGP paper.
-        #
-        # The MSGP sampling-based variance technique here requires
-        # a cholesky decomposition, done in a parallalized manner.
-        # Thus, we're not matrix-free in the predictions.
-
-        Ns = self.variance_samples
-        Q = len(self._functional_kernel.kernels)
-        par = min(max(self.max_procs, 1), max(Ns, Q))
-        W = self.interpolant
-        ls = [(W, coreg_mat, toep.top, np.random.randn(W.shape[1], Ns), i)
-              for i, (coreg_mat, toep) in
-              enumerate(zip(self._functional_kernel.coreg_mats(),
-                            self.kernel.materialized_kernels))]
-        _LOG.info('Using %d processors to '
-                  'precompute %d kernel factors',
-                  par, Q)
-        with closing(Pool(processes=par)) as pool:
-            samples = pool.starmap(InterpolatedLLGP._chol_sample, ls)
-            samples.append(
-                Diag(np.sqrt(self.kernel.K.noise.v)).matmat(
-                    np.random.randn(len(self.y), Ns)))
-            samples = np.array(samples).sum(axis=0).T
-
-            # Re-use same pool
-            _LOG.info('Using %d processors to precompute %d '
-                      'variance samples', par, Ns)
-            ls = [(self.kernel.K, sample) for sample in samples]
-            samples = np.array(pool.starmap(Iterative.solve, ls)).T
-
-        nu = np.square(self.kernel.K.grid_K.matmat(
-            self.interpolantT.dot(samples))).sum(axis=1) / Ns
-
-        self._cache['sampled_nu'] = nu
-        return nu
-
-    def _var_predict_sample(self, prediction_interpolant, _):
-        nu = self._sampled_nu()
-        return prediction_interpolant.dot(nu)
 
     @staticmethod
     def _var_solve(i, K, K_XU, K_UX):
