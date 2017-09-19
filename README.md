@@ -20,6 +20,7 @@ In other words, this provides a matrix-free implementation of multi-output GPs f
 * Currently, I'm only supporting 1 input dimension.
 * Zero-mean only for now.
 * Check out the [latest documentation](http://runlmc.readthedocs.io/en/latest/)
+* Check out the *Dev Stuff* section below for installation requirements.
 
 ## A note on GPy
 
@@ -59,8 +60,6 @@ Make sure that the directory root is in the `PYTHONPATH` when running the benchm
     
 ## Dev Stuff
 
-Required packages for running (Python 3): `pip install -r requirements.txt`.
-
 All below invocations should be done from the repo root.
  
 | Command           | Purpose  |
@@ -69,8 +68,12 @@ All below invocations should be done from the repo root.
 | `./docbuild.sh`   | Regenerate docs (index will be in `doc/_generated/_build/index.html`) |
 | `nosetests`       | Run unit tests |
 | `./arxiv-tar.sh`       | Create an arxiv-friendly tarball of the paper sources |
-| `python setup.py install`       | Install minimal requirements for GPy |
+| `python setup.py install`       | Install minimal runtime requirements for `runlmc` |
 | `./asvrun.sh` | run performance benchmarks |
+
+To develop, requirements also include:
+
+    sphinx sphinx_rtd_theme matplotlib codecov pylint parameterized pandas contexttimer GPy
 
 To build the paper, the packages `epstool` and `epstopdf` are required. Developers should also have `sphinx sphinx_rtd_theme matplotlib GPy codecov pylint parameterized pandas contexttimer` installed.
 
