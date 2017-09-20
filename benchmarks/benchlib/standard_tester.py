@@ -81,9 +81,6 @@ def _foreign_exchange_shared():
 
 
 def foreign_exchange_2007():
-    import os
-    print(os.getcwd())
-    print(os.listdir(os.getcwd()))
     # This example uses only 2007 data
     fx = _foreign_exchange_shared()
     fx2007 = fx.ix['2007/01/01':'2008/01/01']
@@ -228,7 +225,7 @@ def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
             slfm_kernels=slfmgen(),
             indep_gp=indepgen())
         lmc = InterpolatedLLGP(xss, yss, functional_kernel=fk,
-                  normalize=True, m=m, **kwargs)
+                               normalize=True, m=m, **kwargs)
         opt = AdaDelta(**optimizer_opts)
         with contexttimer.Timer() as t:
             lmc.optimize(optimizer=opt)
