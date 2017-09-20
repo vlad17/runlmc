@@ -81,7 +81,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 0. LMC class refactor (to allow multi-input-dimension grids)
    -> prediction interface 
-       -> Corresponding modifications in `README.md, benchmarks/picture-fx2007/fxmetrics.py, benchmarks/picture-fx2007/fxpics.py, examples/example.ipynb, examples/fx2007.ipynb,` (add example-running to .travis.yml checks (?))
+       -> Corresponding modifications in `README.md, examples/example.ipynb, examples/fx2007.ipynb,` (add example-running to .travis.yml checks (?))
    -> cache -> use lru_cache + `clear_cache()`
    -> StochasticDerivative -> StochasticDerivativeService (parameterized w/ metrics, pool)
        -> Make wrapper for pool for in-band parallelism (max_proc=0, should be default)

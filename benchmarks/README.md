@@ -4,7 +4,7 @@ This directory contains benchmarking code, invocations, and sample results.
 
 ## All actual benchmarks (everything but lib)
 
-Each directory contains a `run.sh` file. This must be invoked from the respective directrory.
+Each directory contains a `run.sh` file. This must be invoked from the respective directory. Each benchmark directory also has a corresponding `out` folder as a subfolder. Exceptions include the benchmarks that are auto-run by `asv`, which are located in the `asv` directory. Their outputs are at the top-level (postfixed with `-out`) because of `asv` requirements.
 
 General info:
 
