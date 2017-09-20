@@ -11,10 +11,8 @@ Runs only on local machine, but leverages all processessors avaiable in the
 model evaluation phase. Creates pretty pictures from a single run of
 the fx2007 paper and puts them into ./out.
 
-prediction_time.txt - trace of time it takes to do some predictions
 fx2007graph.pdf - graphical comparison of predictive mean+var of LLGP vs COGP
                   on the stocks being predicted.
-sample-pred-var.eps - exact vs sampled predictive variance estimation
 iterations.eps - number of iterations MINRES requires during course of optimization
 running_cutoff.eps - gradient norms (and cutoff) during course of optimization
 

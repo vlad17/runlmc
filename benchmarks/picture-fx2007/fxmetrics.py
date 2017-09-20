@@ -1,11 +1,14 @@
+# Runs 1-kernel LMC with a rank-2 RBF on fx2007
+# Computes explicit log likelihood and plots optimization trace
+
+import os
+os.environ['OMP_NUM_THREADS'] = '1'
+
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 
-import os
-import logging
 import sys
-import contexttimer
 
 import numpy as np
 from standard_tester import *
@@ -14,6 +17,7 @@ from runlmc.models.interpolated_llgp import InterpolatedLLGP
 from runlmc.kern.rbf import RBF
 from runlmc.models.optimization import AdaDelta
 from runlmc.models.gpy_lmc import GPyLMC
+from runlmc.lmc.functional_kernel import FunctionalKernel
 
 import sys
 
@@ -27,22 +31,27 @@ print('running MINRES metrics')
 
 # also takes ~10 min
 np.random.seed(1234)
-lmc_with_metrics = InterpolatedLLGP(xss, yss, kernels=ks, ranks=ranks, metrics=True, max_procs=1)
+fk = FunctionalKernel(D=len(xss), lmc_kernels=ks, lmc_ranks=ranks)
+lmc_with_metrics = InterpolatedLLGP(
+    xss, yss, functional_kernel=fk, metrics=True)
 lmc_with_metrics.optimize(optimizer=AdaDelta(
-        # Force full 35 iterations with ratio = 0
-        verbosity=10, max_it=35, min_grad_ratio=0))
+    # Force full 35 iterations with ratio = 0
+    verbosity=10, max_it=35, min_grad_ratio=0))
 
-def moving_average(a, n) :
+
+def moving_average(a, n):
     sums = np.add.accumulate(a, dtype=float)
     sums[n:] = sums[n:] - sums[:-n]
     sums[n:] /= n
     sums[:n] /= np.arange(1, n + 1)
     return sums
 
+
 def div_rolled_max(a, n):
     ma = moving_average(a, n)
     roll_max = np.maximum.accumulate(ma)
     return roll_max
+
 
 plt.plot(lmc_with_metrics.metrics.iterations, label='minres MVMs')
 n = len(lmc_with_metrics.y)
