@@ -1,6 +1,6 @@
 publishing results into out directory /memex/vyf/runlmc/benchmarks/picture-fx2007/out/
 training LLGP
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.2, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f4ec21ab488>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fbc6d47dbf8>}
 iteration        5 grad norm 5.7016e+02
 iteration       10 grad norm 6.5188e+02
 iteration       15 grad norm 2.1134e+02
@@ -10,23 +10,14 @@ iteration       30 grad norm 9.4312e+01
 finished adadelta optimization
             31 iterations
     5.9952e+01 final grad norm
-    5.9952e+01 final MA(1) grad norm
-    6.9672e+02 max MA(1) grad norm
     norm used inf
-    time 56.41196821630001 smse 0.212380224141 nlpd -3.62975893015
+    time 88.86488011479378 smse 0.212380224141 nlpd -3.62975893015
 training COGP
 
-time   303.2366 (    0.0000) smse     0.2771 (    0.0000) nlpd    13.0297 (    0.0000)
+time  1627.9567 (    0.0000) smse     0.2771 (    0.0000) nlpd    13.0297 (    0.0000)
 fx2007graph.pdf
-running on-the-fly, exact, precompute predictions for comparison
-    reporting results in prediction_time.txt
-running sampling prediction for different samples
-warning: found 34 of 150 predictive variances set to 0
-warning: found 28 of 150 predictive variances set to 0
-warning: found 32 of 150 predictive variances set to 0
-sample-pred-var.eps
 running MINRES metrics
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 35, 'verbosity': 10, 'min_grad_ratio': 0, 'roll': 1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f8b55347400>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 35, 'verbosity': 10, 'min_grad_ratio': 0, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f8bab226b70>}
 iteration        3 grad norm 5.5082e+02
 iteration        6 grad norm 5.8600e+02
 iteration        9 grad norm 6.4482e+02
@@ -41,8 +32,6 @@ iteration       33 grad norm 2.2683e+02
 finished adadelta optimization
             35 iterations
     9.9740e+01 final grad norm
-    9.9740e+01 final MA(1) grad norm
-    6.9672e+02 max MA(1) grad norm
     norm used inf
 iterations.eps
 running_cutoff.eps
