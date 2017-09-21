@@ -2,6 +2,7 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 from contextlib import closing
+import functools
 import logging
 from multiprocessing import Pool, cpu_count
 import os
@@ -147,7 +148,6 @@ class InterpolatedLLGP(MultiGP):
         self.y = np.hstack(self.Ys)
 
         self.kernel = None
-        self._cache = {}
         self.metrics = Metrics() if metrics else None
         self.max_procs = cpu_count() if max_procs is None else max_procs
         self._pool = None
@@ -188,7 +188,7 @@ class InterpolatedLLGP(MultiGP):
             self._pool = None
 
     def parameters_changed(self):
-        self._cache = {}
+        self._clear_caches()
 
         grid_kernel = gen_grid_kernel(
             self._functional_kernel,
@@ -242,11 +242,10 @@ class InterpolatedLLGP(MultiGP):
             self.metrics.grad_error.append(diff_norm / exact_norm)
             self.metrics.log_likely.append(self.log_likelihood())
 
+    @functools.lru_cache(maxsize=1)
     def _dense(self):
-        if 'exact_kernel' not in self._cache:
-            self._cache['exact_kernel'] = ExactLMCLikelihood(
-                self._functional_kernel, self.Xs, self.Ys)
-        return self._cache['exact_kernel']
+        return ExactLMCLikelihood(
+            self._functional_kernel, self.Xs, self.Ys)
 
     def K(self):
         """
@@ -289,26 +288,24 @@ class InterpolatedLLGP(MultiGP):
         return -0.5 * nll
 
     # Predictive mean for grid points U
+    @functools.lru_cache(maxsize=1)
     def _grid_alpha(self):
-        if 'grid_alpha' not in self._cache:
-            self._cache['grid_alpha'] = self.kernel.K.grid_K.matvec(
-                self.interpolantT.dot(self.kernel.alpha()))
-        return self._cache['grid_alpha']
+        # TODO(cleanup) use proper kernel interface for this
+        return self.kernel.K.grid_K.matvec(
+            self.interpolantT.dot(self.kernel.alpha()))
 
     # The native covariance diag(K) for each output, i.e.,
     # the a priori variance of a single point for each output.
+    @functools.lru_cache(maxsize=1)
     def _native_variance(self):
-        if 'native_var' not in self._cache:
-            coregs = np.column_stack(np.square(per_output).sum(axis=0)
-                                     for per_output
-                                     in self._functional_kernel.coreg_vecs)
-            coregs += np.column_stack(self._functional_kernel.coreg_diags)
-            kernels = self._functional_kernel.eval_kernels(0)
-            native_output_var = coregs.dot(kernels).reshape(-1)
-            native_var = native_output_var + self._functional_kernel.noise
-
-            self._cache['native_var'] = native_var
-        return self._cache['native_var']
+        coregs = np.column_stack(np.square(per_output).sum(axis=0)
+                                 for per_output
+                                 in self._functional_kernel.coreg_vecs)
+        coregs += np.column_stack(self._functional_kernel.coreg_diags)
+        kernels = self._functional_kernel.eval_kernels(0)
+        native_output_var = coregs.dot(kernels).reshape(-1)
+        native_var = native_output_var + self._functional_kernel.noise
+        return native_var
 
     # TODO(test) prediction testing
     def _prediction_methods(self):
@@ -357,10 +354,8 @@ class InterpolatedLLGP(MultiGP):
         x = K_UX.matvec(x)
         return x[i]
 
+    @functools.lru_cache(maxsize=1)
     def _precomputed_nu(self):
-        if 'precomputed_nu' in self._cache:
-            return self._cache['precomputed_nu']
-
         W = self.interpolant
         WT = self.interpolantT
         K_UU = self.kernel.K.grid_K
@@ -382,7 +377,6 @@ class InterpolatedLLGP(MultiGP):
         with closing(Pool(processes=par)) as pool:
             nu = pool.starmap(InterpolatedLLGP._var_solve, ls, chunks)
 
-        self._cache['precomputed_nu'] = nu
         return nu
 
     def _var_predict_precompute(self, prediction_interpolant, _):
@@ -402,3 +396,9 @@ class InterpolatedLLGP(MultiGP):
 
         full_mat = K_test_X.dot(inverted)
         return np.diag(full_mat)
+
+    def _clear_caches(self):
+        self._dense.cache_clear()
+        self._grid_alpha.cache_clear()
+        self._native_variance.cache_clear()
+        self._precomputed_nu.cache_clear()
