@@ -39,7 +39,9 @@ If there is some quantifiable success with this approach then integration with G
     yss = [f(2 * np.pi * xs) + np.random.randn(len(xs)) * 0.05
            for f, xs in zip([np.sin, np.cos], xss)]
     ks = [RBF(name='rbf{}'.format(i)) for i in range(nout)]
-    lmc = LMC(xss, yss, kernels=ks)
+    ranks = [1]
+    fk = FunctionalKernel(D=len(xss), lmc_kernels=ks, lmc_ranks=ranks)
+    lmc = LMC(xss, yss, functional_kernel=fk)
     # ... plotting code
         
 ![unopt](https://raw.githubusercontent.com/vlad17/runlmc/master/examples/unopt.png)
@@ -80,8 +82,6 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 ### Roadmap
 
 0. LMC class refactor (to allow multi-input-dimension grids)
-   -> prediction interface 
-       -> Corresponding modifications in `README.md, examples/example.ipynb, examples/fx2007.ipynb,` (add example-running to .travis.yml checks (?))
    -> cache -> use lru_cache + `clear_cache()`
    -> StochasticDerivative -> StochasticDerivativeService (parameterized w/ metrics, pool)
        -> Make wrapper for pool for in-band parallelism (max_proc=0, should be default)
