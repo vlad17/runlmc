@@ -4,6 +4,8 @@
 # pylint: skip-file
 
 import sys
+from contextlib import closing
+from multiprocessing import Pool, cpu_count
 
 import contexttimer
 import numpy as np
@@ -18,7 +20,7 @@ from runlmc.kern.rbf import RBF
 from runlmc.kern.matern32 import Matern32
 from runlmc.kern.std_periodic import StdPeriodic
 from runlmc.models.interpolated_llgp import InterpolatedLLGP
-from runlmc.lmc.stochastic_deriv import StochasticDeriv
+from runlmc.lmc.stochastic_deriv import StochasticDerivService
 from runlmc.lmc.functional_kernel import FunctionalKernel
 from runlmc.lmc.grid_kernel import *
 from runlmc.lmc.likelihood import ExactLMCLikelihood, ApproxLMCLikelihood
@@ -200,15 +202,21 @@ def run_kernel_benchmark(
 
         return
 
-    with contexttimer.Timer() as t:
-        grid_kernel = gen_grid_kernel(
-            fkern, grid_dists, interpolant, interpolantT, list(map(len, Xs)))
-        approx = ApproxLMCLikelihood(fkern, grid_kernel, grid_dists, Ys, None)
-    aprx_time = t.elapsed
+    n_it = 10
+    metrics = None
+    with closing(Pool(processes=cpu_count())) as pool:
+        sds = StochasticDerivService(metrics, pool, n_it)
+        with contexttimer.Timer() as t:
+            grid_kernel = gen_grid_kernel(
+                fkern, grid_dists, interpolant, interpolantT,
+                list(map(len, Xs)))
+            approx = ApproxLMCLikelihood(
+                fkern, grid_kernel, grid_dists, Ys, sds)
+        aprx_time = t.elapsed
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))
     print('        {:10.4f} sec approx - solve K*alpha=y, solve {} trace terms'
-          .format(aprx_time, StochasticDeriv.N_IT))
+          .format(aprx_time, n_it))
 
     matrix_diff = np.fabs(approx.K.as_numpy() - exact.K).mean()
     print('        {:9.4e} |K_exact - K_approx|_1 / n^2'.format(matrix_diff))
