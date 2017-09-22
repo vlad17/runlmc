@@ -15,11 +15,12 @@ from ..approx.interpolation import multi_interpolant, autogrid
 from ..approx.iterative import Iterative
 from ..linalg.composition import Composition
 from ..linalg.matrix import Matrix
-from ..lmc.stochastic_deriv import StochasticDeriv
+from ..lmc.stochastic_deriv import StochasticDerivService
 from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
 from ..lmc.likelihood import ExactLMCLikelihood, ApproxLMCLikelihood
 from ..util.docs import inherit_doc
+from ..util.inline_pool import InlinePool
 
 _LOG = logging.getLogger(__name__)
 
@@ -102,15 +103,20 @@ class InterpolatedLLGP(MultiGP):
     :param functional_kernel: a
         :class:`runlmc.lmc.functional_kernel.FunctionalKernel` determining
         :math:`K`.
+    :param trace_iterations: number of iterations to be used in approximate
+        trace algorithm.
     :raises: :class:`ValueError` if `Xs` and `Ys` lengths do not match.
     :raises: :class:`ValueError` if normalization if any `Ys` have no variance
                                  or values in `Xs` have multiple identical
                                  values.
+    :ivar metrics: the :class:`runlmc.lmc.metrics.Metrics` instance associated
+                   with the model
     """
 
     def __init__(self, Xs, Ys, normalize=True,  # pylint: disable=too-many-arguments,dangerous-default-value,too-many-locals
                  lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='on-the-fly', max_procs=None,
+                 trace_iterations=10,
                  functional_kernel=None):
 
         super().__init__(Xs, Ys, normalize=normalize, name=name)
@@ -146,25 +152,35 @@ class InterpolatedLLGP(MultiGP):
         self._functional_kernel = functional_kernel
         self.link_parameter(self._functional_kernel)
         self.y = np.hstack(self.Ys)
-
         self.kernel = None
-        self.metrics = Metrics() if metrics else None
-        self.max_procs = cpu_count() if max_procs is None else max_procs
-        self._pool = None
-
-        self._check_omp(max_procs)
 
         self.update_model(True)
+
+        self.metrics = Metrics() if metrics else None
+        self._pool = InlinePool(self._generate_pool(max_procs))
+        self._deriv_service = StochasticDerivService(
+            self.metrics, self._pool, trace_iterations)
         _LOG.info('InterpolatedLLGP %s fully initialized', self.name)
 
     EVAL_NORM = np.inf
+
+    def _generate_pool(self, max_procs):
+        self._check_omp(max_procs)
+        max_procs = cpu_count() if max_procs is None else max_procs
+        if max_procs == 1 or len(self.y) < 1000:
+            _LOG.info('InterpolatedLLGP (%d hyperparams) will run serially',
+                      len(self.param_array))
+            return None
+        _LOG.info('InterpolatedLLGP (%d hyperparams) with %d workers',
+                  len(self.param_array), max_procs)
+        return Pool(processes=max_procs)
 
     def _check_omp(self, procs_requested):
         omp = os.environ.get('OMP_NUM_THREADS', None)
         procs_info = 'InterpolatedLLGP(max_procs={})'.format(procs_requested)
         if procs_requested is None:
-            procs_info += ' [defaults to {}]'.format(self.max_procs)
-        if omp is None and self.max_procs > 1:
+            procs_info += ' [defaults to {}]'.format(cpu_count())
+        if omp is None and (procs_requested or cpu_count()) > 1:
             _LOG.warning('Parallelizing at the process level with %s is'
                          ' incompatible with OMP-level parallelism '
                          '(OMP_NUM_THREADS env var is unset, using all '
@@ -173,19 +189,8 @@ class InterpolatedLLGP(MultiGP):
     def optimize(self, **kwargs):
         if self.metrics is not None:
             self.metrics = Metrics()
-        if self.max_procs == 1 or len(self.y) < 1000:
-            _LOG.info('Optimization (%d hyperparams) starting in serial mode',
-                      len(self.param_array))
-            self._pool = None
-            super().optimize(**kwargs)
-        else:
-            par = min(StochasticDeriv.N_IT + 1, self.max_procs)
-            _LOG.info('Optimization (%d hyperparams) starting with %d workers',
-                      len(self.param_array), par)
-            with closing(Pool(processes=par)) as pool:
-                self._pool = pool
-                super().optimize(**kwargs)
-            self._pool = None
+            self._deriv_service.metrics = self.metrics
+        super().optimize(**kwargs)
 
     def parameters_changed(self):
         self._clear_caches()
@@ -201,8 +206,7 @@ class InterpolatedLLGP(MultiGP):
             grid_kernel,
             self.dists,
             self.Ys,
-            self.metrics,
-            self._pool)
+            self._deriv_service)
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
@@ -369,13 +373,8 @@ class InterpolatedLLGP(MultiGP):
         Dm = D * m
         assert Dm == K_XU.shape[1] and Dm == K_UX.shape[0]
 
-        par = min(max(self.max_procs, 1), Dm)
-        chunks = max(K_XU.shape[1] // par // 4, 1)
         ls = [(i, self.kernel.K, K_XU, K_UX) for i in range(Dm)]
-        _LOG.info('Using %d processors to precompute %d '
-                  'variance terms exactly', par, Dm)
-        with closing(Pool(processes=par)) as pool:
-            nu = pool.starmap(InterpolatedLLGP._var_solve, ls, chunks)
+        nu = self._pool.starmap(InterpolatedLLGP._var_solve, ls)
 
         return nu
 
@@ -386,13 +385,8 @@ class InterpolatedLLGP(MultiGP):
     def _var_predict_on_the_fly(self, _, Xs):
         K_test_X = ExactLMCLikelihood.kernel_from_indices(
             Xs, self.Xs, self._functional_kernel)
-        n_test = sum(map(len, Xs))
-        par = min(max(self.max_procs, 1), n_test)
-        _LOG.info('Using %d processors for %d on-the-fly variance'
-                  ' predictions', par, n_test)
         ls = [(self.kernel.K, k_star) for k_star in K_test_X]
-        with closing(Pool(processes=par)) as pool:
-            inverted = np.array(pool.starmap(Iterative.solve, ls)).T
+        inverted = np.array(self._pool.starmap(Iterative.solve, ls)).T
 
         full_mat = K_test_X.dot(inverted)
         return np.diag(full_mat)

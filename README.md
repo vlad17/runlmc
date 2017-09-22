@@ -81,16 +81,9 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. LMC class refactor (to allow multi-input-dimension grids)
-   -> cache -> use lru_cache + `clear_cache()`
-   -> StochasticDerivative -> StochasticDerivativeService (parameterized w/ metrics, pool)
-       -> Make wrapper for pool for in-band parallelism (max_proc=0, should be default)
-       -> validate `_check_omp` accordingly.
-   -> get rid of sample prediction.
-   -> Update interface in following user files:
-       -> runtime check for 1-d input (lo/hi/Xs should be validated)
-   -> Separate out non-model functionality: prediction
 0. Add basic components for block-toeplitz
+0. InterpolatedLLGP (to allow multi-input-dimension grids)
+   -> runtime check for 1-d input (lo/hi/Xs should be validated)
 0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?

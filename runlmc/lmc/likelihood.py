@@ -7,7 +7,6 @@ import scipy.linalg as la
 import scipy.spatial.distance as dist
 
 from .exact_deriv import ExactDeriv
-from .stochastic_deriv import StochasticDeriv
 from ..approx.ski import SKI
 from ..linalg.diag import Diag
 from ..linalg.toeplitz import Toeplitz
@@ -98,13 +97,12 @@ class LMCLikelihood:
 
 
 class ApproxLMCLikelihood(LMCLikelihood):
-    def __init__(self, functional_kernel, grid_kern, grid_dists, Ys, metrics,
-                 pool=None):
+    def __init__(self, functional_kernel, grid_kern, grid_dists, Ys, deriv):
         super().__init__(functional_kernel, Ys)
         kernels_on_grid = self.functional_kernel.eval_kernels(grid_dists)
         self.materialized_kernels = [Toeplitz(d) for d in kernels_on_grid]
         self.K = grid_kern
-        self.deriv = StochasticDeriv(self.K, self.y, metrics, pool)
+        self.deriv = deriv.generate(self.K, self.y)
         self.materialized_grads = self.functional_kernel.eval_kernel_gradients(
             grid_dists)
 

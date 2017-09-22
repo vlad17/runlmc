@@ -9,39 +9,58 @@ from ..approx.iterative import Iterative
 # https://github.com/mauriziofilippone/preconditioned_GPs/blob/d7bc09b6804ef002cc3fc6bbf936517578d7436e/code/accuracy_vs_time/gp_functions/gp_regression_cg.r
 
 
-class StochasticDeriv(Derivative):
-    # This code accepts arbitrary linear operators for the derivatives
-    # K, however, should have a "solve" function
+class StochasticDerivService:
+    """
+    This service generates :class:`runlmc.lmc.Derivative` instances with
+    pre-specified configurations for recording metrics or using
+    multiprocessing, which enables decoupling of the math from the
+    systems in the GP logic.
 
-    N_IT = 10
+    :param metrics: a :class:`runlmc.lmc.metrics.Metrics` instance or `None`
+                    (if no metrics are to be recorded)
+    :param pool: pool for parallel processing
+    :param n_it: iterations to use in stochastic trace approximation
+    :ivar metrics: the metrics instance used by this class
+    """
 
-    def __init__(self, K, y, metrics, pool=None):
-        self.n = K.shape[0]
-        self.K = K
+    def __init__(self, metrics, pool, n_it):
+        self.metrics = metrics
+        self._pool = pool
+        self._n_it = n_it
 
-        self.rs = np.random.randint(0, 2, (self.N_IT, self.n)) * 2 - 1
-
-        record_metrics = metrics is not None
+    def generate(self, K, y):
+        n = K.shape[0]
+        rs = np.random.randint(0, 2, (self._n_it, n)) * 2 - 1
+        record_metrics = self.metrics is not None
         to_invert = [(K, y, record_metrics)] + [
-            (K, x, record_metrics) for x in self.rs]
+            (K, x, record_metrics) for x in rs]
 
         if record_metrics:
-            solved, ctrs, errs = zip(
-                *StochasticDeriv._concurrent_solve(pool, to_invert))
-            metrics.iterations.append(np.mean(ctrs))
-            metrics.solv_error.append(np.mean(errs))
-            solved = list(solved)
+            solved, ctrs, errs = zip(*self._concurrent_solve(to_invert))
+            self.metrics.iterations.append(np.mean(ctrs))
+            self.metrics.solv_error.append(np.mean(errs))
         else:
-            solved = StochasticDeriv._concurrent_solve(pool, to_invert)
+            solved = self._concurrent_solve(to_invert)
 
-        self.alpha = solved[0]
-        self.inv_rs = solved[1:]
+        return StochasticDeriv(solved[0], rs, solved[1:], self._n_it)
 
-    @staticmethod
-    def _concurrent_solve(pool, ls):
-        if pool is None:
-            return [Iterative.solve(*x) for x in ls]
-        return pool.starmap(Iterative.solve, ls)
+    def _concurrent_solve(self, ls):
+        return self._pool.starmap(Iterative.solve, ls)
+
+
+class StochasticDeriv(Derivative):
+    """
+    Given the inverse of random binary vectors `inv_rs` with respect to some
+    kernel :math:`K` and the similar inverse `alpha` of observations
+    :math:`K^{-1}y`, this class produces the derivatives of :math:`K` with
+    respect to its hyperparameters.
+    """
+
+    def __init__(self, alpha, rs, inv_rs, n_it):
+        self.alpha = alpha
+        self._rs = rs
+        self._inv_rs = inv_rs
+        self._n_it = n_it
 
     def d_normal_quadratic(self, dKdt):
         return self.alpha.dot(dKdt.matvec(self.alpha))
@@ -49,7 +68,7 @@ class StochasticDeriv(Derivative):
     def d_logdet_K(self, dKdt):
         # Preconditioning Kernel Matrices, Cutajar 2016
         trace = 0
-        for r, rinv in zip(self.rs, self.inv_rs):
+        for r, rinv in zip(self._rs, self._inv_rs):
             dr = dKdt.matvec(r)
             trace += rinv.dot(dr)
-        return trace / self.N_IT
+        return trace / self._n_it
