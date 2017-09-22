@@ -1,7 +1,6 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
-from contextlib import closing
 import functools
 import logging
 from multiprocessing import Pool, cpu_count
