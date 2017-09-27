@@ -81,10 +81,14 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. Add basic components for block-toeplitz
+0. SKI cubic interpolation in higher dims
 0. InterpolatedLLGP (to allow multi-input-dimension grids)
    -> runtime check for 1-d input (lo/hi/Xs should be validated)
 0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)
+0. Benchmark dataset, re-run all to see BTTB slowdown
+0. Split kernel
+0. Re-benchmark
+0. optimize BTTB MVM with pre-alloc, power-of-2 FFTs (pad from [middle](http://users.iems.northwestern.edu/~linetsky/ExtrapolationAppendix.pdf)), etc.
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?

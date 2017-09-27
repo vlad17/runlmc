@@ -101,3 +101,10 @@ def begin_end_indices(lens):
     begins = np.roll(ends, 1)
     begins[0] = 0
     return begins, ends
+
+
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    # https://stackoverflow.com/questions/312443
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
