@@ -56,7 +56,7 @@ def cubic_kernel(x):
 def interp_cubic(grid, samples):
     """
     Given a one dimensional grid `grid` of size `m` (that's sorted) and
-    `n` sample points `samples` contained in `grid[1:-1]`, compute the
+    `n` sample points `samples`, compute the
     interpolation coefficients for a cubic interpolation on the grid.
 
     An interpolation coefficient matrix `M` is then an `n` by `m` matrix
@@ -66,8 +66,7 @@ def interp_cubic(grid, samples):
     approaches `f(sample)` at a rate of :math:`O(m^{-3})`.
 
     `samples` should be contained with the range of `grid`, but this method
-    will make do will work with what it has (it will clip things back into
-    range).
+    will create a matrix capable of handling extrapolation.
 
     :returns: the interpolation coefficient matrix
     :raises ValueError: if any of the following hold true:
@@ -111,7 +110,7 @@ def interp_cubic(grid, samples):
         relative_dist = dist_to_closest + conv_idx
         data = cubic_kernel(relative_dist)
         col_idx = coeff_idx
-        ind_ptr = np.arange(0, n_samples + 1)
+        ind_ptr = np.arange(n_samples + 1)
         csr += scipy.sparse.csr_matrix((data, col_idx, ind_ptr),
                                        shape=(n_samples, grid_size))
     return csr
@@ -119,7 +118,7 @@ def interp_cubic(grid, samples):
 
 def multi_interpolant(Xs, inducing_grid):  # pylint: disable=too-many-locals
     """
-    Creates a sparse CSR matrix across multiple inputs `Xs`.
+    Creates a sparse CSR matrix interpolantacross multiple inputs `Xs`.
 
     Each input is mapped onto the inducing grid with a cubic interpolation,
     with :func:`runlmc.approx.interpolation.interp_cubic`.
@@ -189,3 +188,116 @@ def autogrid(Xs, lo, hi, m):
     m += 4
 
     return np.linspace(lo, hi, m), m
+
+
+def interp_bicubic(gridx, gridy, samples):  # pylint: disable=too-many-locals
+    """
+    Given an implicit two dimensional grid from the Cartesian product of
+    `gridx` and `gridy`, with sizes `m1,m2`, respectively (such that each
+    grid is an equispaced increasing sequence of values), and given
+    `n` sample points (which should be 2D), this computes
+    interpolation coefficients for a cubic interpolation on the grid.
+
+    An interpolation coefficient matrix `M` is then an `n` by `m1*m2` matrix
+    that has 16 entries per row.
+
+    For a (vectorized) twice-differentiable function `f`,
+    `M.dot(f(cartesian_product(gridx, gridy)).ravel())`
+    approaches `f(sample)` at a rate of :math:`O(m^{-3})`.
+
+    :returns: the interpolation coefficient matrix
+    :raises ValueError: if any conditions similar to those in
+        :meth:`interp_bicubic` are violated.
+    """
+
+    mx, my = gridx.size, gridy.size
+    n = samples.shape[0]
+
+    if n == 0:
+        return scipy.sparse.csr_matrix((0, mx * my), dtype=float)
+
+    for s in ['gridx', 'gridy']:
+        grid = eval(s)  # pylint: disable=eval-used
+        if grid.ndim != 1:
+            raise ValueError('{} dim {} should be 1'.format(s, grid.ndim))
+        if grid.size < 4:
+            raise ValueError('grid size {} must be >=4'.format(grid.size))
+
+    if samples.ndim != 2 or samples.shape[1] != 2:
+        raise ValueError(
+            'expecting 2d samples, got shape {}'.format(samples.shape))
+
+    if samples[:, 0].min() <= gridx[0] or samples[:, 0].max() >= gridx[-1]:
+        _LOG.warning('x range of samples [%f, %f] outside grid range [%f, %f]',
+                     samples[:, 0].min(), samples[:, 0].max(),
+                     gridx[0], gridx[-1])
+
+    if samples[:, 1].min() <= gridy[0] or samples[:, 1].max() >= gridy[-1]:
+        _LOG.warning('y range of samples [%f, %f] outside grid range [%f, %f]',
+                     samples[:, 1].min(), samples[:, 1].max(),
+                     gridy[0], gridy[-1])
+
+    dx, dy = gridx[1] - gridx[0], gridy[1] - gridy[0]
+
+    # For each sample point (sx, sy), first, generate virtual sample points
+    # (sx, gridy(-2)), (sx, gridy(-1)), (sx, gridy(0)), (sx, gridy(1))
+    # where gridy(range(-2,2)) corresponds to the four-point bubble of grid
+    # points in gridy around sy.
+    #
+    # Next, use regular cubic interpolation to generate an interpolated
+    # function value for all of the four above points: for i in range(-2, 2),
+    # interpolate the function value at (sx, gridy(i)) against the full
+    # mesh.
+    #
+    # Finish by interpolating the interpolated values along the y dimension.
+
+    factors_y = (samples[:, 1] - gridy[0]) / dy
+    idx_of_closest_y = np.floor(factors_y)
+    dist_to_closest_y = factors_y - idx_of_closest_y
+
+    factors_x = (samples[:, 0] - gridx[0]) / dx
+    idx_of_closest_x = np.floor(factors_x)
+    dist_to_closest_x = factors_x - idx_of_closest_x
+
+    xcsrs = []
+    ycsr = scipy.sparse.csr_matrix((n, n * 4), dtype=float)
+    for yconv_idx in range(-2, 2):
+        ycoeff_idx = idx_of_closest_y - yconv_idx
+        ycoeff_idx[ycoeff_idx < 0] = 0  # threshold (no wraparound below)
+        ycoeff_idx[ycoeff_idx >= my] = my - 1  # none above
+
+        # vector of (sx, gridy(i)) is just
+        # Ui = np.column_stack([samples[:, 1], gridy[coeff_idx]])
+        #
+        # We find a matrix Mi such that
+        # f(Ui) = Mi.f(gridx x gridy)
+        # recall for each (sx, gridy(i)) we interpolate the x-dimension
+        xcsr = scipy.sparse.csr_matrix((n, mx * my), dtype=float)
+        for xconv_idx in range(-2, 2):
+            xcoeff_idx = idx_of_closest_x - xconv_idx
+            xcoeff_idx[xcoeff_idx < 0] = 0  # threshold (no wraparound below)
+            xcoeff_idx[xcoeff_idx >= mx] = mx - 1  # none above
+
+            xrelative_dist = dist_to_closest_x + xconv_idx
+            xdata = cubic_kernel(xrelative_dist)
+            # index into appropriate x value of f(gridx x gridy)
+            xcol_idx = xcoeff_idx * my + ycoeff_idx
+            xind_ptr = np.arange(n + 1)
+            xcsr += scipy.sparse.csr_matrix((xdata, xcol_idx, xind_ptr),
+                                            shape=(n, mx * my))
+        xcsrs.append(xcsr)
+
+        # for every fixed sx = samples[j, 0] we'd like to
+        # interpolate sy from Ui[j] at all i in range(-2, 2)
+        # at the end of this loop we don't have all Ui ready, but
+        # we can still get the interpolation coefficients for the current
+        # i == yconv_idx
+        yrelative_dist = dist_to_closest_y + yconv_idx
+        ydata = cubic_kernel(yrelative_dist)
+        ycol_idx = np.arange(n) + n * (yconv_idx + 2)
+        yind_ptr = np.arange(n + 1)
+        ycsr += scipy.sparse.csr_matrix((ydata, ycol_idx, yind_ptr),
+                                        shape=(n, n * 4))
+    xcsr_all = scipy.sparse.vstack(xcsrs, format="csc")
+    interp2d = ycsr.dot(xcsr_all)
+    return interp2d

@@ -6,8 +6,9 @@ import unittest
 import numpy as np
 from parameterized import parameterized
 
-from .interpolation import cubic_kernel, interp_cubic, autogrid
+from .interpolation import cubic_kernel, interp_cubic, autogrid, interp_bicubic
 from .interpolation import multi_interpolant
+from ..util.numpy_convenience import cartesian_product
 from ..util.testing_utils import error_context
 
 
@@ -89,6 +90,71 @@ class TestInterpolation(unittest.TestCase):
 
         for f in [np.sin, np.cos, np.square]:
             approxf = M.dot(f(grid))
+            exactf = f(sample)
+            np.testing.assert_allclose(approxf, exactf, err_msg=str(f))
+
+    def test_interp_bicubic_raises_grid_ndim(self):
+        gridx = np.arange(10).reshape(2, -1)
+        gridy = np.arange(10)
+        sample = np.array([[3, 3]])
+        self.assertRaises(ValueError, interp_bicubic, gridx, gridy, sample)
+        self.assertRaises(ValueError, interp_bicubic, gridy, gridx, sample)
+
+    def test_interp_bicubic_raises_samples_ndim(self):
+        grid = np.arange(10)
+        sample = np.array([[3], [3]])
+        self.assertRaises(ValueError, interp_bicubic, grid, grid, sample)
+        sample = np.array([3, 3])
+        self.assertRaises(ValueError, interp_bicubic, grid, grid, sample)
+
+    def test_interp_bicubic_raises_grid_size(self):
+        gridx = np.arange(3)
+        gridy = np.arange(10)
+        sample = np.array([[1, 1]])
+        self.assertRaises(ValueError, interp_bicubic, gridx, gridy, sample)
+        self.assertRaises(ValueError, interp_bicubic, gridy, gridx, sample)
+
+    def test_interp_bicubic_sample_lower_bound(self):
+        gridx = np.arange(10)
+        gridy = np.linspace(1, 9, 15)
+        expected_interp = np.zeros((1, 150))
+        expected_interp[0, 0] = 1
+        for i in [-2, -2.5]:
+            sample = np.array([[i, i]])
+            interp = interp_bicubic(gridx, gridy, sample)
+            np.testing.assert_allclose(interp.toarray(), expected_interp)
+
+    def test_interp_bicubic_sample_upper_bound(self):
+        gridx = np.arange(10)
+        gridy = np.linspace(1, 9, 15)
+        expected_interp = np.zeros((1, 150))
+        expected_interp[-1, -1] = 1
+        for i in [11, 11.5]:
+            sample = np.array([[i, i]])
+            interp = interp_bicubic(gridx, gridy, sample)
+            np.testing.assert_allclose(interp.toarray(), expected_interp)
+
+    def test_interp_bicubicx(self):
+        gridx = np.arange(-0.1, 10.1, 0.1)
+        gridy = np.arange(0.9, 9.1, 0.1)
+        sample = np.arange(1, 8) + 0.5
+        sample = cartesian_product(sample, sample)
+        M = interp_bicubic(gridx, gridy, sample)
+        self.assertEqual(M.shape, (len(sample), len(gridx) * len(gridy)))
+
+        prod = cartesian_product(gridx, gridy)
+        fs = [
+            lambda x, y: x,
+            lambda x, y: y,
+            lambda x, y: x + y,
+            lambda x, y: np.sin(x * y),
+            lambda x, y: np.exp(x - y),
+            lambda x, y: np.exp(np.cos(x) * y) - y,
+            lambda x, y: x ** 2 - y ** 3 + np.sin(x)]
+        vfs = [(lambda f: lambda xy: f(xy[:, 0], xy[:, 1]))(ff)  # pylint: disable=undefined-variable
+               for ff in fs]
+        for f in vfs:
+            approxf = M.dot(f(prod))
             exactf = f(sample)
             np.testing.assert_allclose(approxf, exactf, err_msg=str(f))
 

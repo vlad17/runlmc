@@ -93,8 +93,6 @@ def symm_2d_list_map(f, arr, D, dtype='object'):
             out[j, i] = out[i, j]
     return out
 
-# TODO(test)
-
 
 def begin_end_indices(lens):
     ends = np.add.accumulate(lens)
@@ -108,3 +106,13 @@ def chunks(l, n):
     # https://stackoverflow.com/questions/312443
     for i in range(0, len(l), n):
         yield l[i:i + n]
+
+
+def cartesian_product(*arrays):
+    # https://stackoverflow.com/questions/11144513
+    narr = len(arrays)
+    dtype = np.result_type(*arrays)
+    arr = np.empty([len(a) for a in arrays] + [narr], dtype=dtype)
+    for i, a in enumerate(np.ix_(*arrays)):
+        arr[..., i] = a
+    return arr.reshape(-1, narr)

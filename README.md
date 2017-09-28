@@ -81,12 +81,14 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. SKI cubic interpolation in higher dims
+0. SKI cubic interpolation in higher dims: 
+   -> raw multidim (multi_interpolant version for 2d)
 0. InterpolatedLLGP (to allow multi-input-dimension grids)
    -> runtime check for 1-d input (lo/hi/Xs should be validated)
 0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)
 0. Benchmark dataset, re-run all to see BTTB slowdown
-0. Split kernel
+0. Split kernel - split kernel -- add .active_dims to each subkernel? - Kernel is then a sum kernel
+   of all active dim subsets... i.e., make a separate SKI instance for all sub-active dims.
 0. Re-benchmark
 0. optimize BTTB MVM with pre-alloc, power-of-2 FFTs (pad from [middle](http://users.iems.northwestern.edu/~linetsky/ExtrapolationAppendix.pdf)), etc.
 0. Automatically find `min_grad_ratio` parameter. 
@@ -105,6 +107,8 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
     * In-place multiplication where possible
     * square matrix optimizations
     * TODO(sparse-derivatives)
+    * bicubic interpolation: invert order of xs/ys for locality gains (i.e., interpolate
+      x first then y)
 0. TODO(sum-fast) low-rank dense multiplications give SumKernel speedups?
 0. multidimensional inputs and ARD.
 0. TODO(prior). Compare to [spike and slab](http://www.aueb.gr/users/mtitsias/publications.html), also try MedGP (e.g., three-parameter beta) - add tests for priored versions of classes, some tests in parameterization/ (priors should be value-cached, try to use an external package)
