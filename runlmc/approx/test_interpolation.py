@@ -12,7 +12,7 @@ from ..util.numpy_convenience import cartesian_product
 from ..util.testing_utils import error_context
 
 
-class TestInterpolation(unittest.TestCase):
+class TestInterpolation(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_cubic_out_of_range(self):
         self.assertRaises(ValueError, cubic_kernel, np.arange(0, 3, 0.1))
@@ -158,7 +158,7 @@ class TestInterpolation(unittest.TestCase):
             exactf = f(sample)
             np.testing.assert_allclose(approxf, exactf, err_msg=str(f))
 
-    def test_multi_interpolant(self):
+    def test_multi_interpolant_cubic(self):
         grid = np.arange(-0.1, 10.1, 0.1)
         sample1 = np.arange(10) + 0.5
         sample2 = np.sin(np.arange(6)) + 4
@@ -169,6 +169,21 @@ class TestInterpolation(unittest.TestCase):
             [int1.toarray(), np.zeros((len(sample1), len(grid)))],
             [np.zeros((len(sample2), len(grid))), int2.toarray()]])
         multi = multi_interpolant([sample1, sample2], grid)
+        np.testing.assert_equal(exact, multi.toarray())
+
+    def test_multi_interpolant_bicubic(self):
+        gridx = np.arange(-0.1, 10.1, 0.1)
+        gridy = np.arange(-2, 11, 0.1)
+        sample1 = np.column_stack([np.arange(10) + 0.5, np.ones(10)])
+        sample2 = np.column_stack([np.sin(np.arange(6)) + 4, np.arange(6)])
+        int1 = interp_bicubic(gridx, gridy, sample1)
+        int2 = interp_bicubic(gridx, gridy, sample2)
+
+        m = len(gridx) * len(gridy)
+        exact = np.bmat([
+            [int1.toarray(), np.zeros((len(sample1), m))],
+            [np.zeros((len(sample2), m)), int2.toarray()]])
+        multi = multi_interpolant([sample1, sample2], gridx, gridy)
         np.testing.assert_equal(exact, multi.toarray())
 
     @parameterized.expand([

@@ -116,22 +116,43 @@ def interp_cubic(grid, samples):
     return csr
 
 
-def multi_interpolant(Xs, inducing_grid):  # pylint: disable=too-many-locals
+def multi_interpolant(Xs, *inducing_grids):  # pylint: disable=too-many-locals
     """
-    Creates a sparse CSR matrix interpolantacross multiple inputs `Xs`.
+    Creates a sparse CSR matrix interpolant across multiple inputs `Xs`.
 
     Each input is mapped onto the inducing grid with a cubic interpolation,
-    with :func:`runlmc.approx.interpolation.interp_cubic`.
+    with :func:`runlmc.approx.interpolation.interp_cubic` or
+    :func:`runlmc.approx.interpolation.interp_bicubic`, depending on the
+    dimensionality of `Xs`.
 
     This induces :math:`n_i\\times m` interpolation matrices :math:`W_i` for
-    the :math:`i`-th element of `Xs` onto the shared inducing grid.
+    the :math:`i`-th element of `Xs` onto the inducing grid, which is
+    shared between all `Xs`. Note that :math:`m` is the total size of
+    the Cartesian product of the inducing grids for each dimension of the
+    input. This also implies that the number of inducing grid axes passed
+    as arguments to `multi_interpolant` must be equal to the dimension of
+    `Xs`.
 
-    :param Xs: list of 1-dimensional numpy vectors, the inputs.
-    :param inducing_grid: 1-dimensional vector of grid points
+    :param Xs: list of :math:`n_i`-by-:math:`d` input points, where
+        :math:`d` may be either 1 or 2. In the case :math:`d=1` the input
+        matrices can be vectors.
+    :param inducing_grids: list 1-dimensional vector of grid points, one for
+        each input dimension
     :return: the rectangular block diagonal matrix of :math:`W_i`.
     """
-    multiout_grid_sizes = np.arange(len(Xs)) * len(inducing_grid)
-    Ws = [interp_cubic(inducing_grid, X) for X in Xs]
+    m = np.prod([len(grid) for grid in inducing_grids])
+    multiout_grid_sizes = np.arange(len(Xs)) * m
+
+    assert Xs
+    if Xs[0].ndim != 2:
+        Xs = [X.reshape(-1, 1) for X in Xs]
+
+    if Xs[0].shape[1] == 1:
+        Ws = [interp_cubic(inducing_grids[0], X.ravel()) for X in Xs]
+    else:
+        gridx = inducing_grids[0]
+        gridy = inducing_grids[1]
+        Ws = [interp_bicubic(gridx, gridy, X) for X in Xs]
 
     row_lens = [len(X) for X in Xs]
     row_begins, row_ends = begin_end_indices(row_lens)
@@ -154,7 +175,7 @@ def multi_interpolant(Xs, inducing_grid):  # pylint: disable=too-many-locals
         data[cols] = W.data
         col_indices[cols] += W.indices
 
-    ncols = len(Xs) * len(inducing_grid)
+    ncols = len(Xs) * m
     return scipy.sparse.csr_matrix(
         (data, col_indices, ind_ptr), shape=(order, ncols))
 
@@ -207,7 +228,7 @@ def interp_bicubic(gridx, gridy, samples):  # pylint: disable=too-many-locals
 
     :returns: the interpolation coefficient matrix
     :raises ValueError: if any conditions similar to those in
-        :meth:`interp_bicubic` are violated.
+        :meth:`interp_cubic` are violated.
     """
 
     mx, my = gridx.size, gridy.size
