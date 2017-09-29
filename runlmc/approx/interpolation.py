@@ -143,11 +143,7 @@ def multi_interpolant(Xs, *inducing_grids):  # pylint: disable=too-many-locals
     m = np.prod([len(grid) for grid in inducing_grids])
     multiout_grid_sizes = np.arange(len(Xs)) * m
 
-    assert Xs
-    if Xs[0].ndim != 2:
-        Xs = [X.reshape(-1, 1) for X in Xs]
-
-    if Xs[0].shape[1] == 1:
+    if Xs[0].ndim == 1 or Xs[0].shape[1] == 1:
         Ws = [interp_cubic(inducing_grids[0], X.ravel()) for X in Xs]
     else:
         gridx = inducing_grids[0]
