@@ -135,8 +135,6 @@ class ExactLMCLikelihood(LMCLikelihood):
         super().__init__(functional_kernel, Ys)
 
         Xs = np.vstack(Xs)
-        if Xs.ndim == 1:
-            Xs = Xs.reshape(-1, 1)
         pdists = dist.pdist(Xs)
         pdists = dist.squareform(pdists)
 

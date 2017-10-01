@@ -75,7 +75,7 @@ All below invocations should be done from the repo root.
 
 To develop, requirements also include:
 
-    sphinx sphinx_rtd_theme matplotlib codecov pylint parameterized pandas contexttimer GPy
+    sphinx sphinx_rtd_theme matplotlib codecov pylint parameterized pandas contexttimer GPy asv
 
 To build the paper, the packages `epstool` and `epstopdf` are required. Developers should also have `sphinx sphinx_rtd_theme matplotlib GPy codecov pylint parameterized pandas contexttimer` installed.
 
