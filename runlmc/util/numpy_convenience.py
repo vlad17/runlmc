@@ -84,12 +84,12 @@ def smallest_eig(top):
 # TODO(test)
 
 
-def symm_2d_list_map(f, arr, D, dtype='object'):
+def symm_2d_list_map(f, arr, D, *args, dtype='object'):
     """Symmetric map construction"""
     out = np.empty((D, D), dtype=dtype)
     for i in range(D):
         for j in range(i, D):
-            out[i, j] = f(arr[i, j])
+            out[i, j] = f(arr[i, j], *args)
             out[j, i] = out[i, j]
     return out
 

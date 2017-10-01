@@ -63,7 +63,7 @@ Make sure that the directory root is in the `PYTHONPATH` when running the benchm
 ## Dev Stuff
 
 All below invocations should be done from the repo root.
- 
+
 | Command           | Purpose  |
 | ----------------- | -------- |
 | `./style.sh`      | Check style with pylint, ignoring TODOs and locally-disabled warnings. |
@@ -81,13 +81,14 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. SKI cubic interpolation in higher dims: 
-   -> raw multidim (multi_interpolant version for 2d)
 0. InterpolatedLLGP (to allow multi-input-dimension grids)
-   -> runtime check for 1-d input (lo/hi/Xs should be validated)
+   -> Tests: add None, 1, 2 as parameterized test cases.
+   -> dedup FFTs in `_gen_coreg_Ks` + `_gen_diag_Ks` with single `grid_k`
+      BTTB generation (i.e., deduped_toeps made in common `_gen_slfm_grid` 
+      method) ; + `ApproxLMCLikelihood`
 0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)
 0. Benchmark dataset, re-run all to see BTTB slowdown
-0. Split kernel - split kernel -- add .active_dims to each subkernel? - Kernel is then a sum kernel
+0. Split kernel - split kernel -- add .active_dims to each subkernel? - Kernel is then a sum kernel -> multiple grid kernels
    of all active dim subsets... i.e., make a separate SKI instance for all sub-active dims.
 0. Re-benchmark
 0. optimize BTTB MVM with pre-alloc, power-of-2 FFTs (pad from [middle](http://users.iems.northwestern.edu/~linetsky/ExtrapolationAppendix.pdf)), etc.

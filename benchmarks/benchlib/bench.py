@@ -121,6 +121,7 @@ def _main():
              zip(kerntypes, kernels, descriptions)}
 
     Xs, Ys = np.random.rand(2, d, n_o)
+    Xs = Xs.reshape(-1, 1)
 
     dists, grid_dists, interpolant, interpolant_T = prep(
         d, n_o, Xs)
@@ -142,10 +143,10 @@ def _main():
 def prep(d, n_o, Xs):
     # Replicates InterpolatedLLGP (runlmc.models.interpolated_llgp) code minimally.
     with contexttimer.Timer() as exact:
-        dists = scipy.spatial.distance.pdist(Xs.reshape(-1, 1))
+        dists = scipy.spatial.distance.pdist(Xs)
         dists = scipy.spatial.distance.squareform(dists)
     with contexttimer.Timer() as approx:
-        grid, m = autogrid(Xs, lo=None, hi=None, m=None)
+        grid = autogrid(Xs, lo=None, hi=None, m=None)[0]
         grid_dists = grid - grid[0]
         interpolant = multi_interpolant(Xs, grid)
         interpolantT = interpolant.transpose().tocsr()

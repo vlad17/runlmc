@@ -185,26 +185,34 @@ def autogrid(Xs, lo, hi, m):
     fall within the grid by two elements on both sides. If a user's values
     do not guarantee this property, they are changed.
 
-    :param Xs: list of 1-dimensional numpy vectors, the inputs.
+    :param Xs: list of 2-dimensional numpy design matrices, the inputs.
     :param lo: optional lower bound
     :param hi: optional upper bound
     :param m: optional grid size
-    :return: a pair of equally-spaced points between low, hi
+    :return: the equally-spaced grid points, as a list for each dimension
     """
+    P = Xs[0].shape[1]
+    assert lo is None or len(lo) == P, (P, lo)
+    assert hi is None or len(hi) == P, (P, hi)
+    assert m is None or len(m) == P, (P, m)
 
-    m = m or sum(len(X) for X in Xs) // len(Xs)
-    max_lo = min(X.min() for X in Xs)
-    min_hi = max(X.max() for X in Xs)
+    max_lo = np.vstack([X.min(axis=0) for X in Xs]).min(axis=0)
+    min_hi = np.vstack([X.max(axis=0) for X in Xs]).max(axis=0)
 
-    lo = min(lo, max_lo) if lo else max_lo
-    hi = max(hi, min_hi) if hi else min_hi
+    if m is None:
+        m = np.ones(P) * (sum(len(X) for X in Xs) // len(Xs))
+    else:
+        m = np.asarray(m)
+    lo = (max_lo if lo is None else np.minimum(lo, max_lo)).astype(float)
+    hi = (min_hi if hi is None else np.maximum(hi, min_hi)).astype(float)
 
     delta = (hi - lo) / m
     lo -= 2 * delta
     hi += 2 * delta
     m += 4
 
-    return np.linspace(lo, hi, m), m
+    grids = [np.linspace(*args) for args in zip(lo, hi, m)]
+    return grids
 
 
 def interp_bicubic(gridx, gridy, samples):  # pylint: disable=too-many-locals

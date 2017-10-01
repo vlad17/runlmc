@@ -40,7 +40,11 @@ class MultiGP(Model):
     does not account for changes in their values.
 
     :param Xs: input observations, should be a list of numpy arrays,
-               where the numpy arrays are one dimensional.
+               where each numpy array is a design matrix for the inputs to
+               output :math:`i`. If the :math:`i`-th input has :math:`n_i`
+               data points, then this matrix can be :math:`n_i` or
+               :math:`n_i\\times P` shape for input dimension :math:`P`,
+               with the former re-interpreted as :math:`P=1`.
     :param Ys: output observations, this must be a list of one-dimensional
                numpy arrays, matching up with the number of rows in `Xs`.
     :param normalize: optional normalization for outputs `Ys`.
@@ -56,8 +60,6 @@ class MultiGP(Model):
         super().__init__(name)
         self.input_dim, self.output_dim = self._validate_io(Xs, Ys)
 
-        assert self.input_dim == 1, self.input_dim
-
         self.normalizer = None
         if normalize:
             _LOG.info('%s: normalizing outputs', name)
@@ -65,8 +67,8 @@ class MultiGP(Model):
             for norm, Y in zip(self.normalizer, Ys):
                 norm.scale_by(Y)
             Ys = [norm.normalize(Y) for norm, Y in zip(self.normalizer, Ys)]
-
-        self.Xs, self.Ys = Xs, Ys
+        self.Ys = Ys
+        self.Xs = self._pad_dims(Xs)
 
         _LOG.info('%s: MultiGP initialized', name)
 
@@ -104,6 +106,7 @@ class MultiGP(Model):
     def _predict(self, Xs, normalize):
         assert len(Xs) == self.output_dim, \
             'num inputs {} != output_dim {}'.format(len(Xs), self.output_dim)
+        assert all(X.shape[1] == self.input_dim for X in Xs)
         mu, var = self._raw_predict(Xs)
 
         if self.normalizer and normalize:
@@ -134,6 +137,7 @@ class MultiGP(Model):
             If you want the predictive quantiles (e.g. 95% confidence interval)
             use :func:`predict_quantiles`.
         """
+        Xs = self._pad_dims(Xs)
         return self._predict(Xs, normalize=True)
 
     def predict_quantiles(self, Xs, quantiles=(2.5, 97.5)):
@@ -148,6 +152,7 @@ class MultiGP(Model):
                   array, 2-D, the first axis corresponding to the
                   input index and the second to the quantile index.
         """
+        Xs = self._pad_dims(Xs)
         mu, var = self._predict(Xs, normalize=False)
         quantiles = np.fromiter(quantiles, dtype=float)
         quantiles = [
@@ -201,12 +206,19 @@ class MultiGP(Model):
             if len(X) != len(Y):
                 raise ValueError('Ouput {} has {} inputs and {} observed vals'
                                  .format(i, len(X), len(Y)))
-            if X.ndim != 1:
-                raise ValueError('Input {} mishapen, {} not 1D'
+            if X.ndim not in [1, 2]:
+                raise ValueError('Input {} mishapen, {} not 1D or 2D'
                                  .format(i, X.shape))
             if Y.ndim != 1:
                 raise ValueError('Output {} mishapen, {} not 1D'
                                  .format(i, Y.shape))
+
+        dims = set(X.shape[1] for X in Xs if X.ndim > 1)
+        if not dims:
+            dims = {1}
+        if len(dims) != 1:
+            raise ValueError(
+                'Found inputs of varying dimensions {}'.format(dims))
 
         for i, Y in enumerate(Ys):
             if np.std(Y) == 0:
@@ -219,4 +231,12 @@ class MultiGP(Model):
                     'Output {} has {} elements, but only {} unique ones'
                     .format(i, len(X), len(u)))
 
-        return 1, len(Xs)
+        return dims.pop(), len(Xs)
+
+    def _pad_dims(self, Xs):
+        Xs = [X.reshape(-1, 1) if X.ndim == 1 else X for X in Xs]
+        for i, X in enumerate(Xs):
+            if X.shape[1] != self.input_dim:
+                raise ValueError('input {} dim {} != expected dim {}'.format(
+                    i, X.shape[1], self.input_dim))
+        return Xs

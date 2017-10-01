@@ -9,7 +9,7 @@ import scipy.spatial.distance as dist
 from .exact_deriv import ExactDeriv
 from ..approx.ski import SKI
 from ..linalg.diag import Diag
-from ..linalg.toeplitz import Toeplitz
+from ..linalg.bttb import BTTB
 from ..linalg.kronecker import Kronecker
 from ..linalg.numpy_matrix import NumpyMatrix
 from ..util.numpy_convenience import begin_end_indices
@@ -100,7 +100,8 @@ class ApproxLMCLikelihood(LMCLikelihood):
     def __init__(self, functional_kernel, grid_kern, grid_dists, Ys, deriv):
         super().__init__(functional_kernel, Ys)
         kernels_on_grid = self.functional_kernel.eval_kernels(grid_dists)
-        self.materialized_kernels = [Toeplitz(d) for d in kernels_on_grid]
+        self.materialized_kernels = [
+            BTTB(d, d.shape) for d in kernels_on_grid]
         self.K = grid_kern
         self.deriv = deriv.generate(self.K, self.y)
         self.materialized_grads = self.functional_kernel.eval_kernel_gradients(
@@ -116,7 +117,7 @@ class ApproxLMCLikelihood(LMCLikelihood):
     def _dKdts_from_dKqdts(self, A, q):
         for dKqdt in self.materialized_grads[q]:
             yield self._ski(Kronecker(
-                NumpyMatrix(A), Toeplitz(dKqdt)))
+                NumpyMatrix(A), BTTB(dKqdt, dKqdt.shape)))
 
     def _dKdt_from_dEpsdt(self, dEpsdt):
         # no SKI approximation for noise
@@ -133,8 +134,10 @@ class ExactLMCLikelihood(LMCLikelihood):
     def __init__(self, functional_kernel, Xs, Ys):
         super().__init__(functional_kernel, Ys)
 
-        # TODO(1d)
-        pdists = dist.pdist(np.hstack(Xs).reshape(-1, 1))
+        Xs = np.vstack(Xs)
+        if Xs.ndim == 1:
+            Xs = Xs.reshape(-1, 1)
+        pdists = dist.pdist(Xs)
         pdists = dist.squareform(pdists)
 
         self.materialized_kernels = self.functional_kernel.eval_kernels(pdists)
@@ -170,9 +173,13 @@ class ExactLMCLikelihood(LMCLikelihood):
         `Zs`.
         """
 
-        # TODO(1d)
-        pair_dists = dist.cdist(np.hstack(Xs).reshape(-1, 1),
-                                np.hstack(Zs).reshape(-1, 1))
+        Xs = np.vstack(Xs)
+        if Xs.ndim == 1:
+            Xs = Xs.reshape(-1, 1)
+        Zs = np.vstack(Zs)
+        if Zs.ndim == 1:
+            Zs = Zs.reshape(-1, 1)
+        pair_dists = dist.cdist(Xs, Zs)
         Kqs = functional_kernel.eval_kernels(pair_dists)
         rlens, clens = [len(X) for X in Xs], [len(Z) for Z in Zs]
         K = sum(ExactLMCLikelihood._coreg_scale(A, Kq, rlens, clens,

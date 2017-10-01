@@ -10,11 +10,11 @@ from .optimization import AdaDelta
 from ..kern.rbf import RBF
 from ..lmc.likelihood import ExactLMCLikelihood
 from ..lmc.functional_kernel import FunctionalKernel
-from ..util.testing_utils import RandomTest, check_np_lists
+from ..util.testing_utils import RandomTest, check_np_lists, vectorize_inputs
 
 
 class ExactAnalogue:
-    def __init__(self, kernels, sizes, coregs, xss=None, yss=None):
+    def __init__(self, kernels, sizes, coregs, xss=None, yss=None, indim=1):
         assert len(coregs) == len(kernels)
         assert set(map(lambda x: x.shape[1], coregs)) == {len(sizes)}
         for coreg in coregs:
@@ -25,7 +25,10 @@ class ExactAnalogue:
         if yss is None:
             yss = [np.random.rand(sz) for sz in sizes]
         if xss is None:
-            xss = [np.random.rand(sz) for sz in sizes]
+            if indim is None:  # explicitly test 1d shorthand
+                xss = [np.random.rand(sz) for sz in sizes]
+            else:
+                xss = [np.random.rand(sz, indim) for sz in sizes]
 
         self.xss, self.yss = xss, yss
         self.lens = sizes
@@ -48,8 +51,10 @@ class ExactAnalogue:
 
     def gen_exact(self):
         if self.exact is None:
+            xss = [xs if xs.ndim == 2 else xs.reshape(-1, 1)
+                   for xs in self.xss]
             self.exact = ExactLMCLikelihood(
-                self.functional_kernel, self.xss, self.yss)
+                self.functional_kernel, xss, self.yss)
 
         return self.exact
 
@@ -61,12 +66,16 @@ class ExactAnalogue:
 
     @staticmethod
     def gen_obs(xss, noise_sd, true_func):
+        true_func = [vectorize_inputs(f) for f in true_func]
         assert all(x <= 0.1 for x in noise_sd)
         assert len(noise_sd) == len(true_func)
         noises = [np.random.randn(len(xs)) * sd
                   for xs, sd in zip(xss, noise_sd)]
-        yss = [f(xs) + noise
+        print([xs.shape for xs in xss])
+        print([n.shape for n in noises])
+        yss = [f(xs).ravel() + noise
                for f, xs, noise in zip(true_func, xss, noises)]
+        print([ys.shape for ys in yss])
         return yss
 
 

@@ -9,6 +9,7 @@ import scipy.stats
 from .multigp import MultiGP
 from ..util.testing_utils import check_np_lists
 
+
 class DummyMultiGP(MultiGP):
     def __init__(self, Xs, Ys, normalize, name):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
@@ -16,7 +17,8 @@ class DummyMultiGP(MultiGP):
         self._n_param_changes = 0
 
     def _raw_predict(self, Xs):
-        return [np.copy(X).astype(float) for X in Xs], [np.fabs(X) for X in Xs]
+        return [np.copy(X[:, 0]).astype(float) for X in Xs], \
+            [np.fabs(X[:, 0]) for X in Xs]
 
     def log_likelihood(self):
         self._log_likelihood += 1
@@ -25,6 +27,7 @@ class DummyMultiGP(MultiGP):
     def parameters_changed(self):
         self._n_param_changes += 1
 
+
 class MultiGPTest(unittest.TestCase):
 
     def test_empty(self):
@@ -32,7 +35,7 @@ class MultiGPTest(unittest.TestCase):
                           [], [], False, '')
 
     def test_dim_X(self):
-        Xs = [np.arange(2).reshape(1, -1)]
+        Xs = [np.arange(2).reshape(1, 1, -1)]
         Ys = [np.arange(2)]
         self.assertRaises(ValueError, DummyMultiGP,
                           Xs, Ys, False, '')
@@ -85,7 +88,7 @@ class MultiGPTest(unittest.TestCase):
 
         mu, var = gp.predict(Xs)
         check_np_lists(Xs, mu)
-        check_np_lists(Xs, var) # Xs already positive
+        check_np_lists(Xs, var)  # Xs already positive
 
     def test_normalization(self):
         Xs = [np.arange(4), np.arange(4)]
@@ -138,9 +141,12 @@ class MultiGPTest(unittest.TestCase):
         actual = gp.predict_quantiles(Xs, quantiles)
 
         expected = [
-            np.vstack([self.create_quantile(
-                mean + sd * unnorm_mean, sd * sd * unnorm_var, quantiles / 100)
-                       for unnorm_mean, unnorm_var in zip(X, np.fabs(X))])
+            np.vstack([
+                self.create_quantile(
+                    mean + sd * unnorm_mean,
+                    sd * sd * unnorm_var,
+                    quantiles / 100)
+                for unnorm_mean, unnorm_var in zip(X, np.fabs(X))])
             for mean, sd, X in zip(means, sds, Xs)]
 
         check_np_lists(actual, expected)

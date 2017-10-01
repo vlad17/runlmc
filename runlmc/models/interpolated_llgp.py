@@ -19,6 +19,7 @@ from ..lmc.grid_kernel import gen_grid_kernel
 from ..lmc.metrics import Metrics
 from ..lmc.likelihood import ExactLMCLikelihood, ApproxLMCLikelihood
 from ..util.docs import inherit_doc
+from ..util.numpy_convenience import cartesian_product
 from ..util.inline_pool import InlinePool
 
 _LOG = logging.getLogger(__name__)
@@ -81,17 +82,28 @@ class InterpolatedLLGP(MultiGP):
     of test points and training points, respectively.
 
     :param Xs: input observations, should be a list of numpy arrays,
-               where the numpy arrays are one dimensional.
+               where each numpy array is a design matrix for the inputs to
+               output :math:`i`. If the :math:`i`-th input has :math:`n_i`
+               data points, then this matrix can be :math:`n_i` or
+               :math:`n_i\\times P` shape for input dimension :math:`P`,
+               with the former re-interpreted as :math:`P=1`.
     :param Ys: output observations, this must be a list of one-dimensional
                numpy arrays, matching up with the number of rows in `Xs`.
     :param normalize: optional normalization for outputs `Ys`.
                            Prediction will be un-normalized.
     :param lo: lexicographically smallest point in inducing point grid used
-               (by default, a bit less than the minimum of input)
+               (by default, a bit less than the minimum of input). For
+               multidimensional inputs this should be a vector.
     :param hi: lexicographically largest point in inducing point grid used
-               (by default, a bit more than the maximum of input)
-    :param m: number of inducing points to use (by default, the total number
-              of input points)
+               (by default, a bit more than the maximum of input). For
+               multidimensional inputs this should be a vector.
+    :param m: number of inducing points to use. For multidimensional inputs
+              this should be
+              a vector indicating how many grid points there should be
+              along each dimension. The total number of points used is then
+              `np.prod(m)`. By default, `m` is a constant array of dimension
+              :math:`P`, the input dimension, of size equal to the average
+              input sequence length.
     :param str name:
     :param metrics: whether to record optimization metrics during optimization
                     (runs exact solution alongside this one, may be slow).
@@ -117,12 +129,8 @@ class InterpolatedLLGP(MultiGP):
                  metrics=False, prediction='on-the-fly', max_procs=None,
                  trace_iterations=10,
                  functional_kernel=None):
-
         super().__init__(Xs, Ys, normalize=normalize, name=name)
         self.update_model(False)
-        # TODO(cleanup) - this entire constructor needs reorg, refactor
-        # into smaller methods, etc. Large number of arguments is OK, though.
-        # basically address all pylint complaints (disabled in the constructor)
 
         if not functional_kernel:
             raise ValueError('functional_kernel must be provided')
@@ -136,17 +144,24 @@ class InterpolatedLLGP(MultiGP):
         _LOG.info('InterpolatedLLGP %s generating inducing grid n = %d',
                   self.name, n)
         # Grid corresponds to U
-        self.inducing_grid, m = autogrid(Xs, lo, hi, m)
+        self.inducing_grid_axes = autogrid(
+            self.Xs, self._wrap(lo), self._wrap(hi), self._wrap(m))
+        self.grid = cartesian_product(*self.inducing_grid_axes)
+        grid_shape = list(map(len, self.inducing_grid_axes))
+        grid_shape.append(len(self.inducing_grid_axes))
+        self.grid = self.grid.reshape(grid_shape)
 
-        # Toeplitz(self.dists) is the pairwise distance matrix of U
-        self.dists = self.inducing_grid - self.inducing_grid[0]
+        # BTTB(self.dists.ravel(), self.dists.shape)
+        # is the pairwise distance matrix of U
+        self.dists = la.norm(self.grid - self.grid[0], axis=-1)
 
         # Corresponds to W; block diagonal matrix.
-        self.interpolant = multi_interpolant(self.Xs, self.inducing_grid)
+        self.interpolant = multi_interpolant(self.Xs, *self.inducing_grid_axes)
         self.interpolantT = self.interpolant.transpose().tocsr()
 
         _LOG.info('InterpolatedLLGP %s grid (n = %d, m = %d) complete, ',
-                  self.name, n, m)
+                  self.name, n,
+                  np.prod([len(g) for g in self.inducing_grid_axes]))
 
         self._functional_kernel = functional_kernel
         self.link_parameter(self._functional_kernel)
@@ -326,9 +341,10 @@ class InterpolatedLLGP(MultiGP):
         grid_alpha = self._grid_alpha()
         native_variance = self._native_variance()
 
-        W = multi_interpolant(Xs, self.inducing_grid)
+        W = multi_interpolant(Xs, *self.inducing_grid_axes)
 
         mean = W.dot(grid_alpha)
+        print(mean.shape)
         lens = [len(X) for X in Xs]
         native_variance = np.repeat(native_variance, lens)
 
@@ -366,12 +382,7 @@ class InterpolatedLLGP(MultiGP):
         # in which case we'd just ask self.kernel.K.ski for them.
         K_XU = Composition([Matrix.wrap(W.shape, W.dot), K_UU])
         K_UX = Composition([K_UU, Matrix.wrap(WT.shape, WT.dot)])
-
-        m = len(self.inducing_grid)
-        D = len(self._functional_kernel.noise)
-        Dm = D * m
-        assert Dm == K_XU.shape[1] and Dm == K_UX.shape[0]
-
+        Dm = K_XU.shape[1]
         ls = [(i, self.kernel.K, K_XU, K_UX) for i in range(Dm)]
         nu = self._pool.starmap(InterpolatedLLGP._var_solve, ls)
 
@@ -395,3 +406,12 @@ class InterpolatedLLGP(MultiGP):
         self._grid_alpha.cache_clear()
         self._native_variance.cache_clear()
         self._precomputed_nu.cache_clear()
+
+    @staticmethod
+    def _wrap(x):
+        if x is None:
+            return None
+        n = np.asarray(x)
+        if not n.shape:
+            return n.reshape(1)
+        return n

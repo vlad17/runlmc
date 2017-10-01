@@ -35,7 +35,11 @@ class GPyLMC(MultiGP):
     by Álvarez et al. 2010.
 
     :param Xs: input observations, should be a list of numpy arrays,
-               where the numpy arrays are one dimensional.
+               where each numpy array is a design matrix for the inputs to
+               output :math:`i`. If the :math:`i`-th input has :math:`n_i`
+               data points, then this matrix can be :math:`n_i` or
+               :math:`n_i\\times P` shape for input dimension :math:`P`,
+               with the former re-interpreted as :math:`P=1`.
     :param Ys: output observations, this must be a list of one-dimensional
                numpy arrays, matching up with the number of rows in `Xs`.
     :param kernels: a list of (stationary) kernels which constitute the
@@ -55,7 +59,7 @@ class GPyLMC(MultiGP):
     def __init__(self, Xs, Ys, kernels, ranks, name='GPyLMC', sparse=0):
         super().__init__(Xs, Ys, normalize=False, name=name)
         self.gpy_model = GPyLMC._construct_gpy(
-            Xs, Ys, kernels, ranks, sparse)
+            self.Xs, Ys, kernels, ranks, sparse)
 
     def _raw_predict(self, Xs):
         pass
@@ -70,21 +74,27 @@ class GPyLMC(MultiGP):
         self.gpy_model.optimize(**kwargs)
 
     def predict(self, Xs):
-        X = np.hstack(Xs)
+        Xs = self._pad_dims(Xs)
+        X = np.vstack(Xs)
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
         lenls = list(map(len, Xs))
-        meta = np.repeat(range(len(Xs)), lenls).reshape(-1, 1)
+        meta = np.repeat(np.arange(len(Xs)), lenls).reshape(-1, 1)
         mu, var = self.gpy_model.predict(
-            np.hstack([X.reshape(-1, 1), meta]),
+            np.hstack([X, meta]),
             Y_metadata={'output_index': meta})
         mu = mu.reshape(-1)
         var = var.reshape(-1)
         return tesselate(mu, lenls), tesselate(var, lenls)
 
     def predict_quantiles(self, Xs, quantiles=(2.5, 97.5)):
-        X = np.hstack(Xs)
+        Xs = self._pad_dims(Xs)
+        X = np.vstack(Xs)
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
         meta = np.repeat(range(len(Xs)), list(map(len, Xs))).reshape(-1, 1)
         Qs = np.array(self.gpy_model.predict_quantiles(
-            np.hstack([X.reshape(-1, 1), meta]),
+            np.hstack([X, meta]),
             quantiles=quantiles,
             Y_metadata={'output_index': meta}))
         assert Qs.shape[2] == 1
@@ -101,7 +111,6 @@ class GPyLMC(MultiGP):
         kernels = [k.to_gpy() for k in kernels]
         input_dim = 1
         num_outputs = len(Ys)
-        Xs = [X.reshape(-1, 1) for X in Xs]
         Ys = [Y.reshape(-1, 1) for Y in Ys]
 
         K = ICM(input_dim, num_outputs, kernels[0], ranks[0], name='ICM0')

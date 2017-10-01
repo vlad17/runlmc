@@ -26,6 +26,12 @@ from ..parameterization.model import Model
 from .numpy_convenience import smallest_eig
 
 
+def vectorize_inputs(f):
+    """Convert a multi-input vector function to accept matrices
+    with each column corresponding to an input"""
+    return lambda args: f(*np.hsplit(args, args.shape[1]))
+
+
 class RandomTest(unittest.TestCase):
     """
     This test case sets the random seed to be based on the time

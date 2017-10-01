@@ -9,7 +9,7 @@ from parameterized import parameterized
 from .interpolation import cubic_kernel, interp_cubic, autogrid, interp_bicubic
 from .interpolation import multi_interpolant
 from ..util.numpy_convenience import cartesian_product
-from ..util.testing_utils import error_context
+from ..util.testing_utils import error_context, vectorize_inputs
 
 
 class TestInterpolation(unittest.TestCase):  # pylint: disable=too-many-public-methods
@@ -151,9 +151,8 @@ class TestInterpolation(unittest.TestCase):  # pylint: disable=too-many-public-m
             lambda x, y: np.exp(x - y),
             lambda x, y: np.exp(np.cos(x) * y) - y,
             lambda x, y: x ** 2 - y ** 3 + np.sin(x)]
-        vfs = [(lambda f: lambda xy: f(xy[:, 0], xy[:, 1]))(ff)  # pylint: disable=undefined-variable
-               for ff in fs]
-        for f in vfs:
+        for f in fs:
+            f = vectorize_inputs(f)
             approxf = M.dot(f(prod))
             exactf = f(sample)
             np.testing.assert_allclose(approxf, exactf, err_msg=str(f))
@@ -187,21 +186,45 @@ class TestInterpolation(unittest.TestCase):  # pylint: disable=too-many-public-m
         np.testing.assert_equal(exact, multi.toarray())
 
     @parameterized.expand([
-        (-1, 13, 10),
-        (-1, 13, 10),
-        (5, 9, 3),
+        ([-1], [13], [10]),
+        ([5], [9], [3]),
         (None, None, None),
-        (None, 13, None),
-        (-1, None, None),
-        (-1, 13, None)
+        (None, [13], None),
+        ([-1], None, None),
+        ([-1], [13], None)
     ])
     def test_autogrid_lo_hi_m(self, lo, hi, m):
         Xs = [np.arange(10), np.arange(4, 12)]
-        grid, m_returned = autogrid(Xs, lo, hi, m)
-        with error_context('lo {} hi {} m {} returned m {}\ngrid {}'
-                           .format(lo, hi, m, m_returned, grid)):
+        Xs = [X.reshape(-1, 1) for X in Xs]
+        grid = autogrid(Xs, lo, hi, m)[0]
+        with error_context('lo {} hi {} m {}\ngrid {}'
+                           .format(lo, hi, m, grid)):
             self.assertGreaterEqual(0, grid[1])
             self.assertLessEqual(11, grid[-2])
             grid_lens = np.unique(np.diff(grid))
             span = grid_lens.max() - grid_lens.min()
             np.testing.assert_allclose(span, 0, atol=1e-6)
+
+    @parameterized.expand([
+        ([-1, -5], [13, 15], [10, 12]),
+        ([5, 3], [9, 12], [3, 4]),
+        (None, None, None),
+        (None, [13, 15], None),
+        ([-1, -5], None, None),
+        ([-1, -5], [13, 15], None)
+    ])
+    def test_autogrid_lo_hi_m_2d(self, lo, hi, m):
+        x1 = np.column_stack([np.arange(10), np.arange(-3, 7)])
+        x2 = np.column_stack([np.arange(4, 12), np.arange(2, 10)])
+        Xs = [x1, x2]
+        gridx, gridy = autogrid(Xs, lo, hi, m)
+        with error_context('lo {} hi {} m {}\ngridx {}\ngridy {}'
+                           .format(lo, hi, m, gridx, gridy)):
+            self.assertGreaterEqual(0, gridx[1])
+            self.assertLessEqual(11, gridx[-2])
+            self.assertGreaterEqual(-3, gridy[1])
+            self.assertLessEqual(10, gridy[-2])
+            for grid in [gridx, gridy]:
+                grid_lens = np.unique(np.diff(grid))
+                span = grid_lens.max() - grid_lens.min()
+                np.testing.assert_allclose(span, 0, atol=1e-6)
