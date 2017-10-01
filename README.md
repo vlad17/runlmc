@@ -82,7 +82,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 ### Roadmap
 
 0. InterpolatedLLGP (to allow multi-input-dimension grids)
-   -> Tests: add None, 1, 2 as parameterized test cases.
+   -> Add test for dimension 2
    -> dedup FFTs in `_gen_coreg_Ks` + `_gen_diag_Ks` with single `grid_k`
       BTTB generation (i.e., deduped_toeps made in common `_gen_slfm_grid` 
       method) ; + `ApproxLMCLikelihood`

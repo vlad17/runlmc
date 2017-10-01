@@ -1,7 +1,10 @@
 # Copyright (c) 2016, Vladimir Feinberg
 # Licensed under the BSD 3-clause license (see LICENSE)
 
+import itertools
+
 import numpy as np
+from parameterized import parameterized
 import scipy.linalg as la
 import scipy.spatial.distance as dist
 
@@ -69,54 +72,77 @@ class ExactAnalogue:
         true_func = [vectorize_inputs(f) for f in true_func]
         assert all(x <= 0.1 for x in noise_sd)
         assert len(noise_sd) == len(true_func)
+        xss = [xs.reshape(-1, 1) if xs.ndim == 1 else xs for xs in xss]
         noises = [np.random.randn(len(xs)) * sd
                   for xs, sd in zip(xss, noise_sd)]
-        print([xs.shape for xs in xss])
-        print([n.shape for n in noises])
         yss = [f(xs).ravel() + noise
                for f, xs, noise in zip(true_func, xss, noises)]
-        print([ys.shape for ys in yss])
         return yss
 
 
-class LMCTest(RandomTest):
+class LMCTestUtils:
 
     @staticmethod
-    def _case_1d():
+    def _case_1d(input_dim):
         kernels = [RBF(inv_lengthscale=3)]
         szs = [30]
         coregs = [np.array([[1]])]
-        return ExactAnalogue(kernels, szs, coregs)
+        return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
 
     @staticmethod
-    def _case_2d():
+    def _case_2d(input_dim):
         kernels = [RBF(inv_lengthscale=3),
                    RBF(inv_lengthscale=2)]
         szs = [30, 40]
         coregs = [np.array(x).reshape(1, -1) for x in [[1, 2], [3, 4]]]
-        return ExactAnalogue(kernels, szs, coregs)
+        return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
 
     @staticmethod
-    def _case_multirank():
+    def _case_multirank(input_dim):
         kernels = [RBF(inv_lengthscale=3),
                    RBF(inv_lengthscale=2)]
         szs = [30, 40]
         coregs = [np.array([[1, 2], [3, 4]]), np.array([[1, 1]])]
-        return ExactAnalogue(kernels, szs, coregs)
+        return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
 
     @staticmethod
-    def _case_large():
+    def _case_large(input_dim):
         kernels = [RBF(inv_lengthscale=3),
                    RBF(inv_lengthscale=2),
                    RBF(inv_lengthscale=1)]
         szs = [10, 12, 14, 12, 10]
         coregs = [np.array(x).reshape(1, -1) for x in
                   [[1, 1, 1, 1, 2], [2, 1, 2, 1, 2], [-1, 1, -1, -1, -1]]]
-        return ExactAnalogue(kernels, szs, coregs)
+        return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
 
     @staticmethod
-    def _avg_entry_diff(x1, x2):
+    def avg_entry_diff(x1, x2):
         return np.fabs(x1 - x2).mean()
+
+    @classmethod
+    def _output_cases(cls):
+        return {
+            'output_1d': cls._case_1d,
+            'output_2d': cls._case_2d,
+            'output_multirank': cls._case_multirank,
+            'output_large': cls._case_large}
+
+    @classmethod
+    def _input_cases(cls):
+        return {
+            'input_1dimplicit': None,
+            'input_1d': 1}
+
+    @classmethod
+    def input_output_cases_grid(cls):
+        outs = cls._output_cases()
+        ins = cls._input_cases()
+        for (out_name, out), (in_name, in_dim) in itertools.product(
+                outs.items(), ins.items()):
+            yield out_name + '_' + in_name, out, in_dim
+
+
+class LMCTest(RandomTest):
 
     def _check_kernel_reconstruction(self, exact):
         def reconstruct(x):
@@ -126,12 +152,12 @@ class LMCTest(RandomTest):
         tol = 1e-4
         np.testing.assert_allclose(
             exact_mat, actual, rtol=tol, atol=tol)
-        avg_diff_sz = self._avg_entry_diff(exact_mat, actual)
+        avg_diff_sz = LMCTestUtils.avg_entry_diff(exact_mat, actual)
 
         actual = reconstruct(exact.gen_lmc(sum(exact.lens) * 2))
         np.testing.assert_allclose(
             exact_mat, actual, rtol=tol, atol=tol)
-        avg_diff_2sz = self._avg_entry_diff(exact_mat, actual)
+        avg_diff_2sz = LMCTestUtils.avg_entry_diff(exact_mat, actual)
 
         self.assertGreater(avg_diff_sz, avg_diff_2sz)
 
@@ -190,56 +216,23 @@ class LMCTest(RandomTest):
         basic_Ys = mapnp([[5, 6, 7], [7, 6, 5]])
         self.assertRaises(ValueError, InterpolatedLLGP, basic_Xs, basic_Ys)
 
-    def test_kernel_reconstruction_1d(self):
-        ea = self._case_1d()
+    @parameterized.expand(LMCTestUtils.input_output_cases_grid())
+    def test_kernel_reconstruction(self, _, output_case, input_dim):
+        ea = output_case(input_dim)
         self._check_kernel_reconstruction(ea)
 
-    def test_kernel_reconstruction_2d(self):
-        ea = self._case_2d()
-        self._check_kernel_reconstruction(ea)
-
-    def test_kernel_reconstruction_multirank(self):
-        ea = self._case_multirank()
-        self._check_kernel_reconstruction(ea)
-
-    def test_kernel_reconstruction_large(self):
-        ea = self._case_large()
-        self._check_kernel_reconstruction(ea)
-
-    def test_kernel_params_1d(self):
-        ea = self._case_1d()
+    @parameterized.expand(LMCTestUtils.input_output_cases_grid())
+    def test_kernel_params(self, _, output_case, input_dim):
+        ea = output_case(input_dim)
         self._check_kernel_params(ea)
 
-    def test_kernel_params_2d(self):
-        ea = self._case_2d()
-        self._check_kernel_params(ea)
-
-    def test_kernel_params_multirank(self):
-        ea = self._case_multirank()
-        self._check_kernel_params(ea)
-
-    def test_kernel_params_large(self):
-        ea = self._case_large()
-        self._check_kernel_params(ea)
-
-    def test_normal_quadratic_1d(self):
-        ea = self._case_1d()
-        self._check_normal_quadratic(ea)
-
-    def test_normal_quadratic_2d(self):
-        ea = self._case_2d()
-        self._check_normal_quadratic(ea)
-
-    def test_normal_quadratic_multirank(self):
-        ea = self._case_multirank()
-        self._check_normal_quadratic(ea)
-
-    def test_normal_quadratic_large(self):
-        ea = self._case_large()
+    @parameterized.expand(LMCTestUtils.input_output_cases_grid())
+    def test_normal_quadratic(self, _, output_case, input_dim):
+        ea = output_case(input_dim)
         self._check_normal_quadratic(ea)
 
     def test_1d_fit(self):
-        ea = self._case_1d()
+        ea = LMCTestUtils._case_1d(None)
         noise_sd = [0.05]
         true_func = [np.sin]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
@@ -248,7 +241,7 @@ class LMCTest(RandomTest):
         self._check_fit(ea)
 
     def test_2d_fit(self):
-        ea = self._case_2d()
+        ea = LMCTestUtils._case_2d(None)
         noise_sd = [0.05, 0.08]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
@@ -257,7 +250,7 @@ class LMCTest(RandomTest):
         self._check_fit(ea)
 
     def test_multirank_fit(self):
-        ea = self._case_multirank()
+        ea = LMCTestUtils._case_multirank(None)
         noise_sd = [0.05, 0.08]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
@@ -266,7 +259,7 @@ class LMCTest(RandomTest):
         self._check_fit(ea)
 
     def test_2d_fit_noisediff(self):
-        ea = self._case_2d()
+        ea = LMCTestUtils._case_2d(None)
         noise_sd = [1e-8, 0.09]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
