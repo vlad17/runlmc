@@ -5,17 +5,19 @@ import unittest
 import warnings
 
 import numpy as np
-from GPy.models import GPCoregionalizedRegression
-from GPy.util.multioutput import LCM
 
 from .gpy_lmc import GPyLMC
 from ..kern.rbf import RBF
+
 
 class GPyLMCTest(unittest.TestCase):
 
     def setUp(self):
         super().setUp()
-        mapnp = lambda x: [np.array(i) for i in x]
+        from GPy.util.multioutput import LCM
+
+        def mapnp(x):
+            return [np.array(i) for i in x]
 
         self.basic_kernels = [
             RBF(name='rbf1'),
@@ -33,6 +35,8 @@ class GPyLMCTest(unittest.TestCase):
             W_rank=1)
 
     def generate_basic(self):
+        from GPy.models import GPCoregionalizedRegression
+
         basic = GPyLMC(
             self.basic_Xs,
             self.basic_Ys,
