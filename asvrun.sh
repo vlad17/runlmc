@@ -17,7 +17,7 @@ asv gh-pages || true
 # asv gh-pages bug fix
 # https://github.com/spacetelescope/asv/issues/515
 git checkout gh-pages
-git push -f
+git push -f --set-upstream origin gh-pages
 git checkout $currbranch
 
 
