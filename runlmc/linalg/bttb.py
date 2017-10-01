@@ -143,7 +143,7 @@ class BTTB(Matrix):
 
     def __str__(self):
         if len(self.top) > 50:
-            topstr = 'grid shape {}'.format(len(self._sizes))
+            topstr = 'shape {}'.format(len(self._sizes))
         else:
             topstr = '\n' + str(self.top.reshape(self._sizes))
         return 'BTTB on grid ' + topstr

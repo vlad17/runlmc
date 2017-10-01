@@ -101,7 +101,7 @@ class ApproxLMCLikelihood(LMCLikelihood):
         super().__init__(functional_kernel, Ys)
         kernels_on_grid = self.functional_kernel.eval_kernels(grid_dists)
         self.materialized_kernels = [
-            BTTB(d, d.shape) for d in kernels_on_grid]
+            BTTB(d.ravel(), d.shape) for d in kernels_on_grid]
         self.K = grid_kern
         self.deriv = deriv.generate(self.K, self.y)
         self.materialized_grads = self.functional_kernel.eval_kernel_gradients(
@@ -117,7 +117,7 @@ class ApproxLMCLikelihood(LMCLikelihood):
     def _dKdts_from_dKqdts(self, A, q):
         for dKqdt in self.materialized_grads[q]:
             yield self._ski(Kronecker(
-                NumpyMatrix(A), BTTB(dKqdt, dKqdt.shape)))
+                NumpyMatrix(A), BTTB(dKqdt.ravel(), dKqdt.shape)))
 
     def _dKdt_from_dEpsdt(self, dEpsdt):
         # no SKI approximation for noise

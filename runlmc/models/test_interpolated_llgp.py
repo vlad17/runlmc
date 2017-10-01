@@ -131,7 +131,8 @@ class LMCTestUtils:
     def _input_cases(cls):
         return {
             'input_1dimplicit': None,
-            'input_1d': 1}
+            'input_1d': 1,
+            'input_2d': 2}
 
     @classmethod
     def input_output_cases_grid(cls):
@@ -144,17 +145,18 @@ class LMCTestUtils:
 
 class LMCTest(RandomTest):
 
-    def _check_kernel_reconstruction(self, exact):
+    def _check_kernel_reconstruction(self, exact, indim):
         def reconstruct(x):
             return x.kernel.K.as_numpy()
-        actual = reconstruct(exact.gen_lmc(sum(exact.lens)))
+        m = sum(exact.lens) * np.ones(indim)
+        actual = reconstruct(exact.gen_lmc(m))
         exact_mat = exact.gen_exact().K
         tol = 1e-4
         np.testing.assert_allclose(
             exact_mat, actual, rtol=tol, atol=tol)
         avg_diff_sz = LMCTestUtils.avg_entry_diff(exact_mat, actual)
 
-        actual = reconstruct(exact.gen_lmc(sum(exact.lens) * 2))
+        actual = reconstruct(exact.gen_lmc(m * 2))
         np.testing.assert_allclose(
             exact_mat, actual, rtol=tol, atol=tol)
         avg_diff_2sz = LMCTestUtils.avg_entry_diff(exact_mat, actual)
@@ -177,8 +179,8 @@ class LMCTest(RandomTest):
             np.testing.assert_allclose(
                 a.noise_gradient(), b.noise_gradient(), tol, tol)
 
-    def _check_kernel_params(self, ea):
-        m = sum(ea.lens) / len(ea.lens)
+    def _check_kernel_params(self, ea, input_dim):
+        m = sum(ea.lens) / len(ea.lens) * np.ones(input_dim)
         actual = ea.gen_lmc(m)
         exact = ea.gen_exact()
 
@@ -187,21 +189,21 @@ class LMCTest(RandomTest):
         self._check_kernels_equal(
             tol, exact, actual.kernel, check_gradients=False)
 
-    def _check_normal_quadratic(self, exact):
+    def _check_normal_quadratic(self, exact, input_dim):
         exact_mat = exact.gen_exact().K
         y = np.hstack(exact.yss)
         Kinv_y = la.solve(exact_mat, y)
         expected = y.dot(Kinv_y)
 
-        lmc = exact.gen_lmc(sum(exact.lens))
+        lmc = exact.gen_lmc(sum(exact.lens) * np.ones(input_dim))
         lmc.TOL = 1e-15  # tighten tolerance for tests
         tol = 1e-4
 
         actual = lmc.normal_quadratic()
         np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
 
-    def _check_fit(self, ea):
-        lmc = ea.gen_lmc(sum(ea.lens))
+    def _check_fit(self, ea, input_dim):
+        lmc = ea.gen_lmc(sum(ea.lens) * np.ones(input_dim))
 
         ll_before = lmc.log_likelihood()
         lmc.optimize(optimizer=AdaDelta(max_it=5))
@@ -219,35 +221,37 @@ class LMCTest(RandomTest):
     @parameterized.expand(LMCTestUtils.input_output_cases_grid())
     def test_kernel_reconstruction(self, _, output_case, input_dim):
         ea = output_case(input_dim)
-        self._check_kernel_reconstruction(ea)
+        self._check_kernel_reconstruction(ea, input_dim)
 
     @parameterized.expand(LMCTestUtils.input_output_cases_grid())
     def test_kernel_params(self, _, output_case, input_dim):
         ea = output_case(input_dim)
-        self._check_kernel_params(ea)
+        self._check_kernel_params(ea, input_dim)
 
     @parameterized.expand(LMCTestUtils.input_output_cases_grid())
     def test_normal_quadratic(self, _, output_case, input_dim):
         ea = output_case(input_dim)
-        self._check_normal_quadratic(ea)
+        self._check_normal_quadratic(ea, input_dim)
 
     def test_1d_fit(self):
-        ea = LMCTestUtils._case_1d(None)
+        input_dim = None
+        ea = LMCTestUtils._case_1d(input_dim)
         noise_sd = [0.05]
         true_func = [np.sin]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.kernels, ea.lens,
                            ea.functional_kernel.coreg_vecs, ea.xss, yss)
-        self._check_fit(ea)
+        self._check_fit(ea, input_dim)
 
     def test_2d_fit(self):
-        ea = LMCTestUtils._case_2d(None)
+        input_dim = None
+        ea = LMCTestUtils._case_2d(input_dim)
         noise_sd = [0.05, 0.08]
         true_func = [np.sin, np.cos]
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.kernels, ea.lens,
                            ea.functional_kernel.coreg_vecs, ea.xss, yss)
-        self._check_fit(ea)
+        self._check_fit(ea, input_dim)
 
     def test_multirank_fit(self):
         ea = LMCTestUtils._case_multirank(None)
@@ -256,7 +260,7 @@ class LMCTest(RandomTest):
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.kernels, ea.lens,
                            ea.functional_kernel.coreg_vecs, ea.xss, yss)
-        self._check_fit(ea)
+        self._check_fit(ea, None)
 
     def test_2d_fit_noisediff(self):
         ea = LMCTestUtils._case_2d(None)
@@ -265,7 +269,7 @@ class LMCTest(RandomTest):
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.kernels, ea.lens,
                            ea.functional_kernel.coreg_vecs, ea.xss, yss)
-        self._check_fit(ea)
+        self._check_fit(ea, None)
 
     def test_2d_1k_fit_large_offset(self):
         kernels = [RBF(inv_lengthscale=3)]
@@ -277,4 +281,4 @@ class LMCTest(RandomTest):
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.kernels, ea.lens,
                            ea.functional_kernel.coreg_vecs, ea.xss, yss)
-        self._check_fit(ea)
+        self._check_fit(ea, None)

@@ -24,7 +24,6 @@ class GridKernel(Matrix):
                  interpolant, interpolantT, ktype, lens_per_output):
         n = interpolant.shape[0]
         super().__init__(n, n)
-
         grid_k = functional_kernel.eval_kernels(grid_dists)
 
         if ktype == 'sum':
@@ -84,7 +83,7 @@ def _gen_coreg_Ks(functional_kernel, grid_k):
     I_m = Identity(np.prod(grid_k.shape[1:]))
     left = Kronecker(NumpyMatrix(A_star), I_m)
     right = Kronecker(NumpyMatrix(A_star.T), I_m)
-    deduped_toeps = np.array([BTTB(top, top.shape)
+    deduped_toeps = np.array([BTTB(top.ravel(), top.shape)
                               for top in grid_k[:len(all_coreg)]])
     toeps = BlockDiag(np.repeat(deduped_toeps, ranks))
     coreg_Ks = Composition([left, toeps, right])

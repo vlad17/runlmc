@@ -147,13 +147,14 @@ class InterpolatedLLGP(MultiGP):
         self.inducing_grid_axes = autogrid(
             self.Xs, self._wrap(lo), self._wrap(hi), self._wrap(m))
         self.grid = cartesian_product(*self.inducing_grid_axes)
+        first = self.grid[0]
         grid_shape = list(map(len, self.inducing_grid_axes))
         grid_shape.append(len(self.inducing_grid_axes))
         self.grid = self.grid.reshape(grid_shape)
 
         # BTTB(self.dists.ravel(), self.dists.shape)
         # is the pairwise distance matrix of U
-        self.dists = la.norm(self.grid - self.grid[0], axis=-1)
+        self.dists = la.norm(self.grid - first, axis=-1)
 
         # Corresponds to W; block diagonal matrix.
         self.interpolant = multi_interpolant(self.Xs, *self.inducing_grid_axes)
