@@ -233,43 +233,30 @@ class LMCTest(RandomTest):
         ea = output_case(input_dim)
         self._check_normal_quadratic(ea, input_dim)
 
-    def test_1d_fit(self):
-        input_dim = None
-        ea = LMCTestUtils._case_1d(input_dim)
-        noise_sd = [0.05]
-        true_func = [np.sin]
+    @parameterized.expand([
+        ('output_1d_input1d', LMCTestUtils._case_1d, 1, [0.05], [np.sin]),
+        ('output_1d_input1dimplicit',
+         LMCTestUtils._case_1d, None, [0.05], [np.sin]),
+        ('output_1d_input2d', LMCTestUtils._case_1d, 2, [0.05], [
+            lambda x, y: np.sin(x - y)]),
+        ('output_2d', LMCTestUtils._case_2d,
+         1, [0.05, 0.08], [np.sin, np.cos]),
+        ('output_2d_noisediff', LMCTestUtils._case_2d,
+         1, [1e-8, 0.08], [np.sin, np.cos]),
+        ('output_2d_input2d', LMCTestUtils._case_2d, 2, [0.05, 0.08], [
+            (lambda x, y: np.sin(x - y)),
+            (lambda x, y: np.cos(np.exp(x) / (np.abs(y) + 1)))]),
+        ('output_multirank', LMCTestUtils._case_multirank,
+         1, [0.05, 0.08], [np.sin, np.cos]),
+        ('output_large', LMCTestUtils._case_large, 1, [0.05] * 5, [
+            np.sin, np.cos, np.exp, np.sin, np.cos])
+    ])
+    def test_fit(self, _, output_case, input_dim, noise_sd, true_func):
+        ea = output_case(input_dim)
         yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
         ea = ExactAnalogue(ea.kernels, ea.lens,
                            ea.functional_kernel.coreg_vecs, ea.xss, yss)
         self._check_fit(ea, input_dim)
-
-    def test_2d_fit(self):
-        input_dim = None
-        ea = LMCTestUtils._case_2d(input_dim)
-        noise_sd = [0.05, 0.08]
-        true_func = [np.sin, np.cos]
-        yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
-        ea = ExactAnalogue(ea.kernels, ea.lens,
-                           ea.functional_kernel.coreg_vecs, ea.xss, yss)
-        self._check_fit(ea, input_dim)
-
-    def test_multirank_fit(self):
-        ea = LMCTestUtils._case_multirank(None)
-        noise_sd = [0.05, 0.08]
-        true_func = [np.sin, np.cos]
-        yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
-        ea = ExactAnalogue(ea.kernels, ea.lens,
-                           ea.functional_kernel.coreg_vecs, ea.xss, yss)
-        self._check_fit(ea, None)
-
-    def test_2d_fit_noisediff(self):
-        ea = LMCTestUtils._case_2d(None)
-        noise_sd = [1e-8, 0.09]
-        true_func = [np.sin, np.cos]
-        yss = ExactAnalogue.gen_obs(ea.xss, noise_sd, true_func)
-        ea = ExactAnalogue(ea.kernels, ea.lens,
-                           ea.functional_kernel.coreg_vecs, ea.xss, yss)
-        self._check_fit(ea, None)
 
     def test_2d_1k_fit_large_offset(self):
         kernels = [RBF(inv_lengthscale=3)]
