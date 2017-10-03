@@ -9,7 +9,7 @@ setup(
     packages=find_packages(),
     author='Vladimir Feinberg',
     install_requires=[
-        'paramz==0.7.4',
+        'paramz',
         'scipy',
         'numpy',
         'climin',
