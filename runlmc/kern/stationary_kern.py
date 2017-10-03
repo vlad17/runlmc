@@ -34,10 +34,21 @@ class StationaryKern(Parameterized):
     Toeplitz.
 
     :param name:
+    :param active_dims: active dimensions (from which Euclidean distances fed
+        into the kernel as inputs are computed). I.e., if data for a problem
+        are 3D :math:`(x, y, t)` with :math:`x,y` spatial coordinates and
+        :math:`t` time then the
+        default `active_dims` setting of `None` would evaluate the kernel
+        :math:`k` between two points as
+        :math:`k(\\|(x_1-x_2,y_1-y_2,t_1-t_2)\\|)`, which doesn't make much
+        sense. In this case you might want to use `active_dims` to specify
+        a sum kernel of two kernels, one over the :math:`(x,y)` values alone
+        and the other over the :math:`t` values alone.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, active_dims=None):
         super().__init__(name=name)
+        self.active_dims = active_dims
 
     def from_dist(self, dists):
         """

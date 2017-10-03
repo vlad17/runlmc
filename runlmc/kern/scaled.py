@@ -14,7 +14,7 @@ from ..util.docs import inherit_doc
 class Scaled(StationaryKern):
     def __init__(self, k):
         name = 'scaled_' + k.name
-        super().__init__(name=name)
+        super().__init__(name=name, active_dims=k.active_dims)
         self.k = k
         self.link_parameter(k)
         self.scale = Param('scale', 1, Logexp())

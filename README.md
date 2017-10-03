@@ -17,10 +17,10 @@ In other words, this provides a matrix-free implementation of multi-output GPs f
 
 ## Usage Notes
 
-* Currently, I'm only supporting 1 input dimension.
 * Zero-mean only for now.
 * Check out the [latest documentation](http://runlmc.readthedocs.io/en/latest/)
 * Check out the *Dev Stuff* section below for installation requirements.
+* Currently, input dimension can be no more than two. Arbitrary input dimension is planned, but the number of active dimensions in each kernel would still be capped at two (though a model can have multiple different kernels depending on different subsets of the dimensions).
 
 ## A note on GPy
 

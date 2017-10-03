@@ -14,6 +14,7 @@ from .stationary_kern import StationaryKern
 from ..parameterization.param import Param
 from ..util.docs import inherit_doc
 
+
 @inherit_doc
 class StdPeriodic(StationaryKern):
     """
@@ -26,9 +27,13 @@ class StdPeriodic(StationaryKern):
     :param inv_lengthscale: :math:`\\gamma`, above.
     :param period: :math:`T`, above.
     :param name:
+    :param active_dims: see :class:`runlmc.kern.stationary_kern.StationaryKern`
+        for details.
     """
-    def __init__(self, inv_lengthscale=1, period=1, name='std_periodic'):
-        super().__init__(name=name)
+
+    def __init__(self, inv_lengthscale=1, period=1, name='std_periodic',
+                 active_dims=None):
+        super().__init__(name=name, active_dims=active_dims)
         self.inv_lengthscale = Param(
             'inv_lengthscale', inv_lengthscale, Logexp())
         self.link_parameter(self.inv_lengthscale)
@@ -47,7 +52,8 @@ class StdPeriodic(StationaryKern):
         l = float(self.inv_lengthscale[0]) ** -0.5
         p = float(self.period[0])
         gpy = GPy.kern.StdPeriodic(
-            input_dim=1, variance=1, lengthscale=l, period=p, name=self.name)
+            input_dim=1, variance=1, lengthscale=l, period=p, name=self.name,
+            active_dims=self.active_dims)
         gpy.variance.constrain_fixed(1)
         return gpy
 
