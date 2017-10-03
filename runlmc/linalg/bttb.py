@@ -2,6 +2,7 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import logging
+import math
 
 import numpy as np
 import scipy.linalg as la
@@ -11,6 +12,12 @@ from ..util.docs import inherit_doc
 from ..util.numpy_convenience import chunks
 
 _LOG = logging.getLogger(__name__)
+
+
+def _pow2(x):
+    # https://stackoverflow.com/questions/14267555
+
+    return [2 ** (int(xx - 1).bit_length()) for xx in x]
 
 
 @inherit_doc
@@ -103,11 +110,11 @@ class BTTB(Matrix):
 
     @staticmethod
     def _cyclic_extend_n(x, sizes, mask):
-        extended = np.zeros(sizes * 2)
+        extended = np.zeros(_pow2(sizes * 2))
         extended[mask] = x.reshape(sizes)
         slices = tuple()
-        for n in reversed(sizes):
-            dst = slice(n + 1, 2 * n)
+        for n, m in reversed(list(zip(sizes, extended.shape))):
+            dst = slice(m - n + 1, m)
             src = slice(n - 1, 0, -1)
             extended[(..., dst, *slices)] = extended[(..., src, *slices)]
             slices = (slice(None), *slices)
@@ -136,7 +143,7 @@ class BTTB(Matrix):
         return blocks[0]
 
     def matvec(self, x):
-        x_fft = np.fft.rfftn(x.reshape(self._sizes), s=(self._sizes * 2))
+        x_fft = np.fft.rfftn(x.reshape(self._sizes), s=_pow2(self._sizes * 2))
         x_fft *= self._circ_fft
         x_ifft = np.fft.irfftn(x_fft)
         return x_ifft[self._subrectangle].ravel()

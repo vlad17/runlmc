@@ -81,13 +81,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. InterpolatedLLGP (to allow multi-input-dimension grids)
-   -> Add test for dimension 2
-   -> dedup FFTs in `_gen_coreg_Ks` + `_gen_diag_Ks` with single `grid_k`
-      BTTB generation (i.e., deduped_toeps made in common `_gen_slfm_grid` 
-      method) ; + `ApproxLMCLikelihood`
-0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)
-0. Benchmark dataset, re-run all to see BTTB slowdown
+0. Flutrends dataset [flutrends](https://www.google.org/flutrends/about/) augmented with [weather](https://www.ncdc.noaa.gov/cdo-web/datasets) in [split kernel](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177) - also test cities as outputs? - local climate data?
 0. Split kernel - split kernel -- add .active_dims to each subkernel? - Kernel is then a sum kernel -> multiple grid kernels
    of all active dim subsets... i.e., make a separate SKI instance for all sub-active dims.
 0. Re-benchmark
