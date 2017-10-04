@@ -46,7 +46,7 @@ class GridKernel(Matrix):
 
 
 def gen_grid_kernel(fk, grid_dists, interpolants, lens_per_output):
-    all_gk = []
+    grid_kerns = {}
     for active_dim in fk.active_dims.keys():
         if fk.Q == 1:
             ktype = 'sum'
@@ -63,14 +63,14 @@ def gen_grid_kernel(fk, grid_dists, interpolants, lens_per_output):
                 ktype = 'bt'
         grid_dist = grid_dists[active_dim]
         interpolant, interpolantT = interpolants[active_dim]
-        gk = GridKernel(fk, grid_dist, interpolant,
-                        interpolantT, ktype, active_dim)
-        all_gk.append(gk)
+        grid_kerns[active_dim] = GridKernel(fk, grid_dist, interpolant,
+                                            interpolantT, ktype, active_dim)
 
     noise = Diag(np.repeat(fk.noise, lens_per_output))
-    all_gk.append(noise)
+    ls = list(grid_kerns.values())
+    ls.append(noise)
 
-    return SumMatrix(all_gk)
+    return SumMatrix(ls), grid_kerns
 
 
 def _gen_slfm_grid(functional_kernel, grid_k, n, active_dim):
