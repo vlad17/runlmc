@@ -165,6 +165,15 @@ class LMCTest(RandomTest):
 
         self.assertGreater(avg_diff_sz, avg_diff_2sz)
 
+        xss = [xs if xs.ndim == 2 else xs.reshape(-1, 1)
+               for xs in exact.xss]
+
+        # Also check ExactLMCLikelihood reconstruction
+        K_X_X = ExactLMCLikelihood.kernel_from_indices(
+            xss, xss, exact.functional_kernel) + np.diag(
+                np.repeat(exact.functional_kernel.noise, exact.lens))
+        np.testing.assert_allclose(exact_mat, K_X_X, rtol=tol, atol=tol)
+
     def _check_kernels_equal(self, tol, a, b, check_gradients=True):
         np.testing.assert_allclose(
             a.alpha(), b.alpha(), tol, tol)
@@ -212,6 +221,41 @@ class LMCTest(RandomTest):
         ll_after = lmc.log_likelihood()
 
         self.assertGreater(ll_after, ll_before)
+
+    def _check_prediction(self, ea, input_dim):
+        lmc = ea.gen_lmc(sum(ea.lens) * np.ones(input_dim))
+
+        K = ea.gen_exact().K
+        y = np.hstack(ea.yss)
+        Kinv_y = la.solve(K, y)
+        test_xss = [np.random.rand(5, input_dim) for _ in ea.xss]
+        K_test_X = ExactLMCLikelihood.kernel_from_indices(
+            test_xss, ea.xss, ea.functional_kernel)
+        expected_mean = K_test_X.dot(Kinv_y)
+
+        K_test_test = ExactLMCLikelihood.kernel_from_indices(
+            test_xss, test_xss, ea.functional_kernel) + np.diag(
+                np.repeat(ea.functional_kernel.noise,
+                          [len(xs) for xs in test_xss]))
+        expected_var = K_test_test - K_test_X.dot(la.solve(K, K_test_X.T))
+        expected_var = np.diag(expected_var)
+
+        tol = 1e-4
+        lmc.prediction = 'exact'
+        actual_exact_mean, actual_exact_var = lmc.predict(test_xss)
+
+        np.testing.assert_allclose(expected_mean, actual_exact_mean,
+                                   rtol=tol, atol=tol)
+        np.testing.assert_allclose(
+            expected_var, actual_exact_var, rtol=tol, atol=tol)
+
+        lmc.prediction = 'on-the-fly'
+        lmc.TOL = 1e-15  # tighten tolerance for tests
+        actual_mean, actual_var = lmc.predict(test_xss)
+        np.testing.assert_allclose(expected_mean, actual_mean,
+                                   rtol=tol, atol=tol)
+        np.testing.assert_allclose(
+            expected_var, actual_var, rtol=tol, atol=tol)
 
     def test_no_kernel(self):
         def mapnp(x):

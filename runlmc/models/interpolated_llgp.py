@@ -307,7 +307,7 @@ class InterpolatedLLGP(MultiGP):
                                  for per_output
                                  in self._functional_kernel.coreg_vecs)
         coregs += np.column_stack(self._functional_kernel.coreg_diags)
-        zero_dist = {v: 0 for v in self._functional_kernel.active_dims.keys()}
+        zero_dist = {v: 0 for v in self._functional_kernel.active_dims}
         kernels = self._functional_kernel.eval_kernels(zero_dist)
         native_output_var = coregs.dot(kernels).reshape(-1)
         native_var = native_output_var + self._functional_kernel.noise

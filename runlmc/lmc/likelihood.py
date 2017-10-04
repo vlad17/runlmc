@@ -140,7 +140,7 @@ class ExactLMCLikelihood(LMCLikelihood):
 
         Xs = np.vstack(Xs)
         dists = ExactLMCLikelihood._gen_dists(
-            functional_kernel.active_dims.keys(), Xs, Xs)
+            functional_kernel.active_dims, Xs, Xs)
 
         self.materialized_kernels = self.functional_kernel.eval_kernels(dists)
         self.K = sum(self._personalized_coreg_scale(A, Kq) for A, Kq in
@@ -185,6 +185,7 @@ class ExactLMCLikelihood(LMCLikelihood):
         `Zs`.
         """
 
+        rlens, clens = [len(X) for X in Xs], [len(Z) for Z in Zs]
         Xs = np.vstack(Xs)
         if Xs.ndim == 1:
             Xs = Xs.reshape(-1, 1)
@@ -192,9 +193,8 @@ class ExactLMCLikelihood(LMCLikelihood):
         if Zs.ndim == 1:
             Zs = Zs.reshape(-1, 1)
         dists = ExactLMCLikelihood._gen_dists(
-            functional_kernel.active_dims.keys(), Xs, Zs)
+            functional_kernel.active_dims, Xs, Zs)
         Kqs = functional_kernel.eval_kernels(dists)
-        rlens, clens = [len(X) for X in Xs], [len(Z) for Z in Zs]
         K = sum(ExactLMCLikelihood._coreg_scale(A, Kq, rlens, clens,
                                                 functional_kernel.D)
                 for A, Kq in zip(functional_kernel.coreg_mats(), Kqs))
