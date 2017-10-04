@@ -192,7 +192,7 @@ class InterpolatedLLGP(MultiGP):
     def parameters_changed(self):
         self._clear_caches()
 
-        grid_kernel = gen_grid_kernel(
+        grid_kernel, gk_dict = gen_grid_kernel(
             self._functional_kernel,
             self.dists,
             self.interpolants,
@@ -204,6 +204,7 @@ class InterpolatedLLGP(MultiGP):
             self.interpolants,
             self.Ys,
             self._deriv_service)
+        self.kernel._grid_kernels = gk_dict
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
@@ -291,9 +292,12 @@ class InterpolatedLLGP(MultiGP):
     # Predictive mean for grid points U
     @functools.lru_cache(maxsize=1)
     def _grid_alpha(self):
-        # TODO(cleanup) use proper kernel interface for this
-        return self.kernel.K.grid_K.matvec(
-            self.interpolantT.dot(self.kernel.alpha()))
+        grid_alpha = {}
+        for active_dim in self._functional_kernel.active_dims:
+            W, _ = self.interpolants[active_dim]
+            grid_K = self.kernel._grid_kernels[active_dim]
+            grid_alpha[active_dim] = grid_K.matvec(W.dot(self.kernel.alpha()))
+        return grid_alpha
 
     # The native covariance diag(K) for each output, i.e.,
     # the a priori variance of a single point for each output.

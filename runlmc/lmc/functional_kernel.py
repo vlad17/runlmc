@@ -289,3 +289,6 @@ class FunctionalKernel(Parameterized):
     @property
     def Q(self):
         return len(self._kernels)
+
+    def get_active_dims(self, q):
+        return self._kernels[q].active_dims
