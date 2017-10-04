@@ -14,12 +14,12 @@ class FunctionalKernel(Parameterized):
     An LMC kernel can be specified by the number of latent GP kernels
     it contains. Recall a full LMC kernel defines the similarity between
     two inputs :math:`\\textbf{x}_i,\\textbf{x}_j` belonging to two outputs
-    :math:`a,b`, respectively, as follows:
+    :math:`a,b`, respectively, as follows (noise not included)
 
     .. math::
 
         K((\\textbf{x}_i, a),(\\textbf{x}_j, b)) = \sum_{q=1}^Q B_{ab}^{(q)}
-            k_q(\\textbf{x}_i,\\textbf{x}_j) + 1_{a=b, i=j}\epsilon^{(a)}
+            k_q(\\textbf{x}_i,\\textbf{x}_j)
 
     If we enumerate all inputs across all our :math:`D` outputs
     :math:`\\{z_j\\}_j=\\{( \\textbf{x}_i, a)|a\\in [D]\\}`, then the complete
@@ -46,6 +46,10 @@ class FunctionalKernel(Parameterized):
     this model, with name `a<q>`, where `<q>` is replaced with a specific
     number.
 
+    Before use, input dimension should be specified with :meth:`set_input_dim`.
+    This is usually done automatically by the model, such as
+    :class:`runlmc.models.interpolated_llgp.InterpolatedLLGP`.
+
     :param D: number of outputs
     :param lmc_kernels: a list of kernels for which the corresponding
         coregionalization matrix has full rank
@@ -57,21 +61,31 @@ class FunctionalKernel(Parameterized):
         \\boldsymbol\\kappa_q`, with :math:`A_q` of rank :math:`r_q`.
     :param slfm_kernels: an SLFM kernel restricts its coregionalization
         matrix to a single rank :math:`A_qA_q^\\top`
-    :param indep_gp: if specified, should be a list of exactly `D` kernels
+    :param indep_gp: indpedent GPs for each output :math:`i`,
         with associated coregionalization matrices
         :math:`\\textbf{e}_i\\textbf{e}_i^\\top`.
+    :param indep_gp_index: should be the same length as `indep_gp`, and
+        specifies which output the kernel in the `indep_gp` list in
+        the same place as an index is associated with. Defaults to
+        `range(len(indep_gp))`.
     :param name: :mod:`paramz` name for this kernel
     :raises ValueError: if any of the parameters don't meet the above
         requirements, or `D,Q` are unspecified, 0, or inconsistent.
     :ivar Q: `Q`, subkernel count including SLFM and indpendent kernels
     :ivar D: `D`, output dimension
-    :ivar num_lmc: number of LMC kernels
-    :ivar num_slfm: number of SLFM kernels
-    :ivar num_indep: number of independent GP kernels (either `0` or `D`)
+    :ivar num_lmc: number of LMC kernels (a dictionary, where the key
+       is the active dimensions and the value is the number of LMC kernels
+       for that set of active dimensions)
+    :ivar num_slfm: number of SLFM kernels, as `num_lmc`
+    :ivar num_indep: number of independent GP kernels, as `num_lmc`
+    :ivar active_dims: a dictionary whose keys are the subsets of the full
+        input dimension set `{1, ..., P}`. Only defined after
+        :meth:`set_input_dim` has been called.
     """
 
     def __init__(self, D=None, lmc_kernels=None, lmc_ranks=None,
-                 slfm_kernels=None, indep_gp=None, name='kern'):
+                 slfm_kernels=None, indep_gp=None, indep_gp_index=None,
+                 name='kern'):
         super().__init__(name=name)
 
         if not D:
@@ -87,22 +101,30 @@ class FunctionalKernel(Parameterized):
         if not all(map(lambda rank: rank > 0, lmc_ranks)):
             raise ValueError('LMC ranks not positive')
 
-        if indep_gp and len(indep_gp) != D:
-            raise ValueError('Independent GP kernels should be one-per-output'
-                             ' or not specified at all')
-
         lmc_kernels = lmc_kernels or []
         slfm_kernels = slfm_kernels or []
         indep_gp = indep_gp or []
+        indep_gp_index = indep_gp_index or range(len(indep_gp))
+
+        if len(indep_gp) != len(indep_gp_index):
+            raise ValueError('indep GP number of kernels should match indices')
+
         self._kernels = lmc_kernels + slfm_kernels + indep_gp
-        self.num_lmc = len(lmc_kernels)
-        self.num_slfm = len(slfm_kernels)
-        self.num_indep = len(indep_gp)
         for k in self._kernels:
             self.link_parameter(k)
 
-        self._coreg_vecs = self._initialize_Aq(lmc_ranks)
-        self._coreg_diags = self._initialize_kq()
+        self._coreg_vecs = self._initialize_Aq(
+            lmc_ranks, len(slfm_kernels), len(indep_gp))
+        self._coreg_diags = self._initialize_kq(
+            len(lmc_kernels), len(slfm_kernels), indep_gp_index)
+        self.P = None
+        self.active_dims = {}
+        self.num_lmc = {}
+        self.num_slfm = {}
+        self.num_indep = {}
+
+        self._num_lmc = len(lmc_kernels)
+        self._num_slfm = len(slfm_kernels)
 
         # Corresponds to epsilon
         self._noise = Param('noise', 0.1 * np.ones(self.D), Logexp())
@@ -111,45 +133,75 @@ class FunctionalKernel(Parameterized):
     _TRUNCNORM = scipy.stats.truncnorm(-1, 1)
 
     @staticmethod
-    def randinit(sx, sy):
+    def _randinit(sx, sy):
         return FunctionalKernel._TRUNCNORM.rvs(size=(sx, sy))
 
-    def _initialize_Aq(self, lmc_ranks):
+    @staticmethod
+    def _count(dictionary, key):
+        dictionary.setdefault(key, 0)
+        dictionary[key] += 1
+
+    def set_input_dim(self, P):
+        """Set the input dimension for the kernel."""
+        if self.P == P:
+            return
+        if self.P is not None:
+            raise ValueError('Cannot set input dimension twice')
+        self.P = P
+        all_dims = tuple(range(P))
+        for i, k in enumerate(self._kernels):
+            if k.active_dims is None:
+                k.active_dims = all_dims
+            else:
+                k.active_dims = tuple(sorted(list(k.active_dims)))
+            self.active_dims.setdefault(k.active_dims, []).append(i)
+            if i < self._num_lmc:
+                FunctionalKernel._count(self.num_lmc, k.active_dims)
+            elif i < self._num_lmc + self._num_slfm:
+                FunctionalKernel._count(self.num_slfm, k.active_dims)
+            else:
+                FunctionalKernel._count(self.num_indep, k.active_dims)
+        for d in (self.num_lmc, self.num_slfm, self.num_indep):
+            for ad in self.active_dims:
+                if ad not in d:
+                    d[ad] = 0
+
+    def _initialize_Aq(self, lmc_ranks, num_slfm, num_indep):
         """Initialize, link, and return coregionalization vectors A_q for all
         Q kernels, for lmc, slfm, and inependent kernels, in that order."""
 
         coreg_vecs = []
         initial_vecs = []
-        initial_vecs += [FunctionalKernel.randinit(rank, self.D)
+        initial_vecs += [FunctionalKernel._randinit(rank, self.D)
                          for rank in lmc_ranks]
-        initial_vecs += [FunctionalKernel.randinit(1, self.D)
-                         for _ in range(self.num_slfm)]
+        initial_vecs += [FunctionalKernel._randinit(1, self.D)
+                         for _ in range(num_slfm)]
         initial_vecs += [np.zeros((1, self.D))
-                         for _ in range(self.num_indep)]
+                         for _ in range(num_indep)]
         for i, coreg_vec in enumerate(initial_vecs):
             coreg_vecs.append(Param('a{}'.format(i), coreg_vec))
             # independent kernels have no off-diagonal coregionalization
             # and it certainly isn't modifiable during optimization
-            if i < self.num_lmc + self.num_slfm:
+            if i < len(lmc_ranks) + num_slfm:
                 self.link_parameter(coreg_vecs[-1])
 
         return coreg_vecs
 
-    def _initialize_kq(self):
+    def _initialize_kq(self, num_lmc, num_slfm, indep_gp_index):
         """Initializes kappa_q analogously as Aq in _initialize_Aq()"""
         coreg_diags = []
-        for _ in range(self.num_lmc):
+        for _ in range(num_lmc):
             i = len(coreg_diags)
             coreg_diag = np.ones(self.D)
             coreg_diags.append(
                 Param('kappa{}'.format(i), coreg_diag, Logexp()))
             self.link_parameter(coreg_diags[-1])
-        for _ in range(self.num_slfm):
+        for _ in range(num_slfm):
             i = len(coreg_diags)
             coreg_diag = np.zeros(self.D)
             coreg_diags.append(Param('kappa{}'.format(i), coreg_diag))
             coreg_diags[-1].constrain_fixed()
-        for d in range(self.num_indep):
+        for d in indep_gp_index:
             i = len(coreg_diags)
             coreg_diag = np.zeros(self.D)
             coreg_diag[d] = 1
@@ -161,6 +213,7 @@ class FunctionalKernel(Parameterized):
         """Update the gradients of parameters in the functional kernel
         with respect to those calculated by a concrete `LMCLikelihood` given
         data."""
+        assert self.P
         for x, dx in zip(self._coreg_vecs, grads.coreg_vec_gradients()):
             x.gradient = dx
         for x, dx in zip(self._coreg_diags, grads.coreg_diags_gradients()):
@@ -169,17 +222,34 @@ class FunctionalKernel(Parameterized):
             k.update_gradient(dk)
         self._noise.gradient = grads.noise_gradient()
 
-    def total_rank(self):
+    def total_rank(self, active_dim):
         """Total (added) coregionalization rank for all B_q matrices"""
-        return sum(len(coreg) for coreg in self._coreg_vecs)
+        assert self.P
+        rank = 0
+        for kidx in self.active_dims[active_dim]:
+            if kidx < self._num_lmc + self._num_slfm:
+                rank += len(self._coreg_vecs[kidx])
+        return rank
 
     def eval_kernels(self, dists):
-        """Computes the array of k_q applied to each distance in dists"""
-        return np.array([k.from_dist(dists) for k in self._kernels])
+        """Computes the array of k_q applied to each distance in `dists`, where
+        `dists` should be a dict of `active_dim`-keyed distances."""
+        assert self.P
+        return np.array([k.from_dist(dists[k.active_dims])
+                         for k in self._kernels])
+
+    def eval_kernels_fixed_dim(self, dists, active_dim):
+        """Computes the array of k_q applied to each distance in `dists`,
+        where only kernels with the passed-in active dimensions are
+        evaluated."""
+        return np.array([self._kernels[kidx].from_dist(dists)
+                         for kidx in self.active_dims[active_dim]])
 
     def eval_kernel_gradients(self, dists):
-        """Computes the list of grad k_q applied to each distance in dists"""
-        return [k.kernel_gradient(dists) for k in self._kernels]
+        """Computes the list of grad k_q applied to each distance in `dists`,
+        where `dists` should be a dict of `active_dim`-keyed distances."""
+        assert self.P
+        return [k.kernel_gradient(dists[k.active_dims]) for k in self._kernels]
 
     @property
     def noise(self):
@@ -207,9 +277,14 @@ class FunctionalKernel(Parameterized):
         for coreg_diag, value in zip(self._coreg_diags, values):
             coreg_diag[:] = value
 
-    def coreg_mats(self):
-        return [a.T.dot(a) + np.diag(k)
-                for a, k in zip(self.coreg_vecs, self.coreg_diags)]
+    def coreg_mats(self, active_dim=None):
+        cv = self.coreg_vecs
+        cd = self.coreg_diags
+        if active_dim is not None:
+            idxs = self.active_dims[active_dim]
+            cv = [cv[idx] for idx in idxs]
+            cd = [cd[idx] for idx in idxs]
+        return [a.T.dot(a) + np.diag(k) for a, k in zip(cv, cd)]
 
     @property
     def Q(self):

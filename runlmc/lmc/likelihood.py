@@ -97,7 +97,8 @@ class LMCLikelihood:
 
 
 class ApproxLMCLikelihood(LMCLikelihood):
-    def __init__(self, functional_kernel, grid_kern, grid_dists, Ys, deriv):
+    def __init__(self, functional_kernel, grid_kern, grid_dists,
+                 interpolants, Ys, deriv):
         super().__init__(functional_kernel, Ys)
         kernels_on_grid = self.functional_kernel.eval_kernels(grid_dists)
         self.materialized_kernels = [
@@ -106,17 +107,20 @@ class ApproxLMCLikelihood(LMCLikelihood):
         self.deriv = deriv.generate(self.K, self.y)
         self.materialized_grads = self.functional_kernel.eval_kernel_gradients(
             grid_dists)
+        self.interpolants = interpolants
 
-    def _ski(self, X):
-        return SKI(X, *self.K.interpolants())
+    def _ski(self, q, X):
+        ad = self.functional_kernel._kernels[q].active_dims
+        interp = self.interpolants[ad]
+        return SKI(X, *interp)
 
     def _dKdt_from_dAdt(self, dAdt, q):
-        return self._ski(Kronecker(
+        return self._ski(q, Kronecker(
             NumpyMatrix(dAdt), self.materialized_kernels[q]))
 
     def _dKdts_from_dKqdts(self, A, q):
         for dKqdt in self.materialized_grads[q]:
-            yield self._ski(Kronecker(
+            yield self._ski(q, Kronecker(
                 NumpyMatrix(A), BTTB(dKqdt.ravel(), dKqdt.shape)))
 
     def _dKdt_from_dEpsdt(self, dEpsdt):
@@ -135,18 +139,19 @@ class ExactLMCLikelihood(LMCLikelihood):
         super().__init__(functional_kernel, Ys)
 
         Xs = np.vstack(Xs)
-        pdists = dist.pdist(Xs)
-        pdists = dist.squareform(pdists)
+        dists = ExactLMCLikelihood._gen_dists(
+            functional_kernel.active_dims.keys(), Xs, Xs)
 
-        self.materialized_kernels = self.functional_kernel.eval_kernels(pdists)
+        self.materialized_kernels = self.functional_kernel.eval_kernels(dists)
         self.K = sum(self._personalized_coreg_scale(A, Kq) for A, Kq in
                      zip(self.functional_kernel.coreg_mats(),
                          self.materialized_kernels))
+
         self.K += np.diag(np.repeat(functional_kernel.noise, self.lens))
         self.L = la.cho_factor(self.K)
         self.deriv = ExactDeriv(self.L, self.y)
         self.materialized_grads = self.functional_kernel.eval_kernel_gradients(
-            pdists)
+            dists)
 
     @staticmethod
     def _coreg_scale(A, K, row_block_lens, col_block_lens, D):
@@ -164,6 +169,15 @@ class ExactLMCLikelihood(LMCLikelihood):
             A, K, self.lens, self.lens, self.functional_kernel.D)
 
     @staticmethod
+    def _gen_dists(active_dims, Xs, Zs):
+        dists = {}
+        for active_dim in active_dims:
+            dists[active_dim] = dist.cdist(
+                Xs[:, active_dim], Zs[:, active_dim])
+
+        return dists
+
+    @staticmethod
     def kernel_from_indices(Xs, Zs, functional_kernel):
         """Computes the dense, exact kernel matrix for an LMC kernel specified
         by `functional_kernel`. The kernel matrix that is computed is relative
@@ -177,8 +191,9 @@ class ExactLMCLikelihood(LMCLikelihood):
         Zs = np.vstack(Zs)
         if Zs.ndim == 1:
             Zs = Zs.reshape(-1, 1)
-        pair_dists = dist.cdist(Xs, Zs)
-        Kqs = functional_kernel.eval_kernels(pair_dists)
+        dists = ExactLMCLikelihood._gen_dists(
+            functional_kernel.active_dims.keys(), Xs, Zs)
+        Kqs = functional_kernel.eval_kernels(dists)
         rlens, clens = [len(X) for X in Xs], [len(Z) for Z in Zs]
         K = sum(ExactLMCLikelihood._coreg_scale(A, Kq, rlens, clens,
                                                 functional_kernel.D)

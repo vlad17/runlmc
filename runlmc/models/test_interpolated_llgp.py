@@ -46,6 +46,7 @@ class ExactAnalogue:
         self.kernels = kernels
         self.functional_kernel = fk
         self.exact = None
+        self.indim = indim or 1
 
     def gen_lmc(self, m):
         lmc = InterpolatedLLGP(self.xss, self.yss, normalize=False, m=m,
@@ -56,6 +57,7 @@ class ExactAnalogue:
         if self.exact is None:
             xss = [xs if xs.ndim == 2 else xs.reshape(-1, 1)
                    for xs in self.xss]
+            self.functional_kernel.set_input_dim(self.indim)
             self.exact = ExactLMCLikelihood(
                 self.functional_kernel, xss, self.yss)
 
