@@ -294,9 +294,9 @@ class InterpolatedLLGP(MultiGP):
     def _grid_alpha(self):
         grid_alpha = {}
         for active_dim in self._functional_kernel.active_dims:
-            W, _ = self.interpolants[active_dim]
+            _, WT = self.interpolants[active_dim]
             grid_K = self.kernel._grid_kernels[active_dim]
-            grid_alpha[active_dim] = grid_K.matvec(W.dot(self.kernel.alpha()))
+            grid_alpha[active_dim] = grid_K.matvec(WT.dot(self.kernel.alpha()))
         return grid_alpha
 
     # The native covariance diag(K) for each output, i.e.,
