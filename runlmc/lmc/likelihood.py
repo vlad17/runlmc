@@ -110,7 +110,7 @@ class ApproxLMCLikelihood(LMCLikelihood):
         self.interpolants = interpolants
 
     def _ski(self, q, X):
-        ad = self.functional_kernel._kernels[q].active_dims
+        ad = self.functional_kernel.get_active_dims(q)
         interp = self.interpolants[ad]
         return SKI(X, *interp)
 

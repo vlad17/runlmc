@@ -135,6 +135,7 @@ def _main():
     fkern.noise = noise
     fkern.coreg_vecs = coreg_vecs
     fkern.coreg_diags = coreg_diags
+    fkern.set_input_dim(1)
 
     run_kernel_benchmark(
         Xs, Ys, fkern, dists, grid_dists, interpolant, interpolant_T, testtype)
@@ -164,6 +165,8 @@ def prep(d, n_o, Xs):
 def run_kernel_benchmark(
         Xs, Ys, fkern, dists, grid_dists, interpolant, interpolantT, testtype):
 
+    grid_dists = {(0,): grid_dists}
+    interpolants = {(0,): (interpolant, interpolantT)}
     with contexttimer.Timer() as t:
         exact = ExactLMCLikelihood(fkern, Xs, Ys)
     chol_time = t.elapsed
@@ -180,8 +183,10 @@ def run_kernel_benchmark(
         solve = Iterative.solve
 
         def make_solve(k, minres):
-            k = GridKernel(fkern, grid_dists, interpolant, interpolantT, k,
-                           list(map(len, Xs)))
+            k = GridKernel(fkern, grid_dists, interpolant,
+                           interpolantT, k, (0,))
+            k = SumMatrix(
+                [k, Diag(np.repeat(fkern.noise, list(map(len, Xs))))])
             return lambda y: solve(k, y, verbose=True, minres=minres)
 
         methods = [
@@ -208,11 +213,10 @@ def run_kernel_benchmark(
     with closing(Pool(processes=cpu_count())) as pool:
         sds = StochasticDerivService(metrics, pool, n_it)
         with contexttimer.Timer() as t:
-            grid_kernel = gen_grid_kernel(
-                fkern, grid_dists, interpolant, interpolantT,
-                list(map(len, Xs)))
+            grid_kernel, _ = gen_grid_kernel(
+                fkern, grid_dists, interpolants, list(map(len, Xs)))
             approx = ApproxLMCLikelihood(
-                fkern, grid_kernel, grid_dists, Ys, sds)
+                fkern, grid_kernel, grid_dists, interpolants, Ys, sds)
         aprx_time = t.elapsed
     print('    matrix materialization/inversion time')
     print('        {:10.4f} sec exact - cholesky'.format(chol_time))
