@@ -235,8 +235,8 @@ class FunctionalKernel(Parameterized):
         """Computes the array of k_q applied to each distance in `dists`, where
         `dists` should be a dict of `active_dim`-keyed distances."""
         assert self.P
-        return np.array([k.from_dist(dists[k.active_dims])
-                         for k in self._kernels])
+        return [k.from_dist(dists[k.active_dims])
+                for k in self._kernels]
 
     def eval_kernels_fixed_dim(self, dists, active_dim):
         """Computes the array of k_q applied to each distance in `dists`,
@@ -291,4 +291,12 @@ class FunctionalKernel(Parameterized):
         return len(self._kernels)
 
     def get_active_dims(self, q):
+        """Returns the active dimensions for the kernel with index `q`"""
         return self._kernels[q].active_dims
+
+    def filter_non_indep_idxs(self, idxs):
+        """Return only the kernel indices associated with coregionalized
+        (non-independent) kernels"""
+        non_indep_max = self._num_lmc + self._num_slfm
+        non_indep = [kidx for kidx in idxs if kidx < non_indep_max]
+        return non_indep

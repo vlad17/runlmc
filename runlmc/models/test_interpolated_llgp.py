@@ -2,6 +2,7 @@
 # Licensed under the BSD 3-clause license (see LICENSE)
 
 import itertools
+from functools import partial
 
 import numpy as np
 from parameterized import parameterized
@@ -101,6 +102,15 @@ class LMCTestUtils:
         return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
 
     @staticmethod
+    def _case_2d_splitkern(split1, split2, input_dim):
+        assert input_dim >= 2
+        kernels = [RBF(inv_lengthscale=3, active_dims=split1),
+                   RBF(inv_lengthscale=2, active_dims=split2)]
+        szs = [30, 40]
+        coregs = [np.array(x).reshape(1, -1) for x in [[1, 2], [3, 4]]]
+        return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
+
+    @staticmethod
     def _case_multirank(input_dim):
         kernels = [RBF(inv_lengthscale=3),
                    RBF(inv_lengthscale=2)]
@@ -135,7 +145,17 @@ class LMCTestUtils:
         return {
             'input_1dimplicit': None,
             'input_1d': 1,
-            'input_2d': 2}
+            'input_2d': 2,
+            'input_3d': 3}
+
+    @classmethod
+    def _input_splits(cls, in_dim):
+        if in_dim is None or in_dim < 2:
+            return []
+        elif in_dim == 2:
+            return [((0, 1), (0,)), ((0,), (1,))]
+        assert in_dim == 3, in_dim
+        return [((0, 1), (2,)), ((0, 1), (1, 2)), ((0,), (1,)), ((0, 1), (0,))]
 
     @classmethod
     def input_output_cases_grid(cls):
@@ -143,7 +163,17 @@ class LMCTestUtils:
         ins = cls._input_cases()
         for (out_name, out), (in_name, in_dim) in itertools.product(
                 outs.items(), ins.items()):
-            yield out_name + '_' + in_name, out, in_dim
+            # Non-split kernels: no more than two input dims
+            if in_dim is None or in_dim <= 2:
+                yield out_name + '_' + in_name, out, in_dim
+        for in_name, in_dim in ins.items():
+            for splits in cls._input_splits(in_dim):
+                name = 'output_2d_input_2d_splitkern_'
+                name += '_'.join(map(str, splits[0]))
+                name += '___'
+                name += '_'.join(map(str, splits[1]))
+                case = partial(cls._case_2d_splitkern, splits[0], splits[1])
+                yield name, case, in_dim
 
 
 class LMCTest(RandomTest):

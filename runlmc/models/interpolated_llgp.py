@@ -332,7 +332,8 @@ class InterpolatedLLGP(MultiGP):
         mean = np.zeros(sum(lens))
         prediction_W = {}
         for active_dim, grid_alpha_ad in grid_alpha.items():
-            W = multi_interpolant(Xs, *self.grid_axes[active_dim])
+            Xs_active = [X[:, active_dim] for X in Xs]
+            W = multi_interpolant(Xs_active, *self.grid_axes[active_dim])
             prediction_W[active_dim] = W
             mean += W.dot(grid_alpha_ad)
 

@@ -146,7 +146,6 @@ class ExactLMCLikelihood(LMCLikelihood):
         self.K = sum(self._personalized_coreg_scale(A, Kq) for A, Kq in
                      zip(self.functional_kernel.coreg_mats(),
                          self.materialized_kernels))
-
         self.K += np.diag(np.repeat(functional_kernel.noise, self.lens))
         self.L = la.cho_factor(self.K)
         self.deriv = ExactDeriv(self.L, self.y)

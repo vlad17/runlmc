@@ -32,8 +32,9 @@ class GridKernel(Matrix):
         elif ktype == 'bt':
             self.grid_K = _gen_bt_grid(functional_kernel, grid_k, active_dim)
         elif ktype == 'slfm':
+            m = interpolant.shape[1]
             self.grid_K = _gen_slfm_grid(
-                functional_kernel, grid_k, n, active_dim)
+                functional_kernel, grid_k, m, active_dim)
         else:
             assert False, ktype
 
@@ -73,17 +74,18 @@ def gen_grid_kernel(fk, grid_dists, interpolants, lens_per_output):
     return SumMatrix(ls), grid_kerns
 
 
-def _gen_slfm_grid(functional_kernel, grid_k, n, active_dim):
-    coreg_Ks = _gen_coreg_Ks(functional_kernel, grid_k, active_dim)
-    diag_Ks = _gen_diag_Ks(functional_kernel, grid_k, n, active_dim)
+def _gen_slfm_grid(functional_kernel, grid_k, m, active_dim):
+    coreg_Ks = _gen_coreg_Ks(functional_kernel, grid_k, m, active_dim)
+    diag_Ks = _gen_diag_Ks(functional_kernel, grid_k, m, active_dim)
     return SumMatrix([coreg_Ks, diag_Ks])
 
 
-def _gen_coreg_Ks(fk, grid_k, active_dim):
+def _gen_coreg_Ks(fk, grid_k, m, active_dim):
     kidxs = fk.active_dims[active_dim]
-    non_indep_max = fk.num_lmc[active_dim] + fk.num_slfm[active_dim]
-    non_indep = [kidx for kidx in kidxs if kidx < non_indep_max]
+    non_indep = fk.filter_non_indep_idxs(kidxs)
     all_coreg = [fk.coreg_vecs[idx] for idx in non_indep]
+    if not all_coreg:
+        return Identity(m)
     ranks = np.array([len(coreg) for coreg in all_coreg])
     A_star = np.vstack(all_coreg).T
     I_m = Identity(np.prod(grid_k.shape[1:]))
@@ -98,9 +100,9 @@ def _gen_coreg_Ks(fk, grid_k, active_dim):
     return coreg_Ks
 
 
-def _gen_diag_Ks(fk, grid_k, n, active_dim):
+def _gen_diag_Ks(fk, grid_k, m, active_dim):
     if fk.num_lmc[active_dim] == 0 and fk.num_indep[active_dim] == 0:
-        return Identity(n)
+        return Identity(m)
     kidxs = fk.active_dims[active_dim]
     diags = np.column_stack([fk.coreg_diags[kidx] for kidx in kidxs])
     Q = grid_k.shape[0]
