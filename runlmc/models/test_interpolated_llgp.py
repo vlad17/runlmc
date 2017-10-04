@@ -13,6 +13,7 @@ from .optimization import AdaDelta
 from ..kern.rbf import RBF
 from ..lmc.likelihood import ExactLMCLikelihood
 from ..lmc.functional_kernel import FunctionalKernel
+from ..util.numpy_convenience import tesselate
 from ..util.testing_utils import RandomTest, check_np_lists, vectorize_inputs
 
 
@@ -222,40 +223,43 @@ class LMCTest(RandomTest):
 
         self.assertGreater(ll_after, ll_before)
 
-    def _check_prediction(self, ea, input_dim):
+    def _check_prediction(self, ea, input_dim):  # pylint: disable=too-many-locals
         lmc = ea.gen_lmc(sum(ea.lens) * np.ones(input_dim))
 
+        # Apply formula for conditional Gaussian
+
         K = ea.gen_exact().K
-        y = np.hstack(ea.yss)
-        Kinv_y = la.solve(K, y)
+        input_dim = input_dim or 1
         test_xss = [np.random.rand(5, input_dim) for _ in ea.xss]
+        test_lens = [len(xs) for xs in test_xss]
+        xss = [xs if xs.ndim == 2 else xs.reshape(-1, 1)
+               for xs in ea.xss]
         K_test_X = ExactLMCLikelihood.kernel_from_indices(
-            test_xss, ea.xss, ea.functional_kernel)
-        expected_mean = K_test_X.dot(Kinv_y)
+            test_xss, xss, ea.functional_kernel)
+        expected_mean = K_test_X.dot(la.solve(K, np.hstack(ea.yss)))
+        expected_mean = tesselate(expected_mean, test_lens)
 
         K_test_test = ExactLMCLikelihood.kernel_from_indices(
             test_xss, test_xss, ea.functional_kernel) + np.diag(
-                np.repeat(ea.functional_kernel.noise,
-                          [len(xs) for xs in test_xss]))
+                np.repeat(ea.functional_kernel.noise, test_lens))
         expected_var = K_test_test - K_test_X.dot(la.solve(K, K_test_X.T))
-        expected_var = np.diag(expected_var)
+        expected_var = tesselate(np.diag(expected_var), test_lens)
 
-        tol = 1e-4
         lmc.prediction = 'exact'
         actual_exact_mean, actual_exact_var = lmc.predict(test_xss)
-
+        # The O(1) mean can actually be fairly inaccurate
         np.testing.assert_allclose(expected_mean, actual_exact_mean,
-                                   rtol=tol, atol=tol)
+                                   rtol=1e-1, atol=1e-1)
         np.testing.assert_allclose(
-            expected_var, actual_exact_var, rtol=tol, atol=tol)
+            expected_var, actual_exact_var, rtol=1e-4, atol=1e-4)
 
         lmc.prediction = 'on-the-fly'
         lmc.TOL = 1e-15  # tighten tolerance for tests
         actual_mean, actual_var = lmc.predict(test_xss)
-        np.testing.assert_allclose(expected_mean, actual_mean,
-                                   rtol=tol, atol=tol)
+        np.testing.assert_allclose(actual_exact_mean, actual_mean,
+                                   rtol=1e-4, atol=1e-4)
         np.testing.assert_allclose(
-            expected_var, actual_var, rtol=tol, atol=tol)
+            expected_var, actual_var, rtol=1e-4, atol=1e-4)
 
     def test_no_kernel(self):
         def mapnp(x):
@@ -278,6 +282,11 @@ class LMCTest(RandomTest):
     def test_normal_quadratic(self, _, output_case, input_dim):
         ea = output_case(input_dim)
         self._check_normal_quadratic(ea, input_dim)
+
+    @parameterized.expand(LMCTestUtils.input_output_cases_grid())
+    def test_prediction(self, _, output_case, input_dim):
+        ea = output_case(input_dim)
+        self._check_prediction(ea, input_dim)
 
     @parameterized.expand([
         ('output_1d_input1d', LMCTestUtils._case_1d, 1, [0.05], [np.sin]),
