@@ -57,6 +57,13 @@ print('stations in climate missing location data', missing, 'of', tot)
 
 joined = climate.merge(stations, on='wban', how='left')
 tot = len(joined)
+
+
+numerics = ['temp', 'dew', 'pressure', 'wind', 'time']
+for name in numerics:
+    cleanstr = joined[name].astype('str').str.replace(r'[^\d\.]', '')
+    joined[name] = pd.to_numeric(cleanstr)
+
 joined = joined.dropna()
 print('left-joined climate/stations data has',
       len(joined), 'of', tot, 'clean rows')
@@ -114,7 +121,7 @@ print('# of bad lat/lon parses:', badparse)
 
 fname = 'noaa.csv'
 print('exporting cleaned noaa dataset to', fname)
-joined.to_csv(fname)
+joined.to_csv(fname, index=False)
 
 fname = 'stations.pdf'
 print('plotting stations with weather data on', fname)
