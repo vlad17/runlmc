@@ -20,7 +20,7 @@ In other words, this provides a matrix-free implementation of multi-output GPs f
 * Zero-mean only for now.
 * Check out the [latest documentation](http://runlmc.readthedocs.io/en/latest/)
 * Check out the *Dev Stuff* section below for installation requirements.
-* Accepts arbitrary input dimensions is planned, but the number of active dimensions in each kernel must still be capped at two (though a model can have multiple different kernels depending on different subsets of the dimensions).
+* Accepts arbitrary input dimensions are allowed, but the number of active dimensions in each kernel must still be capped at two (though a model can have multiple different kernels depending on different subsets of the dimensions).
 
 ## A note on GPy
 
@@ -81,8 +81,6 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. Test split kernel
-0. Flutrends dataset [flutrends](https://www.google.org/flutrends/about/) augmented with [weather](https://www.ncdc.noaa.gov/cdo-web/datasets) in [split kernel](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177) - also test cities as outputs? - local climate data?
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?
