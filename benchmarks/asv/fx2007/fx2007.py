@@ -76,7 +76,7 @@ def main():
     else:
         runs = 10
         cogp_runs = 10
-        interpolation_points = 238
+        interpolation_points = 234
         inducing_points = 100
         nthreads = 16
 

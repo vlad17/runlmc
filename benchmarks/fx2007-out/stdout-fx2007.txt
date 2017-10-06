@@ -1,7 +1,8 @@
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.2407e+02
 iteration        2 grad norm 5.4388e+02
 iteration        3 grad norm 5.5819e+02
@@ -33,11 +34,12 @@ finished adadelta optimization
             27 iterations
     7.3701e+01 final grad norm
     norm used inf
-time 50.5228275610134 smse 0.229681760204 nlpd -3.47453494589
+time 48.798987611196935 smse 0.229681760204 nlpd -3.47453494589
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.2927e+02
 iteration        2 grad norm 5.4732e+02
 iteration        3 grad norm 5.5820e+02
@@ -96,11 +98,12 @@ finished adadelta optimization
             54 iterations
     1.1325e+02 final grad norm
     norm used inf
-time 124.42330341180786 smse 0.197880759147 nlpd -3.54821300963
+time 108.70962869003415 smse 0.197880759147 nlpd -3.54821300963
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.3139e+02
 iteration        2 grad norm 5.3820e+02
 iteration        3 grad norm 5.4472e+02
@@ -144,11 +147,12 @@ finished adadelta optimization
             39 iterations
     1.0597e+02 final grad norm
     norm used inf
-time 82.42846947303042 smse 0.219401419537 nlpd -3.58866443977
+time 72.13234458910301 smse 0.219401419537 nlpd -3.58866443977
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.4005e+02
 iteration        2 grad norm 5.5939e+02
 iteration        3 grad norm 5.6953e+02
@@ -179,11 +183,12 @@ finished adadelta optimization
             26 iterations
     9.4298e+01 final grad norm
     norm used inf
-time 55.020165861118585 smse 0.203020889842 nlpd -3.6087639444
+time 44.040480913128704 smse 0.203020889842 nlpd -3.6087639444
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.3778e+02
 iteration        2 grad norm 5.5060e+02
 iteration        3 grad norm 5.6736e+02
@@ -215,11 +220,12 @@ finished adadelta optimization
             27 iterations
     1.1950e+02 final grad norm
     norm used inf
-time 60.62111516483128 smse 0.197620712774 nlpd -3.74150043851
+time 46.61175644909963 smse 0.197620712774 nlpd -3.74150043851
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.4281e+02
 iteration        2 grad norm 5.5905e+02
 iteration        3 grad norm 5.6944e+02
@@ -246,11 +252,12 @@ finished adadelta optimization
             22 iterations
     6.0727e+01 final grad norm
     norm used inf
-time 41.421893190126866 smse 0.193968366647 nlpd -3.77389638835
+time 40.13628137484193 smse 0.193968366647 nlpd -3.77389638835
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.3959e+02
 iteration        2 grad norm 5.5363e+02
 iteration        3 grad norm 5.5654e+02
@@ -286,11 +293,12 @@ finished adadelta optimization
             31 iterations
     6.6205e+01 final grad norm
     norm used inf
-time 68.18334609689191 smse 0.194575223604 nlpd -3.67442815017
+time 59.39659122796729 smse 0.194575223604 nlpd -3.67442815017
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.3573e+02
 iteration        2 grad norm 5.4476e+02
 iteration        3 grad norm 5.4950e+02
@@ -331,11 +339,12 @@ finished adadelta optimization
             36 iterations
     1.2619e+02 final grad norm
     norm used inf
-time 75.01459321333095 smse 0.198035484827 nlpd -3.59669133208
+time 74.3246055743657 smse 0.198035484827 nlpd -3.59669133208
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.4423e+02
 iteration        2 grad norm 5.5694e+02
 iteration        3 grad norm 5.7385e+02
@@ -376,11 +385,12 @@ finished adadelta optimization
             36 iterations
     1.1259e+02 final grad norm
     norm used inf
-time 78.70613043010235 smse 0.213569873538 nlpd -3.5920615247
+time 78.31472213706002 smse 0.213569873538 nlpd -3.5920615247
+[238]
 InterpolatedLLGP lmc generated grid (n = 3054, m = 238) for active dimensions (0,)
 InterpolatedLLGP (53 hyperparams) with 16 workers
 InterpolatedLLGP lmc fully initialized
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1e0864c378>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 100, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f5569c7d378>}
 iteration        1 grad norm 5.0058e+02
 iteration        2 grad norm 5.1518e+02
 iteration        3 grad norm 5.1576e+02
@@ -407,10 +417,10 @@ finished adadelta optimization
             22 iterations
     7.2415e+01 final grad norm
     norm used inf
-time 43.96343807596713 smse 0.221465424163 nlpd -3.57527534174
----> llgp Q1R2 m None time    68.0305 (    7.3268) smse     0.2069 (    0.0039) nlpd    -3.6174 (    0.0268)
+time 40.64336504787207 smse 0.221465424163 nlpd -3.57527534174
+---> llgp Q1R2 m 234 time    61.3109 (    6.6123) smse     0.2069 (    0.0039) nlpd    -3.6174 (    0.0268)
 
----> cogp m 100 time    89.9071 (    0.2822) smse     0.2642 (    0.0267) nlpd    14.5242 (    3.1056)
-min idx 0 (68.030528247822076, 7.3267643642283087)
+---> cogp m 100 time    90.8642 (    0.2925) smse     0.2642 (    0.0267) nlpd    14.5242 (    3.1056)
+min idx 0 (61.310876361466946, 6.6123262515170751)
 min idx 0 (0.20692199142820336, 0.0038886171095628632)
 min idx 0 (-3.6174029515239972, 0.026849059484665774)
