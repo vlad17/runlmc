@@ -123,7 +123,7 @@ class LMCTestUtils:
         kernels = [RBF(inv_lengthscale=3),
                    RBF(inv_lengthscale=2),
                    RBF(inv_lengthscale=1)]
-        szs = [6, 6, 6, 6, 6]
+        szs = [8, 8, 8, 8, 8]
         coregs = [np.array(x).reshape(1, -1) for x in
                   [[1, 1, 1, 1, 2], [2, 1, 2, 1, 2], [-1, 1, -1, -1, -1]]]
         return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
