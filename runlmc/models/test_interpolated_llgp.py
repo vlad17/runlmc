@@ -89,7 +89,7 @@ class LMCTestUtils:
     @staticmethod
     def _case_1d(input_dim):
         kernels = [RBF(inv_lengthscale=3)]
-        szs = [30]
+        szs = [10]
         coregs = [np.array([[1]])]
         return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
 
@@ -97,7 +97,7 @@ class LMCTestUtils:
     def _case_2d(input_dim):
         kernels = [RBF(inv_lengthscale=3),
                    RBF(inv_lengthscale=2)]
-        szs = [30, 40]
+        szs = [10, 15]
         coregs = [np.array(x).reshape(1, -1) for x in [[1, 2], [3, 4]]]
         return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
 
@@ -106,7 +106,7 @@ class LMCTestUtils:
         assert input_dim >= 2
         kernels = [RBF(inv_lengthscale=3, active_dims=split1),
                    RBF(inv_lengthscale=2, active_dims=split2)]
-        szs = [30, 40]
+        szs = [10, 15]
         coregs = [np.array(x).reshape(1, -1) for x in [[1, 2], [3, 4]]]
         return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
 
@@ -114,7 +114,7 @@ class LMCTestUtils:
     def _case_multirank(input_dim):
         kernels = [RBF(inv_lengthscale=3),
                    RBF(inv_lengthscale=2)]
-        szs = [30, 40]
+        szs = [10, 15]
         coregs = [np.array([[1, 2], [3, 4]]), np.array([[1, 1]])]
         return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
 
@@ -123,7 +123,7 @@ class LMCTestUtils:
         kernels = [RBF(inv_lengthscale=3),
                    RBF(inv_lengthscale=2),
                    RBF(inv_lengthscale=1)]
-        szs = [10, 12, 14, 12, 10]
+        szs = [6, 6, 6, 6, 6]
         coregs = [np.array(x).reshape(1, -1) for x in
                   [[1, 1, 1, 1, 2], [2, 1, 2, 1, 2], [-1, 1, -1, -1, -1]]]
         return ExactAnalogue(kernels, szs, coregs, indim=input_dim)
@@ -164,8 +164,9 @@ class LMCTestUtils:
         for (out_name, out), (in_name, in_dim) in itertools.product(
                 outs.items(), ins.items()):
             # Non-split kernels: no more than two input dims
-            if in_dim is None or in_dim <= 2:
-                yield out_name + '_' + in_name, out, in_dim
+            if in_dim is not None and in_dim > 2:
+                continue
+            yield out_name + '_' + in_name, out, in_dim
         for in_name, in_dim in ins.items():
             for splits in cls._input_splits(in_dim):
                 name = 'output_2d_input_2d_splitkern_'
@@ -181,10 +182,10 @@ class LMCTest(RandomTest):
     def _check_kernel_reconstruction(self, exact, indim):
         def reconstruct(x):
             return x.kernel.K.as_numpy()
-        m = sum(exact.lens) * np.ones(indim)
+        m = sum(exact.lens) * np.ones(indim) * 2
         actual = reconstruct(exact.gen_lmc(m))
         exact_mat = exact.gen_exact().K
-        tol = 1e-4
+        tol = 1e-3
         np.testing.assert_allclose(
             exact_mat, actual, rtol=tol, atol=tol)
         avg_diff_sz = LMCTestUtils.avg_entry_diff(exact_mat, actual)
@@ -237,15 +238,15 @@ class LMCTest(RandomTest):
         Kinv_y = la.solve(exact_mat, y)
         expected = y.dot(Kinv_y)
 
-        lmc = exact.gen_lmc(sum(exact.lens) * np.ones(input_dim))
+        lmc = exact.gen_lmc(sum(exact.lens) * np.ones(input_dim) * 2)
         lmc.TOL = 1e-15  # tighten tolerance for tests
-        tol = 1e-4
+        tol = 1e-3
 
         actual = lmc.normal_quadratic()
         np.testing.assert_allclose(expected, actual, rtol=tol, atol=tol)
 
     def _check_fit(self, ea, input_dim):
-        lmc = ea.gen_lmc(sum(ea.lens) * np.ones(input_dim))
+        lmc = ea.gen_lmc(sum(ea.lens) * np.ones(input_dim) * 2)
 
         ll_before = lmc.log_likelihood()
         lmc.optimize(optimizer=AdaDelta(max_it=5))
@@ -254,7 +255,7 @@ class LMCTest(RandomTest):
         self.assertGreater(ll_after, ll_before)
 
     def _check_prediction(self, ea, input_dim):  # pylint: disable=too-many-locals
-        lmc = ea.gen_lmc(sum(ea.lens) * np.ones(input_dim))
+        lmc = ea.gen_lmc(sum(ea.lens) * np.ones(input_dim) * 2)
 
         # Apply formula for conditional Gaussian
 
