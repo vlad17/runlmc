@@ -77,7 +77,7 @@ def main():
         inducing_points = 10
         nthreads = ''
     else:
-        runs = 10
+        runs = 100
         cogp_runs = 10
         interpolating_points = [500, 600, 700, 800, 900, 1000]
         inducing_points = 200
