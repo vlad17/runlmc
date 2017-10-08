@@ -79,7 +79,6 @@ class TestInterpolation(unittest.TestCase):  # pylint: disable=too-many-public-m
         for i in [11, 11.5]:
             sample = np.array([i])
             interp = interp_cubic(grid, sample)
-            print(i, interp.toarray())
             np.testing.assert_allclose(interp.toarray(), expected_interp)
 
     def test_interp_cubic(self):

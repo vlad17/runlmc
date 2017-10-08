@@ -20,20 +20,24 @@ class StochasticDerivService:
                     (if no metrics are to be recorded)
     :param pool: pool for parallel processing
     :param n_it: iterations to use in stochastic trace approximation
+    :param tol: tolerance in inversion routine
     :ivar metrics: the metrics instance used by this class
     """
 
-    def __init__(self, metrics, pool, n_it):
+    def __init__(self, metrics, pool, n_it, tol):
         self.metrics = metrics
         self._pool = pool
         self._n_it = n_it
+        self._tol = tol
 
     def generate(self, K, y):
         n = K.shape[0]
         rs = np.random.randint(0, 2, (self._n_it, n)) * 2 - 1
         record_metrics = self.metrics is not None
-        to_invert = [(K, y, record_metrics)] + [
-            (K, x, record_metrics) for x in rs]
+        minres = True
+        tol = self._tol
+        to_invert = [(K, y, record_metrics, minres, tol)] + [
+            (K, x, record_metrics, minres, tol) for x in rs]
 
         if record_metrics:
             solved, ctrs, errs = zip(*self._concurrent_solve(to_invert))

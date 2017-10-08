@@ -79,9 +79,9 @@ def main():
     else:
         runs = 10
         cogp_runs = 10
-        interpolating_points = [500, 600, 700, 800, 900, 1000]
+        interpolating_points = [500, 1000]
         inducing_points = 200
-        nthreads = 4
+        nthreads = 16
 
     llgp_stats = []
     for num_interp in interpolating_points:

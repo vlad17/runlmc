@@ -26,10 +26,12 @@ class RBF(StationaryKern):
 
     :param inv_lengthscale: :math:`\gamma`, above.
     :param name:
+    :param active_dims: see :class:`runlmc.kern.stationary_kern.StationaryKern`
+        for details.
     """
 
-    def __init__(self, inv_lengthscale=1, name='rbf'):
-        super().__init__(name=name)
+    def __init__(self, inv_lengthscale=1, name='rbf', active_dims=None):
+        super().__init__(name=name, active_dims=active_dims)
         self.inv_lengthscale = Param(
             'inv_lengthscale', inv_lengthscale, Logexp())
         self.link_parameter(self.inv_lengthscale)
@@ -41,7 +43,8 @@ class RBF(StationaryKern):
         import GPy
         l = float(self.inv_lengthscale[0]) ** -0.5
         gpy = GPy.kern.RBF(
-            input_dim=1, variance=1, lengthscale=l, name=self.name)
+            input_dim=1, variance=1, lengthscale=l, name=self.name,
+            active_dims=self.active_dims)
         gpy.variance.constrain_fixed(1)
         return gpy
 

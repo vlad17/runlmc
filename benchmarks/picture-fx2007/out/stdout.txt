@@ -1,37 +1,36 @@
-publishing results into out directory /memex/vyf/runlmc/benchmarks/picture-fx2007/out/
+publishing results into out directory /data/vladf/runlmc/benchmarks/picture-fx2007/out/
 training LLGP
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fbc6d47dbf8>}
-iteration        5 grad norm 5.7016e+02
-iteration       10 grad norm 6.5188e+02
-iteration       15 grad norm 2.1134e+02
-iteration       20 grad norm 2.7247e+02
-iteration       25 grad norm 1.8088e+02
-iteration       30 grad norm 9.4312e+01
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f73cd75f2f0>}
+iteration        5 grad norm 5.6933e+02
+iteration       10 grad norm 6.4689e+02
+iteration       15 grad norm 2.7563e+02
+iteration       20 grad norm 1.5316e+02
+iteration       25 grad norm 1.1084e+02
 finished adadelta optimization
-            31 iterations
-    5.9952e+01 final grad norm
+            27 iterations
+    7.3701e+01 final grad norm
     norm used inf
-    time 88.86488011479378 smse 0.212380224141 nlpd -3.62975893015
+    time 51.99350185086951 smse 0.229681760204 nlpd -3.47453494589
 training COGP
 
-time  1627.9567 (    0.0000) smse     0.2771 (    0.0000) nlpd    13.0297 (    0.0000)
+time    98.0407 (    0.0000) smse     0.2771 (    0.0000) nlpd    13.0297 (    0.0000)
 fx2007graph.pdf
 running MINRES metrics
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 35, 'verbosity': 10, 'min_grad_ratio': 0, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f8bab226b70>}
-iteration        3 grad norm 5.5082e+02
-iteration        6 grad norm 5.8600e+02
-iteration        9 grad norm 6.4482e+02
-iteration       12 grad norm 5.9856e+02
-iteration       15 grad norm 2.1134e+02
-iteration       18 grad norm 3.5795e+02
-iteration       21 grad norm 9.6894e+01
-iteration       24 grad norm 1.1679e+02
-iteration       27 grad norm 2.6766e+02
-iteration       30 grad norm 9.4312e+01
-iteration       33 grad norm 2.2683e+02
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 35, 'verbosity': 10, 'min_grad_ratio': 0, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7fdcb1bcf268>}
+iteration        3 grad norm 5.5819e+02
+iteration        6 grad norm 5.8407e+02
+iteration        9 grad norm 6.4094e+02
+iteration       12 grad norm 6.0113e+02
+iteration       15 grad norm 2.7563e+02
+iteration       18 grad norm 4.5504e+02
+iteration       21 grad norm 4.0505e+01
+iteration       24 grad norm 1.2225e+02
+iteration       27 grad norm 7.3701e+01
+iteration       30 grad norm 3.5786e+02
+iteration       33 grad norm 1.8519e+02
 finished adadelta optimization
             35 iterations
-    9.9740e+01 final grad norm
+    2.6334e+02 final grad norm
     norm used inf
 iterations.eps
 running_cutoff.eps

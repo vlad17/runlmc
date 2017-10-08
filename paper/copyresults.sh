@@ -30,10 +30,6 @@ epsconvert relalpha_l2
 echo 'fx2007graph.pdf'
 cp ../benchmarks/picture-fx2007/out/fx2007graph.pdf .
 
-echo 'm_time_nlpd.eps -> m_time_nlpd.pdf'
-cp ../benchmarks/weather-out/m_time_nlpd.eps .
-epsconvert m_time_nlpd
-
 echo 'representation-cmp/out/results.tex -> representation.tex'
 cp ../benchmarks/representation-cmp/out/results.tex representation.tex
 

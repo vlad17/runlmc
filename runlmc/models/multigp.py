@@ -224,13 +224,6 @@ class MultiGP(Model):
             if np.std(Y) == 0:
                 raise ValueError('Output {} has std dev 0'.format(i))
 
-        for i, X in enumerate(Xs):
-            u = np.unique(X)
-            if len(u) < len(X):
-                raise ValueError(
-                    'Output {} has {} elements, but only {} unique ones'
-                    .format(i, len(X), len(u)))
-
         return dims.pop(), len(Xs)
 
     def _pad_dims(self, Xs):

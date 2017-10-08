@@ -18,11 +18,10 @@ class _EarlyTerm(Exception):
 
 
 class Iterative:
-    TOL = 1e-4
-    """Target solve() tolerance. Only errors > TOL reported."""
+    """Target solve() tolerance. Only errors > tol reported."""
 
     @staticmethod
-    def solve(K, y, verbose=False, minres=True):
+    def solve(K, y, verbose=False, minres=True, tol=1e-4):
         """
         Solves the linear system :math:`K\\textbf{x}=\\textbf{y}`.
 
@@ -39,7 +38,7 @@ class Iterative:
             ctr += 1
             if ctr % 100 == 0:  # early termination
                 reconstruction = la.norm(y - op.matvec(x))
-                if reconstruction < Iterative.TOL:
+                if reconstruction < tol:
                     raise _EarlyTerm(x)
 
         method = sla.minres if minres else sla.cg
@@ -49,11 +48,11 @@ class Iterative:
 
         try:
             Kinv_y, succ = method(
-                op, y, tol=1e-10, maxiter=n, M=M, callback=cb)
+                op, y, tol=min(1e-10, tol), maxiter=n, M=M, callback=cb)
         except _EarlyTerm as e:
             Kinv_y, succ = e.x, 0
         error = la.norm(y - op.matvec(Kinv_y))
-        if error > Iterative.TOL or succ != 0:
+        if error > tol or succ != 0:
             _LOG.critical('MINRES (n = %d) did not converge in n iterations.'
                           ' Reconstruction error %e',
                           n, error)

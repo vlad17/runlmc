@@ -21,88 +21,99 @@ from ..util.numpy_convenience import symm_2d_list_map
 
 class GridKernel(Matrix):
     def __init__(self, functional_kernel, grid_dists,
-                 interpolant, interpolantT, ktype, lens_per_output):
+                 interpolant, interpolantT, ktype, active_dim):
         n = interpolant.shape[0]
         super().__init__(n, n)
-
-        grid_k = functional_kernel.eval_kernels(grid_dists)
+        grid_k = functional_kernel.eval_kernels_fixed_dim(
+            grid_dists, active_dim)
 
         if ktype == 'sum':
-            self.grid_K = _gen_sum_grid(functional_kernel, grid_k)
+            self.grid_K = _gen_sum_grid(functional_kernel, grid_k, active_dim)
         elif ktype == 'bt':
-            self.grid_K = _gen_bt_grid(functional_kernel, grid_k)
+            self.grid_K = _gen_bt_grid(functional_kernel, grid_k, active_dim)
         elif ktype == 'slfm':
-            self.grid_K = _gen_slfm_grid(functional_kernel, grid_k, n)
+            m = interpolant.shape[1]
+            self.grid_K = _gen_slfm_grid(
+                functional_kernel, grid_k, m, active_dim)
         else:
             assert False, ktype
 
         self.ski = SKI(self.grid_K, interpolant, interpolantT)
-        self.noise = Diag(
-            np.repeat(functional_kernel.noise, lens_per_output))
-        self.K = SumMatrix([self.ski, self.noise])
 
     def matvec(self, x):
-        return self.K.matvec(x)
-
-    def interpolants(self):
-        ski = self.K.Ks[0]
-        return ski.W, ski.WT
+        return self.ski.matvec(x)
 
 # TODO(test)
 
 
-def gen_grid_kernel(functional_kernel, grid_dists, interpolant, interpolantT,
-                    lens_per_output):
-    if functional_kernel.Q == 1:
-        ktype = 'sum'
-    else:
-        tot_rank = functional_kernel.total_rank()
-        if functional_kernel.num_lmc == 0 and functional_kernel.num_indep == 0:
-            correction_if_no_diagonal = functional_kernel.D
+def gen_grid_kernel(fk, grid_dists, interpolants, lens_per_output):
+    grid_kerns = {}
+    for active_dim in fk.active_dims.keys():
+        if fk.Q == 1:
+            ktype = 'sum'
         else:
-            correction_if_no_diagonal = 0
-        dsq = functional_kernel.D ** 2
-        if tot_rank + functional_kernel.D < dsq + correction_if_no_diagonal:
-            ktype = 'slfm'
-        else:
-            ktype = 'bt'
-    return GridKernel(functional_kernel, grid_dists,
-                      interpolant, interpolantT, ktype, lens_per_output)
+            tot_rank = fk.total_rank(active_dim)
+            if not fk.num_lmc[active_dim] and not fk.num_indep[active_dim]:
+                correction_if_no_diagonal = fk.D
+            else:
+                correction_if_no_diagonal = 0
+            dsq = fk.D ** 2
+            if tot_rank + fk.D < dsq + correction_if_no_diagonal:
+                ktype = 'slfm'
+            else:
+                ktype = 'bt'
+        grid_dist = grid_dists[active_dim]
+        interpolant, interpolantT = interpolants[active_dim]
+        grid_kerns[active_dim] = GridKernel(fk, grid_dist, interpolant,
+                                            interpolantT, ktype, active_dim)
+
+    noise = Diag(np.repeat(fk.noise, lens_per_output))
+    ls = list(grid_kerns.values())
+    ls.append(noise)
+
+    return SumMatrix(ls), grid_kerns
 
 
-def _gen_slfm_grid(functional_kernel, grid_k, n):
-    coreg_Ks = _gen_coreg_Ks(functional_kernel, grid_k)
-    diag_Ks = _gen_diag_Ks(functional_kernel, grid_k, n)
+def _gen_slfm_grid(functional_kernel, grid_k, m, active_dim):
+    coreg_Ks = _gen_coreg_Ks(functional_kernel, grid_k, m, active_dim)
+    diag_Ks = _gen_diag_Ks(functional_kernel, grid_k, m, active_dim)
     return SumMatrix([coreg_Ks, diag_Ks])
 
 
-def _gen_coreg_Ks(functional_kernel, grid_k):
-    non_indep = functional_kernel.num_lmc + functional_kernel.num_slfm
-    all_coreg = functional_kernel.coreg_vecs[:non_indep]
+def _gen_coreg_Ks(fk, grid_k, m, active_dim):
+    kidxs = fk.active_dims[active_dim]
+    non_indep = fk.filter_non_indep_idxs(kidxs)
+    all_coreg = [fk.coreg_vecs[idx] for idx in non_indep]
+    if not all_coreg:
+        return Identity(m)
     ranks = np.array([len(coreg) for coreg in all_coreg])
     A_star = np.vstack(all_coreg).T
     I_m = Identity(np.prod(grid_k.shape[1:]))
     left = Kronecker(NumpyMatrix(A_star), I_m)
     right = Kronecker(NumpyMatrix(A_star.T), I_m)
-    deduped_toeps = np.array([BTTB(top, top.shape)
+    # here, rely on the fact that grid_k from fk.evaluate_kernels_fixed_dim
+    # is returned in the same order as fk.active_dims[active_dim]
+    deduped_toeps = np.array([BTTB(top.ravel(), top.shape)
                               for top in grid_k[:len(all_coreg)]])
     toeps = BlockDiag(np.repeat(deduped_toeps, ranks))
     coreg_Ks = Composition([left, toeps, right])
     return coreg_Ks
 
 
-def _gen_diag_Ks(functional_kernel, grid_k, n):
-    if functional_kernel.num_lmc == 0 and functional_kernel.num_indep == 0:
-        return Identity(n)
-    diags = np.column_stack(functional_kernel.coreg_diags)
+def _gen_diag_Ks(fk, grid_k, m, active_dim):
+    if fk.num_lmc[active_dim] == 0 and fk.num_indep[active_dim] == 0:
+        return Identity(m)
+    kidxs = fk.active_dims[active_dim]
+    diags = np.column_stack([fk.coreg_diags[kidx] for kidx in kidxs])
     Q = grid_k.shape[0]
+    assert Q == len(kidxs)
     diag_tops = diags.dot(grid_k.reshape(Q, -1))
     diag_Ks = BlockDiag([BTTB(top, grid_k.shape[1:]) for top in diag_tops])
     return diag_Ks
 
 
-def _gen_bt_grid(functional_kernel, grid_k):
-    Bs = np.array(functional_kernel.coreg_mats())
+def _gen_bt_grid(functional_kernel, grid_k, active_dim):
+    Bs = np.array(functional_kernel.coreg_mats(active_dim))
     Q = grid_k.shape[0]
     tops = grid_k.reshape(Q, -1)
     bt = np.tensordot(Bs, tops, axes=(0, 0))
@@ -112,7 +123,7 @@ def _gen_bt_grid(functional_kernel, grid_k):
     return blocked
 
 
-def _gen_sum_grid(functional_kernel, grid_k):
+def _gen_sum_grid(functional_kernel, grid_k, active_dim):
     Q = grid_k.shape[0]
     tops = grid_k.reshape(Q, -1)
     sizes = grid_k.shape[1:]
@@ -120,6 +131,6 @@ def _gen_sum_grid(functional_kernel, grid_k):
     # TODO(sum-fast)
     # Coreg_mats can be in decomposed representation to be a bit faster.
     products = [Kronecker(NumpyMatrix(A), K) for A, K in
-                zip(functional_kernel.coreg_mats(), kernels_on_grid)]
+                zip(functional_kernel.coreg_mats(active_dim), kernels_on_grid)]
     ksum = SumMatrix(products)
     return ksum

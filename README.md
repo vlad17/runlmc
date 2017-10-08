@@ -17,10 +17,10 @@ In other words, this provides a matrix-free implementation of multi-output GPs f
 
 ## Usage Notes
 
-* Currently, I'm only supporting 1 input dimension.
 * Zero-mean only for now.
 * Check out the [latest documentation](http://runlmc.readthedocs.io/en/latest/)
 * Check out the *Dev Stuff* section below for installation requirements.
+* Accepts arbitrary input dimensions are allowed, but the number of active dimensions in each kernel must still be capped at two (though a model can have multiple different kernels depending on different subsets of the dimensions).
 
 ## A note on GPy
 
@@ -75,23 +75,12 @@ All below invocations should be done from the repo root.
 
 To develop, requirements also include:
 
-    sphinx sphinx_rtd_theme matplotlib codecov pylint parameterized pandas contexttimer GPy
+    sphinx sphinx_rtd_theme matplotlib codecov pylint parameterized pandas contexttimer GPy asv
 
 To build the paper, the packages `epstool` and `epstopdf` are required. Developers should also have `sphinx sphinx_rtd_theme matplotlib GPy codecov pylint parameterized pandas contexttimer` installed.
 
 ### Roadmap
 
-0. InterpolatedLLGP (to allow multi-input-dimension grids)
-   -> Add test for dimension 2
-   -> dedup FFTs in `_gen_coreg_Ks` + `_gen_diag_Ks` with single `grid_k`
-      BTTB generation (i.e., deduped_toeps made in common `_gen_slfm_grid` 
-      method) ; + `ApproxLMCLikelihood`
-0. Add [dataset](https://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/download/11998/12177)
-0. Benchmark dataset, re-run all to see BTTB slowdown
-0. Split kernel - split kernel -- add .active_dims to each subkernel? - Kernel is then a sum kernel -> multiple grid kernels
-   of all active dim subsets... i.e., make a separate SKI instance for all sub-active dims.
-0. Re-benchmark
-0. optimize BTTB MVM with pre-alloc, power-of-2 FFTs (pad from [middle](http://users.iems.northwestern.edu/~linetsky/ExtrapolationAppendix.pdf)), etc.
 0. Automatically find `min_grad_ratio` parameter. 
     * validate on small subset to get min grad ratio?
     * use quadratic form as a proxy?

@@ -74,7 +74,8 @@ class InterpolatedLLGP(MultiGP):
     * `'precompute'` - Compute an auxiliary predictive variance matrix for \
     the grid points, but then cheaply re-use that work for prediction. This \
     is an up-front :math:`O(n^2 \log n)` payment for :math:`O(1)` predictive \
-    variance afterwards per test point.
+    variance afterwards per test point. This is not available if using \
+    split kernels (i.e., different active dimensions for different kernels).
     * `'exact'` - Use the exact cholesky-based algorithm (not matrix free), \
     :math:`O(n^3)` runtime up-front and then :math:`O(n^2)` per query.
 
@@ -127,7 +128,7 @@ class InterpolatedLLGP(MultiGP):
     def __init__(self, Xs, Ys, normalize=True,  # pylint: disable=too-many-arguments,dangerous-default-value,too-many-locals
                  lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='on-the-fly', max_procs=None,
-                 trace_iterations=10,
+                 trace_iterations=15, tolerance=1e-4,
                  functional_kernel=None):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
         self.update_model(False)
@@ -140,40 +141,22 @@ class InterpolatedLLGP(MultiGP):
             raise ValueError('Variance prediction method {} unrecognized'
                              .format(prediction))
 
-        n = sum(map(len, self.Xs))
-        _LOG.info('InterpolatedLLGP %s generating inducing grid n = %d',
-                  self.name, n)
-        # Grid corresponds to U
-        self.inducing_grid_axes = autogrid(
-            self.Xs, self._wrap(lo), self._wrap(hi), self._wrap(m))
-        self.grid = cartesian_product(*self.inducing_grid_axes)
-        grid_shape = list(map(len, self.inducing_grid_axes))
-        grid_shape.append(len(self.inducing_grid_axes))
-        self.grid = self.grid.reshape(grid_shape)
-
-        # BTTB(self.dists.ravel(), self.dists.shape)
-        # is the pairwise distance matrix of U
-        self.dists = la.norm(self.grid - self.grid[0], axis=-1)
-
-        # Corresponds to W; block diagonal matrix.
-        self.interpolant = multi_interpolant(self.Xs, *self.inducing_grid_axes)
-        self.interpolantT = self.interpolant.transpose().tocsr()
-
-        _LOG.info('InterpolatedLLGP %s grid (n = %d, m = %d) complete, ',
-                  self.name, n,
-                  np.prod([len(g) for g in self.inducing_grid_axes]))
-
         self._functional_kernel = functional_kernel
+        self._functional_kernel.set_input_dim(self.input_dim)
         self.link_parameter(self._functional_kernel)
         self.y = np.hstack(self.Ys)
         self.kernel = None
+
+        # We need a grid for each subset of active dimensions.
+        self.dists, self.interpolants, self.grid_axes = {}, {}, {}
+        self._generate_grids(lo, hi, m)
 
         self.update_model(True)
 
         self.metrics = Metrics() if metrics else None
         self._pool = InlinePool(self._generate_pool(max_procs))
         self._deriv_service = StochasticDerivService(
-            self.metrics, self._pool, trace_iterations)
+            self.metrics, self._pool, trace_iterations, tolerance)
         _LOG.info('InterpolatedLLGP %s fully initialized', self.name)
 
     EVAL_NORM = np.inf
@@ -209,18 +192,19 @@ class InterpolatedLLGP(MultiGP):
     def parameters_changed(self):
         self._clear_caches()
 
-        grid_kernel = gen_grid_kernel(
+        grid_kernel, gk_dict = gen_grid_kernel(
             self._functional_kernel,
             self.dists,
-            self.interpolant,
-            self.interpolantT,
+            self.interpolants,
             list(map(len, self.Ys)))
         self.kernel = ApproxLMCLikelihood(
             self._functional_kernel,
             grid_kernel,
             self.dists,
+            self.interpolants,
             self.Ys,
             self._deriv_service)
+        self.kernel._grid_kernels = gk_dict
 
         if _LOG.isEnabledFor(logging.DEBUG):
             fmt = '{:7.6e}'.format
@@ -308,9 +292,12 @@ class InterpolatedLLGP(MultiGP):
     # Predictive mean for grid points U
     @functools.lru_cache(maxsize=1)
     def _grid_alpha(self):
-        # TODO(cleanup) use proper kernel interface for this
-        return self.kernel.K.grid_K.matvec(
-            self.interpolantT.dot(self.kernel.alpha()))
+        grid_alpha = {}
+        for active_dim in self._functional_kernel.active_dims:
+            _, WT = self.interpolants[active_dim]
+            grid_K = self.kernel._grid_kernels[active_dim].grid_K
+            grid_alpha[active_dim] = grid_K.matvec(WT.dot(self.kernel.alpha()))
+        return grid_alpha
 
     # The native covariance diag(K) for each output, i.e.,
     # the a priori variance of a single point for each output.
@@ -320,7 +307,8 @@ class InterpolatedLLGP(MultiGP):
                                  for per_output
                                  in self._functional_kernel.coreg_vecs)
         coregs += np.column_stack(self._functional_kernel.coreg_diags)
-        kernels = self._functional_kernel.eval_kernels(0)
+        zero_dist = {v: 0 for v in self._functional_kernel.active_dims}
+        kernels = self._functional_kernel.eval_kernels(zero_dist)
         native_output_var = coregs.dot(kernels).reshape(-1)
         native_var = native_output_var + self._functional_kernel.noise
         return native_var
@@ -334,22 +322,25 @@ class InterpolatedLLGP(MultiGP):
         }
 
     def _raw_predict(self, Xs):
-
+        lens = [len(X) for X in Xs]
         if self.kernel is None:
             self.parameters_changed()
 
         grid_alpha = self._grid_alpha()
         native_variance = self._native_variance()
 
-        W = multi_interpolant(Xs, *self.inducing_grid_axes)
+        mean = np.zeros(sum(lens))
+        prediction_W = {}
+        for active_dim, grid_alpha_ad in grid_alpha.items():
+            Xs_active = [X[:, active_dim] for X in Xs]
+            W = multi_interpolant(Xs_active, *self.grid_axes[active_dim])
+            prediction_W[active_dim] = W
+            mean += W.dot(grid_alpha_ad)
 
-        mean = W.dot(grid_alpha)
-        print(mean.shape)
-        lens = [len(X) for X in Xs]
         native_variance = np.repeat(native_variance, lens)
 
         explained_variance = self._prediction_methods()[self.prediction](
-            W, Xs)
+            prediction_W, Xs)
         var = native_variance - explained_variance
         var[var < 0] = 0
 
@@ -375,9 +366,11 @@ class InterpolatedLLGP(MultiGP):
 
     @functools.lru_cache(maxsize=1)
     def _precomputed_nu(self):
-        W = self.interpolant
-        WT = self.interpolantT
-        K_UU = self.kernel.K.grid_K
+        if len(self.interpolants) != 1:
+            raise ValueError(
+                'precompute prediction mode unavailable for split kernels')
+        W, WT = self.interpolants[tuple(range(self.input_dim))]
+        K_UU = self.kernel.K.Ks[0].grid_K
         # SKI should have a half_matrix() method returning these two,
         # in which case we'd just ask self.kernel.K.ski for them.
         K_XU = Composition([Matrix.wrap(W.shape, W.dot), K_UU])
@@ -388,9 +381,11 @@ class InterpolatedLLGP(MultiGP):
 
         return nu
 
-    def _var_predict_precompute(self, prediction_interpolant, _):
+    def _var_predict_precompute(self, prediction_interpolants, _):
         nu = self._precomputed_nu()
-        return prediction_interpolant.dot(nu)
+        assert len(prediction_interpolants) == 1
+        W = next(prediction_interpolants.values())
+        return W.dot(nu)
 
     def _var_predict_on_the_fly(self, _, Xs):
         K_test_X = ExactLMCLikelihood.kernel_from_indices(
@@ -408,10 +403,41 @@ class InterpolatedLLGP(MultiGP):
         self._precomputed_nu.cache_clear()
 
     @staticmethod
-    def _wrap(x):
+    def _wrap(x, active_dims):
         if x is None:
             return None
         n = np.asarray(x)
         if not n.shape:
+            assert len(active_dims) == 1, len(active_dims)
             return n.reshape(1)
-        return n
+        return n[list(active_dims)]
+
+    def _generate_grids(self, lo, hi, m):
+        n = sum(map(len, self.Xs))
+
+        for active_dim in self._functional_kernel.active_dims.keys():
+            # Grid corresponds to U
+            wlo, whi, wm = (self._wrap(x, active_dim) for x in (lo, hi, m))
+            Xs = [X[:, active_dim] for X in self.Xs]
+            self.grid_axes[active_dim] = autogrid(Xs, wlo, whi, wm)
+            grid = cartesian_product(*self.grid_axes[active_dim])
+            first = grid[0]
+            grid_shape = list(map(len, self.grid_axes[active_dim]))
+            grid_shape.append(len(self.grid_axes[active_dim]))
+            grid = grid.reshape(grid_shape)
+
+            # BTTB(dists.ravel(), dists.shape)
+            # is the pairwise distance matrix of U
+            self.dists[active_dim] = la.norm(grid - first, axis=-1)
+
+            # Corresponds to W; block diagonal matrix.
+            interpolant = multi_interpolant(Xs, *self.grid_axes[active_dim])
+            interpolantT = interpolant.transpose().tocsr()
+
+            self.interpolants[active_dim] = (interpolant, interpolantT)
+
+            _LOG.info('InterpolatedLLGP %s generated grid (n = %d, m = %d) '
+                      'for active dimensions %s',
+                      self.name, n,
+                      np.prod([len(g) for g in self.grid_axes[active_dim]]),
+                      str(active_dim))

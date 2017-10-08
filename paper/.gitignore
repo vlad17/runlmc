@@ -1,7 +1,4 @@
-*.pdf
-!paper.pdf
-!supplement.pdf
-!poster.pdf
+*.eps
 *.aux
 *.out
 *.log

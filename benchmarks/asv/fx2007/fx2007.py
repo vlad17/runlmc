@@ -76,9 +76,9 @@ def main():
     else:
         runs = 10
         cogp_runs = 10
-        interpolation_points = None
+        interpolation_points = 234
         inducing_points = 100
-        nthreads = 4
+        nthreads = 16
 
     llgp_stats = Suite(runs, interpolation_points, nthreads).setup_cache()
     print('---> llgp Q1R2 m', interpolation_points, statsline(llgp_stats))
