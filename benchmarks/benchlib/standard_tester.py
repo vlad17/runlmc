@@ -414,3 +414,62 @@ def latex_table(filename, cols, col_results):
     outdir = sys.argv[2]
     with open(outdir + '/' + filename, 'w') as f:
         f.write(begin + latex + end)
+
+
+def gen_random_k():
+    """Generates a Q=2 SLFM kernel with varying lengthscales for 5 outputs."""
+    ks = [RBF(name='rbf1', inv_lengthscale=5),
+          RBF(name='rbf2', inv_lengthscale=0.5)]
+    indeps = [RBF(name='indep{}'.format(i), inv_lengthscale=2)
+              for i in range(5)]
+    return FunctionalKernel(
+        D=5, lmc_kernels=[], lmc_ranks=[], slfm_kernels=ks, indep_gp=indeps)
+
+def cogp_synth(num_runs, inducing_pts, nthreads, nbatch, it):
+    _download_cogp()
+    benchmark_dir = os.path.join(
+        _download_own_data(), os.pardir, 'benchmarks', 'benchlib')
+    datadir = os.path.join(_download_own_data(), 'synth') + os.path.sep
+    # This runs the COGP code; only learning is timed
+    cmd = ['matlab', '-nojvm', '-r',
+           re.sub(r'[\s+]', '', """
+              datadir='{}';
+              maxiter={};
+              M={};
+              runs={};
+              maxNumCompThreads({});
+              cogp_synth;
+              exit""")
+           .format(datadir, it, inducing_pts, num_runs, nthreads)]
+    with open(TMP + '/out-synth-{}-{}'.format(nbatch, inducing_pts), 'w') as f:
+        f.write(' '.join(cmd))
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
+        cwd=benchmark_dir,
+        env=env_no_omp())
+    mout, err = process.communicate()
+    print(err)
+    with open(TMP + '/out-{}'.format(num_runs), 'w') as f:
+        f.write(mout)
+
+    ending = mout[mout.find('mean/stderr times'):]
+    match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
+    m_time, se_time = float(match.groups()[0]), float(match.groups()[1])
+    ending = ending[ending.find('mean/stderr smses'):]
+    match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
+    m_smse, se_smse = float(match.groups()[0]), float(match.groups()[1])
+    ending = ending[ending.find('mean/stderr nlpds'):]
+    match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
+    m_nlpd, se_nlpd = float(match.groups()[0]), float(match.groups()[1])
+
+    # the matlab script writes to this file
+    test_fx = ['CAD', 'JPY', 'AUD']
+    cogp_mu = pd.read_csv(TMP + '/cogp-fx2007-mu', header=None, names=test_fx)
+    cogp_var = pd.read_csv(TMP + '/cogp-fx2007-var', header=None,
+                           names=test_fx)
+
+    stats = [(m_time, se_time), (m_smse, se_smse), (m_nlpd, se_nlpd)]
+    return stats, cogp_mu, cogp_var
