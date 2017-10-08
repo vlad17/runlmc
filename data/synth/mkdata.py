@@ -6,7 +6,7 @@ import numpy as np
 np.random.seed(1234)
 
 D = 5
-NperD = 100
+NperD = 1000
 fk = gen_random_k()
 fk.coreg_vecs[0][:] = np.random.rand(5)
 fk.coreg_vecs[1][:] = np.random.rand(5)
