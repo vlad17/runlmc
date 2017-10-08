@@ -66,4 +66,3 @@ cd $REPOROOT
 
 OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/benchmarks/asv/weather/weather.py $IS_VALIDATION $OUTFOLDER 2>&1 | tee $OUTFOLDER/stdout-weather.txt | egrep -e '--->' 
 
-python3 $REPOROOT/benchmarks/asv/weather/makepics.py

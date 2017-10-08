@@ -128,7 +128,7 @@ class InterpolatedLLGP(MultiGP):
     def __init__(self, Xs, Ys, normalize=True,  # pylint: disable=too-many-arguments,dangerous-default-value,too-many-locals
                  lo=None, hi=None, m=None, name='lmc',
                  metrics=False, prediction='on-the-fly', max_procs=None,
-                 trace_iterations=15,
+                 trace_iterations=15, tolerance=1e-4,
                  functional_kernel=None):
         super().__init__(Xs, Ys, normalize=normalize, name=name)
         self.update_model(False)
