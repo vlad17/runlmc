@@ -156,7 +156,7 @@ class InterpolatedLLGP(MultiGP):
         self.metrics = Metrics() if metrics else None
         self._pool = InlinePool(self._generate_pool(max_procs))
         self._deriv_service = StochasticDerivService(
-            self.metrics, self._pool, trace_iterations)
+            self.metrics, self._pool, trace_iterations, tolerance)
         _LOG.info('InterpolatedLLGP %s fully initialized', self.name)
 
     EVAL_NORM = np.inf
