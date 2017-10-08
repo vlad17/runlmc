@@ -164,7 +164,7 @@ class InterpolatedLLGP(MultiGP):
     def _generate_pool(self, max_procs):
         self._check_omp(max_procs)
         max_procs = cpu_count() if max_procs is None else max_procs
-        if max_procs == 1 or len(self.y) < 1000:
+        if max_procs == 1 or len(self.y) < 300:
             _LOG.info('InterpolatedLLGP (%d hyperparams) will run serially',
                       len(self.param_array))
             return None
