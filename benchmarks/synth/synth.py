@@ -27,11 +27,11 @@ def main():
     np.random.seed(1234)
     activate_logs()
 
-    max_it = 100
+    max_it = 30
     interpolating_points = [100, 100]
     nthreads = 16
-    inducing_points = 500  # like in COGP sarcos
-    iters = [200, 300, 500, 800, 1000]
+    inducing_points = 1000  # like in COGP sarcos
+    iters = [50, 100, 150, 200, 250]
 
     kgen, rgen, slfmgen, indepgen = synth_gen()
 
@@ -51,7 +51,7 @@ def main():
     def perf_cb():
         nonlocal times, smses, nlpds, lmc, ctr, timer
         ctr += 1
-        if ctr % 10 != 0:
+        if ctr % 2 != 0:
             return
 
         timer.__exit__(None, None, None)
@@ -68,9 +68,10 @@ def main():
     opt = AdaDelta(max_it=max_it, min_grad_ratio=0,
                    callback=perf_cb, verbosity=0)
     timer.__enter__()
+    # high-dimensional n requires lower tolerance.
     lmc = InterpolatedLLGP(xss, yss, functional_kernel=fk,
                            normalize=True, m=interpolating_points,
-                           max_procs=nthreads)
+                           max_procs=nthreads, tolerance=1e-3)
     lmc.optimize(optimizer=opt)
     timer.__exit__(None, None, None)
 
