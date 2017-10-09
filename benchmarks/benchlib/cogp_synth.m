@@ -36,11 +36,11 @@ cf.learn_z    = true;
 cf.momentum_z = 0.0;
 cf.lrate_z    = 1e-4;
 cf.maxiter = maxiter;
-cf.nbatch = 100; %2000;
+cf.nbatch = 2000;
 cf.beta = 1/0.1;
 cf.initz = 'random';
 cf.w = ones(size(y,2),2);
-cf.monitor_elbo = 100;
+cf.monitor_elbo = 10;
 cf.fix_first = false;
 Q = 2;
 
