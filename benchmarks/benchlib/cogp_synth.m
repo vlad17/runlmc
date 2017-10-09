@@ -5,7 +5,7 @@
 
 % Uses similar assumptions to cogp_fx2007: datadir and runs required
 % datadir should go the csv directory
-% requires M, runs and datadir to be defined
+% requires maxiter, M, runs and datadir to be defined
 
 addpath(genpath([tempdir 'cogp']));
 format long;
