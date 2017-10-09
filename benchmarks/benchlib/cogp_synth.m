@@ -26,6 +26,7 @@ rng(1234,'twister');
 [y,ymean,ystd] = standardize(y,[],[]);
 
 cf.covfunc_g  = 'covSEard';
+cf.covfunc_h = 'covSEard';
 cf.lrate      = 1e-2;
 cf.momentum   = 0.9;
 cf.lrate_hyp  = 1e-5;
@@ -36,23 +37,24 @@ cf.learn_z    = true;
 cf.momentum_z = 0.0;
 cf.lrate_z    = 1e-4;
 cf.maxiter = maxiter;
-cf.nbatch = 2000;
+cf.nbatch = nbatch;
 cf.beta = 1/0.1;
 cf.initz = 'random';
 cf.w = ones(size(y,2),2);
-cf.monitor_elbo = 10;
-cf.fix_first = false;
+cf.monitor_elbo = 50;
+cf.fix_first = true;
 Q = 2;
 
 smses = zeros(runs,1);
+MM.g = M; MM.h = M;
 nlpds = zeros(runs,1);
 times = zeros(runs,1);
 for r=1:runs
-  par.g = cell(Q,1);
+  par.g = cell(Q,1); par.task = cell(size(y,2),1);
   tic;
-  [elbo,par] = slfm2_learn(x,y,M,par,cf);
+  [elbo,par] = slfm_learn(x,y,MM,par,cf);
   times(r) = toc;
-  [mu,vaar,mu_g,var_g] = slfm2_predict(cf.covfunc_g,par,xtest(sel,:),size(y,2));
+  [mu,vaar,mu_g,var_g] = slfm_predict(cf.covfunc_g, cf.covfunc_h,par,xtest(sel,:));
   mu = mu.*repmat(ystd,size(mu,1),1) + repmat(ymean,size(mu,1),1);
   fvar = vaar.*repmat(ystd.^2,size(mu,1),1);
   smses(r) = mysmse(ytest(sel,end),mu(:,end),ymean(end));

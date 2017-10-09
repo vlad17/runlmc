@@ -27,109 +27,36 @@ def main():
     np.random.seed(1234)
     activate_logs()
 
-    max_it = 30
-    interpolating_points = [100, 100]
+    llgp_runs = 3
+    cogp_runs = 3
+    cogp_max_it = 100 # like in COGP sarcos
+    interpolating_points = [25, 25]
     nthreads = 16
-    inducing_points = 1000  # like in COGP sarcos
-    iters = [50, 100, 150, 200, 250]
+    inducing_points = [500]
+    nbatches = [1000]
 
     kgen, rgen, slfmgen, indepgen = synth_gen()
-
-    times = []
-    times, smses, nlpds = [], [], []
-    lmc = None
-    ctr = 0
-    timer = contexttimer.Timer()
     xss, yss, test_xss, test_yss = synth()
-    fk = FunctionalKernel(
-        D=len(xss),
-        lmc_kernels=kgen(),
-        lmc_ranks=rgen(),
-        slfm_kernels=slfmgen(),
-        indep_gp=indepgen())
+    stats = bench_runlmc(llgp_runs, interpolating_points, xss, yss, test_xss,
+                test_yss, kgen, rgen, slfmgen, indepgen, {}, max_procs=nthreads,
+                tolerance=1e-3) # reduce tol a bit b/c of large problem size
+    dump(stats, 'llgp_stats')
+    # stats = load('llgp_stats')
 
-    def perf_cb():
-        nonlocal times, smses, nlpds, lmc, ctr, timer
-        ctr += 1
-        if ctr % 2 != 0:
-            return
+    all_stats = [stats]
+    colnames = ['LLGP']
+    
+    for ind, nb in zip(inducing_points, nbatches):
+        cogp_stats = cogp_synth(
+            cogp_runs, ind, nthreads, nb, cogp_max_it)
+        dump(cogp_stats, 'cogp_stats-{}-{}'.format(ind, nb))
+        # cogp_stats = load('cogp_stats-{}-{}'.format(ind, nb))   
+        all_stats.append(cogp_stats)
+        colnames.append(r'\begin{tabular}{c}LLGP\\$m=' +
+                        str(ind) + ',n_b=' + str(nb) +
+                        r'$\end{tabular}')
 
-        timer.__exit__(None, None, None)
-        np.save(TMP + 'lmc-iter-{}'.format(ctr), lmc.param_array)
-        pred_yss, pred_vss = lmc.predict(test_xss)
-        smses.append(smse(test_yss, pred_yss, yss))
-        nlpds.append(nlpd(test_yss, pred_yss, pred_vss))
-        prev = times[-1] if times else 0
-        times.append(timer.elapsed + prev)
-        print('[llgp] time {:.0f} smse {:.2f} nlpd {:.2f}'.format(
-            times[-1], smses[-1], nlpds[-1]))
-        timer.__enter__()
-
-    opt = AdaDelta(max_it=max_it, min_grad_ratio=0,
-                   callback=perf_cb, verbosity=0)
-    timer.__enter__()
-    # high-dimensional n requires lower tolerance.
-    lmc = InterpolatedLLGP(xss, yss, functional_kernel=fk,
-                           normalize=True, m=interpolating_points,
-                           max_procs=nthreads, tolerance=1e-3)
-    lmc.optimize(optimizer=opt)
-    timer.__exit__(None, None, None)
-
-    for i in ['times', 'smses', 'nlpds']:
-        dump(eval(i), 'llgp_' + i)
-
-    cogp_times, cogp_smses, cogp_nlpds = [], [], []
-    for it in iters:
-        (ctime, _), (csmse, _), (cnlpd, _) = cogp_synth(
-            1, inducing_points, nthreads, it)
-        print('[cogp] time {:.0f} smse {:.2f} nlpd {:.2f}'.format(
-            ctime, csmse, cnlpd))
-        cogp_times.append(ctime)
-        cogp_smses.append(csmse)
-        cogp_nlpds.append(cnlpd)
-
-    for i in ['times', 'smses', 'nlpds']:
-        i = 'cogp_' + i
-        dump(eval(i), i)
-
-    figfile = 'out/learning-curves.pdf'
-    print('writing output to', figfile)
-
-    _, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 4))
-
-    ax1.plot(times, smses, c='red', ls='-', marker='s')
-    ax1.plot(cogp_times, cogp_smses, c='blue', ls='-', marker='^')
-    ax1.set_xlabel('time (s)')
-    ax1.set_ylabel('SMSE')
-    ax1.set_title('SMSE vs training time')
-
-    ax2.plot(times, nlpds, c='red', ls='-', marker='s')
-    ax2.plot(cogp_times, cogp_nlpds, c='blue', ls='-', marker='^')
-    ax2.set_xlabel('time (s)')
-    ax2.set_ylabel('NLPD')
-    ax2.set_title('NLPD vs training time')
-
-    plt.savefig(figfile, format='pdf', bbox_inches='tight')
-    plt.clf()
-    figfile = 'out/learning-curves-log.pdf'
-    print('writing output to', figfile)
-
-    _, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 4))
-
-    ax1.semilogy(times, smses, c='red', ls='-', marker='s')
-    ax1.semilogy(cogp_times, cogp_smses, c='blue', ls='-', marker='^')
-    ax1.set_xlabel('time (s)')
-    ax1.set_ylabel('SMSE')
-    ax1.set_title('SMSE vs training time')
-
-    ax2.semilogy(times, nlpds, c='red', ls='-', marker='s')
-    ax2.semilogy(cogp_times, cogp_nlpds, c='blue', ls='-', marker='^')
-    ax2.set_xlabel('time (s)')
-    ax2.set_ylabel('NLPD')
-    ax2.set_title('NLPD vs training time')
-
-    plt.savefig(figfile, format='pdf', bbox_inches='tight')
-
+    latex_table('results_synth.tex', colnames, all_stats)
 
 if __name__ == '__main__':
     main()

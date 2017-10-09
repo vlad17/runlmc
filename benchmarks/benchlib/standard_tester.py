@@ -376,7 +376,8 @@ def cogp_weather(num_runs, M, nthreads):
     test_fx = ['cam', 'chi']
     cogp_mu = pd.read_csv(TMP + '/cogp-weather-mu{}{}'.format(num_runs, M),
                           header=None, names=test_fx)
-    cogp_var = pd.read_csv(TMP + '/cogp-weather-var{}{}'.format(num_runs, M))
+    cogp_var = pd.read_csv(TMP + '/cogp-weather-var{}{}'.format(num_runs, M),
+                          header=None, names=test_fx)
 
     stats = [(m_time, se_time), (m_smse, se_smse), (m_nlpd, se_nlpd)]
     return stats, cogp_mu, cogp_var
@@ -450,7 +451,7 @@ def synth_gen():
         lambda: [RBF(name='indep{}'.format(i)) for i in range(5)]
 
 
-def cogp_synth(num_runs, inducing_pts, nthreads, it):
+def cogp_synth(num_runs, inducing_pts, nthreads, nbatch, maxiter):
     _download_cogp()
     benchmark_dir = os.path.join(
         _download_own_data(), os.pardir, 'benchmarks', 'benchlib')
@@ -460,12 +461,13 @@ def cogp_synth(num_runs, inducing_pts, nthreads, it):
            re.sub(r'[\s+]', '', """
               datadir='{}';
               maxiter={};
+              nbatch={};
               M={};
               runs={};
               maxNumCompThreads({});
               cogp_synth;
               exit""")
-           .format(datadir, it, inducing_pts, num_runs, nthreads)]
+           .format(datadir, maxiter, nbatch, inducing_pts, num_runs, nthreads)]
     with open(TMP + '/out-synth-{}'.format(inducing_pts), 'w') as f:
         f.write(' '.join(cmd))
     process = subprocess.Popen(
