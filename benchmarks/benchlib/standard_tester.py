@@ -147,6 +147,24 @@ def weather():
 
     return xss, yss, test_xss, test_yss, sensors
 
+def synth():
+    datadir = _download_own_data()
+    xss = np.load(os.path.join(datadir, 'synth', 'xss.npy'))
+    yss = np.load(os.path.join(datadir, 'synth', 'yss.npy'))
+    xss = list(xss)
+    yss = list(yss)
+
+    # the values for the last output in the upper-right quadrant of the unit
+    # square are the test values.
+    sel = np.all(xss[-1] >= 0.5, axis=1)
+    e = np.array([]).reshape(0, 2)
+    test_xss = [e] * 4 + [xss[-1][sel]]
+    e = e.reshape(0, 1)
+    test_yss = [e] * 4 + [yss[-1][sel]]
+    xss[-1] = xss[-1][~sel, :]
+    yss[-1] = yss[-1][~sel]
+    return xss, yss, test_xss, test_yss
+
 
 def toy_sinusoid():
     # Adapts the 2-output toy problem from
@@ -425,7 +443,14 @@ def gen_random_k():
     return FunctionalKernel(
         D=5, lmc_kernels=[], lmc_ranks=[], slfm_kernels=ks, indep_gp=indeps)
 
-def cogp_synth(num_runs, inducing_pts, nthreads, nbatch, it):
+def synth_gen():
+    """Kernel generators associated for gen_random_k()"""
+    return lambda: [], lambda: [], \
+        lambda: [RBF(name='rbf1'), RBF(name='rbf2')], \
+        lambda: [RBF(name='indep{}'.format(i)) for i in range(5)]
+
+
+def cogp_synth(num_runs, inducing_pts, nthreads, it):
     _download_cogp()
     benchmark_dir = os.path.join(
         _download_own_data(), os.pardir, 'benchmarks', 'benchlib')
@@ -441,7 +466,7 @@ def cogp_synth(num_runs, inducing_pts, nthreads, nbatch, it):
               cogp_synth;
               exit""")
            .format(datadir, it, inducing_pts, num_runs, nthreads)]
-    with open(TMP + '/out-synth-{}-{}'.format(nbatch, inducing_pts), 'w') as f:
+    with open(TMP + '/out-synth-{}'.format(inducing_pts), 'w') as f:
         f.write(' '.join(cmd))
     process = subprocess.Popen(
         cmd,
@@ -451,9 +476,9 @@ def cogp_synth(num_runs, inducing_pts, nthreads, nbatch, it):
         cwd=benchmark_dir,
         env=env_no_omp())
     mout, err = process.communicate()
-    print(err)
     with open(TMP + '/out-{}'.format(num_runs), 'w') as f:
         f.write(mout)
+        f.write(err)
 
     ending = mout[mout.find('mean/stderr times'):]
     match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
@@ -465,11 +490,5 @@ def cogp_synth(num_runs, inducing_pts, nthreads, nbatch, it):
     match = re.match('\D*([-+e\.\d]*)\s*([-+e\.\d]*)', ending)
     m_nlpd, se_nlpd = float(match.groups()[0]), float(match.groups()[1])
 
-    # the matlab script writes to this file
-    test_fx = ['CAD', 'JPY', 'AUD']
-    cogp_mu = pd.read_csv(TMP + '/cogp-fx2007-mu', header=None, names=test_fx)
-    cogp_var = pd.read_csv(TMP + '/cogp-fx2007-var', header=None,
-                           names=test_fx)
-
     stats = [(m_time, se_time), (m_smse, se_smse), (m_nlpd, se_nlpd)]
-    return stats, cogp_mu, cogp_var
+    return stats
