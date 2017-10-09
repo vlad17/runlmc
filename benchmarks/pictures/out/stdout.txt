@@ -1,0 +1,38 @@
+publishing results into out directory /data/vladf/runlmc/benchmarks/pictures/out/
+FX2007 picture
+training LLGP
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f7599deb488>}
+iteration        5 grad norm 5.6933e+02
+iteration       10 grad norm 6.4689e+02
+iteration       15 grad norm 2.7563e+02
+iteration       20 grad norm 1.5316e+02
+iteration       25 grad norm 1.1084e+02
+finished adadelta optimization
+            27 iterations
+    7.3701e+01 final grad norm
+    norm used inf
+    time 53.2464479370974 smse 0.229681760204 nlpd -3.47453494589
+training COGP
+
+time   105.5181 (    0.0000) smse     0.2771 (    0.0000) nlpd    13.0297 (    0.0000)
+fx2007graph.pdf
+weather picture
+training LLGP
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f7599deb488>}
+iteration        5 grad norm 5.5874e+03
+iteration       10 grad norm 3.0929e+03
+iteration       15 grad norm 1.2779e+03
+iteration       20 grad norm 1.2048e+03
+iteration       25 grad norm 1.1875e+03
+iteration       30 grad norm 1.0242e+03
+iteration       35 grad norm 8.0519e+02
+iteration       40 grad norm 6.5273e+02
+finished adadelta optimization
+            40 iterations
+    6.5273e+02 final grad norm
+    norm used inf
+    time 290.1190013391897 smse 0.143754812376 nlpd 3.48898658493
+training COGP
+
+time   537.0125 (    0.0000) smse     0.0814 (    0.0000) nlpd   101.1327 (    0.0000)
+running MINRES metrics

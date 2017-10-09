@@ -1,8 +1,8 @@
 #!/bin/bash
-# Creates pictures from 1 run of fx2007 dataset example
+# Creates pictures from 1 run of fx2007 and weather dataset example
 
 USAGE="Usage: ./run.sh [--help]"
-EXPECTED_DIR="runlmc/benchmarks/picture-fx2007"
+EXPECTED_DIR="runlmc/benchmarks/pictures"
 HELP_STR="$USAGE
 
 Must be run from $EXPECTED_DIR.
@@ -13,8 +13,10 @@ the fx2007 paper and puts them into ./out.
 
 fx2007graph.pdf - graphical comparison of predictive mean+var of LLGP vs COGP
                   on the stocks being predicted.
-iterations.eps - number of iterations MINRES requires during course of optimization
-running_cutoff.eps - gradient norms (and cutoff) during course of optimization
+weather.pdf - graphical comparison of predictive mean+var of LLGP vs COGP
+                  on the weather being predicted
+iterations.pdf - number of iterations MINRES requires during course of optimization
+running_cutoff.pdf - gradient norms (and cutoff) during course of optimization
 
 stdout.txt - trace of execution stdout (this program)
 
@@ -61,6 +63,6 @@ REPOROOT=$(readlink -f "$PWD/../../../")
 
 cd $REPOROOT
 
-OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/../$EXPECTED_DIR/fxpics.py $OUTFOLDER | tee $OUTFOLDER/stdout.txt
+OMP_NUM_THREADS=1 PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/../$EXPECTED_DIR/pics.py $OUTFOLDER | tee $OUTFOLDER/stdout.txt
 # metrics should use all threads (capped at 1 proc)
-PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/../$EXPECTED_DIR/fxmetrics.py $OUTFOLDER | tee -a $OUTFOLDER/stdout.txt
+OMP_NUM_THREADS=$(nproc) PYTHONPATH="$REPOROOT:$REPOROOT/benchmarks/benchlib" python3 -u $REPOROOT/../$EXPECTED_DIR/fxmetrics.py $OUTFOLDER | tee -a $OUTFOLDER/stdout.txt

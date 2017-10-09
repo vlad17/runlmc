@@ -2,7 +2,6 @@
 # Computes explicit log likelihood and plots optimization trace
 
 import os
-os.environ['OMP_NUM_THREADS'] = '1'
 
 import matplotlib as mpl
 mpl.use('Agg')
@@ -33,7 +32,7 @@ print('running MINRES metrics')
 np.random.seed(1234)
 fk = FunctionalKernel(D=len(xss), lmc_kernels=ks, lmc_ranks=ranks)
 lmc_with_metrics = InterpolatedLLGP(
-    xss, yss, functional_kernel=fk, metrics=True)
+    xss, yss, functional_kernel=fk, metrics=True, max_procs=1)
 lmc_with_metrics.optimize(optimizer=AdaDelta(
     # Force full 35 iterations with ratio = 0
     verbosity=10, max_it=35, min_grad_ratio=0))
@@ -60,7 +59,7 @@ plt.xlabel('optimization iteration')
 plt.ylabel('inversion iterations')
 plt.legend(bbox_to_anchor=(.3, -0.15), loc=2)
 print('iterations.eps')
-plt.savefig(outdir + 'iterations.eps', format='eps', bbox_inches='tight')
+plt.savefig(outdir + 'iterations.pdf', format='pdf', bbox_inches='tight')
 plt.clf()
 
 fig, ax1 = plt.subplots()
@@ -76,6 +75,6 @@ ax2.plot(0.2 * div_rolled_max(lmc_with_metrics.metrics.grad_norms, 1),
 ax2.set_ylabel('grad norms', color='b')
 fig.tight_layout()
 plt.legend(bbox_to_anchor=(.3, -.07), loc=2)
-print('running_cutoff.eps')
-plt.savefig(outdir + 'running_cutoff.eps', format='eps', bbox_inches='tight')
+print('running_cutoff.pdf')
+plt.savefig(outdir + 'running_cutoff.pdf', format='pdf', bbox_inches='tight')
 plt.clf()
