@@ -14,12 +14,12 @@ import matplotlib.pyplot as plt
 
 
 def load(f):
-    with open('out/' + f + '.pkl', 'rb') as handle:
+    with open(sys.argv[2] + os.path.sep + f + '.pkl', 'rb') as handle:
         return pickle.load(handle)
 
 
 def dump(x, f):
-    with open('out/' + f + '.pkl', 'wb') as handle:
+    with open(sys.argv[2] + os.path.sep + f + '.pkl', 'wb') as handle:
         pickle.dump(x, handle, pickle.HIGHEST_PROTOCOL)
 
 
@@ -29,7 +29,7 @@ def main():
 
     llgp_runs = 3
     cogp_runs = 3
-    cogp_max_it = 100 # like in COGP sarcos
+    cogp_max_it = [1000]
     interpolating_points = [25, 25]
     nthreads = 16
     inducing_points = [500]
@@ -42,7 +42,7 @@ def main():
         nthreads = ''
         inducing_points = [int(sys.argv[3])]
         nbatches = [int(sys.argv[4])]
-        cogp_max_it = int(sys.argv[5])
+        cogp_max_it = [int(sys.argv[5])]
         cogp_runs = 1
     else:
         kgen, rgen, slfmgen, indepgen = synth_gen()
@@ -55,14 +55,14 @@ def main():
         all_stats = [stats]
         colnames = ['LLGP']
 
-    for ind, nb in zip(inducing_points, nbatches):
+    for ind, nb, mi in zip(inducing_points, nbatches, cogp_max_it):
         cogp_stats = cogp_synth(
-            cogp_runs, ind, nthreads, nb, cogp_max_it)
+            cogp_runs, ind, nthreads, nb, mi)
         dump(cogp_stats, 'cogp_stats-{}-{}'.format(ind, nb))
         # cogp_stats = load('cogp_stats-{}-{}'.format(ind, nb))   
         all_stats.append(cogp_stats)
-        colnames.append(r'\begin{tabular}{c}LLGP\\$m=' +
-                        str(ind) + ',n_b=' + str(nb) +
+        colnames.append(r'\begin{tabular}{c}COGP\\$m=' +
+                        str(ind) + '\\n_b=' + str(nb) +
                         r'$\end{tabular}')
 
     latex_table('results_synth.tex', colnames, all_stats)

@@ -51,7 +51,7 @@ if [[ $# -eq 1 ]]; then
 fi
 IS_VALIDATION=false
 
-REPOROOT=$(readlink -f "$PWD/../../../")
+REPOROOT=$(readlink -f "$PWD/../../")
 cd out
 
 OUTFOLDER=$PWD

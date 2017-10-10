@@ -1,0 +1,15 @@
+InterpolatedLLGP lmc generated grid (n = 47527, m = 841) for active dimensions (0, 1)
+InterpolatedLLGP (22 hyperparams) with 16 workers
+InterpolatedLLGP lmc fully initialized
+time 166.30104428902268 smse 0.123577071951 nlpd 0.271523330149
+InterpolatedLLGP lmc generated grid (n = 47527, m = 841) for active dimensions (0, 1)
+InterpolatedLLGP (22 hyperparams) with 16 workers
+InterpolatedLLGP lmc fully initialized
+time 162.97201939602382 smse 0.125495222729 nlpd 0.280018623414
+InterpolatedLLGP lmc generated grid (n = 47527, m = 841) for active dimensions (0, 1)
+InterpolatedLLGP (22 hyperparams) with 16 workers
+InterpolatedLLGP lmc fully initialized
+time 185.16106668300927 smse 0.124188651143 nlpd 0.274221065216
+min idx 0 (171.47804345601858, 5.6409109815372958)
+min idx 0 (0.12442031527402891, 0.00046189869115714516)
+min idx 0 (0.2752543395933062, 0.0020463107109439018)
