@@ -2,7 +2,7 @@
 
 import os
 os.environ['OMP_NUM_THREADS'] = '1'
-
+import sys
 import numpy as np
 from standard_tester import *
 import pickle
@@ -35,17 +35,24 @@ def main():
     inducing_points = [500]
     nbatches = [1000]
 
-    kgen, rgen, slfmgen, indepgen = synth_gen()
-    xss, yss, test_xss, test_yss = synth()
-    stats = bench_runlmc(llgp_runs, interpolating_points, xss, yss, test_xss,
-                test_yss, kgen, rgen, slfmgen, indepgen, {}, max_procs=nthreads,
-                tolerance=1e-3) # reduce tol a bit b/c of large problem size
-    dump(stats, 'llgp_stats')
-    # stats = load('llgp_stats')
-
-    all_stats = [stats]
-    colnames = ['LLGP']
+    all_stats = []
+    colnames = []
     
+    if len(sys.argv) > 3: # COGP grid-search mode
+        nthreads = ''
+        inducing_points = [int(sys.argv[3])]
+        nbatches = [int(sys.argv[4])]
+    else:
+        kgen, rgen, slfmgen, indepgen = synth_gen()
+        xss, yss, test_xss, test_yss = synth()
+        stats = bench_runlmc(llgp_runs, interpolating_points, xss, yss, test_xss,
+                    test_yss, kgen, rgen, slfmgen, indepgen, {}, max_procs=nthreads,
+                    tolerance=1e-3) # reduce tol a bit b/c of large problem size
+        dump(stats, 'llgp_stats')
+        # stats = load('llgp_stats')
+        all_stats = [stats]
+        colnames = ['LLGP']
+
     for ind, nb in zip(inducing_points, nbatches):
         cogp_stats = cogp_synth(
             cogp_runs, ind, nthreads, nb, cogp_max_it)
