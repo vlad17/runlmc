@@ -42,6 +42,8 @@ def main():
         nthreads = ''
         inducing_points = [int(sys.argv[3])]
         nbatches = [int(sys.argv[4])]
+        cogp_max_it = [int(sys.argv[5])]
+        cogp_runs = 1
     else:
         kgen, rgen, slfmgen, indepgen = synth_gen()
         xss, yss, test_xss, test_yss = synth()
