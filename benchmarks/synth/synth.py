@@ -37,8 +37,8 @@ def main():
 
     all_stats = []
     colnames = []
-    
-    if len(sys.argv) > 3: # COGP grid-search mode
+
+    if len(sys.argv) > 3:  # COGP grid-search mode
         nthreads = ''
         inducing_points = [int(sys.argv[3])]
         nbatches = [int(sys.argv[4])]
@@ -48,8 +48,8 @@ def main():
         kgen, rgen, slfmgen, indepgen = synth_gen()
         xss, yss, test_xss, test_yss = synth()
         stats = bench_runlmc(llgp_runs, interpolating_points, xss, yss, test_xss,
-                    test_yss, kgen, rgen, slfmgen, indepgen, {}, max_procs=nthreads,
-                    tolerance=1e-3) # reduce tol a bit b/c of large problem size
+                             test_yss, kgen, rgen, slfmgen, indepgen, {}, max_procs=nthreads,
+                             tolerance=1e-3)  # reduce tol a bit b/c of large problem size
         dump(stats, 'llgp_stats')
         # stats = load('llgp_stats')
         all_stats = [stats]
@@ -59,13 +59,14 @@ def main():
         cogp_stats = cogp_synth(
             cogp_runs, ind, nthreads, nb, mi)
         dump(cogp_stats, 'cogp_stats-{}-{}'.format(ind, nb))
-        # cogp_stats = load('cogp_stats-{}-{}'.format(ind, nb))   
+        # cogp_stats = load('cogp_stats-{}-{}'.format(ind, nb))
         all_stats.append(cogp_stats)
         colnames.append(r'\begin{tabular}{c}COGP\\$m=' +
-                        str(ind) + '\\n_b=' + str(nb) +
+                        str(ind) + r'$\\ $n_b=' + str(nb) +
                         r'$\end{tabular}')
 
     latex_table('results_synth.tex', colnames, all_stats)
+
 
 if __name__ == '__main__':
     main()
