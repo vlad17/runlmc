@@ -17,11 +17,8 @@ chiy = csvread([datadir 'chiy.csv']);
 soty = csvread([datadir 'soty.csv']);
 
 x = csvread([datadir 'sotx.csv']);
-sel = x >= 10 & x <= 15;
 
-x = x(sel);
 y = [bray(:,4), camy(:,4), chiy(:,4), soty(:,4)];
-y = y(sel, :);
 y(y == -1) = nan; % missing data
 ytest = y;
 xtest = x;
