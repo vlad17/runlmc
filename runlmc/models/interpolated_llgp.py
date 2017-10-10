@@ -384,7 +384,7 @@ class InterpolatedLLGP(MultiGP):
     def _var_predict_precompute(self, prediction_interpolants, _):
         nu = self._precomputed_nu()
         assert len(prediction_interpolants) == 1
-        W = next(prediction_interpolants.values())
+        W = list(prediction_interpolants.values()).pop()
         return W.dot(nu)
 
     def _var_predict_on_the_fly(self, _, Xs):
