@@ -81,9 +81,10 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
-0. Automatically find `min_grad_ratio` parameter. 
-    * validate on small subset to get min grad ratio?
-    * use quadratic form as a proxy?
+0. Make `grad-grid` benchmark only generate `pdf` files directly, get rid of `epstool,epstopdf` deps.
+0. Make all benchmarks accept --validate.
+0. Automatically trigger ./asvrun.sh on commit, somehow
+0. Automatically find `min_grad_ratio` parameter / get rid of it.
     * Logdet approximations: (1) [Chebyshev-Hutchinson](https://arxiv.org/abs/1503.06394) [Code](https://sites.google.com/site/mijirim/logdet) (2) [Integral Probing](https://arxiv.org/abs/1504.02661) (3) [Lanczos](http://www-users.cs.umn.edu/~saad/PDF/ys-2016-04.pdf) (4) approx `tr log (A)` with MVM from [f(A)b](http://epubs.siam.org/doi/abs/10.1137/090778250) paper
 0. Preconditioning
     * Cache Krylov solutions over iterations?
