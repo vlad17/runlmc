@@ -211,7 +211,7 @@ def run_kernel_benchmark(
     n_it = 10
     metrics = None
     with closing(Pool(processes=cpu_count())) as pool:
-        sds = StochasticDerivService(metrics, pool, n_it)
+        sds = StochasticDerivService(metrics, pool, n_it, 1e-4)
         with contexttimer.Timer() as t:
             grid_kernel, _ = gen_grid_kernel(
                 fkern, grid_dists, interpolants, list(map(len, Xs)))
