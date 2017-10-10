@@ -58,7 +58,7 @@ plt.axhline(n, label='iterartion cutoff ($n={}$)'.format(n), c='r')
 plt.xlabel('optimization iteration')
 plt.ylabel('inversion iterations')
 plt.legend(bbox_to_anchor=(.3, -0.15), loc=2)
-print('iterations.eps')
+print('iterations.pdf')
 plt.savefig(outdir + 'iterations.pdf', format='pdf', bbox_inches='tight')
 plt.clf()
 

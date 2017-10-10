@@ -30,7 +30,6 @@ outdir = sys.argv[1] + '/'
 print('publishing results into out directory', outdir)
 
 print('FX2007 picture')
-
 # Nguyen 2014 COGP uses Q=2 R=1, but that is not LMC
 # Álvarez and Lawrence 2010 Convolved GP has R=4, sort of.
 # Álvarez and Lawrence 2010 find that vanilla LMC works best with Q=1 R=2
@@ -62,7 +61,7 @@ all_xs = np.arange(min(xs.min() for xs in xss), max(xs.max()
                                                     for xs in xss) + 1)
 test_ix = {col: list(cols).index(col) for col in test_fx}
 pred_xss = [all_xs if col in test_fx else np.array([]) for col in cols]
-# lmc.prediction = 'exact'
+lmc.prediction = 'precompute'
 pred_yss, pred_vss = lmc.predict(pred_xss)
 pred_yss = {col: ys for col, ys in zip(cols, pred_yss)}
 pred_vss = {col: vs for col, vs in zip(cols, pred_vss)}
@@ -130,47 +129,44 @@ print('training COGP')
 stats, cogp_mu, cogp_var = cogp_weather(1, 200, nthreads)
 print(statsline(stats))
 
-all_xs = np.hstack(xss).unique()
+all_xs = np.unique(np.hstack(xss))
 all_xs.sort()
+sel = (10 <= all_xs) & (all_xs <= 15)
 test_ix = {col: list(cols).index(col) for col in test_fx}
-pred_xss = [all_xs if col in test_fx else np.array([]) for col in cols]
-# lmc.prediction = 'exact'
+pred_xss = [all_xs[sel] if col in test_fx else np.array([]) for col in cols]
+lmc.prediction = 'precompute'
 pred_yss, pred_vss = lmc.predict(pred_xss)
 pred_yss = {col: ys for col, ys in zip(cols, pred_yss)}
 pred_vss = {col: vs for col, vs in zip(cols, pred_vss)}
 
 _, axs = plt.subplots(ncols=2, figsize=(16, 4))
 for col, ax in zip(test_fx, axs):
-
     # Prediction on entire domain for COGP
-    ax.plot(all_xs, cogp_mu[col], c='black', ls='-')
-    sd = np.sqrt(cogp_var[col])
-    top = cogp_mu[col] + 2 * sd
-    bot = cogp_mu[col] - 2 * sd
-    ax.fill_between(all_xs, bot, top, facecolor='grey', alpha=0.2)
-
+    ax.plot(all_xs[sel], cogp_mu[col].values[sel], c='black', ls='-')
+    sd = np.sqrt(cogp_var[col].values[sel])
+    top = cogp_mu[col].values[sel] + 2 * sd
+    bot = cogp_mu[col].values[sel] - 2 * sd
+    ax.fill_between(all_xs[sel], bot, top, facecolor='grey', alpha=0.2)
     # Prediction for LLGP
-    ax.plot(all_xs, pred_yss[col], c='red')
+    ax.plot(all_xs[sel], pred_yss[col], c='red')
     sd = np.sqrt(pred_vss[col])
     top = pred_yss[col] + 2 * sd
     bot = pred_yss[col] - 2 * sd
-    ax.fill_between(all_xs, bot, top, facecolor='green', alpha=0.3)
-
+    ax.fill_between(all_xs[sel], bot, top, facecolor='green', alpha=0.3)
     # Actual holdout
     marker_size = 5
     test_xs = test_xss[test_ix[col]]
     test_ys = test_yss[test_ix[col]]
     ax.scatter(test_xs, test_ys, c='blue',
                edgecolors='none', s=marker_size, zorder=11)
-
     # Rest of image (training)
     rest_xs = xss[test_ix[col]]
+    selx = (10 <= rest_xs) & (rest_xs <= 15)
     rest_ys = yss[test_ix[col]]
-    ax.scatter(rest_xs, rest_ys, c='magenta',
+    ax.scatter(rest_xs[selx], rest_ys[selx], c='magenta',
                edgecolors='none', s=marker_size, zorder=10)
-
-    ax.set_xlim([0, 250])
     ax.set_title('output {} (95%)'.format(col))
+
 
 print('weather.pdf')
 plt.savefig(outdir + 'weather.pdf', format='pdf', bbox_inches='tight')
