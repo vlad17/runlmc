@@ -81,6 +81,7 @@ To build the paper, the packages `epstool` and `epstopdf` are required. Develope
 
 ### Roadmap
 
+0. Make `standard_tester` stale-tolerable: can't fetch data, code from `github` without version inconsistency.
 0. Make `grad-grid` benchmark only generate `pdf` files directly, get rid of `epstool,epstopdf` deps.
 0. Make all benchmarks accept --validate.
 0. Automatically trigger ./asvrun.sh on commit, somehow
