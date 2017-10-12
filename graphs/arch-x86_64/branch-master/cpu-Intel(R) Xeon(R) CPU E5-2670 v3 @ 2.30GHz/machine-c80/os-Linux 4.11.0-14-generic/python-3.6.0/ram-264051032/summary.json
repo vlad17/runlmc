@@ -1,0 +1,122 @@
+[
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": -3.6174028681628543,
+        "name": "fx2007.fx2007.Suite.track_mean_nlpd",
+        "pretty_name": "fx2007.fx2007.Suite.track_mean_nlpd",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 0.2069219737430891,
+        "name": "fx2007.fx2007.Suite.track_mean_smse",
+        "pretty_name": "fx2007.fx2007.Suite.track_mean_smse",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 148.6690287837293,
+        "name": "fx2007.fx2007.Suite.track_mean_time",
+        "pretty_name": "fx2007.fx2007.Suite.track_mean_time",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 0.026848994353816685,
+        "name": "fx2007.fx2007.Suite.track_se_nlpd",
+        "pretty_name": "fx2007.fx2007.Suite.track_se_nlpd",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 0.0038886049206229936,
+        "name": "fx2007.fx2007.Suite.track_se_smse",
+        "pretty_name": "fx2007.fx2007.Suite.track_se_smse",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 18.101521193324924,
+        "name": "fx2007.fx2007.Suite.track_se_time",
+        "pretty_name": "fx2007.fx2007.Suite.track_se_time",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 1.6929203140141056,
+        "name": "weather.weather.Suite.track_mean_nlpd",
+        "pretty_name": "weather.weather.Suite.track_mean_nlpd",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 0.08918960248509247,
+        "name": "weather.weather.Suite.track_mean_smse",
+        "pretty_name": "weather.weather.Suite.track_mean_smse",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 208.49958037068137,
+        "name": "weather.weather.Suite.track_mean_time",
+        "pretty_name": "weather.weather.Suite.track_mean_time",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 0.19489962781548384,
+        "name": "weather.weather.Suite.track_se_nlpd",
+        "pretty_name": "weather.weather.Suite.track_se_nlpd",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 0.00839058363778547,
+        "name": "weather.weather.Suite.track_se_smse",
+        "pretty_name": "weather.weather.Suite.track_se_smse",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 574,
+        "last_value": 39.07699991508307,
+        "name": "weather.weather.Suite.track_se_time",
+        "pretty_name": "weather.weather.Suite.track_se_time",
+        "prev_value": null
+    }
+]

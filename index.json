@@ -1,0 +1,220 @@
+{
+    "benchmarks": {
+        "fx2007.fx2007.Suite.track_mean_nlpd": {
+            "code": "def track_mean_nlpd(self, llgp_stats):\n    _, _, (mean_nlpd, _) = llgp_stats\n    return mean_nlpd\n",
+            "name": "fx2007.fx2007.Suite.track_mean_nlpd",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "fx2007.fx2007.Suite.track_mean_nlpd",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/fx2007/fx2007.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "fx2007.fx2007.Suite.track_mean_smse": {
+            "code": "def track_mean_smse(self, llgp_stats):\n    _, (mean_smse, _), _ = llgp_stats\n    return mean_smse\n",
+            "name": "fx2007.fx2007.Suite.track_mean_smse",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "fx2007.fx2007.Suite.track_mean_smse",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/fx2007/fx2007.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "fx2007.fx2007.Suite.track_mean_time": {
+            "code": "def track_mean_time(self, llgp_stats):\n    (mean_time, _), _, _ = llgp_stats\n    return mean_time\n",
+            "name": "fx2007.fx2007.Suite.track_mean_time",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "fx2007.fx2007.Suite.track_mean_time",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/fx2007/fx2007.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "fx2007.fx2007.Suite.track_se_nlpd": {
+            "code": "def track_se_nlpd(self, llgp_stats):\n    _, _, (_, se_nlpd) = llgp_stats\n    return se_nlpd\n",
+            "name": "fx2007.fx2007.Suite.track_se_nlpd",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "fx2007.fx2007.Suite.track_se_nlpd",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/fx2007/fx2007.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "fx2007.fx2007.Suite.track_se_smse": {
+            "code": "def track_se_smse(self, llgp_stats):\n    _, (_, se_smse), _ = llgp_stats\n    return se_smse\n",
+            "name": "fx2007.fx2007.Suite.track_se_smse",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "fx2007.fx2007.Suite.track_se_smse",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/fx2007/fx2007.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "fx2007.fx2007.Suite.track_se_time": {
+            "code": "def track_se_time(self, llgp_stats):\n    (_, se_time), _, _ = llgp_stats\n    return se_time\n",
+            "name": "fx2007.fx2007.Suite.track_se_time",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "fx2007.fx2007.Suite.track_se_time",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/fx2007/fx2007.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "weather.weather.Suite.track_mean_nlpd": {
+            "code": "def track_mean_nlpd(self, llgp_stats):\n    _, _, (mean_nlpd, _) = llgp_stats\n    return mean_nlpd\n",
+            "name": "weather.weather.Suite.track_mean_nlpd",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "weather.weather.Suite.track_mean_nlpd",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/weather/weather.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "weather.weather.Suite.track_mean_smse": {
+            "code": "def track_mean_smse(self, llgp_stats):\n    _, (mean_smse, _), _ = llgp_stats\n    return mean_smse\n",
+            "name": "weather.weather.Suite.track_mean_smse",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "weather.weather.Suite.track_mean_smse",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/weather/weather.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "weather.weather.Suite.track_mean_time": {
+            "code": "def track_mean_time(self, llgp_stats):\n    (mean_time, _), _, _ = llgp_stats\n    return mean_time\n",
+            "name": "weather.weather.Suite.track_mean_time",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "weather.weather.Suite.track_mean_time",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/weather/weather.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "weather.weather.Suite.track_se_nlpd": {
+            "code": "def track_se_nlpd(self, llgp_stats):\n    _, _, (_, se_nlpd) = llgp_stats\n    return se_nlpd\n",
+            "name": "weather.weather.Suite.track_se_nlpd",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "weather.weather.Suite.track_se_nlpd",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/weather/weather.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "weather.weather.Suite.track_se_smse": {
+            "code": "def track_se_smse(self, llgp_stats):\n    _, (_, se_smse), _ = llgp_stats\n    return se_smse\n",
+            "name": "weather.weather.Suite.track_se_smse",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "weather.weather.Suite.track_se_smse",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/weather/weather.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        },
+        "weather.weather.Suite.track_se_time": {
+            "code": "def track_se_time(self, llgp_stats):\n    (_, se_time), _, _ = llgp_stats\n    return se_time\n",
+            "name": "weather.weather.Suite.track_se_time",
+            "param_names": [],
+            "params": [],
+            "pretty_name": "weather.weather.Suite.track_se_time",
+            "setup_cache_key": "/data/vladf/runlmc/benchmarks/asv/weather/weather.py:16",
+            "setup_cache_timeout": 43200,
+            "timeout": 60.0,
+            "type": "track",
+            "unit": "unit"
+        }
+    },
+    "graph_param_list": [
+        {
+            "arch": "x86_64",
+            "branch": "master",
+            "cpu": "Intel(R) Xeon(R) CPU E5-2670 v3 @ 2.30GHz",
+            "machine": "c80",
+            "os": "Linux 4.11.0-14-generic",
+            "python": "3.6.0",
+            "ram": "264051032"
+        }
+    ],
+    "hash_length": 8,
+    "machines": {
+        "c80": {
+            "arch": "x86_64",
+            "cpu": "Intel(R) Xeon(R) CPU E5-2670 v3 @ 2.30GHz",
+            "machine": "c80",
+            "os": "Linux 4.11.0-14-generic",
+            "ram": "264051032",
+            "version": 1
+        }
+    },
+    "pages": [
+        [
+            "",
+            "Grid view",
+            "Display as a agrid"
+        ],
+        [
+            "summarylist",
+            "List view",
+            "Display as a list"
+        ],
+        [
+            "regressions",
+            "Show regressions",
+            "Display information about recent regressions"
+        ]
+    ],
+    "params": {
+        "arch": [
+            "x86_64"
+        ],
+        "branch": [
+            "master"
+        ],
+        "cpu": [
+            "Intel(R) Xeon(R) CPU E5-2670 v3 @ 2.30GHz"
+        ],
+        "machine": [
+            "c80"
+        ],
+        "os": [
+            "Linux 4.11.0-14-generic"
+        ],
+        "python": [
+            "3.6.0"
+        ],
+        "ram": [
+            "264051032"
+        ]
+    },
+    "project": "runlmc",
+    "project_url": "https://github.com/vlad17/runlmc/",
+    "revision_to_date": {
+        "574": 1507829781000
+    },
+    "revision_to_hash": {
+        "574": "d11c57f5a470a04e29279c9fde7e9b3e84f098df"
+    },
+    "show_commit_url": "https://github.com/vlad17/runlmc/commit/",
+    "tags": {}
+}
