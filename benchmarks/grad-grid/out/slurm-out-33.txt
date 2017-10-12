@@ -1,8 +1,8 @@
 n_o 500 d 10 r_q 3 q 5 eps 0.001 kern periodic seed 1234 test-type opt
 
 preparation time (once per optimization)
-      0.5897 sec exact - pairwise distances (for dense approaches)
-      0.0434 sec apprx - linear interpolation (for approximations)
+      0.7144 sec exact - pairwise distances (for dense approaches)
+      0.0263 sec approx - linear interpolation (for approximations)
 
 periodic only - inv lengthscale is 1, periods in logspace(0, 1, q)
     covariance matrix info
@@ -10,42 +10,42 @@ periodic only - inv lengthscale is 1, periods in logspace(0, 1, q)
         smallest eig        9.5570e-04
         l2 condition number 2.0461e+07
     matrix materialization/inversion time
-           37.4631 sec exact - cholesky
-           88.7455 sec apprx - solve K*alpha=y, solve 10 trace terms
-        1.8917e-09 |K_exact - K_apprx|_1 / n^2
-        2.2519e-06 rel alpha l1 error
-        2.6156e-06 rel alpha l2 error
+           85.6895 sec exact - cholesky
+           43.7725 sec approx - solve K*alpha=y, solve 10 trace terms
+        1.8917e-09 |K_exact - K_approx|_1 / n^2
+        8.8570e-07 rel alpha l1 error
+        9.7763e-07 rel alpha l2 error
     kernel gradients # 10
-            3.5141 sec exact per gradient
-            0.0378 sec apprx per gradient
-        3.5718e+01 avg grad error
+            1.3742 sec exact per gradient
+            0.0317 sec approx per gradient
+        7.4803e+01 avg grad error
     coregionalization Aq gradients # 15
-            9.3307 sec exact per gradient
-            4.5741 sec apprx per gradient
-        4.0185e+00 avg grad error
+           16.7994 sec exact per gradient
+            0.3046 sec approx per gradient
+        4.3634e+00 avg grad error
     coregionalization kappa gradients # 50
-            1.2716 sec exact per gradient
-            0.0203 sec apprx per gradient
-        1.4835e+00 avg grad error
+            1.6573 sec exact per gradient
+            0.0421 sec approx per gradient
+        2.1769e+00 avg grad error
     noise gradients # 10
-            0.7124 sec exact per gradient
-            0.0007 sec apprx per gradient
-        6.0280e+02 avg grad error
+            1.2165 sec exact per gradient
+            0.0004 sec approx per gradient
+        5.6212e+02 avg grad error
     total gradient runtime summary (220 partial derivatives)
-          245.8085 sec exact all gradients
-           70.0137 sec apprx all gradients
-        3.2101e+01 avg grad error
+          360.7639 sec exact all gradients
+            6.9952 sec approx all gradients
+        3.2421e+01 avg grad error
         9.1186e+05 avg grad magnitude
-        3.5204e-05 err:grad l1 ratio
-        3.9815e-05 err:grad l2 ratio
+        3.5555e-05 err:grad l1 ratio
+        3.2757e-05 err:grad l2 ratio
     total optimization iteration time
-          283.2716 sec cholesky
-          158.7593 sec runlmc
+          446.4534 sec cholesky
+           50.7677 sec runlmc
 n_o 500 d 10 r_q 3 q 5 eps 0.001 kern periodic seed 1234 test-type opt
 
 preparation time (once per optimization)
-      0.6308 sec exact - pairwise distances (for dense approaches)
-      0.0246 sec apprx - linear interpolation (for approximations)
+      0.6132 sec exact - pairwise distances (for dense approaches)
+      0.0283 sec approx - linear interpolation (for approximations)
 
 periodic only - inv lengthscale is 1, periods in logspace(0, 1, q)
     covariance matrix info
@@ -53,34 +53,34 @@ periodic only - inv lengthscale is 1, periods in logspace(0, 1, q)
         smallest eig        9.5570e-04
         l2 condition number 2.0461e+07
     matrix materialization/inversion time
-           28.3382 sec exact - cholesky
-          217.6948 sec apprx - solve K*alpha=y, solve 10 trace terms
-        1.8917e-09 |K_exact - K_apprx|_1 / n^2
-        2.2519e-06 rel alpha l1 error
-        2.6156e-06 rel alpha l2 error
+           77.7368 sec exact - cholesky
+           40.2688 sec approx - solve K*alpha=y, solve 10 trace terms
+        1.8917e-09 |K_exact - K_approx|_1 / n^2
+        8.8570e-07 rel alpha l1 error
+        9.7763e-07 rel alpha l2 error
     kernel gradients # 10
-            3.2698 sec exact per gradient
-            0.0234 sec apprx per gradient
-        3.5718e+01 avg grad error
+            1.1754 sec exact per gradient
+            0.0284 sec approx per gradient
+        7.4803e+01 avg grad error
     coregionalization Aq gradients # 15
-           10.8236 sec exact per gradient
-            3.5633 sec apprx per gradient
-        4.0185e+00 avg grad error
+           17.6708 sec exact per gradient
+            0.3056 sec approx per gradient
+        4.3634e+00 avg grad error
     coregionalization kappa gradients # 50
-            1.1473 sec exact per gradient
-            1.1715 sec apprx per gradient
-        1.4835e+00 avg grad error
+            1.9616 sec exact per gradient
+            0.0319 sec approx per gradient
+        2.1769e+00 avg grad error
     noise gradients # 10
-            0.5976 sec exact per gradient
-            0.0007 sec apprx per gradient
-        6.0280e+02 avg grad error
+            1.3510 sec exact per gradient
+            0.0006 sec approx per gradient
+        5.6212e+02 avg grad error
     total gradient runtime summary (220 partial derivatives)
-          258.3908 sec exact all gradients
-          112.2638 sec apprx all gradients
-        3.2101e+01 avg grad error
+          388.4072 sec exact all gradients
+            6.4716 sec approx all gradients
+        3.2421e+01 avg grad error
         9.1186e+05 avg grad magnitude
-        3.5204e-05 err:grad l1 ratio
-        3.9815e-05 err:grad l2 ratio
+        3.5555e-05 err:grad l1 ratio
+        3.2757e-05 err:grad l2 ratio
     total optimization iteration time
-          286.7290 sec cholesky
-          329.9586 sec runlmc
+          466.1440 sec cholesky
+           46.7404 sec runlmc

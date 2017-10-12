@@ -1,7 +1,9 @@
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.350347e-04
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.128672e-04
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.481760e-04
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 4.299165e-04
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.803504e-04
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 3.671215e-04
-MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.730532e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.794685e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 3.510421e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.672055e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.111053e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.113993e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.425179e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 3.490438e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 2.204693e-04
+MINRES (n = 5000) did not converge in n iterations. Reconstruction error 1.449812e-04
