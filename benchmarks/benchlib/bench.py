@@ -180,12 +180,12 @@ def run_kernel_benchmark(
           .format(eigs.max() / eigs.min()))
 
     if testtype == 'inv':
-        print('    krylov subspace methods m={}'.format(len(grid_dists)))
+        print('    krylov subspace methods m={}'.format(len(grid_dists[(0,)])))
 
         solve = Iterative.solve
 
         def make_solve(k, minres):
-            k = GridKernel(fkern, grid_dists, interpolant,
+            k = GridKernel(fkern, grid_dists[(0,)], interpolant,
                            interpolantT, k, (0,))
             k = SumMatrix(
                 [k, Diag(np.repeat(fkern.noise, list(map(len, Xs))))])

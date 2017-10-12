@@ -1,12 +1,15 @@
 \documentclass{article}
+\usepackage{aistats2018}
+% Camera ready: \usepackage[accepted]{aistats2018}
+\newif\ifanonymized
+\anonymizedtrue
+% Camera ready: \anonymizedfalse
 
-\PassOptionsToPackage{numbers, compress}{natbib}
-% Camera ready: \usepackage[final]{nips_2017}
-\usepackage[final]{nips_2017}
-
+\usepackage[round]{natbib}
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
-\usepackage{hyperref}       % hyperlinks
+\usepackage{lmodern}
+\usepackage[hidelinks]{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
 \usepackage{amsfonts}       % blackboard math symbols
@@ -16,42 +19,51 @@
 \usepackage{algorithm}% http://ctan.org/pkg/algorithms
 \usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
 \usepackage{booktabs}
-\usepackage{placeins}
 
 
 \input{defs}
 
-\title{Supplementary Material for Large Linear Multi-output Gaussian Process Learning for Time Series}
 
-\author{
-  Vladimir Feinberg, Li-Fang Cheng, {Barbara Engelhardt}, {Kai Li}\\
-  Department of Computer Science\\
-  Princeton University\\
-  Princeton, NJ 08544 \\
-  \texttt{\{vyf,lifangc,bee,li\}@princeton.edu} \\
-}
+
 
 \begin{document}
 
-\maketitle
+\ifanonymized
+
+\twocolumn[
+\aistatstitle{Supplementary Material for Large Linear Multi-output Gaussian Process Learning}
+\aistatsauthor{ Anonymous Author }
+\aistatsaddress{ Anonymous Institution }
+]
+\else
+\twocolumn[
+\aistatstitle{Supplementary Material for Large Linear Multi-output Gaussian Process Learning}
+\aistatsauthor{   {Vladimir Feinberg} \And {Li-Fang Cheng} \And  {Kai Li} \And {Barbara E Engelhardt} }
+\aistatsaddress{ UC Berkeley \And Princeton University \And Princeton University \And Princeton University }
+]
+\fi
+
 
 \section{Implementation Details}
 
-LLGP was implemented in Python 3 from the Anaconda, which offered an Intel MKL-linked scipy \cite{scipy}. The code made heavy use of other packages, namely climin \cite{climin}, GPy \cite{gpy}, and paramz \cite{paramz}. Code and benchmarks are available at
-\url{https://github.com/vlad17/runlmc}. % camera ready
-%\texttt{<anonymous repository>}.
+LLGP was implemented in Python 3 from the Anaconda, which offered an Intel MKL-linked scipy \citep{scipy}. The code made heavy use of other packages, namely climin \citep{climin}, GPy \citep{gpy}, and paramz \citep{paramz}. Code and benchmarks are available at
+\ifanonymized
+\texttt{<anonymous repository>}.
+\else
+\url{https://github.com/vlad17/runlmc}.
+\fi
 
-Application of our approach to all replication studies was carried out on a large server in a multiprogramming environment: CentOS 6.5 with 80 Intel(R) Xeon(R) CPU E7-4870 @ 2.40GHz. The representation evaluation benchmarks were done at once on a cluster of machines running CentOS 5.2-5.9 with Intel(R) Xeon(R) CPU E5430 @ 2.66GHz, where these jobs ran on a single thread per CPU.
+Application of our approach to all replication studies was carried out on a large server in a multiprogramming environment: Ubuntu 16.04.3 LTS with 48 Intel(R) Xeon(R) CPU E5-2670 v3 @ 2.30GHz. All experiments in the main report were allotted up to 16 threads (both for COGP MATLAB computation threads and parallel Monte Carlo in the case of LLGP). All experiments in the supplement (below, Sec.~\ref{empirical-rep}) were allotted only 1 thread each.
 
 \section{Representation evaluation}\label{empirical-rep}
 
 We evaluated the performance of the different kernel representations over various rank and parameterization settings. In particular, we have the following parameters: $n$ total sample size across all outputs, $D$ number of outputs, $Q$ number of kernels $k_q$, $R$ average added rank, $\epsilon$ mean noise, and \texttt{ktype} kernel type. Kernel type is one of \texttt{mat, periodic, rbf, mix} corresponding to Mat\'{e}rn-3/2, standard periodic\footnote{We define the periodic kernel as $k(r) = \exp \left(\frac{-\gamma}{2}\sin^2\frac{\pi r}{T}\right)$.}, and radial basis functions. \texttt{mix} refers to a mix of all three kernels.
 
-For each setting, we randomly sample entries for each $A_q,\bsk_q$, and $\bse$ and the inverse length scale $\gamma$ for each kernel. Then, we investigate the average gradient construction accuracy and speed of LLGP for different settings of $Q,\epsilon$, and \texttt{ktype}.Each kernel's inverse length scales and periods were selected by sampling uniformly in log space from 1 to 10 with $Q$ samples. Next, we construct a random LMC kernel by sampling entries of each $A_q$ from a standard normal distribution truncated to the unit interval, $\bsk_q$ from an inverse gamma with unit shape and scale, and independent noise $\bse$ for every output from an inverse gamma with unit scale and mean $\epsilon$. Inputs and outputs were independently generated from $\Unif[0,1]$ for benchmarking.
+For each setting, we randomly sample entries for each $A_q,\bsk_q$, and $\bse$ and the inverse length scale $\gamma$ for each kernel. Then, we investigate the average gradient construction accuracy and speed of LLGP for different settings of $Q,\epsilon$, and \texttt{ktype}.Each kernel's inverse length scales and periods were selected by sampling uniformly in log space from 1 to 10 with $Q$ samples. Next, we construct a random LMC kernel by sampling entries of each $A_q$ from a standard normal distribution truncated to the unit interval, $\bsk_q$ from an inverse gamma with unit shape and scale, and independent noise $\bse$ for every output from an inverse gamma with unit scale and mean $\epsilon$. Inputs and outputs were independently generated from $\Unif[0,1]$ for representation evaluation benchmarking.
 
 As expected from their asymptotic runtime, \textsc{sum}, \textsc{bt}, and \textsc{slfm} representations are complimentary in MVM speed for different configurations of $D,R,Q$---this results in sparse inversion computation that consistently outperforms Cholesky decomposition in runtime (Tab.~\ref{complement}).
 For inverting systems, all computations were carried out until the residual $\ell_2$ norm was at most $10^{-4}$.
-\begin{table}[!ht]
+\begin{table*}[!ht]
   \caption{The runtime in seconds for solving $K\Tx=\Ty$ for a random kernel $K$ constructed as in Sec.~\ref{empirical-rep} using \textsc{minres} for each of the kernel representations. For comparison, the \textsc{chol} representation is wallclock time to compute the Cholesky decomposition of the matrix, which must be constructed, and use this decomposition to invert the system. We averaged over five runs. In every run, we use $n=5000$ simulated data points, $\texttt{mix}$ kernels, and $\epsilon=0.1$.
 }
 \label{complement}
@@ -60,27 +72,26 @@ For inverting systems, all computations were carried out until the residual $\el
     \input{representation.tex}
 \end{small}
 \end{center}
-\end{table}
+\end{table*}
 
-We next evaluated the accuracy of the gradients for $N=10$ trace samples. Fixing $R=3,n=5000,D=10$, we quantified the accuracy LLGP's $\nabla\mcL$ by comparing against the exact Cholesky approach. The relative error in the gradients is generally low for smooth kernels that induce diagonally dominant covariance matrices (Fig.~\ref{fig:relgrad}). Kernels such as the single Mat\'{e}rn or periodic kernel with noise on the order of $10^{-4}$ lead to less accurate gradients, owing to poor \textsc{minres} convergence in the inversions (Fig.~\ref{fig:rellog}. We showed in the main paper that the stochastic gradients suffice for optimization in practical examples.
+We next evaluated the accuracy of the gradients for $N=10$ trace samples. Fixing $R=3,n=5000,D=10$, we quantified the accuracy LLGP's $\nabla\mcL$ by comparing against the exact Cholesky approach. The relative error in the gradients is generally low for smooth kernels that induce diagonally dominant covariance matrices (Fig.~\ref{fig:relgrad}). Kernels such as the single Mat\'{e}rn or periodic kernel with noise on the order of $10^{-4}$ lead to less accurate gradients, owing to poor \textsc{minres} convergence in the inversions (Fig.~\ref{fig:rellog}). We showed in the main paper that the stochastic gradients suffice for optimization in practical examples.
 
-\begin{figure}[!ht]
+\begin{figure*}[!ht]
   \centering
 {\includegraphics[width=\textwidth]{relgrad_l2.pdf}}
 \caption{Negative logarithm of the relative error from the LLGP gradient construction to the exact log likelihood gradient. In each case, higher is better, and extremal values are noted.  For each data point, the average was taken over five runs. Reducing average noise, corresponding to increases in $-\log_{10}\varepsilon$, and increases in $Q$, generally make gradient reconstruction more difficult by making $K$ more ill-conditioned, reducing the accuracy of \textsc{minres}.}
 \label{fig:relgrad}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[!ht]
+\begin{figure*}[!ht]
 \centering
 {\includegraphics[width=\textwidth]{relalpha_l2.pdf}}
 \caption{Negative logarithm of the relative error in $K^{-1}\Ty$, using \textsc{minres} compared to the Cholesky solution. Higher is better, and extremal values are noted. An average was taken over five runs.}
 \label{fig:rellog}
-\end{figure}
+\end{figure*}
 
-\FloatBarrier
 \bibliographystyle{unsrtnat}
-\bibliography{paper}
+\bibliography{supplement}
 
 \end{document}
 
