@@ -1,6 +1,7 @@
 #!/bin/bash
 # Internal slurm wrapper when it's missing.
 # Only mimics slurm array-launching functionality.
+# parallelizes across all cores (so tasks should be 1-core only)
 
 if which sbatch >/dev/null 2>/dev/null; then
     jobid=$(sbatch --parsable "$@")
@@ -13,13 +14,9 @@ else
     array=$(grep "#SBATCH --array=" $script | head -1)
     array=$(echo $array | cut -c17- | tr '-' ' ')
     for i in $(seq $array); do
-        echo "Running array job $i"
         outfile="slurm-out-$i.txt"
         errfile="slurm-err-$i.txt"
-        SLURM_ARRAY_TASK_ID=$i $script "$@" >$outfile 2>$errfile
-    done
+        echo "echo Running array job $i && \
+              SLURM_ARRAY_TASK_ID=$i $script \"$@\" >$outfile 2>$errfile"
+    done | xargs --max-procs=$(nproc) --replace /bin/bash -c "{}"
 fi
-
-    
-        
-

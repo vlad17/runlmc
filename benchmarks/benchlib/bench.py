@@ -3,6 +3,9 @@
 
 # pylint: skip-file
 
+import os
+os.environ['OMP_NUM_THREADS'] = '1'
+
 import sys
 from contextlib import closing
 from multiprocessing import Pool, cpu_count
@@ -19,7 +22,6 @@ from runlmc.approx.iterative import Iterative
 from runlmc.kern.rbf import RBF
 from runlmc.kern.matern32 import Matern32
 from runlmc.kern.std_periodic import StdPeriodic
-from runlmc.models.interpolated_llgp import InterpolatedLLGP
 from runlmc.lmc.stochastic_deriv import StochasticDerivService
 from runlmc.lmc.functional_kernel import FunctionalKernel
 from runlmc.lmc.grid_kernel import *
