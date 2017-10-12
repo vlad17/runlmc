@@ -189,22 +189,23 @@ def run_kernel_benchmark(
                            interpolantT, k, (0,))
             k = SumMatrix(
                 [k, Diag(np.repeat(fkern.noise, list(map(len, Xs))))])
-            return lambda y: solve(k, y, verbose=True, minres=minres)
+            return lambda y: solve(k, y, verbose=True, minres=minres, tol=1e-4)
 
+        y = np.hstack(Ys)
         methods = [
             ('sum', True),
             ('bt', True),
             ('slfm', True),
             ('slfm', False)]
 
-        chol_err = la.norm(fkern.y - exact.K.dot(exact.deriv.alpha))
+        chol_err = la.norm(y - exact.K.dot(exact.deriv.alpha))
         fmt = '        {:9.4e} reconstruction {:10.4f} sec {:8d} iterations {}'
         print(fmt.format(chol_err, chol_time, 0, 'chol'))
 
         for name, minres in methods:
             f = make_solve(name, minres)
             with contexttimer.Timer() as t:
-                x, it, recon_err = f(np.hstack(Ys))
+                x, it, recon_err = f(y)
             name = '{:5} ({})'.format(name, 'minres' if minres else 'lcg')
             print(fmt.format(recon_err, t.elapsed, it, name))
 
