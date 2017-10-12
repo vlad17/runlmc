@@ -28,11 +28,11 @@ def main():
     activate_logs()
 
     llgp_runs = 3
-    cogp_runs = 1
-    cogp_max_it = [100, 100]
+    cogp_runs = 3
+    cogp_max_it = [100, 1000]
     interpolating_points = [25, 25]
     nthreads = 16
-    inducing_points = [500, 5000]
+    inducing_points = [500, 500]
     nbatches = [1000, 1000]
     cogp_colnames = ['COGP', 'COGP+']
 
