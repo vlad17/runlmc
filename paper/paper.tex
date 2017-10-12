@@ -25,20 +25,28 @@
 \input{defs}
 
 \begin{document}
+
+\ifanonymized
+
 \twocolumn[
-
 \aistatstitle{Large Linear Multi-output Gaussian Process Learning}
-
-\aistatsauthor{   Vladimir Feinberg \And Li-Fang Cheng \And  {Kai Li} \And {Barbara E Engelhardt} }
-
+\aistatsauthor{ Anonymous Author }
+\aistatsaddress{ Anonymous Institution }
+]
+\else
+\twocolumn[
+\aistatstitle{Large Linear Multi-output Gaussian Process Learning}
+\aistatsauthor{   {Vladimir Feinberg} \And {Li-Fang Cheng} \And  {Kai Li} \And {Barbara E Engelhardt} }
 \aistatsaddress{ UC Berkeley \And Princeton University \And Princeton University \And Princeton University }
 ]
+\fi
 
 
 \begin{abstract}
+
 Gaussian processes, or distributions over arbitrary functions in a continuous domain, can be generalized to the multi-output case: a linear model of coregionalization (LMC) is one approach \citep{alvarez2012kernels}. LMCs estimate and exploit correlations across the multiple outputs.
 While model estimation can be performed efficiently for single-output GPs \citep{msgp}, these assume stationarity, but in the multi-output case the cross-covariance interaction is not stationary.
-We propose Large Linear GPs (LLGPs), which circumvent the need for stationarity by using LMC's structure, enabling optimization of GP hyperparameters for multi-dimensional outputs and low-dimensional inputs. When applied to real time series and temporal-spatial data, we find our theoretical improvement relative to the current state of the art is realized with LLGP reducing training time while improving or maintaining predictive accuracy.
+We propose Large Linear GPs (LLGPs), which circumvent the need for stationarity by using LMC's structure, enabling optimization of GP hyperparameters for multi-dimensional outputs and low-dimensional inputs. When applied to synthetic two-dimensional input and real time series data, we find our theoretical improvement relative to the current state of the art is realized with LLGP reducing training time while improving or maintaining predictive accuracy. By using a direct likelihood approximation rather than a variational one predictive variance estimates are significantly improved.
 \end{abstract}
 
 \section{Introduction}\label{introduction}
@@ -81,7 +89,7 @@ The LMC kernel provides a flexible way of specifying multiple additive contribut
 
 If we can identify structure in the covariance $K$, then we can develop fast in-memory representations and efficient matrix-vector multiplications (MVMs) for $K$---this has been used in the past to accelerate GP model estimation \citep{gilboa2015scaling, cunningham2008fast}. The Kronecker product $A\otimes B$ of matrices of order $a,b$ is a block matrix of order $ab$ with $ij$th block $A_{ij}B$. We can represent the product by keeping representations of $A$ and $B$ separately, rather than the product. Then, the corresponding MVMs can be computed in time $O(a\mvm(B)+b\mvm(A))$, where $\text{MVM}(\cdot)$ is the runtime of a MVM. For GPs on uniform dimension-$P$ grids, this reduces the runtime of finding $\mcL$ from $O(n^3)$ to $O\pa{Pn^{\nicefrac{1+P}{P}}}$ \citep{gilboa2015scaling}.
 
-Symmetric Toeplitz matrices $T$ are constant along their diagonals and fully determined by their top row $\{T_{1j}\}_{j=1}^n$, yielding an $O(n)$ representation. Such matrices arise naturally when we examine the covariance matrix induced by a stationary kernel $k$ applied to a one-dimensional grid of inputs. Since the difference in adjacent inputs $t_{i+1}-t_{i}$ is the same for all $i$, we have the Toeplitz property that $T_{(i+1)(j+1)}=k(\abs{t_{i+1} -t_{j+1}})=k(\abs{t_i-t_j})=T_{ij}$. Furthermore, we can embed $T$ in the upper-left corner of a circulant matrix $C$ of twice its size, in $O(n\log n)$ time. This approach has been used for fast inference in single-output GP time series with uniformly spaced inputs \citep{cunningham2008fast}. When applied to grids of more than one dimension, the resulting covariance becomes block-Toeplitz with Toeplitz blocks (BTTB) \citep{msgp}. Consider a two-dimensional $n_x\times n_y$ grid with separations $\Delta_x,\Delta_y$. For a fixed pair of $x_1,x_2$, this grid contains a one-dimensional subgrid over varying $y$ values. The pairwise covariances for a stationary kernel in this subgrid also exhibit Toeplitz structure, since we still have $(x_1-x_2,y_i-y_j)=(x_1-x_2,y_i+\Delta_y-y_{j}-\Delta_y)=(x_1-x_2,y_{i+1}-y_{j+1})$. Ordering points in lexicographic order, so that the covariance matrix $K$ has $n_x^2$ order-$n_y$ blocks $K_{x_ix_j}$ with pairwise covariances between varying $y$ values between a pair of fixed $x$ values, the previous sentence implies $K_{x_ix_j}$ are Toeplitz. By similar reasoning, since for any $y_1,y_2$, $(x_i-x_j,y_1-y_j)=(x_{i+1}-x_{j+1},y_1-y_2)$, we have $K_{x_ix_j}=K_{x_{i+1}x_{j+1}}$, thus the block structure of $K$ is itself Toeplitz, and hence $K$ is BTTB. For higher dimensions, one can imagine a recursive block-Toeplitz structure. BTTB matrices themselves admit $O(n\log n)$ runtime for MVMs, with $n$ being the total grid size, or $n_xn_y$ in the two dimensional case, and if they are symmetric they can be represented with only their top row as well. The MVM runtime constant scales exponentially in the input dimension, however, so this approach is only applicable for low-input-dimension problems.
+Symmetric Toeplitz matrices $T$ are constant along their diagonals and fully determined by their top row $\{T_{1j}\}_{j=1}^n$, yielding an $O(n)$ representation. Such matrices arise naturally when we examine the covariance matrix induced by a stationary kernel $k$ applied to a one-dimensional grid of inputs. Since the difference in adjacent inputs $t_{i+1}-t_{i}$ is the same for all $i$, we have the Toeplitz property that $T_{(i+1)(j+1)}=k(\abs{t_{i+1} -t_{j+1}})=k(\abs{t_i-t_j})=T_{ij}$. Furthermore, we can embed $T$ in the upper-left corner of a circulant matrix $C$ of twice its size, in $O(n\log n)$ time. This approach has been used for fast inference in single-output GP time series with uniformly spaced inputs \citep{cunningham2008fast}. When applied to grids of more than one dimension, the resulting covariance becomes block-Toeplitz with Toeplitz blocks (BTTB) \citep{msgp}. Consider a two-dimensional $n_x\times n_y$ grid with separations $\Delta_x,\Delta_y$. For a fixed pair of $x_1,x_2$, this grid contains a one-dimensional subgrid over varying $y$ values. The pairwise covariances for a stationary kernel in this subgrid also exhibit Toeplitz structure, since we still have $(x_1-x_2,y_i-y_j)=(x_1-x_2,y_i+\Delta_y-y_{j}-\Delta_y)=(x_1-x_2,y_{i+1}-y_{j+1})$. Ordering points in lexicographic order, so that the covariance matrix $K$ has $n_x^2$ order-$n_y$ blocks $K_{x_ix_j}$ with pairwise covariances between varying $y$ values between a pair of fixed $x$ values, the previous sentence implies $\{K_{x_ix_j}\}_{ij}$ are Toeplitz. By similar reasoning, since for any $y_1,y_2$, $(x_i-x_j,y_1-y_j)=(x_{i+1}-x_{j+1},y_1-y_2)$, we have $K_{x_ix_j}=K_{x_{i+1}x_{j+1}}$, thus the block structure of $K$ is itself Toeplitz, and hence $K$ is BTTB. For higher dimensions, one can imagine a recursive block-Toeplitz structure. BTTB matrices themselves admit $O(n\log n)$ runtime for MVMs, with $n$ being the total grid size, or $n_xn_y$ in the two dimensional case, and if they are symmetric they can be represented with only their top row as well. The MVM runtime constant scales exponentially in the input dimension, however, so this approach is only applicable to low-input-dimension problems.
 
 \section{Related work}
 \label{sec:related-work}
@@ -89,7 +97,7 @@ Symmetric Toeplitz matrices $T$ are constant along their diagonals and fully det
 
 Inducing point approaches create a tractable model to approximate the exact GP. For example, the deterministic training conditional (DTC) for a single-output GP fixes inducing points $T\subset\mcX$ and estimates kernel hyperparameters for $\Ty_{X}|\Ty_{T}\sim N(K_{X,T}K_{T,T}^{-1}\Ty_T,\sigma^2)$ \citep{quinonero2005unifying}. This approach is agnostic to kernel stationarity, so one may use inducing points for all outputs $T'\subset \mcX'$, with the model equal to the exact GP model when $T'={X'}$ \citep{alvarez2010efficient}. Computationally, these approaches resemble making rank-$m$ approximations to the $n\times n$ covariance matrix.
 
-In Collaborative Multi-output Gaussian Processes (COGP), multi-output GP algorithms further share an internal representation of the covariance structure among all outputs at once~\citep{nguyen2014collaborative}. COGP fixes inducing points ${T'}=[D]\times T$ for some $m$-sized $T\subset \mcX$ and puts a GP prior on $\Ty_{{T'}}$ with a restricted LMC kernel that matches the Semiparametric Latent Factor Model (SLFM) \citep{seeger2005semiparametric}. Applying the COGP prior to $\Ty_X$ corresponds to an LMC kernel (Eq.~\ref{lmcpointwise}) where $\bsk_q$ is set to 0 and $A_q=\textbf{a}_q\in\R^{D\times 1}$. Moreover, SLFM and COGP models include an independent GP for each output, represented in LMC as additional kernels $\idx{k_d}{d=1}{D}$, where $A_d=0$ and $\bsk_d=\Te_d\in\R^D$. COGP uses its shared structure to derive efficient expressions for variational inference for parameter estimation.
+In Collaborative Multi-output Gaussian Processes (COGP), multi-output GP algorithms further share an internal representation of the covariance structure among all outputs at once~\citep{nguyen2014collaborative}. COGP fixes inducing points ${T'}=[D]\times T$ for some $m$-sized $T\subset \mcX$ and puts a GP prior on $\Ty_{{T'}}$ with a restricted LMC kernel that matches the Semiparametric Latent Factor Model (SLFM) \citep{seeger2005semiparametric}. Applying the COGP prior to $\Ty_X$ corresponds to an LMC kernel (Eq.~\ref{lmcpointwise}) where $\bsk_q$ is set to 0 and $A_q=\textbf{a}_q\in\R^{D\times 1}$. Moreover, SLFM and COGP models include an independent GP for each output, represented in LMC as additional kernels $\idx{k_d}{d=1}{D}$, where $A_d=0$ and $\bsk_d=\Te_d\in\R^D$. COGP uses its shared structure to derive efficient expressions for variational inference (VI) for parameter estimation.
 
 \subsection{Structured Kernel Interpolation (SKI)}\label{ski-section}
 
@@ -125,7 +133,7 @@ This approximation improves as the size of $K$ increases, so, as in other work \
 
 We depart from Gibbs and MacKay in two important ways (Algorithm~\ref{alg:grad}). First, we do not construct $K$, but instead keep a low-memory representation $\tilde{K}$ (Sec.~\ref{fast-mvm}). Second, we use \textsc{minres} instead of LCG as the Krylov-subspace inversion method used to compute inverses from MVMs. Iterative \textsc{minres} solutions to numerically semidefinite matrices monotonically improve in practice, as opposed to LCG \citep{fong2012cg}. This is essential in GP optimization, where the diagonal noise matrix $\bse$, iid for each output, shrinks throughout learning. Inversion-based methods then require additional iterations because $\kappa_2$, the spectral condition number of $K$, increases as $K$ becomes less diagonally dominant (Fig.~\ref{fx2007-iterations}).
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
 \begin{center}
   \subfigure[]{\includegraphics[width=0.4\columnwidth]{iterations.pdf}}
   \subfigure[]{\includegraphics[width=0.4\columnwidth]{running_cutoff.pdf}}
@@ -140,7 +148,7 @@ Every AdaDelta iteration (invoking Algorithm~\ref{alg:grad}) then takes total ti
 For a gradient-only stopping heuristic, we maintain the running maximum gradient $\infty$-norm. If gradient norms drop below a proportion of the running max norm more than a pre-set number of times, we terminate (Fig.~\ref{fx2007-iterations}). This heuristic is avoidable since it is possible to evaluate $\mcL$ with only MVMs \citep{han2015large}, but using the heuristic proved sufficient and results in a simpler gradient-only optimization routine.
 
 \begin{algorithm}[!ht]
-  \caption{Compute an approximation of $\nabla L$. Assume \textsc{minres} is the inversion routine. We also assume we have access to linear operators $\partial_{\theta_j}$, representing matrices $\partial_{\theta_j}\tilde{K}$.} \label{alg:grad}
+  \caption{Compute an approximation of $\nabla \mcL$. Assume \textsc{minres} is the inversion routine. We also assume we have access to linear operators $\partial_{\theta_j}$, representing matrices $\partial_{\theta_j}\tilde{K}$.} \label{alg:grad}
 \begin{algorithmic}[1]
   \Procedure{LLGP}{$\tilde{K}$, $\Ty$, $N$, $\{\partial_{\theta_j}\}$}
   \State $R\gets\idx{\tbr_i}{i=1}{N}$, sampling $\tbr\sim\Unif\{\pm 1\}$.
@@ -173,12 +181,10 @@ We cannot fold the Gaussian noise $\bse$ into the interpolated term $K_{{U'},{U'
 
 We consider different representations of $K_{{U'},{U'}}$ (Eq.~\ref{lmcski}) to reduce the memory and runtime requirements for performing the multiplication $K_{{U'},{U'}}\Tz$ in the following sections.
 
-% Sum is pretty useless in practice,
-% but a useful baseline for comparison between representations in the supplement.
-% move the explanation of sum representation to supplement, then
-% \subsubsection{Sum representation}
-% 
-% In \textsc{sum}, we represent $K_{{U'},{U'}}$ with a $Q$-length list. At each index $q$, $B_q$ is a dense matrix of order $D$ and $K_q$ is a BTTB matrix of order $m$, represented using only the top row. In turn, multiplication $K_{{U'},{U'}}\Tz$ is performed by multiplying each matrix in the list with $\Tz$ and summing the results. The Kronecker MVM $(B_q\otimes K_q)\Tz$ may be expressed as $D$ fast BTTB MVMs with $K_q$ and $m$ dense MVMs with $B_q$. In turn, assuming $D\ll m$, the runtime for each of the $Q$ terms is $O(Dm\log m)$.
+% Can probably move this subsection to supplement if necessary
+\subsubsection{Sum representation}
+ 
+In \textsc{sum}, we represent $K_{{U'},{U'}}$ with a $Q$-length list. At each index $q$, $B_q$ is a dense matrix of order $D$ and $K_q$ is a BTTB matrix of order $m$, represented using only the top row. In turn, multiplication $K_{{U'},{U'}}\Tz$ is performed by multiplying each matrix in the list with $\Tz$ and summing the results. The Kronecker MVM $(B_q\otimes K_q)\Tz$ may be expressed as $D$ fast BTTB MVMs with $K_q$ and $m$ dense MVMs with $B_q$. In turn, assuming $D\ll m$, the runtime for each of the $Q$ terms is $O(Dm\log m)$.
 
 \subsubsection{Block-Toeplitz representation}
 
@@ -204,7 +210,7 @@ where $\textbf{A}=\mat{ \textbf{a}_{q'}}_{q'}\otimes I_m$ with $\mat{ \textbf{a}
 
 Note that \textsc{bt} and \textsc{slfm} each have a faster run time than the other depending on whether $D^2>QR$. An algorithm that uses this condition to decide between representations can minimize runtime (Tab.~\ref{asymp}). 
 
-\begin{table*}[!h]
+\begin{table*}[!ht]
   \caption{
    Asymptotic Runtimes. For both LLGP and COGP, $m$ is a configurable parameter that increases up to $n$ to improve accuracy. $Q,R,D,\kappa_2$ depend on the LMC kernel, which has $O(QRD)$ hyperparameters (Eq.~\ref{lmcpointwise}). The asymptotic performance is given in the table. COGP is only independent of $R$ because it cannot represent models for $R\neq 1$. Computing $\nabla\mcL$ at $\bsth$ requires an up-front cost in addition to the per-hyperparameter cost for each $\theta_j\in\bsth$. Multiplicative log terms in $\kappa_2, m$ are hidden, as are exponential dependencies of the input dimension.
   }
@@ -227,14 +233,15 @@ Note that \textsc{bt} and \textsc{slfm} each have a faster run time than the oth
 \end{table*}
 
 \subsection{GP mean and variance prediction}
-
+    
 The predictive mean can be computed in $O(1)$ time by $K_{*,X}\bsa\approx W_{*,{U'}}K_{{U'},{U'}}\bsa$ \citep{msgp}.
 
 The full predictive covariance estimate requires finding a new term $K_{*,X}K_{X,X}^{-1}K_{X,*}$. This is done by solving the linear system in a matrix-free manner on-the-fly; in particular, $K_{X,X}^{-1}K_{X,*}$ is computed via \textsc{minres} for every new test point $K_{X,*}$. Over several test points, this process is parallelizable.
 
+% TODO rerun graphs with axis labels
 \section{Results}
 \label{sec:results}
-We evaluate the methods on held out data by using standardized mean square error (SMSE) of the test points with the predicted mean, and the negative log predictive density (NLPD) of the Gaussian likelihood of the inferred model. NLPD takes confidence into account, while SMSE only evaluates the mean prediction. In both cases, lower values represent better performance. We evaluated the performance of our representations of the kernel, \textsc{bt} and \textsc{slfm}, by computing exact gradients using the standard Cholesky algorithm over a variety of different kernels (see the supplement).\footnote{Hyperparameters, data, code, and benchmarking scripts are available in
+We evaluate the methods on held out data by using standardized mean square error (SMSE) of the test points with the predicted mean, and the negative log predictive density (NLPD) of the Gaussian likelihood of the inferred model. NLPD takes confidence into account, while SMSE only evaluates the mean prediction. In both cases, lower values represent better performance. We evaluated the performance of our representations of the kernel, \textsc{sum}, \textsc{bt}, and \textsc{slfm}, by computing exact gradients using the standard Cholesky algorithm over a variety of different kernels (see the supplement).\footnote{Hyperparameters, data, code, and benchmarking scripts are available in
   \ifanonymized
   \texttt{<anonymous repository>}.
   \else
@@ -242,12 +249,35 @@ We evaluate the methods on held out data by using standardized mean square error
   \fi
 }
 
+Predictive performance on held-out data with SMSE and NLPD offers an apples-to-apples comparison with COGP, which was itself proposed on the basis of these two metrics. Training data log likelihood would unfairly favor LLGP, which optimizes $\mcL$ directly. Note that predicting each output's mean results in a baseline SMSE of $1$.
+
+Finally, we attempted to run hyperparameter optimization with both an exact GP and a variational DTC approximation as provided by the GPy package, but both runtime and predictive performance were already an order of magnitude worse than both LLGP and COGP on our smallest dataset from Sec.~\ref{fx2007-results} \citep{gpy2014}.
+
+\subsection{Synthetic dataset}\label{synth-bench}
+
+First, we evaluate raw learning performance on a synthetic dataset. We fix the GP index as $\R^2$ and generate a fixed SLFM RBF kernel with $Q=2$, fixed lengthscales, and covariance hyperparameters $\textbf{a}_1,\textbf{a}_2$. We set the output dimension to be $D=5$, so this synthetic dataset might resemble a geospatial GP model for subterranean mineral density, where the various minerals would be different outputs. Sampling $n\approx 50000$ GP values from the unit square, we hold out approximately $2500$ of them, corresponding to the values for the final output in the upper-right quadrant of the sampling square.
+
+We consider the problem of estimating the pre-fixed GP hyperparameters (starting from randomly-initialized ones) with LLGP and COGP. We evaluate the fit based on imputation performance on the held-out values (Tbl.~\ref{tbl:synth}). For COGP, we use hyperparameter settings applied to the Sarcos dataset from the COGP paper, a dataset of approximately the same size, which have the number of inducing points $m=500$. However, COGP failed to have above-baseline SMSE performance with learned inducing points, even on a range of $m$ up to $5000$ and various learning rates. Using fixed inducing points allowed for moderate improvement in COGP, which we used for comparison. For LLGP, we use a grid of size $m=25\times 25=625$ on the unit square with no learning rate tuning. LLGP was able to estimate more predictive hyperparameter values in about the same amount of time it took COGP to learn significantly worse values in terms of prediction.
+
+\begin{table}[!ht]
+\caption{Predictive Performance versus Training Time Tradeoffs on the Synthetic Dataset. We evaluate the learned LLGP model with $m=625$. COGP was evaluated with $m=500$, which were used on a similar-sized dataset from the COGP paper, and increasing $m$ did not improve performance. Since COGP does not provide a terminating condition for its optimization, we also show its performance when permitted to train longer, labelled COGP+. All trials were run 3 times, with parenthesized values representing standard error shown below.}
+\label{tbl:synth}
+\begin{center}
+  \begin{small}
+    \begin{sc}
+\input{results_synth.tex}
+\end{sc}
+\end{small}
+\end{center}
+
+\end{table}
+
 \subsection{Foreign exchange rates (FX2007)}\label{fx2007-results}
 
-We replicate the medium-sized dataset from COGP as an application to evaluate LLGP performance. The dataset includes ten foreign currency exchange rates---CAD, EUR, JPY, GBP, CHF, AUD, HKD, NZD, KRW, and MXN---and three precious metals---XAU, XAG, and XPT---implying that $D=13$. In LLGP, we set $Q=1,R=2$, as recommended for LMC models on this dataset~\citep{alvarez2010efficient}. COGP roughly corresponds to the the SLFM model, which has a total of 94 hyperparameters, compared to 53 for LLGP. All kernels are squared exponential. The data used in this example are from 2007, and include $n=3054$ training points and $150$ test points. The test points include 50 contiguous points extracted from each of the CAD, JPY, and AUD exchanges. For this application, LLGP uses $m=n/D=238$ interpolating points. We used the COGP settings from the paper. LLGP outperforms COGP in terms of predictive mean and variance estimation as well as runtime (Tab.~\ref{fx2007-tbl}).
+We replicate the medium-sized dataset from COGP as an application to evaluate LLGP performance. The dataset includes ten foreign currency exchange rates---CAD, EUR, JPY, GBP, CHF, AUD, HKD, NZD, KRW, and MXN---and three precious metals---XAU, XAG, and XPT---implying that $D=13$. In LLGP, we set $Q=1,R=2$, as recommended for LMC models on this dataset~\citep{alvarez2010efficient}. COGP roughly corresponds to the the SLFM model, which has a total of 94 hyperparameters, compared to 53 for LLGP. All kernels are squared exponential. The data used in this example are from 2007, and include $n=3054$ training points and $150$ test points. The test points include 50 contiguous points extracted from each of the CAD, JPY, and AUD exchanges. For this application, LLGP uses $m=n/D=234$ interpolating points. We used the COGP settings from the paper. LLGP outperforms COGP in terms of predictive mean and variance estimation as well as runtime (Tab.~\ref{fx2007-tbl}).
 
-\begin{table}[!h]
-  \caption{Average Predictive Performance and Training Time Over $10$ Runs for LLGP and COGP on the FX2007 Dataset. Parenthesized values are standard error. LLGP was run with LMC set to $Q=1$, $R=2$, and $238$ interpolating points. COGP used a $Q=2$ kernel with $100$ inducing points.}
+\begin{table}[!ht]
+  \caption{Average Predictive Performance and Training Time Over $10$ Runs for LLGP and COGP on the FX2007 Dataset. Parenthesized values are standard error. LLGP was run with LMC set to $Q=1$, $R=2$, and $234$ interpolating points. COGP used a $Q=2$ kernel with $100$ inducing points.}
 \label{fx2007-tbl}
 \begin{center}
   \begin{small}
@@ -258,7 +288,7 @@ We replicate the medium-sized dataset from COGP as an application to evaluate LL
 \end{center}
 \end{table}
 
-\begin{figure*}[!h]
+\begin{figure*}[!ht]
 \centering
 {\includegraphics[width=\textwidth]{fx2007graph.pdf}}
 \caption{Test outputs for the FX2007 dataset. COGP mean is black, with 95\% confidence intervals shaded in grey. LLGP mean is a solid red curve, with light green 95\% confidence intervals. Magenta points are in the training set, while blue ones are in the test set. Notice LLGP variance corresponds to an appropriate level of uncertainty on the test set and certainty on the training set, as opposed to the uniform variance from COGP.}
@@ -269,9 +299,9 @@ We replicate the medium-sized dataset from COGP as an application to evaluate LL
 
 Next, we replicate results from a weather dataset, a large time series used to validate COGP. Here, $D=4$ weather sensors Bramblemet, Sotonmet, Cambermet, and Chimet record air temperature over five days in five minute intervals, with some dropped records due to equipment failure. Parts of Cambernet and Chimet are dropped for imputation, yielding $n=15789$ training measurements and $374$ test measurements. 
 
-We use the default COGP parameters.\footnote{\url{https://github.com/trungngv/cogp}} We tested LLGP models on from $500$ to $1000$ interpolating points.
+We use the default COGP parameters.\footnote{\url{https://github.com/trungngv/cogp}} We tested LLGP models on $500$ and $1000$ interpolating points.
 
-\begin{table}[!h]
+\begin{table}[!ht]
   \caption{Average Predictive Performance and Training Time Over $10$ Runs of LLGP and COGP on the Weather Dataset. Parenthesized values are standard error. Both LLGP and COGP trained the SLFM model. We show LLGP with $500$ and $1000$ interpolating points and COGP with $200$ inducing points.}
 \label{weather-tbl}
 \begin{center}
@@ -284,45 +314,21 @@ We use the default COGP parameters.\footnote{\url{https://github.com/trungngv/co
 
 \end{table}
 
-LLGP performed slightly worse than COGP in SMSE, but both NLPD and runtime indicate significant improvements (Tab.~\ref{weather-tbl}). Varying the number of interpolating points $m$ from $500$ to $1000$ demonstrates the runtime versus NLPD tradeoff (Fig.~\ref{fig:llgpweather}). While NLPD improvement diminishes as $m$ increases, LLGP still improves upon COGP for a wide range of $m$ by an order of magnitude in runtime and almost two orders of magnitude in NLPD.
+LLGP performed slightly worse than COGP in SMSE, but both NLPD and runtime indicate significant improvements (Tab.~\ref{weather-tbl}, Fig.~\ref{weather-fig}). Varying the number of interpolating points $m$ from $500$ to $1000$ demonstrates the runtime versus NLPD tradeoff. While NLPD improvement diminishes as $m$ increases, LLGP still improves upon COGP for a wide range of $m$ by an order of magnitude in runtime and almost two orders of magnitude in NLPD.
 
-\begin{figure}[!h]
+
+\begin{figure*}[!ht]
 \centering
-{\includegraphics[width=0.8\columnwidth]{m_time_nlpd.pdf}}
-\caption{Average and standard error of NLPD and runtime of the SLFM model on LLGP across over varying interpolating points. Every setting was run $10$ times.}
-\label{fig:llgpweather}
-\end{figure}
-
-\subsection{NOAA dataset}\label{noaa-bench}
-
-TODO. NOAA dataset intro. Mention use of split kernel, what that is (Tbl.~\ref{noaa-tbl}). Also TODO: current numbers are all on Princeton machines.
-
-
-\begin{table}[!h]
-  \caption{Average Predictive Performance and Training Time Over $10$ Runs of LLGP and COGP (GPy?) on the NOAA Dataset. Parenthesized values are standard error. Both LLGP and COGP (GPy?) trained the SLFM model.}
-\label{noaa-tbl}
-\begin{center}
-  \begin{small}
-    \begin{sc}
-\begin{tabular}{lcc}\toprule
-Metric & LLGP & COGP (GPy?)\\
-\midrule
-seconds & $\textbf{0.00}$ ($\textbf{0.00}$) &  $\infty$ ($0.00$) \\
-SMSE & $\textbf{0.00}$ ($\textbf{0.00}$) & $\infty$ ($0.00$) \\
-NLPD & $\textbf{0.00}$ ($\textbf{0.00}$) & $\infty$ ($0.00$) \\
-\bottomrule
-\end{tabular}
-\end{sc}
-\end{small}
-\end{center}
-
-\end{table}
+{\includegraphics[width=\textwidth]{weather.pdf}}
+\caption{Test outputs for the Weather dataset. COGP mean is black, with 95\% confidence intervals shaded in grey. LLGP mean is a solid red curve, with light green 95\% confidence intervals. Magenta points are in the training set, while blue ones are in the test set. Like Fig.~\ref{fx2007-graph}, the training run was not cherry-picked.}
+\label{weather-fig}
+\end{figure*}
 
 \section{Conclusion}\label{conclusion}
 
 In this paper, we present LLGP, which we show adapts and accelerates SKI \citep{kiss-gp} for the problem of multi-output GP regression. LLGP exploits structure unique to LMC kernels,  enabling a parsimonious representation of the covariance matrix, and gradient computations in $\tilde{O}\pa{\sqrt{\kappa_2}(m+n)}$.
 
-LLGP provides an efficient means to approximate the log-likelihood gradients using interpolation. We have shown on several datasets that this can be done in a way that is faster and leads to more accurate results than variational approximations. Because LLGP scales well with increases in $m$, capturing complex interactions in the covariance with an accurate interpolation is cheap, as demonstrated by performance on both the FX2007 and weather datasets (Fig.~\ref{fx2007-graph}, Tab.~\ref{fx2007-tbl}, Tab.~\ref{weather-tbl}).
+LLGP provides an efficient means to approximate the log-likelihood gradients using interpolation. We have shown on several datasets that this can be done in a way that is faster and leads to more accurate results than variational approximations. Because LLGP scales well with increases in $m$, capturing complex interactions in the covariance with an accurate interpolation is cheap, as demonstrated by performance on a variety of datasets (Tab.~\ref{tbl:synth}, Tab.~\ref{fx2007-tbl}, Tab.~\ref{weather-tbl}).
 
 Future work could extend LLGP to accept large input dimensions, though most GP use cases are covered by low-dimensional inputs. Finally, an extension to non-Gaussian noise and use of LLGP as a preconditioner for fine-tuned exact GP models is also feasible in a manner following prior work \citep{cutajar2016preconditioning}.
 
@@ -330,7 +336,7 @@ Future work could extend LLGP to accept large input dimensions, though most GP u
 
 \else
 \subsubsection*{Acknowledgments}
-(TODO) Thanks to Princeton, Cal, Prof. Joseph Gonzalez, Prof. Andrew Wilson.
+(TODO) Thanks to Princeton, Cal, Prof. Joseph Gonzalez, Prof. Andrew Wilson, Prof. John Cunningham.
 \fi
 
 \bibliographystyle{unsrtnat}
