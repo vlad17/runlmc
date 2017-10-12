@@ -67,7 +67,10 @@ pred_yss = {col: ys for col, ys in zip(cols, pred_yss)}
 pred_vss = {col: vs for col, vs in zip(cols, pred_vss)}
 
 _, axs = plt.subplots(ncols=3, figsize=(16, 4))
-for col, ax in zip(test_fx, axs):
+for i, (col, ax) in enumerate(zip(test_fx, axs)):
+    if i == 0:
+        ax.set_ylabel('USD : foreign currency rate')
+    ax.set_xlabel('time (days)')
 
     # Prediction on entire domain for COGP
     ax.plot(all_xs, cogp_mu[col], c='black', ls='-')
@@ -140,7 +143,10 @@ pred_yss = {col: ys for col, ys in zip(cols, pred_yss)}
 pred_vss = {col: vs for col, vs in zip(cols, pred_vss)}
 
 _, axs = plt.subplots(ncols=2, figsize=(16, 4))
-for col, ax in zip(test_fx, axs):
+for i, (col, ax) in enumerate(zip(test_fx, axs)):
+    if i == 0:
+        ax.set_ylabel('temperature (celsius)')
+    ax.set_xlabel('time (days)')
     # Prediction on entire domain for COGP
     ax.plot(all_xs[sel], cogp_mu[col].values[sel], c='black', ls='-')
     sd = np.sqrt(cogp_var[col].values[sel])

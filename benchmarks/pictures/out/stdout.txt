@@ -1,7 +1,7 @@
 publishing results into out directory /data/vladf/runlmc/benchmarks/pictures/out/
 FX2007 picture
 training LLGP
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f2272dde488>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.2, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7ffb2c4a72f0>}
 iteration        5 grad norm 5.6933e+02
 iteration       10 grad norm 6.4689e+02
 iteration       15 grad norm 2.7563e+02
@@ -11,14 +11,14 @@ finished adadelta optimization
             27 iterations
     7.3701e+01 final grad norm
     norm used inf
-    time 51.92040996393189 smse 0.229681760204 nlpd -3.47453494589
+    time 52.094715368933976 smse 0.229681760204 nlpd -3.47453494589
 training COGP
 
-time    98.7837 (    0.0000) smse     0.2771 (    0.0000) nlpd    13.0297 (    0.0000)
+time    98.7471 (    0.0000) smse     0.2771 (    0.0000) nlpd    13.0297 (    0.0000)
 fx2007graph.pdf
 weather picture
 training LLGP
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f2272dde488>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 100, 'verbosity': 20, 'min_grad_ratio': 0.1, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7ffb2c4a72f0>}
 iteration        5 grad norm 5.5874e+03
 iteration       10 grad norm 3.0929e+03
 iteration       15 grad norm 1.2779e+03
@@ -31,13 +31,13 @@ finished adadelta optimization
             40 iterations
     6.5273e+02 final grad norm
     norm used inf
-    time 229.74575063213706 smse 0.143754812376 nlpd 3.48898658493
+    time 225.74082606006414 smse 0.143754812376 nlpd 3.48898658493
 training COGP
 
-time   459.7546 (    0.0000) smse     0.0811 (    0.0000) nlpd    21.8670 (    0.0000)
+time   457.7610 (    0.0000) smse     0.0811 (    0.0000) nlpd    21.8670 (    0.0000)
 weather.pdf
 running MINRES metrics
-starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 35, 'verbosity': 10, 'min_grad_ratio': 0, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f807fa3c400>}
+starting adadelta {'step_rate': 1, 'decay': 0.9, 'momentum': 0.5, 'offset': 0.0001, 'max_it': 35, 'verbosity': 10, 'min_grad_ratio': 0, 'permitted_drops': 5, 'callback': <function AdaDelta.noop at 0x7f1cc4f43268>}
 iteration        3 grad norm 5.5819e+02
 iteration        6 grad norm 5.8407e+02
 iteration        9 grad norm 6.4094e+02
