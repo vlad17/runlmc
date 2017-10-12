@@ -1,22 +1,21 @@
 N=5000 D=2 R=2 Q=10 SMALL DIM -> BT is best
 n_o 2500 d 2 r_q 2 q 10 eps 0.1 kern mix seed 1234 test-type inv
-    covariance matrix info
-        largest  eig        2.6187e+05
-        smallest eig        7.3228e-02
-        l2 condition number 3.5760e+06
-    krylov subspace methods m=1
+        8.8345e-10 reconstruction    42.7152 sec        0 iterations chol
+        2.2639e-05 reconstruction     3.4553 sec      500 iterations sum   (minres)
+        2.2551e-05 reconstruction     0.8025 sec      500 iterations bt    (minres)
+        1.7101e-05 reconstruction     3.5929 sec      500 iterations slfm  (minres)
+        2.3025e-05 reconstruction     3.5744 sec      500 iterations slfm  (lcg)
 N=5000 D=10 R=1 Q=10 SMALL RANK -> SLFM is best
 n_o 500 d 10 r_q 1 q 10 eps 0.1 kern mix seed 1234 test-type inv
-    covariance matrix info
-        largest  eig        5.5789e+04
-        smallest eig        6.2415e-02
-        l2 condition number 8.9384e+05
-    krylov subspace methods m=1
+        1.5769e-10 reconstruction    41.6049 sec        0 iterations chol
+        9.8397e-05 reconstruction    10.9877 sec     1200 iterations sum   (minres)
+        4.0581e-05 reconstruction    11.4721 sec     1300 iterations bt    (minres)
+        3.8021e-05 reconstruction     2.6700 sec     1300 iterations slfm  (minres)
+        4.4254e-05 reconstruction     2.8077 sec     1400 iterations slfm  (lcg)
 N=5000 D=10 R=10 Q=1 SMALL SUM -> SUM
 n_o 500 d 10 r_q 10 q 1 eps 0.1 kern mix seed 1234 test-type inv
-    covariance matrix info
-        largest  eig        1.6209e+04
-        smallest eig        6.3419e-02
-        l2 condition number 2.5559e+05
-    krylov subspace methods m=1
-WARNINGS/ERRORS possible check /tmp/tmp.FAdgtixMTS
+        6.9512e-11 reconstruction    13.1865 sec        0 iterations chol
+        4.9706e-06 reconstruction     0.2670 sec      200 iterations sum   (minres)
+        4.9650e-06 reconstruction     1.8611 sec      200 iterations bt    (minres)
+        4.9961e-06 reconstruction     0.4501 sec      200 iterations slfm  (minres)
+        5.9370e-07 reconstruction     0.4149 sec      200 iterations slfm  (lcg)
