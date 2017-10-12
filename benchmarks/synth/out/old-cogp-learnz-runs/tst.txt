@@ -1,0 +1,78 @@
+import pandas as pd
+
+def noaa():
+    # 2006 NOAA weather data
+    #datadir = os.path.join(_download_own_data(), 'noaa')
+    datadir = 'data/noaa'
+    df = pd.read_csv(os.path.join(datadir, 'noaa.csv'))
+    
+    holdout_day_min = 150
+    holdout_day_max = 300
+    holdout_rows = df['wban'] == 3160
+    holdout_rows &= df['time'] >= holdout_day_min
+    holdout_rows &= df['time'] <= holdout_day_max
+    
+    outputs = ['temp', 'dew', 'pressure', 'wind']
+    inputs = ['time', 'lat', 'lon']
+    
+    holdout = {'temp': holdout_rows}
+    for col in outputs:
+        if col not in holdout:
+            holdout[col] = slice(0, 0)
+    holdin = {}
+    for col in outputs:
+        select = np.ones(len(df), dtype=bool)
+        select[df[col].isnull().values] = False
+        select[holdout[col]] = False
+        holdin[col] = np.r_[np.flatnonzero(select)]
+
+    xss = []
+    yss = []
+    for col in outputs:
+        xss.append(df[inputs].values[holdin[col]])
+        yss.append(df[col].values[holdin[col]])
+
+    test_xss = [df[inputs].values[holdout[col]] for col in outputs]
+    test_yss = [df[col].values[holdout[col]] for col in outputs]
+    return xss, yss, test_xss, test_yss
+xss, yss, test_xss, test_yss = noaa()
+
+ks = [RBF(name='time', active_dims=(0,)), RBF(name='space', active_dims=(1, 2))]
+ranks = [1, 1]
+fk = FunctionalKernel(D=len(xss), lmc_kernels=ks, lmc_ranks=ranks)
+
+datadir = 'data/noaa'
+df = pd.read_csv(os.path.join(datadir, 'noaa.csv'))
+
+np.random.seed(1234)
+col = 'time'
+time_min, time_max, time_m = df[col].min(), df[col].max(), len(df[col].unique())
+col = 'lat'
+lat_min, lat_max, lat_m = df[col].min(), df[col].max(), len(df[col].unique())
+col = 'lon'
+lon_min, lon_max, lon_m = df[col].min(), df[col].max(), len(df[col].unique())
+lo = [time_min, lat_min, lon_min]
+hi = [time_max, lat_max, lon_max]
+m = [time_m, lat_m, lon_m]
+with contexttimer.Timer() as t:
+     lmc = InterpolatedLLGP(xss, yss, lo=lo, hi=hi, m=m, functional_kernel=fk, max_procs=3)
+with contexttimer.Timer() as p:
+     pred_yss, pred_vss = lmc.predict(test_xss)
+pred_time = p.elapsed     
+llgp_time = t.elapsed
+llgp_smse = smse(test_yss, pred_yss, yss)
+llgp_nlpd = nlpd(test_yss, pred_yss, pred_vss)
+print('prediction time', p)
+print('before optimization')
+print('time', llgp_time, 'smse', llgp_smse, 'nlpd', llgp_nlpd)
+
+opt = AdaDelta(verbosity=10, max_it=10, min_grad_ratio=0.2)
+with contexttimer.Timer() as t:
+    lmc.optimize(optimizer=opt)
+pred_yss, pred_vss = lmc.predict(test_xss)
+
+llgp_time = t.elapsed
+llgp_smse = smse(test_yss, pred_yss, yss)
+llgp_nlpd = nlpd(test_yss, pred_yss, pred_vss)
+print('after optimization')
+print('time', llgp_time, 'smse', llgp_smse, 'nlpd', llgp_nlpd)
