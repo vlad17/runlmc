@@ -73,34 +73,39 @@ for i, (col, ax) in enumerate(zip(test_fx, axs)):
     ax.set_xlabel('time (days)')
 
     # Prediction on entire domain for COGP
-    ax.plot(all_xs, cogp_mu[col], c='black', ls='-')
+    ax.plot(all_xs, cogp_mu[col], c='black', ls='-', label='COGP mean')
     sd = np.sqrt(cogp_var[col])
     top = cogp_mu[col] + 2 * sd
     bot = cogp_mu[col] - 2 * sd
-    ax.fill_between(all_xs, bot, top, facecolor='grey', alpha=0.2)
+    ax.fill_between(all_xs, bot, top, facecolor='grey', alpha=0.2, label='COGP CI')
 
     # Prediction for LLGP
-    ax.plot(all_xs, pred_yss[col], c='red')
+    ax.plot(all_xs, pred_yss[col], c='red', label='LLGP mean')
     sd = np.sqrt(pred_vss[col])
     top = pred_yss[col] + 2 * sd
     bot = pred_yss[col] - 2 * sd
-    ax.fill_between(all_xs, bot, top, facecolor='green', alpha=0.3)
+    ax.fill_between(all_xs, bot, top, facecolor='green', alpha=0.3, label='LLGP CI')
 
     # Actual holdout
     marker_size = 5
     test_xs = test_xss[test_ix[col]]
     test_ys = test_yss[test_ix[col]]
     ax.scatter(test_xs, test_ys, c='blue',
-               edgecolors='none', s=marker_size, zorder=11)
+               edgecolors='none', s=marker_size, zorder=11, label='holdout')
 
     # Rest of image (training)
     rest_xs = xss[test_ix[col]]
     rest_ys = yss[test_ix[col]]
     ax.scatter(rest_xs, rest_ys, c='magenta',
-               edgecolors='none', s=marker_size, zorder=10)
+               edgecolors='none', s=marker_size, zorder=10, label='training')
 
     ax.set_xlim([0, 250])
     ax.set_title('output {} (95%)'.format(col))
+
+    h, l = ax.get_legend_handles_labels()
+
+plt.figlegend(h, l, loc="upper center", borderaxespad=0., ncol=6)
+    
 
 print('fx2007graph.pdf')
 plt.savefig(outdir + 'fx2007graph.pdf', format='pdf', bbox_inches='tight')
@@ -148,31 +153,34 @@ for i, (col, ax) in enumerate(zip(test_fx, axs)):
         ax.set_ylabel('temperature (celsius)')
     ax.set_xlabel('time (days)')
     # Prediction on entire domain for COGP
-    ax.plot(all_xs[sel], cogp_mu[col].values[sel], c='black', ls='-')
+    ax.plot(all_xs[sel], cogp_mu[col].values[sel], c='black', ls='-', label='COGP mean')
     sd = np.sqrt(cogp_var[col].values[sel])
     top = cogp_mu[col].values[sel] + 2 * sd
     bot = cogp_mu[col].values[sel] - 2 * sd
-    ax.fill_between(all_xs[sel], bot, top, facecolor='grey', alpha=0.2)
+    ax.fill_between(all_xs[sel], bot, top, facecolor='grey', alpha=0.2, label='COGP CI')
     # Prediction for LLGP
-    ax.plot(all_xs[sel], pred_yss[col], c='red')
+    ax.plot(all_xs[sel], pred_yss[col], c='red', label='LLGP mean')
     sd = np.sqrt(pred_vss[col])
     top = pred_yss[col] + 2 * sd
     bot = pred_yss[col] - 2 * sd
-    ax.fill_between(all_xs[sel], bot, top, facecolor='green', alpha=0.3)
+    ax.fill_between(all_xs[sel], bot, top, facecolor='green', alpha=0.3, label='LLGP CI')
     # Actual holdout
     marker_size = 5
     test_xs = test_xss[test_ix[col]]
     test_ys = test_yss[test_ix[col]]
     ax.scatter(test_xs, test_ys, c='blue',
-               edgecolors='none', s=marker_size, zorder=11)
+               edgecolors='none', s=marker_size, zorder=11, label='holdout')
     # Rest of image (training)
     rest_xs = xss[test_ix[col]]
     selx = (10 <= rest_xs) & (rest_xs <= 15)
     rest_ys = yss[test_ix[col]]
     ax.scatter(rest_xs[selx], rest_ys[selx], c='magenta',
-               edgecolors='none', s=marker_size, zorder=10)
+               edgecolors='none', s=marker_size, zorder=10, label='training')
     ax.set_title('output {} (95%)'.format(col))
 
+    h, l = ax.get_legend_handles_labels()
+
+plt.figlegend(h, l, loc="upper center", borderaxespad=0., ncol=6)
 
 print('weather.pdf')
 plt.savefig(outdir + 'weather.pdf', format='pdf', bbox_inches='tight')
