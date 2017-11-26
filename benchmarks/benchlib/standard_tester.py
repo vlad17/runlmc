@@ -147,6 +147,7 @@ def weather():
 
     return xss, yss, test_xss, test_yss, sensors
 
+
 def synth():
     datadir = _download_own_data()
     xss = np.load(os.path.join(datadir, 'synth', 'xss.npy'))
@@ -235,6 +236,9 @@ def nlpd(test_yss, pred_yss, pred_vss):
 def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
                  kgen, rgen, slfmgen, indepgen, optimizer_opts, **kwargs):
     times, smses, nlpds = [], [], []
+    return_lmc = 'return_lmc' in kwargs
+    if return_lmc:
+        del kwargs['return_lmc']
     for i in range(num_runs):
         fk = FunctionalKernel(
             D=len(xss),
@@ -257,6 +261,8 @@ def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
 
     points = [times, smses, nlpds]
     stats = [(np.mean(x), np.std(x) / np.sqrt(len(x))) for x in points]
+    if return_lmc:
+        return lmc
     return stats
 
 
@@ -377,7 +383,7 @@ def cogp_weather(num_runs, M, nthreads):
     cogp_mu = pd.read_csv(TMP + '/cogp-weather-mu{}{}'.format(num_runs, M),
                           header=None, names=test_fx)
     cogp_var = pd.read_csv(TMP + '/cogp-weather-var{}{}'.format(num_runs, M),
-                          header=None, names=test_fx)
+                           header=None, names=test_fx)
 
     stats = [(m_time, se_time), (m_smse, se_smse), (m_nlpd, se_nlpd)]
     return stats, cogp_mu, cogp_var
@@ -443,6 +449,7 @@ def gen_random_k():
               for i in range(5)]
     return FunctionalKernel(
         D=5, lmc_kernels=[], lmc_ranks=[], slfm_kernels=ks, indep_gp=indeps)
+
 
 def synth_gen():
     """Kernel generators associated for gen_random_k()"""
