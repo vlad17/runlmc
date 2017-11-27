@@ -262,7 +262,7 @@ def bench_runlmc(num_runs, m, xss, yss, test_xss, test_yss,
     points = [times, smses, nlpds]
     stats = [(np.mean(x), np.std(x) / np.sqrt(len(x))) for x in points]
     if return_lmc:
-        return lmc
+        return stats, lmc
     return stats
 
 
@@ -468,13 +468,15 @@ def cogp_synth(num_runs, inducing_pts, nthreads, nbatch, maxiter):
            re.sub(r'[\s+]', '', """
               datadir='{}';
               maxiter={};
+              outdir='{}';
               nbatch={};
               M={};
               runs={};
               maxNumCompThreads({});
               cogp_synth;
               exit""")
-           .format(datadir, maxiter, nbatch, inducing_pts, num_runs, nthreads)]
+           .format(datadir, maxiter, sys.argv[2] + os.path.sep,
+                   nbatch, inducing_pts, num_runs, nthreads)]
     with open(TMP + '/out-synth-{}'.format(inducing_pts), 'w') as f:
         f.write(' '.join(cmd))
     process = subprocess.Popen(

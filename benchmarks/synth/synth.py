@@ -47,18 +47,13 @@ def main():
         cogp_runs = 1
         cogp_colnames = ['COGP']
     else:
-        import h5py
         kgen, rgen, slfmgen, indepgen = synth_gen()
         xss, yss, test_xss, test_yss = synth()
         stats, lmc = bench_runlmc(llgp_runs, interpolating_points, xss, yss, test_xss,
                                   test_yss, kgen, rgen, slfmgen, indepgen, {}, max_procs=nthreads,
                                   # reduce tol a bit b/c of large problem size
                                   tolerance=1e-3, return_lmc=True)
-        approx = lmc.kernel.K.as_numpy()
-        exact = lmc.K()
-        with h5py.File('llgp-mats.h5', 'w') as f:
-            f.create_dataset('approx', data=approx)
-            f.create_dataset('exact', data=exact)
+        dump(lmc._functional_kernel, 'fk-llgp')
         dump(stats, 'llgp_stats')
         #
         # stats = load('llgp_stats')
