@@ -29,7 +29,10 @@
 \ProvidesPackage{aistats2018}
 
 \DeclareOption{accepted}{\renewcommand{\statePaper}{\acceptedPaper}%
-                         \renewcommand{\Notice@String}{\AISTATS@appearing}}
+  \renewcommand{\Notice@String}{\AISTATS@appearing}}
+
+\DeclareOption{arxiv}{\renewcommand{\statePaper}{\acceptedPaper}%
+  \renewcommand{\Notice@String}{}}
 
 \newcommand{\statePaper}{0}
 \newcommand{\acceptedPaper}{1}
