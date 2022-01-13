@@ -211,7 +211,7 @@ def autogrid(Xs, lo, hi, m):
     hi += 2 * delta
     m += 4
 
-    grids = [np.linspace(*args) for args in zip(lo, hi, m)]
+    grids = [np.linspace(*args) for args in zip(lo, hi, m.astype(int))]
     return grids
 
 
