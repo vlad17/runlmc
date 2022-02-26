@@ -83,7 +83,7 @@ def _foreign_exchange_shared():
 def foreign_exchange_2007():
     # This example uses only 2007 data
     fx = _foreign_exchange_shared()
-    fx2007 = fx.ix['2007/01/01':'2008/01/01']
+    fx2007 = fx.loc['2007/01/01':'2008/01/01']
     # they did the experiment in R...
     holdout = {'CAD': slice(49, 99),
                'JPY': slice(99, 149),
@@ -110,7 +110,7 @@ def foreign_exchange_2007():
 
     test_fx = ['CAD', 'JPY', 'AUD']
     test_xss = [all_ixs[holdout[col]] for col in fx2007.columns]
-    test_yss = [np.reciprocal(fx2007.ix[holdout[col], col])
+    test_yss = [np.reciprocal(fx2007.iloc[holdout[col]][col])
                 for col in fx2007.columns]
     return xss, yss, test_xss, test_yss, test_fx, fx2007.columns
 
