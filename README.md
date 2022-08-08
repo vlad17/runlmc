@@ -22,6 +22,23 @@ In other words, this provides a matrix-free implementation of multi-output GPs f
 * Check out the *Dev Stuff* section below for installation requirements.
 * Accepts arbitrary input dimensions are allowed, but the number of active dimensions in each kernel must still be capped at two (though a model can have multiple different kernels depending on different subsets of the dimensions).
 
+You should be able to directly use `runlmc` with minimal requirements by running:
+
+```
+! pip install git+https://github.com/vlad17/runlmc.git@master
+```
+
+If you found `runlmc` useful, **please cite the original paper. I spend my own free time maintaining the code so this would really be appreciated:
+
+```
+@article{feinberg2017large,
+  title={Large linear multi-output gaussian process learning},
+  author={Feinberg, Vladimir and Cheng, Li-Fang and Li, Kai and Engelhardt, Barbara E},
+  journal={arXiv preprint arXiv:1705.10813},
+  year={2017}
+}
+```
+
 ## A note on GPy
 
 [GPy](https://github.com/SheffieldML/GPy) is a way more general GP library that was a strong influence in the development of this one. I've tried to stay as faithful as possible to its structure.
